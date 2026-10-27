@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кофейня «Зерно» — свежий кофе и выпечка</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf6f0; --dark: #2a1a12; --brown: #6f4430; --cream: #f1e6d6;
+      --accent: #c8753a; --muted: #7d6a5d; --radius: 20px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--dark); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { font-family: "Playfair Display", Georgia, serif; line-height: 1.15; }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 12px; }
+    .lead { color: var(--muted); max-width: 560px; }
+    .btn {
+      display: inline-block; padding: 14px 28px; border-radius: 999px; background: var(--accent);
+      color: #fff; font-weight: 600; border: 0; cursor: pointer; font-size: 15px; transition: .2s;
+    }
+    .btn:hover { background: var(--brown); transform: translateY(-2px); }
+    .btn--light { background: transparent; border: 1.5px solid rgba(255,255,255,.6); }
+    .btn--light:hover { background: rgba(255,255,255,.12); }
+
+    .demo-bar { background: var(--dark); color: #f1e6d6; text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; }
+
+    header { position: absolute; left: 0; right: 0; z-index: 10; color: #fff; }
+    .head { display: flex; align-items: center; justify-content: space-between; height: 80px; }
+    .logo { font-family: "Playfair Display", serif; font-size: 1.6rem; font-weight: 700; }
+    nav { display: flex; gap: 28px; font-size: 15px; }
+    nav a { opacity: .85; } nav a:hover { opacity: 1; }
+
+    .hero {
+      min-height: 92vh; display: flex; align-items: center; color: #fff; position: relative;
+      background:
+        radial-gradient(circle at 75% 40%, rgba(200,117,58,.55), transparent 45%),
+        linear-gradient(135deg, #1c100a 0%, #3b2418 55%, #6f4430 100%);
+      overflow: hidden;
+    }
+    .hero__cup { position: absolute; right: 4%; top: 50%; transform: translateY(-40%); font-size: clamp(7rem, 15vw, 14rem); opacity: .9; filter: drop-shadow(0 30px 40px rgba(0,0,0,.5)); }
+    .hero h1 { font-size: clamp(2.6rem, 7vw, 5rem); max-width: 640px; }
+    .hero p { margin: 20px 0 34px; max-width: 480px; font-size: 1.1rem; opacity: .85; }
+    .hero__btns { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    section { padding: 90px 0; }
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+    .feature { background: #fff; border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 30px -18px rgba(42,26,18,.35); }
+    .feature span { font-size: 2rem; }
+    .feature h3 { margin: 12px 0 6px; font-size: 1.3rem; }
+    .feature p { color: var(--muted); font-size: 15px; }
+
+    .menu { background: var(--cream); }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 30px 0; }
+    .tab {
+      padding: 10px 20px; border-radius: 999px; border: 1.5px solid var(--brown); background: transparent;
+      color: var(--brown); font: 500 14px "Inter", sans-serif; cursor: pointer; transition: .2s;
+    }
+    .tab.active, .tab:hover { background: var(--brown); color: #fff; }
+    .items { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 40px; }
+    .item { display: flex; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px dashed rgba(111,68,48,.3); animation: fade .35s; }
+    .item__emoji { width: 56px; height: 56px; flex-shrink: 0; border-radius: 16px; background: #fff; display: grid; place-items: center; font-size: 28px; }
+    .item__info { flex: 1; }
+    .item__info b { font-size: 1.05rem; }
+    .item__info p { color: var(--muted); font-size: 14px; }
+    .item__price { font-family: "Playfair Display", serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } }
+
+    .book { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+    form { background: #fff; padding: 34px; border-radius: var(--radius); box-shadow: 0 20px 50px -25px rgba(42,26,18,.4); display: grid; gap: 14px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    label { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+    input, select {
+      width: 100%; padding: 13px 14px; border: 1.5px solid #e6dccf; border-radius: 12px; font: 15px "Inter", sans-serif;
+      background: var(--bg); color: var(--dark);
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+    .success { display: none; text-align: center; padding: 20px 0; }
+    .success span { font-size: 3rem; }
+    .info-list { margin-top: 26px; display: grid; gap: 12px; }
+    .info-list div { display: flex; gap: 12px; align-items: center; }
+    .info-list span { font-size: 1.3rem; }
+
+    .map {
+      height: 320px; border-radius: var(--radius); margin-top: 40px; position: relative; overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(111,68,48,.08) 1px, transparent 1px) 0 0 / 40px 40px,
+        linear-gradient(rgba(111,68,48,.08) 1px, transparent 1px) 0 0 / 40px 40px,
+        #efe5d7;
+      display: grid; place-items: center;
+    }
+    .map::before { content: ""; position: absolute; left: 0; right: 0; top: 55%; height: 18px; background: #fff; transform: rotate(-6deg); }
+    .map::after { content: ""; position: absolute; top: 0; bottom: 0; left: 40%; width: 14px; background: #fff; transform: rotate(12deg); }
+    .pin { position: relative; z-index: 2; background: var(--dark); color: #fff; padding: 10px 18px; border-radius: 999px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,.25); }
+
+    footer { background: var(--dark); color: #cdbba8; padding: 40px 0; font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+
+    @media (max-width: 860px) {
+      nav { display: none; }
+      .features, .items, .book { grid-template-columns: 1fr; }
+      .hero__cup { opacity: .25; right: -10%; }
+    }
+    @media (max-width: 480px) { .row { grid-template-columns: 1fr; } form { padding: 24px; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+
+  <header>
+    <div class="container head">
+      <a href="#" class="logo">Зерно</a>
+      <nav>
+        <a href="#about">О нас</a>
+        <a href="#menu">Меню</a>
+        <a href="#book">Бронь</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Кофе, ради которого стоит проснуться</h1>
+      <p>Обжариваем зёрна сами, печём круассаны каждое утро и знаем постоянных гостей по имени.</p>
+      <div class="hero__btns">
+        <a href="#menu" class="btn">Смотреть меню</a>
+        <a href="#book" class="btn btn--light">Забронировать стол</a>
+      </div>
+    </div>
+    <div class="hero__cup" aria-hidden="true">☕</div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <h2>Почему к нам возвращаются</h2>
+      <p class="lead">Маленькая кофейня в центре города с большим вниманием к деталям.</p>
+      <div class="features">
+        <div class="feature"><span>🌱</span><h3>Своя обжарка</h3><p>Зерно из Эфиопии, Колумбии и Бразилии. Обжариваем небольшими партиями раз в неделю.</p></div>
+        <div class="feature"><span>🥐</span><h3>Выпечка с утра</h3><p>Круассаны и синнабоны из печи к открытию. К обеду обычно уже ничего не остаётся.</p></div>
+        <div class="feature"><span>💻</span><h3>Можно работать</h3><p>Быстрый Wi-Fi, розетки у каждого стола и тихая музыка.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu" id="menu">
+    <div class="container">
+      <h2>Меню</h2>
+      <p class="lead">Выберите категорию.</p>
+      <div class="tabs" id="tabs"></div>
+      <div class="items" id="items"></div>
+    </div>
+  </section>
+
+  <section id="book">
+    <div class="container book">
+      <div>
+        <h2>Забронировать столик</h2>
+        <p class="lead">Оставьте заявку, и мы перезвоним в течение 15 минут, чтобы подтвердить бронь.</p>
+        <div class="info-list" id="contacts">
+          <div><span>📍</span> ул. Примерная, 12</div>
+          <div><span>🕗</span> Ежедневно с 8:00 до 22:00</div>
+          <div><span>📞</span> +7 (900) 000-00-00</div>
+        </div>
+      </div>
+      <form id="form">
+        <div class="fields">
+          <div style="display:grid;gap:14px">
+            <label>Имя<input required name="name" placeholder="Как к вам обращаться"></label>
+            <label>Телефон<input required name="phone" type="tel" placeholder="+7 (___) ___-__-__"></label>
+            <div class="row">
+              <label>Дата<input required name="date" type="date" id="date"></label>
+              <label>Время
+                <select name="time" required>
+                  <option>10:00</option><option>12:00</option><option>14:00</option>
+                  <option>16:00</option><option selected>18:00</option><option>20:00</option>
+                </select>
+              </label>
+            </div>
+            <label>Гостей
+              <select name="guests"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5+</option></select>
+            </label>
+            <button class="btn" type="submit">Отправить заявку</button>
+          </div>
+        </div>
+        <div class="success" id="success">
+          <span>🎉</span>
+          <h3>Заявка отправлена!</h3>
+          <p class="lead" style="margin:8px auto 0">Скоро перезвоним для подтверждения.</p>
+        </div>
+      </form>
+    </div>
+    <div class="container">
+      <div class="map"><div class="pin">📍 Зерно</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container foot">
+      <span>© Кофейня «Зерно»</span>
+      <span>Демо-сайт для портфолио</span>
+    </div>
+  </footer>
+
+  <script>
+    const menu = {
+      "Кофе": [
+        ["☕", "Эспрессо", "Классика, 30 мл", 150],
+        ["☕", "Капучино", "Эспрессо и нежная молочная пена", 220],
+        ["🥛", "Латте", "Больше молока, мягкий вкус", 240],
+        ["☕", "Флэт уайт", "Двойной эспрессо и бархатное молоко", 260],
+        ["🧊", "Айс-латте", "Холодный латте со льдом", 270],
+        ["🍯", "Раф медовый", "Сливки, мёд и эспрессо", 290],
+      ],
+      "Чай": [
+        ["🍵", "Матча латте", "Японский зелёный чай на молоке", 280],
+        ["🫖", "Чай облепиховый", "С имбирём и мёдом, 400 мл", 250],
+        ["🍃", "Пуэр", "Выдержанный, 400 мл", 230],
+      ],
+      "Выпечка": [
+        ["🥐", "Круассан", "Классический, на сливочном масле", 180],
+        ["🥐", "Круассан с миндалём", "С миндальным кремом", 230],
+        ["🌀", "Синнабон", "С корицей и сливочным кремом", 210],
+      ],
+      "Десерты": [
+        ["🍰", "Чизкейк Нью-Йорк", "Классический, с ягодным соусом", 290],
+        ["🍮", "Тирамису", "Маскарпоне, савоярди, эспрессо", 320],
+        ["🍪", "Печенье с шоколадом", "Тёплое, только из печи", 120],
+      ],
+    };
+
+    const tabs = document.getElementById("tabs");
+    const items = document.getElementById("items");
+
+    function render(cat) {
+      tabs.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.textContent === cat));
+      items.innerHTML = menu[cat].map(([e, n, d, p]) => `
+        <div class="item">
+          <div class="item__emoji">${e}</div>
+          <div class="item__info"><b>${n}</b><p>${d}</p></div>
+          <div class="item__price">${p} ₽</div>
+        </div>`).join("");
+    }
+
+    Object.keys(menu).forEach(cat => {
+      const b = document.createElement("button");
+      b.className = "tab";
+      b.textContent = cat;
+      b.onclick = () => render(cat);
+      tabs.appendChild(b);
+    });
+    render("Кофе");
+
+    const date = document.getElementById("date");
+    date.min = new Date().toISOString().split("T")[0];
+
+    // В реальном проекте заявка уходит в Telegram администратору
+    document.getElementById("form").addEventListener("submit", e => {
+      e.preventDefault();
+      e.target.querySelector(".fields").style.display = "none";
+      document.getElementById("success").style.display = "block";
+    });
+  </script>
+</body>
+</html>

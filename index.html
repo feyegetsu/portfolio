@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Разработка сайтов и Telegram-ботов для бизнеса</title>
+  <meta name="description" content="Делаю сайты для кафе, ресторанов, салонов и Telegram-ботов для приёма заказов и записи. Быстро, под ключ, с поддержкой.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="#top" class="logo">feyegetsu<span>.dev</span></a>
+      <nav class="nav" id="nav">
+        <a href="#services">Услуги</a>
+        <a href="#works">Работы</a>
+        <a href="#bot">Боты</a>
+        <a href="#prices">Цены</a>
+        <a href="#faq">Вопросы</a>
+      </nav>
+      <a href="#contact" class="btn btn--small">Связаться</a>
+      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__text">
+          <p class="badge"><span class="dot"></span> Беру новые проекты</p>
+          <h1>Сайты и Telegram-боты, которые приводят клиентов</h1>
+          <p class="hero__lead">Делаю под ключ сайты для кафе, ресторанов, барбершопов, салонов и магазинов. Плюс Telegram-боты для заказов, записи и уведомлений. Вы получаете готовый инструмент, а не просто «красивую картинку».</p>
+          <div class="hero__actions">
+            <a href="#contact" class="btn">Обсудить проект</a>
+            <a href="#works" class="btn btn--ghost">Смотреть работы</a>
+          </div>
+          <ul class="hero__facts">
+            <li><b>от 5 дней</b><span>срок запуска</span></li>
+            <li><b>100%</b><span>адаптив под телефон</span></li>
+            <li><b>1 месяц</b><span>поддержки бесплатно</span></li>
+          </ul>
+        </div>
+        <div class="hero__visual" aria-hidden="true">
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span>project.js</span></div>
+<pre><code><span class="k">const</span> project = {
+  client: <span class="s">"Ваш бизнес"</span>,
+  site:   <span class="s">"быстрый и современный"</span>,
+  bot:    <span class="s">"принимает заказы 24/7"</span>,
+  mobile: <span class="b">true</span>,
+  seo:    <span class="b">true</span>,
+};
+
+<span class="k">launch</span>(project); <span class="c">// 🚀 больше клиентов</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="section" id="services">
+      <div class="container">
+        <p class="eyebrow">Что я делаю</p>
+        <h2>Услуги</h2>
+        <div class="grid grid--3">
+          <article class="card">
+            <div class="card__icon">☕</div>
+            <h3>Сайт для кафе и ресторана</h3>
+            <p>Меню с фото и ценами, бронь столика, карта, часы работы. Гость за минуту понимает, почему стоит прийти именно к вам.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">📱</div>
+            <h3>QR-меню</h3>
+            <p>Электронное меню, которое открывается по QR-коду на столе. Цены меняете сами за секунды, без перепечатки.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">✂️</div>
+            <h3>Онлайн-запись</h3>
+            <p>Для барбершопов, салонов и студий: выбор услуги, мастера и времени. Заявка сразу прилетает вам в Telegram.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🤖</div>
+            <h3>Telegram-боты</h3>
+            <p>Приём заказов, запись, рассылки, ответы на частые вопросы, оплата. Бот работает круглосуточно и не устаёт.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🛍️</div>
+            <h3>Лендинги и каталоги</h3>
+            <p>Одностраничный сайт под рекламу или каталог товаров с корзиной и заказом через мессенджер.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🛠️</div>
+            <h3>Доработка и поддержка</h3>
+            <p>Обновлю старый сайт, ускорю загрузку, подключу аналитику и формы. Помогу с доменом и хостингом.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKS -->
+    <section class="section section--alt" id="works">
+      <div class="container">
+        <p class="eyebrow">Портфолио</p>
+        <h2>Работы</h2>
+        <p class="section__lead">Демо-проекты. Всё работает, можно открыть и потыкать прямо сейчас.</p>
+        <div class="grid grid--3">
+          <a class="work" href="projects/cafe/">
+            <div class="work__preview work__preview--cafe">
+              <span class="work__title-mock">Кофейня «Зерно»</span>
+            </div>
+            <div class="work__body">
+              <h3>Кофейня «Зерно»</h3>
+              <p>Сайт кофейни: меню с фильтрами по категориям, бронь столика, контакты и карта.</p>
+              <ul class="tags"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul>
+            </div>
+          </a>
+          <a class="work" href="projects/barbershop/">
+            <div class="work__preview work__preview--barber">
+              <span class="work__title-mock">BLADE</span>
+            </div>
+            <div class="work__body">
+              <h3>Барбершоп BLADE</h3>
+              <p>Лендинг с онлайн-записью в 3 шага: услуга, мастер, дата и время.</p>
+              <ul class="tags"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul>
+            </div>
+          </a>
+          <a class="work" href="#bot">
+            <div class="work__preview work__preview--bot">
+              <span class="work__title-mock">@cafe_order_bot</span>
+            </div>
+            <div class="work__body">
+              <h3>Бот для заказов</h3>
+              <p>Telegram-бот кафе: меню, корзина, оформление заказа, уведомление администратору.</p>
+              <ul class="tags"><li>Python</li><li>aiogram 3</li><li>SQLite</li></ul>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOT DEMO -->
+    <section class="section" id="bot">
+      <div class="container bot">
+        <div class="bot__text">
+          <p class="eyebrow">Telegram-боты</p>
+          <h2>Попробуйте бота прямо здесь</h2>
+          <p>Это симуляция моего бота для кафе. Понажимайте кнопки: так ваши клиенты будут делать заказ, не выходя из Telegram.</p>
+          <ul class="checks">
+            <li>Меню с категориями и ценами</li>
+            <li>Корзина и оформление заказа</li>
+            <li>Заказ мгновенно приходит администратору</li>
+            <li>Рассылки акций всем подписчикам</li>
+          </ul>
+          <a href="https://github.com/feyegetsu" class="btn btn--ghost" target="_blank" rel="noopener">Исходный код на GitHub</a>
+        </div>
+        <div class="phone">
+          <div class="phone__head">
+            <div class="phone__avatar">☕</div>
+            <div><b>Зерно | Заказы</b><small>бот</small></div>
+          </div>
+          <div class="phone__chat" id="chat"></div>
+          <div class="phone__keys" id="keys"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="section section--alt">
+      <div class="container">
+        <p class="eyebrow">Как я работаю</p>
+        <h2>От заявки до запуска</h2>
+        <ol class="steps">
+          <li><b>Знакомство</b><p>Обсуждаем задачу, ваш бизнес и клиентов. Бесплатно и без обязательств.</p></li>
+          <li><b>Предложение</b><p>Фиксирую объём, сроки и цену. Никаких «а это будет стоить ещё».</p></li>
+          <li><b>Разработка</b><p>Показываю промежуточный результат, вношу правки по ходу.</p></li>
+          <li><b>Запуск</b><p>Размещаю на хостинге, подключаю домен, учу пользоваться. Месяц поддержки.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- PRICES -->
+    <section class="section" id="prices">
+      <div class="container">
+        <p class="eyebrow">Стоимость</p>
+        <h2>Цены</h2>
+        <p class="section__lead">Ориентиры. Точную цену назову после короткого разговора о задаче.</p>
+        <div class="grid grid--3">
+          <div class="price">
+            <h3>Лендинг</h3>
+            <p class="price__sum">от 15 000 ₽</p>
+            <ul class="checks">
+              <li>Одна страница под ключ</li>
+              <li>Адаптив под телефоны</li>
+              <li>Форма заявки в Telegram</li>
+              <li>Срок от 5 дней</li>
+            </ul>
+            <a href="#contact" class="btn btn--ghost">Заказать</a>
+          </div>
+          <div class="price price--hot">
+            <span class="price__label">Популярное</span>
+            <h3>Сайт заведения</h3>
+            <p class="price__sum">от 30 000 ₽</p>
+            <ul class="checks">
+              <li>Несколько страниц</li>
+              <li>Меню / каталог / запись</li>
+              <li>SEO-настройка и аналитика</li>
+              <li>Срок от 10 дней</li>
+            </ul>
+            <a href="#contact" class="btn">Заказать</a>
+          </div>
+          <div class="price">
+            <h3>Telegram-бот</h3>
+            <p class="price__sum">от 10 000 ₽</p>
+            <ul class="checks">
+              <li>Заказы, запись, FAQ</li>
+              <li>Уведомления админу</li>
+              <li>Рассылки и база клиентов</li>
+              <li>Срок от 4 дней</li>
+            </ul>
+            <a href="#contact" class="btn btn--ghost">Заказать</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STACK -->
+    <section class="section section--alt">
+      <div class="container">
+        <p class="eyebrow">Технологии</p>
+        <h2>Чем пользуюсь</h2>
+        <ul class="stack">
+          <li>HTML5</li><li>CSS3</li><li>JavaScript</li><li>React</li><li>Python</li>
+          <li>aiogram</li><li>FastAPI</li><li>SQLite / PostgreSQL</li><li>Git</li><li>Figma</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <p class="eyebrow">Вопросы</p>
+        <h2>Частые вопросы</h2>
+        <details class="faq">
+          <summary>Сколько времени занимает разработка?</summary>
+          <p>Лендинг занимает 5–7 дней, сайт заведения 10–14 дней, бот 4–7 дней. Срок зависит от объёма и от того, как быстро вы присылаете тексты и фото.</p>
+        </details>
+        <details class="faq">
+          <summary>У меня нет текстов и фотографий. Что делать?</summary>
+          <p>Помогу составить тексты и подберу качественные фото со стоков. Позже их можно заменить на свои.</p>
+        </details>
+        <details class="faq">
+          <summary>Смогу ли я сам менять цены и меню?</summary>
+          <p>Да. Сделаю так, чтобы базовые вещи вы меняли сами, без программиста, и покажу, как это делать.</p>
+        </details>
+        <details class="faq">
+          <summary>Как происходит оплата?</summary>
+          <p>Обычно 50% предоплаты и 50% после сдачи проекта. Для небольших задач возможна оплата по факту.</p>
+        </details>
+        <details class="faq">
+          <summary>Что входит в бесплатную поддержку?</summary>
+          <p>В течение месяца после запуска бесплатно исправляю ошибки и вношу мелкие правки.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section contact" id="contact">
+      <div class="container contact__inner">
+        <h2>Есть задача? Давайте обсудим</h2>
+        <p>Напишите пару слов о вашем бизнесе. Отвечу в течение пары часов и предложу решение.</p>
+        <div class="contact__links">
+          <a href="https://t.me/your_username" class="btn" target="_blank" rel="noopener">Написать в Telegram</a>
+          <a href="https://github.com/feyegetsu" class="btn btn--ghost" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <p class="contact__mail">Почта: <span>your@email.com</span></p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© <span id="year"></span> feyegetsu.dev</span>
+      <a href="#top">Наверх ↑</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

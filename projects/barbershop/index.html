@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLADE — барбершоп</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0c0c0c; --card: #161616; --line: #2a2a2a; --gold: #c9a14a; --text: #f2f2f2; --muted: #9a9a9a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { font-family: "Oswald", Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; line-height: 1.1; }
+    h2 { font-size: clamp(2rem, 4.5vw, 3rem); margin-bottom: 12px; }
+    h2 em { color: var(--gold); font-style: normal; }
+    .lead { color: var(--muted); max-width: 560px; }
+    .btn {
+      display: inline-block; padding: 15px 30px; background: var(--gold); color: #111; font-weight: 600;
+      border: 0; cursor: pointer; font-size: 15px; text-transform: uppercase; letter-spacing: .05em; transition: .2s;
+    }
+    .btn:hover { background: #e0b95c; }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+    .btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    .btn--ghost:hover { background: transparent; border-color: var(--gold); }
+
+    .demo-bar { background: var(--gold); color: #111; text-align: center; font-size: 13px; padding: 8px 12px; font-weight: 500; }
+    .demo-bar a { text-decoration: underline; }
+
+    .head { display: flex; justify-content: space-between; align-items: center; height: 76px; border-bottom: 1px solid var(--line); }
+    .logo { font-family: "Oswald", sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: .15em; }
+    .logo span { color: var(--gold); }
+    nav { display: flex; gap: 30px; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    nav a:hover { color: var(--gold); }
+
+    .hero { padding: 110px 0 100px; position: relative; overflow: hidden; }
+    .hero::after {
+      content: "BLADE"; position: absolute; right: -2%; bottom: -8%; font: 700 clamp(8rem, 24vw, 20rem) "Oswald", sans-serif;
+      color: transparent; -webkit-text-stroke: 1px #222; pointer-events: none; z-index: -1;
+    }
+    .hero h1 { font-size: clamp(2.8rem, 8vw, 6rem); max-width: 800px; }
+    .hero h1 span { color: var(--gold); }
+    .hero p { color: var(--muted); font-size: 1.1rem; margin: 22px 0 36px; max-width: 480px; }
+    .hero__stats { display: flex; gap: 50px; margin-top: 60px; flex-wrap: wrap; }
+    .hero__stats b { font: 700 2.4rem "Oswald", sans-serif; color: var(--gold); display: block; }
+    .hero__stats span { color: var(--muted); font-size: 14px; }
+
+    section { padding: 90px 0; }
+    .alt { background: #111; }
+
+    .services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 60px; margin-top: 40px; }
+    .service { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .service b { font-size: 1.1rem; font-weight: 500; }
+    .service small { display: block; color: var(--muted); font-size: 14px; }
+    .service span { font: 700 1.4rem "Oswald", sans-serif; color: var(--gold); white-space: nowrap; }
+
+    .masters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+    .master { background: var(--card); border: 1px solid var(--line); }
+    .master__photo { aspect-ratio: 4 / 3; display: grid; place-items: center; font-size: 4.5rem; background: linear-gradient(160deg, #222, #0e0e0e); }
+    .master__info { padding: 22px; }
+    .master__info h3 { font-size: 1.4rem; }
+    .master__info p { color: var(--muted); font-size: 14px; }
+
+    /* Booking */
+    .booking { background: var(--card); border: 1px solid var(--line); margin-top: 40px; }
+    .progress { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+    .progress div { padding: 18px; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 2px solid transparent; }
+    .progress div.active { color: var(--gold); border-color: var(--gold); }
+    .progress div.done { color: var(--text); }
+    .step { display: none; padding: 34px; }
+    .step.active { display: block; }
+    .options { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .opt {
+      padding: 18px; border: 1px solid var(--line); background: transparent; color: var(--text); text-align: left;
+      cursor: pointer; font: 15px "Inter", sans-serif; transition: .2s;
+    }
+    .opt small { display: block; color: var(--muted); margin-top: 4px; }
+    .opt:hover { border-color: #555; }
+    .opt.selected { border-color: var(--gold); background: rgba(201,161,74,.08); }
+    .days { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 22px; }
+    .day { min-width: 74px; padding: 12px 8px; text-align: center; }
+    .day b { display: block; font: 700 1.4rem "Oswald", sans-serif; }
+    .times { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 10px; }
+    .time { text-align: center; padding: 12px; }
+    .time:disabled { opacity: .25; text-decoration: line-through; cursor: not-allowed; }
+    .step__nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+    .summary { background: #0f0f0f; border: 1px solid var(--line); padding: 20px; margin-bottom: 22px; display: grid; gap: 6px; }
+    .summary span { color: var(--muted); }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    input { width: 100%; padding: 15px; background: #0f0f0f; border: 1px solid var(--line); color: var(--text); font: 15px "Inter", sans-serif; }
+    input:focus { outline: none; border-color: var(--gold); }
+    .done-box { text-align: center; padding: 30px 0; }
+    .done-box div { font-size: 3.5rem; }
+    .done-box h3 { font-size: 2rem; margin: 10px 0; color: var(--gold); }
+
+    footer { border-top: 1px solid var(--line); padding: 36px 0; color: var(--muted); font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+    @media (max-width: 860px) {
+      nav { display: none; }
+      .services, .masters { grid-template-columns: 1fr; }
+      .fields { grid-template-columns: 1fr; }
+      .step { padding: 22px; }
+      .progress div { font-size: 11px; padding: 14px 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+
+  <div class="container head">
+    <a href="#" class="logo">BL<span>A</span>DE</a>
+    <nav>
+      <a href="#services">Услуги</a>
+      <a href="#masters">Мастера</a>
+      <a href="#booking">Запись</a>
+    </nav>
+    <a href="#booking" class="btn">Записаться</a>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Мужские стрижки <span>без компромиссов</span></h1>
+      <p>Стрижки, бритьё и уход за бородой от мастеров с опытом от 5 лет. Записаться онлайн можно за 30 секунд.</p>
+      <a href="#booking" class="btn">Онлайн-запись</a>
+      <div class="hero__stats">
+        <div><b>7</b><span>лет работы</span></div>
+        <div><b>3</b><span>топ-мастера</span></div>
+        <div><b>4.9</b><span>средняя оценка</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt" id="services">
+    <div class="container">
+      <h2>Услуги и <em>цены</em></h2>
+      <div class="services" id="servicesList"></div>
+    </div>
+  </section>
+
+  <section id="masters">
+    <div class="container">
+      <h2>Наши <em>мастера</em></h2>
+      <div class="masters" id="mastersList"></div>
+    </div>
+  </section>
+
+  <section class="alt" id="booking">
+    <div class="container">
+      <h2>Онлайн-<em>запись</em></h2>
+      <p class="lead">Выберите услугу, мастера и удобное время. Заявка сразу уходит администратору в Telegram.</p>
+
+      <div class="booking">
+        <div class="progress" id="progress">
+          <div class="active">1. Услуга</div>
+          <div>2. Мастер</div>
+          <div>3. Время</div>
+        </div>
+
+        <div class="step active" data-step="0">
+          <div class="options" id="optServices"></div>
+          <div class="step__nav"><span></span><button class="btn" data-next disabled>Далее</button></div>
+        </div>
+
+        <div class="step" data-step="1">
+          <div class="options" id="optMasters"></div>
+          <div class="step__nav"><button class="btn btn--ghost" data-back>Назад</button><button class="btn" data-next disabled>Далее</button></div>
+        </div>
+
+        <div class="step" data-step="2">
+          <div class="days" id="days"></div>
+          <div class="times" id="times"></div>
+          <div class="step__nav"><button class="btn btn--ghost" data-back>Назад</button><button class="btn" data-next disabled>Далее</button></div>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="summary" id="summary"></div>
+          <form id="form">
+            <div class="fields">
+              <input required placeholder="Ваше имя" name="name">
+              <input required type="tel" placeholder="Телефон" name="phone">
+            </div>
+            <div class="step__nav"><button type="button" class="btn btn--ghost" data-back>Назад</button><button class="btn" type="submit">Подтвердить запись</button></div>
+          </form>
+        </div>
+
+        <div class="step" data-step="4">
+          <div class="done-box">
+            <div>✂️</div>
+            <h3>Вы записаны!</h3>
+            <p class="lead" style="margin:0 auto" id="doneText"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container foot">
+      <span>© BLADE Barbershop · ул. Примерная, 7</span>
+      <span>Демо-сайт для портфолио</span>
+    </div>
+  </footer>
+
+  <script>
+    const services = [
+      { name: "Мужская стрижка", desc: "Консультация, мытьё, укладка", price: 1500, time: "60 мин" },
+      { name: "Стрижка машинкой", desc: "Одна насадка", price: 900, time: "30 мин" },
+      { name: "Моделирование бороды", desc: "Форма, контур, уход", price: 1000, time: "40 мин" },
+      { name: "Стрижка + борода", desc: "Комплекс со скидкой", price: 2200, time: "90 мин" },
+      { name: "Королевское бритьё", desc: "Опасная бритва, горячее полотенце", price: 1400, time: "45 мин" },
+      { name: "Детская стрижка", desc: "До 12 лет", price: 1000, time: "40 мин" },
+    ];
+    const masters = [
+      { name: "Артём", role: "Топ-барбер, 8 лет опыта", emoji: "🧔" },
+      { name: "Денис", role: "Барбер, мастер фейдов", emoji: "👨‍🦱" },
+      { name: "Игорь", role: "Барбер, специалист по бородам", emoji: "🧔‍♂️" },
+    ];
+
+    document.getElementById("servicesList").innerHTML = services.map(s =>
+      `<div class="service"><div><b>${s.name}</b><small>${s.desc} · ${s.time}</small></div><span>${s.price} ₽</span></div>`).join("");
+    document.getElementById("mastersList").innerHTML = masters.map(m =>
+      `<div class="master"><div class="master__photo">${m.emoji}</div><div class="master__info"><h3>${m.name}</h3><p>${m.role}</p></div></div>`).join("");
+
+    // ----- Запись -----
+    const state = { service: null, master: null, day: null, time: null };
+    const steps = document.querySelectorAll(".step");
+    const progress = document.querySelectorAll("#progress div");
+    let current = 0;
+
+    function go(n) {
+      current = n;
+      steps.forEach((s, i) => s.classList.toggle("active", i === n));
+      progress.forEach((p, i) => {
+        p.classList.toggle("active", i === Math.min(n, 2));
+        p.classList.toggle("done", i < n);
+      });
+      if (n === 3) {
+        document.getElementById("summary").innerHTML = `
+          <div><span>Услуга:</span> ${state.service.name} (${state.service.price} ₽)</div>
+          <div><span>Мастер:</span> ${state.master.name}</div>
+          <div><span>Когда:</span> ${state.day.label}, ${state.time}</div>`;
+      }
+    }
+
+    function enableNext() { steps[current].querySelector("[data-next]").disabled = false; }
+
+    function makeOptions(container, list, render, onPick) {
+      container.innerHTML = "";
+      list.forEach(item => {
+        const b = document.createElement("button");
+        b.className = "opt";
+        b.innerHTML = render(item);
+        b.onclick = () => {
+          container.querySelectorAll(".opt").forEach(o => o.classList.remove("selected"));
+          b.classList.add("selected");
+          onPick(item);
+        };
+        container.appendChild(b);
+      });
+    }
+
+    makeOptions(document.getElementById("optServices"), services,
+      s => `${s.name}<small>${s.price} ₽ · ${s.time}</small>`,
+      s => { state.service = s; enableNext(); });
+
+    makeOptions(document.getElementById("optMasters"), [{ name: "Любой мастер", role: "Ближайшее время", emoji: "⚡" }, ...masters],
+      m => `${m.emoji} ${m.name}<small>${m.role}</small>`,
+      m => { state.master = m; enableNext(); });
+
+    // Ближайшие 7 дней
+    const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+    const months = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+    const days = [...Array(7)].map((_, i) => {
+      const d = new Date(); d.setDate(d.getDate() + i);
+      return { date: d, label: `${d.getDate()} ${months[d.getMonth()]}, ${wd[d.getDay()]}` };
+    });
+    const hours = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+
+    // Псевдослучайно «занятые» слоты, стабильные для дня
+    const busy = (dayIdx, h) => ((dayIdx + 3) * 7 + h * 5) % 4 === 0;
+
+    const daysEl = document.getElementById("days");
+    const timesEl = document.getElementById("times");
+    days.forEach((d, i) => {
+      const b = document.createElement("button");
+      b.className = "opt day";
+      b.innerHTML = `<small>${wd[d.date.getDay()]}</small><b>${d.date.getDate()}</b><small>${months[d.date.getMonth()]}</small>`;
+      b.onclick = () => {
+        daysEl.querySelectorAll(".day").forEach(o => o.classList.remove("selected"));
+        b.classList.add("selected");
+        state.day = d; state.time = null;
+        steps[2].querySelector("[data-next]").disabled = true;
+        renderTimes(i);
+      };
+      daysEl.appendChild(b);
+    });
+
+    function renderTimes(dayIdx) {
+      const now = new Date();
+      timesEl.innerHTML = "";
+      hours.forEach((h, hi) => {
+        const b = document.createElement("button");
+        b.className = "opt time";
+        b.textContent = h;
+        const past = dayIdx === 0 && parseInt(h) <= now.getHours();
+        b.disabled = past || busy(dayIdx, hi);
+        b.onclick = () => {
+          timesEl.querySelectorAll(".time").forEach(o => o.classList.remove("selected"));
+          b.classList.add("selected");
+          state.time = h; enableNext();
+        };
+        timesEl.appendChild(b);
+      });
+    }
+    daysEl.firstChild.click();
+
+    document.querySelectorAll("[data-next]").forEach(b => b.onclick = () => go(current + 1));
+    document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => go(current - 1));
+
+    // В реальном проекте здесь отправка заявки в Telegram-бот администратора
+    document.getElementById("form").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = e.target.elements["name"].value;
+      document.getElementById("doneText").textContent =
+        `${name}, ждём вас ${state.day.label} в ${state.time}. Мастер: ${state.master.name}. Напомним за 2 часа до визита.`;
+      go(4);
+    });
+  </script>
+</body>
+</html>
