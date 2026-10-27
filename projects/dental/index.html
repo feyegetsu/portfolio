@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Белая линия — стоматология без боли и страха</title>
+  <meta name="description" content="Современная стоматология: лечение, имплантация, отбеливание. Бесплатная консультация и план лечения.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦷</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #f5f8fc; --ink: #0f2137; --muted: #61738a; --blue: #1d6fe0; --blue-l: #e6f0ff; --mint: #19b394; --line: #e2e9f2; --r: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Golos Text", system-ui, sans-serif; background: #fff; color: var(--ink); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { line-height: 1.15; font-weight: 700; letter-spacing: -.02em; }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.7rem); margin-bottom: 12px; }
+    .muted { color: var(--muted); }
+    .demo-bar { background: var(--blue); color: #fff; text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; }
+
+    .top { border-bottom: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+    .top .container { display: flex; justify-content: space-between; gap: 16px; padding-block: 8px; flex-wrap: wrap; }
+    .top b { color: var(--ink); }
+    header { position: sticky; top: 0; z-index: 30; background: rgba(255,255,255,.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .head { display: flex; align-items: center; gap: 30px; height: 70px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; }
+    .logo span { width: 38px; height: 38px; border-radius: 12px; background: var(--blue); color: #fff; display: grid; place-items: center; }
+    nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; }
+    nav a:hover { color: var(--blue); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 26px; border-radius: 14px; background: var(--blue); color: #fff; font-weight: 600; border: 0; transition: .2s; }
+    .btn:hover { background: #155bc0; transform: translateY(-1px); }
+    .btn--soft { background: var(--blue-l); color: var(--blue); }
+    .btn--soft:hover { background: #d5e5ff; }
+
+    .hero { background: linear-gradient(180deg, var(--bg), #fff); padding: 70px 0; overflow: hidden; }
+    .hero__grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 50px; align-items: center; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; }
+    .badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); }
+    .hero h1 { font-size: clamp(2.4rem, 5.5vw, 4rem); margin: 20px 0; }
+    .hero h1 span { color: var(--blue); }
+    .hero p { font-size: 1.1rem; color: var(--muted); max-width: 500px; }
+    .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 30px 0; }
+    .trust { display: flex; gap: 30px; flex-wrap: wrap; }
+    .trust b { display: block; font-size: 1.6rem; color: var(--blue); }
+    .trust span { font-size: 13px; color: var(--muted); }
+
+    .hero__card { position: relative; background: #fff; border-radius: 28px; padding: 30px; box-shadow: 0 30px 60px -30px rgba(15, 33, 55, .3); }
+    .tooth { width: 100%; max-width: 280px; display: block; margin: 0 auto 10px; }
+    .hero__card h3 { text-align: center; margin-bottom: 18px; }
+    .offer { display: flex; justify-content: space-between; padding: 14px 0; border-top: 1px dashed var(--line); font-size: 15px; }
+    .offer b { color: var(--mint); }
+    .sticker { position: absolute; top: -16px; right: -10px; background: var(--mint); color: #fff; padding: 10px 16px; border-radius: 14px; font-weight: 700; transform: rotate(6deg); box-shadow: 0 10px 20px -10px var(--mint); }
+
+    section { padding: 80px 0; }
+    .alt { background: var(--bg); }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 30px 0 20px; }
+    .tab { padding: 10px 18px; border-radius: 12px; border: 1px solid var(--line); background: #fff; font-weight: 500; transition: .2s; }
+    .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .prices { background: #fff; border-radius: var(--r); border: 1px solid var(--line); overflow: hidden; }
+    .prow { display: flex; justify-content: space-between; gap: 20px; padding: 18px 24px; border-bottom: 1px solid var(--line); animation: in .3s both; }
+    .prow:last-child { border-bottom: 0; }
+    .prow small { display: block; color: var(--muted); font-size: 13px; }
+    .prow b { white-space: nowrap; }
+    @keyframes in { from { opacity: 0; transform: translateY(6px); } }
+
+    /* Quiz */
+    .quiz { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: start; }
+    .quiz__box { background: #fff; border-radius: 24px; padding: 34px; border: 1px solid var(--line); box-shadow: 0 20px 50px -35px rgba(15,33,55,.4); }
+    .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 24px; }
+    .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--mint)); width: 0; transition: width .4s; }
+    .q h3 { font-size: 1.3rem; margin-bottom: 18px; }
+    .answers { display: grid; gap: 10px; }
+    .ans { text-align: left; padding: 16px 18px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; transition: .2s; display: flex; gap: 12px; align-items: center; }
+    .ans:hover { border-color: var(--blue); background: var(--blue-l); }
+    .result { text-align: center; }
+    .result .big { font-size: 3rem; }
+    .result h3 { font-size: 1.5rem; margin: 8px 0; }
+    .result form { display: grid; gap: 10px; margin-top: 20px; }
+
+    .doctors { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 36px; }
+    .doc { background: #fff; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); }
+    .doc__ph { aspect-ratio: 1; display: grid; place-items: center; font-size: 4.5rem; background: linear-gradient(160deg, var(--blue-l), #f7fbff); }
+    .doc__b { padding: 18px; }
+    .doc__b h3 { font-size: 1.05rem; }
+    .doc__b p { font-size: 14px; color: var(--muted); }
+    .doc__b span { display: inline-block; margin-top: 10px; font-size: 12px; background: var(--bg); padding: 4px 10px; border-radius: 99px; }
+
+    .book { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; background: var(--ink); color: #fff; border-radius: 32px; padding: 56px; }
+    .book p { opacity: .7; }
+    .book form, .result form { display: grid; gap: 12px; }
+    input, select { width: 100%; padding: 15px 16px; border-radius: 14px; border: 1.5px solid var(--line); font: 15px "Golos Text", sans-serif; background: #fff; color: var(--ink); }
+    input:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .ok { display: none; text-align: center; padding: 20px; }
+    .ok div { font-size: 3rem; }
+
+    footer { padding: 40px 0; color: var(--muted); font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+    @media (max-width: 900px) {
+      nav, .top .hide { display: none; }
+      .head .btn { margin-left: auto; padding: 11px 16px; }
+      .hero__grid, .quiz, .book { grid-template-columns: 1fr; }
+      .doctors { grid-template-columns: 1fr 1fr; }
+      .book { padding: 32px 22px; }
+    }
+    @media (max-width: 480px) { .doctors { grid-template-columns: 1fr; } .quiz__box { padding: 22px; } .prow { padding: 16px; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <div class="top">
+    <div class="container">
+      <span>📍 ул. Примерная, 24 · м. Центральная</span>
+      <span class="hide">Пн–Сб 9:00–21:00, Вс 10:00–18:00</span>
+      <b>+7 (900) 000-00-00</b>
+    </div>
+  </div>
+  <header>
+    <div class="container head">
+      <a href="#" class="logo"><span>Б</span>Белая линия</a>
+      <nav>
+        <a href="#prices">Услуги и цены</a>
+        <a href="#quiz">Подбор лечения</a>
+        <a href="#doctors">Врачи</a>
+      </nav>
+      <a href="#book" class="btn">Записаться</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero__grid">
+      <div>
+        <span class="badge"><i></i> Лицензия Минздрава · работаем с 2012 года</span>
+        <h1>Лечим зубы <span>без боли</span> и без страха</h1>
+        <p>Современная анестезия, цифровая диагностика и фиксированная цена в плане лечения. Никаких сюрпризов в чеке.</p>
+        <div class="hero__cta">
+          <a href="#book" class="btn">Бесплатная консультация</a>
+          <a href="#quiz" class="btn btn--soft">Рассчитать стоимость</a>
+        </div>
+        <div class="trust">
+          <div><b>12 лет</b><span>опыта клиники</span></div>
+          <div><b>18 000+</b><span>пациентов</span></div>
+          <div><b>5 лет</b><span>гарантии на импланты</span></div>
+        </div>
+      </div>
+      <div class="hero__card">
+        <div class="sticker">−15% в октябре</div>
+        <svg class="tooth" viewBox="0 0 200 200" aria-hidden="true">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9e8ff"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="90" fill="#e6f0ff"/>
+          <path d="M60 52c14-10 28-4 40 2 12-6 26-12 40-2 16 12 14 38 6 58-6 16-8 40-16 52-6 9-14 4-16-6-3-14-6-28-14-28s-11 14-14 28c-2 10-10 15-16 6-8-12-10-36-16-52-8-20-10-46 6-58z" fill="url(#g)" stroke="#1d6fe0" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M78 70c6-4 12-4 16 0" stroke="#1d6fe0" stroke-width="4" fill="none" stroke-linecap="round" opacity=".5"/>
+          <g fill="#19b394"><circle cx="150" cy="44" r="5"/><circle cx="162" cy="62" r="3"/><circle cx="44" cy="150" r="4"/></g>
+        </svg>
+        <h3>Первый визит</h3>
+        <div class="offer"><span>Консультация и осмотр</span><b>0 ₽</b></div>
+        <div class="offer"><span>3D-снимок челюсти</span><b>0 ₽</b></div>
+        <div class="offer"><span>План лечения с ценами</span><b>0 ₽</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prices" class="alt">
+    <div class="container">
+      <h2>Услуги и цены</h2>
+      <p class="muted">Цены фиксируем в плане лечения, и они не меняются по ходу работы.</p>
+      <div class="tabs" id="tabs"></div>
+      <div class="prices" id="prices-list"></div>
+    </div>
+  </section>
+
+  <section id="quiz">
+    <div class="container quiz">
+      <div>
+        <h2>Подберём лечение за 3 вопроса</h2>
+        <p class="muted">Ответьте на вопросы, и мы покажем примерную стоимость. В конце закрепим за вами скидку 15% на первый визит.</p>
+      </div>
+      <div class="quiz__box">
+        <div class="bar"><i id="bar"></i></div>
+        <div id="quizBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="doctors" class="alt">
+    <div class="container">
+      <h2>Наши врачи</h2>
+      <p class="muted">Каждый врач проходит обучение минимум раз в год.</p>
+      <div class="doctors">
+        <div class="doc"><div class="doc__ph">👩‍⚕️</div><div class="doc__b"><h3>Анна Соколова</h3><p>Главный врач, терапевт</p><span>Стаж 16 лет</span></div></div>
+        <div class="doc"><div class="doc__ph">👨‍⚕️</div><div class="doc__b"><h3>Михаил Орлов</h3><p>Хирург-имплантолог</p><span>Стаж 12 лет</span></div></div>
+        <div class="doc"><div class="doc__ph">🧑‍⚕️</div><div class="doc__b"><h3>Елена Ким</h3><p>Ортодонт, элайнеры</p><span>Стаж 9 лет</span></div></div>
+        <div class="doc"><div class="doc__ph">👨‍⚕️</div><div class="doc__b"><h3>Павел Лебедев</h3><p>Ортопед, виниры</p><span>Стаж 11 лет</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="book">
+    <div class="container">
+      <div class="book">
+        <div>
+          <h2>Запишитесь на бесплатную консультацию</h2>
+          <p>Администратор перезвонит в течение 10 минут и подберёт удобное время.</p>
+        </div>
+        <div>
+          <form id="bookForm">
+            <input required placeholder="Ваше имя" aria-label="Имя">
+            <input required type="tel" placeholder="Телефон" aria-label="Телефон">
+            <select aria-label="Врач">
+              <option>Любой врач</option><option>Анна Соколова, терапевт</option><option>Михаил Орлов, хирург</option>
+              <option>Елена Ким, ортодонт</option><option>Павел Лебедев, ортопед</option>
+            </select>
+            <button class="btn">Записаться</button>
+          </form>
+          <div class="ok" id="bookOk"><div>✅</div><h3>Заявка принята</h3><p>Скоро перезвоним!</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container foot">
+      <span>© Стоматология «Белая линия»</span>
+      <span>Имеются противопоказания, необходима консультация специалиста · Демо-сайт</span>
+    </div>
+  </footer>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const prices = {
+      "Лечение": [["Лечение кариеса", "Световая пломба, анестезия включена", "от 4 500 ₽"], ["Лечение каналов", "Под микроскопом, 1 канал", "от 7 900 ₽"], ["Детская стоматология", "Адаптационный приём", "от 2 000 ₽"]],
+      "Гигиена": [["Профессиональная чистка", "Ультразвук + Air Flow + полировка", "5 500 ₽"], ["Фторирование", "Укрепление эмали", "1 500 ₽"], ["Отбеливание ZOOM 4", "Результат за 1 визит", "24 000 ₽"]],
+      "Имплантация": [["Имплант Osstem (Корея)", "Пожизненная гарантия производителя", "от 32 000 ₽"], ["Имплант Straumann (Швейцария)", "Премиум-система", "от 58 000 ₽"], ["All-on-4", "Зубы за 1 день на 4 имплантах", "от 280 000 ₽"]],
+      "Протезирование": [["Коронка металлокерамика", "", "от 14 000 ₽"], ["Коронка цирконий", "Не отличить от своего зуба", "от 26 000 ₽"], ["Винир E.max", "Ультратонкий, керамика", "от 35 000 ₽"]],
+      "Ортодонтия": [["Брекеты металлические", "Полная установка на 1 челюсть", "от 45 000 ₽"], ["Элайнеры", "Невидимое выравнивание", "от 150 000 ₽"]],
+    };
+    const tabs = $("tabs");
+    function showPrices(cat) {
+      tabs.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.cat === cat));
+      $("prices-list").innerHTML = prices[cat].map(([n, d, p], i) =>
+        `<div class="prow" style="animation-delay:${i * 50}ms"><div>${n}${d ? `<small>${d}</small>` : ""}</div><b>${p}</b></div>`).join("");
+    }
+    tabs.innerHTML = Object.keys(prices).map(c => `<button class="tab" data-cat="${c}">${c}</button>`).join("");
+    tabs.addEventListener("click", e => e.target.dataset.cat && showPrices(e.target.dataset.cat));
+    showPrices("Лечение");
+
+    // Квиз
+    const questions = [
+      { q: "Что вас беспокоит?", a: [["🦷", "Болит зуб", "pain"], ["😁", "Хочу красивую улыбку", "smile"], ["🕳️", "Нет одного или нескольких зубов", "implant"], ["🪥", "Просто давно не был у стоматолога", "check"]] },
+      { q: "Как давно появилась проблема?", a: [["⚡", "Несколько дней", 1], ["📅", "Пару месяцев", 1.1], ["⏳", "Больше года", 1.25]] },
+      { q: "Когда удобно прийти?", a: [["🌅", "Утром", "утро"], ["☀️", "Днём", "день"], ["🌙", "Вечером", "вечер"], ["📆", "В выходные", "выходные"]] },
+    ];
+    const outcomes = {
+      pain: ["Лечение кариеса или каналов", 4500, 15000],
+      smile: ["Отбеливание или виниры", 24000, 120000],
+      implant: ["Имплантация под ключ", 45000, 90000],
+      check: ["Гигиена и осмотр", 5500, 9000],
+    };
+    let step = 0, answers = [];
+    function renderQuiz() {
+      $("bar").style.width = (step / questions.length) * 100 + "%";
+      if (step < questions.length) {
+        const { q, a } = questions[step];
+        $("quizBody").innerHTML = `<div class="q"><p class="muted" style="font-size:13px">Вопрос ${step + 1} из ${questions.length}</p><h3>${q}</h3>
+          <div class="answers">${a.map(([e, t], i) => `<button class="ans" data-i="${i}"><span>${e}</span>${t}</button>`).join("")}</div></div>`;
+        return;
+      }
+      const [title, min, max] = outcomes[answers[0]];
+      const k = answers[1];
+      const f = n => Math.round(n * k / 500) * 500;
+      $("quizBody").innerHTML = `<div class="result"><div class="big">🎁</div><h3>${title}</h3>
+        <p class="muted">Примерная стоимость: <b style="color:var(--ink)">${f(min).toLocaleString("ru-RU")} – ${f(max).toLocaleString("ru-RU")} ₽</b><br>Точную цену врач назовёт на бесплатной консультации.</p>
+        <form id="quizForm"><input required type="tel" placeholder="Телефон для записи (${answers[2]})" aria-label="Телефон"><button class="btn">Закрепить скидку 15%</button></form></div>`;
+      $("quizForm").onsubmit = e => {
+        e.preventDefault();
+        $("quizBody").innerHTML = `<div class="result"><div class="big">✅</div><h3>Скидка закреплена!</h3><p class="muted">Перезвоним и запишем на удобное время.</p>
+          <button class="btn btn--soft" style="margin-top:16px" id="again">Пройти заново</button></div>`;
+        $("again").onclick = () => { step = 0; answers = []; renderQuiz(); };
+      };
+    }
+    $("quizBody").addEventListener("click", e => {
+      const b = e.target.closest(".ans"); if (!b) return;
+      answers.push(questions[step].a[b.dataset.i][2]); step++; renderQuiz();
+    });
+    renderQuiz();
+
+    $("bookForm").addEventListener("submit", e => {
+      e.preventDefault(); e.target.style.display = "none"; $("bookOk").style.display = "block";
+    });
+  </script>
+</body>
+</html>

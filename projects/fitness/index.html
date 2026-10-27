@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PULSE — фитнес-клуб 24/7</title>
+  <meta name="description" content="Фитнес-клуб 24/7: тренажёрный зал, групповые тренировки, бассейн. Первая тренировка бесплатно.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #08090b; --card: #121418; --line: #22252c; --lime: #c6ff3d; --text: #f3f4f6; --muted: #8b919c; --r: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    h1, h2 { font-family: "Russo One", Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 1; }
+    h2 { font-size: clamp(2rem, 5vw, 3.4rem); margin-bottom: 14px; }
+    h2 span, h1 span { color: var(--lime); }
+    h3 { font-weight: 700; }
+    .muted { color: var(--muted); }
+    .demo-bar { background: var(--lime); color: #111; text-align: center; font-size: 13px; padding: 8px 12px; font-weight: 500; }
+    .demo-bar a { text-decoration: underline; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 15px 28px; border-radius: 14px; background: var(--lime); color: #0b0c0e; font-weight: 700; border: 0; transition: .2s; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -10px rgba(198, 255, 61, .6); }
+    .btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    .btn--ghost:hover { border-color: var(--lime); box-shadow: none; }
+
+    header { position: sticky; top: 0; z-index: 30; background: rgba(8, 9, 11, .85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .head { display: flex; align-items: center; gap: 30px; height: 70px; }
+    .logo { font-family: "Russo One", sans-serif; font-size: 1.6rem; letter-spacing: .05em; }
+    .logo span { color: var(--lime); }
+    nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; color: var(--muted); }
+    nav a:hover { color: var(--text); }
+
+    .hero { padding: 90px 0 70px; position: relative; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; width: 600px; height: 600px; right: -150px; top: -150px; background: radial-gradient(circle, rgba(198, 255, 61, .18), transparent 60%); }
+    .hero__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; position: relative; }
+    .hero h1 { font-size: clamp(3rem, 9vw, 7rem); }
+    .hero p { font-size: 1.15rem; color: var(--muted); margin: 24px 0 34px; max-width: 520px; }
+    .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .live { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; margin-bottom: 24px; }
+    .live i { width: 8px; height: 8px; background: var(--lime); border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(198, 255, 61, 0); } 0% { box-shadow: 0 0 0 0 rgba(198, 255, 61, .6); } }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 24px; }
+    .stat b { font-family: "Russo One", sans-serif; font-size: 2.4rem; color: var(--lime); display: block; line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: 14px; }
+    .stat--wide { grid-column: span 2; display: flex; align-items: center; gap: 16px; }
+    .ring { width: 64px; height: 64px; flex-shrink: 0; }
+
+    .marquee { border-block: 1px solid var(--line); overflow: hidden; padding: 18px 0; }
+    .marquee div { display: flex; gap: 50px; width: max-content; animation: run 25s linear infinite; font-family: "Russo One", sans-serif; font-size: 1.4rem; text-transform: uppercase; color: var(--muted); }
+    .marquee span::after { content: "✦"; color: var(--lime); margin-left: 50px; }
+    @keyframes run { to { transform: translateX(-50%); } }
+
+    section { padding: 90px 0; }
+
+    /* Schedule */
+    .sched__top { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 20px; margin-bottom: 26px; }
+    .days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+    .day { min-width: 64px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: var(--muted); text-align: center; font-size: 13px; transition: .2s; }
+    .day b { display: block; font-size: 1.2rem; color: var(--text); }
+    .day.active { background: var(--lime); border-color: var(--lime); color: #111; }
+    .day.active b { color: #111; }
+    .types { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+    .type { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 14px; }
+    .type.active { color: var(--text); border-color: var(--lime); }
+    .classes { display: grid; gap: 10px; }
+    .cls { display: grid; grid-template-columns: 90px 1fr auto auto; gap: 20px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; animation: in .3s both; }
+    @keyframes in { from { opacity: 0; transform: translateX(-10px); } }
+    .cls time { font-family: "Russo One", sans-serif; font-size: 1.3rem; }
+    .cls time small { display: block; font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted); }
+    .cls h3 { font-size: 1.05rem; }
+    .cls p { font-size: 13px; color: var(--muted); }
+    .spots { font-size: 13px; color: var(--muted); text-align: right; min-width: 110px; }
+    .spots i { display: block; height: 4px; border-radius: 9px; background: var(--line); margin-top: 6px; overflow: hidden; }
+    .spots i::after { content: ""; display: block; height: 100%; width: var(--w); background: var(--lime); }
+    .cls .btn { padding: 10px 18px; font-size: 14px; border-radius: 10px; }
+    .cls .btn.booked { background: transparent; color: var(--lime); border: 1px solid var(--lime); }
+    .cls .btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; box-shadow: none; transform: none; }
+    .empty { padding: 40px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }
+
+    /* Pricing */
+    .switch { display: inline-flex; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin: 10px 0 36px; }
+    .switch button { border: 0; background: transparent; color: var(--muted); padding: 10px 20px; border-radius: 10px; font-weight: 600; }
+    .switch button.active { background: var(--text); color: #111; }
+    .switch em { font-style: normal; color: var(--lime); font-size: 12px; margin-left: 6px; }
+    .switch button.active em { color: #3b7a00; }
+    .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .plan { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 32px; display: flex; flex-direction: column; }
+    .plan--hot { border-color: var(--lime); background: linear-gradient(180deg, rgba(198, 255, 61, .08), var(--card) 60%); position: relative; }
+    .plan--hot::before { content: "Выбор 70% клиентов"; position: absolute; top: -12px; left: 32px; background: var(--lime); color: #111; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+    .plan h3 { font-size: 1.3rem; }
+    .plan .sum { font-family: "Russo One", sans-serif; font-size: 2.6rem; margin: 14px 0 4px; }
+    .plan .sum small { font-family: "Inter", sans-serif; font-size: 15px; color: var(--muted); }
+    .plan ul { list-style: none; margin: 20px 0 28px; display: grid; gap: 10px; flex: 1; }
+    .plan li::before { content: "✓"; color: var(--lime); margin-right: 10px; font-weight: 700; }
+    .plan li.no { color: #555; } .plan li.no::before { content: "—"; color: #555; }
+
+    .trial { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; background: var(--lime); color: #0b0c0e; border-radius: 32px; padding: 56px; }
+    .trial h2 span { color: #0b0c0e; text-decoration: underline; }
+    .trial form { display: grid; gap: 12px; }
+    .trial input { padding: 16px; border-radius: 14px; border: 0; font: 15px "Inter", sans-serif; }
+    .trial .btn { background: #0b0c0e; color: var(--lime); }
+
+    footer { padding: 40px 0; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 90px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--lime); color: #111; font-weight: 600; padding: 13px 22px; border-radius: 14px; z-index: 50; transition: transform .35s; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) {
+      nav { display: none; }
+      .head .btn { margin-left: auto; padding: 11px 16px; }
+      .hero__grid, .trial { grid-template-columns: 1fr; }
+      .plans { grid-template-columns: 1fr; }
+      .trial { padding: 32px 22px; }
+      .cls { grid-template-columns: 70px 1fr; gap: 10px 16px; }
+      .spots { grid-column: 2; text-align: left; }
+      .cls .btn { grid-column: 1 / -1; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <a href="#" class="logo">PUL<span>S</span>E</a>
+      <nav><a href="#schedule">Расписание</a><a href="#plans">Абонементы</a><a href="#trial">Пробная</a></nav>
+      <a href="#trial" class="btn">Пробная бесплатно</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero__grid">
+      <div>
+        <span class="live"><i></i> Сейчас в клубе: <b id="now">34</b> человека</span>
+        <h1>Сильнее <span>каждый</span> день</h1>
+        <p>Зал 2 000 м², 40+ групповых тренировок в неделю, бассейн 25 м и сауна. Открыто круглосуточно, без выходных.</p>
+        <div class="hero__cta"><a href="#trial" class="btn">Первая тренировка бесплатно</a><a href="#schedule" class="btn btn--ghost">Расписание</a></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>24/7</b><span>без выходных</span></div>
+        <div class="stat"><b>2000</b><span>м² площадь</span></div>
+        <div class="stat stat--wide">
+          <svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#22252c" stroke-width="3"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#c6ff3d" stroke-width="3" stroke-dasharray="87 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
+          <div><b style="font-size:1.6rem">87%</b><span>клиентов продлевают абонемент</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div id="marq"></div></div>
+
+  <section id="schedule">
+    <div class="container">
+      <div class="sched__top">
+        <div><h2>Распи<span>сание</span></h2><p class="muted">Запишитесь на занятие в один клик.</p></div>
+        <div class="days" id="days"></div>
+      </div>
+      <div class="types" id="types"></div>
+      <div class="classes" id="classes"></div>
+    </div>
+  </section>
+
+  <section id="plans">
+    <div class="container">
+      <h2>Абоне<span>менты</span></h2>
+      <div class="switch" id="switch">
+        <button class="active" data-p="m">Помесячно</button>
+        <button data-p="y">На год <em>−25%</em></button>
+      </div>
+      <div class="plans" id="plansList"></div>
+    </div>
+  </section>
+
+  <section id="trial" style="padding-bottom:0">
+    <div class="container">
+      <div class="trial">
+        <div><h2>Первая тренировка <span>бесплатно</span></h2><p>Персональный тренер покажет зал, составит программу и проведёт тренировку.</p></div>
+        <form id="trialForm">
+          <input required placeholder="Имя" aria-label="Имя">
+          <input required type="tel" placeholder="Телефон" aria-label="Телефон">
+          <button class="btn">Получить пробную тренировку</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container foot"><span>© PULSE Fitness · ул. Примерная, 1</span><span>Демо-сайт для портфолио</span></div>
+  </footer>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const words = ["Силовые", "Кроссфит", "Йога", "Бокс", "Пилатес", "Бассейн", "Растяжка", "Сайкл"];
+    $("marq").innerHTML = [...words, ...words].map(w => `<span>${w}</span>`).join("");
+    setInterval(() => { $("now").textContent = 28 + Math.floor(Math.random() * 14); }, 4000);
+
+    const types = { strength: "Силовые", cardio: "Кардио", mind: "Йога и растяжка", fight: "Единоборства" };
+    const pool = [
+      ["07:00", "Утренняя йога", "mind", "Ольга", 60, 14], ["08:00", "Функциональный тренинг", "strength", "Андрей", 55, 16],
+      ["10:00", "Пилатес", "mind", "Мария", 55, 12], ["12:00", "Сайкл", "cardio", "Илья", 45, 20],
+      ["17:00", "Бокс для начинающих", "fight", "Руслан", 60, 12], ["18:00", "Кроссфит", "strength", "Андрей", 60, 15],
+      ["19:00", "Zumba", "cardio", "Катя", 55, 25], ["19:30", "Тайский бокс", "fight", "Руслан", 75, 10],
+      ["20:00", "Стретчинг", "mind", "Ольга", 50, 18], ["21:00", "Pump", "strength", "Денис", 55, 16],
+    ];
+    const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+    const week = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
+    // Для каждого дня своё стабильное расписание и заполненность
+    const schedule = week.map((d, di) => pool.filter((_, i) => (i + di) % 3 !== 0).map(([t, n, ty, coach, min, cap], i) => {
+      const taken = Math.min(cap, (i * 7 + di * 5 + 3) % (cap + 3));
+      return { id: `${di}-${i}`, t, n, ty, coach, min, cap, taken, booked: false };
+    }));
+    let day = 0, type = "all";
+
+    $("days").innerHTML = week.map((d, i) => `<button class="day${i === 0 ? " active" : ""}" data-i="${i}">${i === 0 ? "Сегодня" : wd[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
+    $("days").addEventListener("click", e => {
+      const b = e.target.closest(".day"); if (!b) return;
+      day = +b.dataset.i;
+      document.querySelectorAll(".day").forEach(x => x.classList.toggle("active", x === b));
+      renderClasses();
+    });
+    $("types").innerHTML = [["all", "Все"], ...Object.entries(types)].map(([k, v]) => `<button class="type${k === "all" ? " active" : ""}" data-t="${k}">${v}</button>`).join("");
+    $("types").addEventListener("click", e => {
+      const b = e.target.closest(".type"); if (!b) return;
+      type = b.dataset.t;
+      document.querySelectorAll(".type").forEach(x => x.classList.toggle("active", x === b));
+      renderClasses();
+    });
+
+    function renderClasses() {
+      const nowH = new Date().getHours();
+      const list = schedule[day].filter(c => type === "all" || c.ty === type);
+      if (!list.length) { $("classes").innerHTML = `<div class="empty">В этот день таких занятий нет. Попробуйте другой день.</div>`; return; }
+      $("classes").innerHTML = list.map((c, i) => {
+        const left = c.cap - c.taken;
+        const past = day === 0 && parseInt(c.t) <= nowH;
+        const label = c.booked ? "Вы записаны ✓" : past ? "Прошло" : left ? "Записаться" : "Мест нет";
+        return `<div class="cls" style="animation-delay:${i * 40}ms">
+          <time>${c.t}<small>${c.min} мин</small></time>
+          <div><h3>${c.n}</h3><p>${types[c.ty]} · тренер ${c.coach}</p></div>
+          <div class="spots">Свободно ${left} из ${c.cap}<i style="--w:${(c.taken / c.cap) * 100}%"></i></div>
+          <button class="btn${c.booked ? " booked" : ""}" data-id="${c.id}" ${(!left && !c.booked) || past ? "disabled" : ""}>${label}</button>
+        </div>`;
+      }).join("");
+    }
+    $("classes").addEventListener("click", e => {
+      const b = e.target.closest("[data-id]"); if (!b || b.disabled) return;
+      const c = schedule[day].find(x => x.id === b.dataset.id);
+      c.booked = !c.booked; c.taken += c.booked ? 1 : -1;
+      toast(c.booked ? `Вы записаны: ${c.n}, ${c.t}` : "Запись отменена");
+      renderClasses();
+    });
+    renderClasses();
+
+    const plans = [
+      { n: "Дневной", m: 2900, f: ["Зал с 7:00 до 17:00", "Групповые тренировки", "Раздевалки и душ", "Бассейн", "Персональные тренировки"], no: 2 },
+      { n: "Безлимит", m: 4500, f: ["Зал 24/7", "Все групповые тренировки", "Бассейн и сауна", "Вводная тренировка", "Заморозка 30 дней"], no: 0, hot: true },
+      { n: "Премиум", m: 8900, f: ["Всё из «Безлимита»", "8 персональных тренировок", "Составление питания", "Гостевые визиты", "Полотенца и шкафчик"], no: 0 },
+    ];
+    let period = "m";
+    function renderPlans() {
+      $("plansList").innerHTML = plans.map(p => {
+        const price = period === "m" ? p.m : Math.round(p.m * .75 / 10) * 10;
+        return `<div class="plan${p.hot ? " plan--hot" : ""}"><h3>${p.n}</h3>
+          <div class="sum">${price.toLocaleString("ru-RU")} ₽<small> / мес</small></div>
+          <span class="muted" style="font-size:13px">${period === "y" ? `${(price * 12).toLocaleString("ru-RU")} ₽ при оплате за год` : "Оплата каждый месяц"}</span>
+          <ul>${p.f.map((f, i) => `<li class="${i >= p.f.length - p.no ? "no" : ""}">${f}</li>`).join("")}</ul>
+          <a href="#trial" class="btn${p.hot ? "" : " btn--ghost"}">Выбрать</a></div>`;
+      }).join("");
+    }
+    $("switch").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      period = b.dataset.p;
+      $("switch").querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+      renderPlans();
+    });
+    renderPlans();
+
+    $("trialForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast("Заявка принята! Тренер позвонит сегодня"); });
+    let tt;
+    function toast(m) { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2500); }
+  </script>
+</body>
+</html>

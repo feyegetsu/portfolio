@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>МоторЛайн — автосервис с честными ценами</title>
+  <meta name="description" content="Ремонт и обслуживание автомобилей. Онлайн-калькулятор стоимости, гарантия 12 месяцев, отслеживание ремонта.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #f2f2ef; --ink: #17181a; --gray: #26282c; --muted: #73767d; --orange: #ff5a1f; --line: #dcdcd6; --r: 18px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Rubik", system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { line-height: 1.1; letter-spacing: -.01em; }
+    h2 { font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 800; margin-bottom: 12px; }
+    .muted { color: var(--muted); }
+    .demo-bar { background: var(--orange); color: #fff; text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 28px; border-radius: 12px; background: var(--orange); color: #fff; font-weight: 600; border: 0; transition: .2s; }
+    .btn:hover { background: #e84a12; transform: translateY(-2px); }
+    .btn--dark { background: var(--ink); }
+    .btn--dark:hover { background: #000; }
+
+    header { background: var(--ink); color: #fff; position: sticky; top: 0; z-index: 30; }
+    .head { display: flex; align-items: center; gap: 30px; height: 70px; }
+    .logo { font-weight: 800; font-size: 1.35rem; display: flex; align-items: center; gap: 10px; }
+    .logo span { width: 34px; height: 34px; background: var(--orange); border-radius: 8px; display: grid; place-items: center; transform: skew(-10deg); }
+    nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; color: #b6b8bd; }
+    nav a:hover { color: #fff; }
+    .phone { font-weight: 600; }
+
+    .hero { background: var(--ink); color: #fff; padding: 70px 0 110px; position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 60px; background: var(--bg); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+    .stripes { position: absolute; right: -80px; top: 0; bottom: 0; width: 420px; background: repeating-linear-gradient(-55deg, transparent 0 30px, rgba(255, 90, 31, .12) 30px 60px); }
+    .hero__grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: center; position: relative; z-index: 1; }
+    .hero h1 { font-size: clamp(2.6rem, 6.5vw, 4.8rem); font-weight: 800; }
+    .hero h1 span { color: var(--orange); }
+    .hero p { color: #b6b8bd; font-size: 1.1rem; margin: 22px 0 32px; max-width: 520px; }
+    .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero__cta .btn--dark { background: transparent; border: 1px solid #44464b; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .fact { background: var(--gray); border-radius: var(--r); padding: 22px; border-left: 3px solid var(--orange); }
+    .fact b { font-size: 2rem; font-weight: 800; display: block; }
+    .fact span { color: #b6b8bd; font-size: 14px; }
+
+    section { padding: 80px 0; }
+
+    .services { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 34px; }
+    .svc { background: #fff; border-radius: var(--r); padding: 26px; border: 1px solid var(--line); transition: .25s; }
+    .svc:hover { border-color: var(--orange); transform: translateY(-4px); }
+    .svc svg { width: 36px; height: 36px; stroke: var(--orange); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .svc h3 { margin: 16px 0 6px; font-size: 1.1rem; }
+    .svc p { color: var(--muted); font-size: 14px; }
+
+    /* Calculator */
+    .calc { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; margin-top: 34px; align-items: start; }
+    .calc > *, .status > * { min-width: 0; }
+    .panel { background: #fff; border-radius: 24px; padding: 30px; border: 1px solid var(--line); }
+    .panel h3 { font-size: 1rem; margin-bottom: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 500; }
+    .cars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 28px; }
+    .car { padding: 16px 10px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; text-align: center; font-weight: 500; transition: .2s; }
+    .car span { display: block; font-size: 1.8rem; }
+    .car.active { border-color: var(--orange); background: #fff3ee; }
+    .works { display: grid; gap: 8px; }
+    .work { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1.5px solid var(--line); border-radius: 14px; cursor: pointer; transition: .2s; user-select: none; }
+    .work:hover { border-color: #bbb; }
+    .work input { display: none; }
+    .work .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; flex-shrink: 0; transition: .2s; }
+    .work input:checked ~ .box { background: var(--orange); border-color: var(--orange); }
+    .work input:checked ~ .box::after { content: "✓"; color: #fff; font-size: 13px; font-weight: 700; }
+    .work:has(input:checked) { border-color: var(--orange); }
+    .work .name { flex: 1; }
+    .work .name small { display: block; color: var(--muted); font-size: 13px; }
+    .work .p { font-weight: 600; white-space: nowrap; }
+    .total { background: var(--ink); color: #fff; position: sticky; top: 90px; }
+    .total h3 { color: #8d9097; }
+    .sum { font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .lines { margin: 20px 0; display: grid; gap: 8px; font-size: 14px; color: #b6b8bd; min-height: 40px; }
+    .lines div { display: flex; justify-content: space-between; gap: 10px; }
+    .total .note { font-size: 13px; color: #8d9097; margin-bottom: 18px; }
+    .total form { display: grid; gap: 10px; }
+    input[type=tel], input[type=text], input[type=date] { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--line); font: 15px "Rubik", sans-serif; background: #fff; color: var(--ink); }
+    .total input { background: var(--gray); border-color: #3a3c41; color: #fff; }
+
+    /* Status */
+    .status { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: start; }
+    .status form { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .status form input { flex: 1; min-width: 160px; }
+    .timeline { background: #fff; border-radius: 24px; padding: 30px; border: 1px solid var(--line); min-height: 200px; }
+    .tl { display: grid; gap: 0; }
+    .tl-item { display: grid; grid-template-columns: 28px 1fr; gap: 14px; padding-bottom: 22px; position: relative; animation: in .35s both; }
+    .tl-item::before { content: ""; position: absolute; left: 13px; top: 26px; bottom: 0; width: 2px; background: var(--line); }
+    .tl-item:last-child::before { display: none; }
+    .tl-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); background: #fff; display: grid; place-items: center; font-size: 12px; z-index: 1; }
+    .tl-item.done .tl-dot { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .tl-item.now .tl-dot { border-color: var(--orange); box-shadow: 0 0 0 5px #ffe3d8; }
+    .tl-item b { display: block; }
+    .tl-item small { color: var(--muted); }
+    @keyframes in { from { opacity: 0; transform: translateY(8px); } }
+
+    footer { background: var(--ink); color: #8d9097; padding: 40px 0; font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--ink); color: #fff; padding: 13px 22px; border-radius: 12px; border-left: 4px solid var(--orange); z-index: 50; transition: transform .35s; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    @media (max-width: 960px) {
+      nav { display: none; }
+      .phone { margin-left: auto; }
+      .hero__grid, .calc, .status { grid-template-columns: 1fr; }
+      .services { grid-template-columns: 1fr 1fr; }
+      .total { position: static; }
+    }
+    @media (max-width: 480px) { .services { grid-template-columns: 1fr; } .panel { padding: 20px; } .sum { font-size: 2.4rem; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <a href="#" class="logo"><span>М</span>МоторЛайн</a>
+      <nav><a href="#services">Услуги</a><a href="#calc">Калькулятор</a><a href="#status">Статус ремонта</a></nav>
+      <a href="#calc" class="phone">+7 (900) 000-00-00</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="stripes" aria-hidden="true"></div>
+    <div class="container hero__grid">
+      <div>
+        <h1>Ремонт авто <span>без сюрпризов</span> в чеке</h1>
+        <p>Посчитайте стоимость онлайн. Цена в калькуляторе совпадёт с ценой в заказ-наряде. Если найдём что-то ещё, сначала согласуем с вами.</p>
+        <div class="hero__cta"><a href="#calc" class="btn">Рассчитать стоимость →</a><a href="#status" class="btn btn--dark">Где моя машина?</a></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>12 мес</b><span>гарантия на работы</span></div>
+        <div class="fact"><b>6 постов</b><span>без очередей</span></div>
+        <div class="fact"><b>от 1 часа</b><span>ТО и замена масла</span></div>
+        <div class="fact"><b>Видео</b><span>отчёт о ремонте в Telegram</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="container">
+      <h2>Что ремонтируем</h2>
+      <p class="muted">Все марки, кроме грузовых. Оригинальные запчасти и проверенные аналоги.</p>
+      <div class="services">
+        <div class="svc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.9 2.9M16.9 16.9l2.9 2.9M1 12h4M19 12h4M4.2 19.8l2.9-2.9M16.9 7.1l2.9-2.9"/></svg><h3>Двигатель</h3><p>Диагностика, ремонт, замена ГРМ</p></div>
+        <div class="svc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg><h3>Ходовая</h3><p>Подвеска, рулевое, развал-схождение</p></div>
+        <div class="svc"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg><h3>Электрика</h3><p>Компьютерная диагностика, проводка</p></div>
+        <div class="svc"><svg viewBox="0 0 24 24"><path d="M12 2.7c3.5 4 6 7.3 6 10.3a6 6 0 0 1-12 0c0-3 2.5-6.3 6-10.3z"/></svg><h3>ТО и масло</h3><p>Регламентное ТО по книжке</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="calc" style="padding-top:0">
+    <div class="container">
+      <h2>Калькулятор стоимости</h2>
+      <p class="muted">Выберите тип автомобиля и работы. Цена включает работу, запчасти считаются отдельно.</p>
+      <div class="calc">
+        <div class="panel">
+          <h3>Тип автомобиля</h3>
+          <div class="cars" id="cars">
+            <button class="car active" data-k="1"><span>🚗</span>Седан</button>
+            <button class="car" data-k="1.2"><span>🚙</span>Кроссовер</button>
+            <button class="car" data-k="1.45"><span>🛻</span>Внедорожник</button>
+          </div>
+          <h3>Работы</h3>
+          <div class="works" id="works"></div>
+        </div>
+        <div class="panel total">
+          <h3>Итого за работу</h3>
+          <div class="sum" id="sum">0 ₽</div>
+          <div class="lines" id="lines"><div>Выберите хотя бы одну работу</div></div>
+          <p class="note">⏱ Примерное время: <b id="time">—</b></p>
+          <form id="bookForm">
+            <input type="text" required placeholder="Марка и модель" aria-label="Марка и модель">
+            <input type="tel" required placeholder="Телефон" aria-label="Телефон">
+            <input type="date" required id="date" aria-label="Дата">
+            <button class="btn" id="bookBtn" disabled>Записаться на ремонт</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="status" style="padding-top:0">
+    <div class="container status">
+      <div>
+        <h2>Где моя машина?</h2>
+        <p class="muted">Введите номер заказ-наряда и смотрите, на каком этапе ремонт. Попробуйте <b>1234</b>.</p>
+        <form id="statusForm">
+          <input type="text" id="orderNo" placeholder="Номер заказа" required aria-label="Номер заказа" inputmode="numeric">
+          <button class="btn btn--dark">Проверить</button>
+        </form>
+      </div>
+      <div class="timeline" id="timeline"><p class="muted">Здесь появится статус ремонта.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container foot"><span>© МоторЛайн · ул. Промышленная, 15 · Ежедневно 8:00–21:00</span><span>Демо-сайт для портфолио</span></div>
+  </footer>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const works = [
+      ["Замена масла и фильтра", "Моторное масло, масляный фильтр", 1200, 0.5],
+      ["Компьютерная диагностика", "Все электронные системы", 1500, 0.5],
+      ["Замена тормозных колодок", "Передняя или задняя ось", 1800, 1],
+      ["Развал-схождение", "3D-стенд Hunter", 2200, 1],
+      ["Замена ремня ГРМ", "С роликами и помпой", 7500, 4],
+      ["Замена амортизаторов", "Комплект на ось", 4800, 2.5],
+      ["Заправка кондиционера", "Проверка на утечки + фреон", 2500, 1],
+      ["Шиномонтаж", "4 колеса с балансировкой", 2400, 1],
+    ];
+    let k = 1;
+    $("works").innerHTML = works.map(([n, d, p], i) => `
+      <label class="work"><input type="checkbox" value="${i}"><span class="box"></span>
+        <span class="name">${n}<small>${d}</small></span><span class="p" data-base="${p}">${p.toLocaleString("ru-RU")} ₽</span></label>`).join("");
+
+    $("cars").addEventListener("click", e => {
+      const b = e.target.closest(".car"); if (!b) return;
+      k = +b.dataset.k;
+      document.querySelectorAll(".car").forEach(c => c.classList.toggle("active", c === b));
+      document.querySelectorAll(".work .p").forEach(p => p.textContent = round(+p.dataset.base * k).toLocaleString("ru-RU") + " ₽");
+      calc();
+    });
+    $("works").addEventListener("change", calc);
+    const round = n => Math.round(n / 50) * 50;
+
+    let shown = 0;
+    function calc() {
+      const picked = [...document.querySelectorAll(".work input:checked")].map(i => works[i.value]);
+      const total = picked.reduce((s, w) => s + round(w[2] * k), 0);
+      const hours = picked.reduce((s, w) => s + w[3], 0);
+      $("lines").innerHTML = picked.length
+        ? picked.map(w => `<div><span>${w[0]}</span><span>${round(w[2] * k).toLocaleString("ru-RU")} ₽</span></div>`).join("")
+        : "<div>Выберите хотя бы одну работу</div>";
+      $("time").textContent = hours ? (hours < 1 ? "30 мин" : `${hours} ч`) : "—";
+      $("bookBtn").disabled = !picked.length;
+      animate(total);
+    }
+    function animate(to) {
+      // Страховка: если браузер не даёт анимировать (свёрнутое окно), итог всё равно появится
+      clearTimeout(animate.done);
+      animate.done = setTimeout(() => { shown = to; $("sum").textContent = to.toLocaleString("ru-RU") + " ₽"; }, 450);
+      const from = shown, start = performance.now();
+      const step = t => {
+        const p = Math.min(1, (t - start) / 400);
+        shown = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+        $("sum").textContent = shown.toLocaleString("ru-RU") + " ₽";
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+    $("date").min = $("date").value = new Date().toISOString().split("T")[0];
+    $("bookForm").addEventListener("submit", e => { e.preventDefault(); toast("Вы записаны! Мастер-приёмщик перезвонит для подтверждения"); e.target.reset(); $("date").value = $("date").min; });
+
+    const stages = [["Автомобиль принят", "Осмотр и фотофиксация"], ["Диагностика", "Мастер нашёл причину"], ["Согласование", "Смета отправлена вам в Telegram"], ["Ремонт", "Работы выполняются"], ["Контроль качества", "Тест-драйв мастером"], ["Готово к выдаче", "Можно забирать"]];
+    $("statusForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const no = $("orderNo").value.trim();
+      // Демо: этап определяется по номеру заказа
+      const cur = no === "1234" ? 3 : [...no].reduce((s, c) => s + c.charCodeAt(0), 0) % stages.length;
+      const base = new Date(); base.setHours(9, 0, 0, 0);
+      $("timeline").innerHTML = `<p style="margin-bottom:18px"><b>Заказ №${no.replace(/[<>&"]/g, "")}</b> · Toyota Camry</p><div class="tl">` + stages.map(([t, d], i) => {
+        const time = new Date(base.getTime() + i * 75 * 60000).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+        const cls = i < cur ? "done" : i === cur ? "now" : "";
+        return `<div class="tl-item ${cls}" style="animation-delay:${i * 70}ms"><div class="tl-dot">${i < cur ? "✓" : ""}</div><div><b>${t}</b><small>${i <= cur ? `${d} · ${time}` : "Ожидается"}</small></div></div>`;
+      }).join("") + "</div>";
+    });
+
+    let tt;
+    function toast(m) { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2800); }
+  </script>
+</body>
+</html>

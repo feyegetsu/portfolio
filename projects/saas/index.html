@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taskly — задачи команды в одном месте</title>
+  <meta name="description" content="Таск-менеджер для небольших команд: доски, сроки, интеграция с Telegram. 14 дней бесплатно.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%234f46e5'/><path d='M28 52l14 14 30-32' stroke='white' stroke-width='12' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #fbfbfd; --ink: #0d0f1a; --muted: #6b7086; --indigo: #4f46e5; --indigo-l: #eef0ff; --line: #e8e9f1; --r: 18px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { font-family: "Inter Tight", "Inter", sans-serif; letter-spacing: -.035em; line-height: 1.05; }
+    h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); margin-bottom: 14px; }
+    .muted { color: var(--muted); }
+    .center { text-align: center; }
+    .center .muted { max-width: 560px; margin: 0 auto; }
+    .demo-bar { background: var(--ink); color: #c7c9d9; text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; color: #fff; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px; border-radius: 12px; background: var(--ink); color: #fff; font-weight: 600; border: 0; transition: .2s; font-size: 15px; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgba(13, 15, 26, .6); }
+    .btn--indigo { background: var(--indigo); }
+    .btn--line { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+
+    header { position: sticky; top: 0; z-index: 30; background: rgba(251, 251, 253, .8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .head { display: flex; align-items: center; gap: 30px; height: 66px; }
+    .logo { display: flex; align-items: center; gap: 9px; font: 800 1.2rem "Inter Tight", sans-serif; }
+    .logo i { width: 28px; height: 28px; border-radius: 8px; background: var(--indigo); display: grid; place-items: center; color: #fff; font-style: normal; font-size: 15px; }
+    nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; color: var(--muted); }
+    nav a:hover { color: var(--ink); }
+
+    .hero { padding: 80px 0 40px; text-align: center; position: relative; }
+    .hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79, 70, 229, .15), transparent 70%); pointer-events: none; }
+    .announce { display: inline-flex; gap: 10px; align-items: center; padding: 5px 6px 5px 14px; border-radius: 99px; background: #fff; border: 1px solid var(--line); font-size: 13px; }
+    .announce b { background: var(--indigo-l); color: var(--indigo); padding: 3px 10px; border-radius: 99px; font-weight: 600; }
+    .hero h1 { font-size: clamp(2.6rem, 7vw, 5.2rem); margin: 24px auto 20px; max-width: 900px; }
+    .grad { background: linear-gradient(90deg, #4f46e5, #a855f7, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { font-size: 1.15rem; color: var(--muted); max-width: 600px; margin: 0 auto 32px; }
+    .hero__cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero small { display: block; margin-top: 14px; color: var(--muted); font-size: 13px; }
+
+    /* App mock with drag and drop */
+    .app { margin: 56px auto 0; max-width: 1040px; background: #fff; border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 40px 80px -40px rgba(13, 15, 26, .35); overflow: hidden; text-align: left; position: relative; }
+    .app__bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+    .app__bar i { width: 10px; height: 10px; border-radius: 50%; background: #e3e4ec; }
+    .app__bar span { margin-left: 10px; }
+    .app__hint { margin-left: auto; background: var(--indigo-l); color: var(--indigo); padding: 3px 10px; border-radius: 99px; font-weight: 500; }
+    .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 18px; background: #f6f7fb; overflow-x: auto; }
+    .col { background: #eef0f6; border-radius: 14px; padding: 12px; min-height: 260px; min-width: 220px; transition: background .2s; }
+    .col.over { background: var(--indigo-l); outline: 2px dashed var(--indigo); outline-offset: -2px; }
+    .col h4 { font-size: 13px; display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--muted); font-weight: 600; }
+    .col h4 b { background: #fff; padding: 0 8px; border-radius: 99px; color: var(--ink); }
+    .task { background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(13, 15, 26, .06); cursor: grab; user-select: none; transition: transform .15s, box-shadow .15s; font-size: 14px; }
+    .task:hover { box-shadow: 0 6px 16px -8px rgba(13, 15, 26, .3); }
+    .task.dragging { opacity: .4; }
+    .task .lbl { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
+    .task .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--muted); }
+    .ava { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 700; }
+    .confetti { position: absolute; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; animation: fall 900ms ease-out forwards; }
+    @keyframes fall { to { transform: translate(var(--x), var(--y)) rotate(540deg); opacity: 0; } }
+
+    .logos { padding: 50px 0; text-align: center; color: var(--muted); font-size: 14px; }
+    .logos div { display: flex; justify-content: center; gap: 46px; flex-wrap: wrap; margin-top: 18px; font: 700 1.3rem "Inter Tight", sans-serif; color: #b4b7c7; }
+
+    section { padding: 90px 0; }
+    .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 44px; }
+    .tile { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 28px; overflow: hidden; position: relative; }
+    .tile h3 { font-size: 1.25rem; margin-bottom: 8px; }
+    .tile p { color: var(--muted); font-size: 15px; }
+    .t1 { grid-column: span 4; } .t2 { grid-column: span 2; } .t3 { grid-column: span 2; } .t4 { grid-column: span 2; } .t5 { grid-column: span 2; }
+    .t1 { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border: 0; }
+    .t1 p { color: rgba(255, 255, 255, .8); }
+    .tg { margin-top: 22px; display: grid; gap: 8px; max-width: 360px; }
+    .tg div { background: rgba(255, 255, 255, .15); backdrop-filter: blur(4px); padding: 10px 14px; border-radius: 14px 14px 14px 4px; font-size: 14px; }
+    .bars { display: flex; align-items: end; gap: 8px; height: 90px; margin-top: 20px; }
+    .bars i { flex: 1; background: var(--indigo-l); border-radius: 6px 6px 2px 2px; }
+    .bars i:nth-child(5) { background: var(--indigo); }
+    .big-num { font: 800 3rem "Inter Tight", sans-serif; color: var(--indigo); margin-top: 14px; }
+
+    /* Pricing */
+    .pricing__ctrl { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin: 30px 0 40px; }
+    .seg { display: inline-flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+    .seg button { border: 0; background: transparent; padding: 8px 18px; border-radius: 9px; font-weight: 600; color: var(--muted); }
+    .seg button.active { background: var(--ink); color: #fff; }
+    .seats { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .seats input { accent-color: var(--indigo); width: 160px; }
+    .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .plan { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 30px; display: flex; flex-direction: column; }
+    .plan--pro { border: 2px solid var(--indigo); box-shadow: 0 30px 60px -40px rgba(79, 70, 229, .6); }
+    .plan h3 { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+    .plan h3 span { font: 600 12px "Inter", sans-serif; background: var(--indigo-l); color: var(--indigo); padding: 3px 10px; border-radius: 99px; letter-spacing: 0; }
+    .plan .price { font: 800 2.6rem "Inter Tight", sans-serif; margin: 16px 0 2px; }
+    .plan .price small { font: 400 15px "Inter", sans-serif; color: var(--muted); }
+    .plan .per { font-size: 13px; color: var(--muted); min-height: 20px; }
+    .plan ul { list-style: none; margin: 22px 0 26px; display: grid; gap: 10px; font-size: 15px; flex: 1; }
+    .plan li { display: flex; gap: 10px; }
+    .plan li::before { content: ""; width: 18px; height: 18px; flex-shrink: 0; margin-top: 3px; border-radius: 50%; background: var(--indigo-l) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12l4 4 8-8' stroke='%234f46e5' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center / 12px no-repeat; }
+
+    .faq { max-width: 760px; margin: 36px auto 0; }
+    details { border-bottom: 1px solid var(--line); }
+    summary { padding: 20px 0; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 1.4rem; color: var(--indigo); transition: .2s; line-height: 1; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { color: var(--muted); padding-bottom: 20px; }
+
+    .cta { background: var(--ink); color: #fff; border-radius: 32px; padding: 70px 30px; text-align: center; position: relative; overflow: hidden; }
+    .cta::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 20% 0%, rgba(79, 70, 229, .5), transparent 50%), radial-gradient(circle at 80% 100%, rgba(236, 72, 153, .35), transparent 50%); }
+    .cta > * { position: relative; }
+    .cta p { color: #a9acc0; margin-bottom: 28px; }
+    .cta form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 480px; margin: 0 auto; }
+    .cta input { flex: 1; min-width: 220px; padding: 14px 16px; border-radius: 12px; border: 0; font: 15px "Inter", sans-serif; }
+
+    footer { padding: 40px 0; color: var(--muted); font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 12px; z-index: 50; transition: transform .35s; font-size: 14px; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) {
+      nav { display: none; }
+      .head .btn { margin-left: auto; }
+      .bento { grid-template-columns: 1fr 1fr; }
+      .t1 { grid-column: span 2; } .t2, .t3, .t4, .t5 { grid-column: span 1; }
+      .plans { grid-template-columns: 1fr; }
+      .board { grid-template-columns: repeat(3, 220px); }
+    }
+    @media (max-width: 560px) { .bento { grid-template-columns: 1fr; } .t1, .t2, .t3, .t4, .t5 { grid-column: span 1; } .app__hint { display: none; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <a href="#" class="logo"><i>✓</i>Taskly</a>
+      <nav><a href="#features">Возможности</a><a href="#pricing">Цены</a><a href="#faq">FAQ</a></nav>
+      <a href="#start" class="btn">Попробовать</a>
+    </div>
+  </header>
+
+  <section class="hero" style="padding-bottom:0">
+    <div class="container">
+      <span class="announce">Новое: интеграция с Telegram <b>Подробнее →</b></span>
+      <h1>Все задачи команды. <span class="grad">Без хаоса в чатах.</span></h1>
+      <p>Taskly собирает задачи, сроки и обсуждения в одном месте и напоминает о дедлайнах прямо в Telegram.</p>
+      <div class="hero__cta"><a href="#start" class="btn btn--indigo">Начать бесплатно</a><a href="#features" class="btn btn--line">Как это работает</a></div>
+      <small>14 дней бесплатно · без привязки карты</small>
+
+      <div class="app">
+        <div class="app__bar"><i></i><i></i><i></i><span>Taskly · Запуск сайта</span><em class="app__hint">Перетащите карточку ↔</em></div>
+        <div class="board" id="board"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="logos container">
+    Нам доверяют 3 000+ команд
+    <div><span>Northwind</span><span>Acme</span><span>Globex</span><span>Initech</span><span>Umbrella</span></div>
+  </div>
+
+  <section id="features" style="padding-top:40px">
+    <div class="container">
+      <div class="center"><h2>Всё, что нужно команде</h2><p class="muted">Без лишних функций, которыми никто не пользуется.</p></div>
+      <div class="bento">
+        <div class="tile t1">
+          <h3>Напоминания в Telegram</h3>
+          <p>Бот пишет, когда вам назначили задачу или подходит срок. Отметить задачу выполненной можно прямо из чата.</p>
+          <div class="tg"><div>🔔 Вам назначена задача «Макет главной»</div><div>⏰ Завтра дедлайн: «Тексты для лендинга»</div></div>
+        </div>
+        <div class="tile t2"><h3>Аналитика</h3><p>Кто перегружен, а что застряло.</p><div class="bars"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:80%"></i><i style="height:100%"></i><i style="height:70%"></i></div></div>
+        <div class="tile t3"><h3>Доски и списки</h3><p>Канбан, список или календарь, как удобнее.</p></div>
+        <div class="tile t4"><h3>Быстрый старт</h3><p>Команда разберётся за</p><div class="big-num">5 мин</div></div>
+        <div class="tile t5"><h3>Безопасность</h3><p>Данные хранятся в РФ, шифрование и ежедневные бэкапы.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" style="padding-top:20px">
+    <div class="container">
+      <div class="center"><h2>Простые цены</h2><p class="muted">Платите только за активных участников.</p></div>
+      <div class="pricing__ctrl">
+        <div class="seg" id="seg"><button class="active" data-y="0">Месяц</button><button data-y="1">Год −20%</button></div>
+        <div class="seats">Участников: <input type="range" id="seats" min="1" max="50" value="8" aria-label="Количество участников"><b id="seatsVal">8</b></div>
+      </div>
+      <div class="plans" id="plans"></div>
+    </div>
+  </section>
+
+  <section id="faq" style="padding-top:20px">
+    <div class="container">
+      <div class="center"><h2>Вопросы</h2></div>
+      <div class="faq">
+        <details><summary>Можно ли перенести задачи из Trello или Jira?</summary><p>Да, импорт занимает пару минут: загрузите файл экспорта, и Taskly сам разложит задачи по доскам.</p></details>
+        <details><summary>Что будет после пробного периода?</summary><p>Вы сами выберете тариф. Если ничего не выбрать, аккаунт перейдёт на бесплатный план, данные сохранятся.</p></details>
+        <details><summary>Есть ли мобильное приложение?</summary><p>Да, для iOS и Android. А ещё Telegram-бот, через который удобно работать с задачами на ходу.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="start" style="padding-top:20px">
+    <div class="container">
+      <div class="cta">
+        <h2>Наведите порядок за 5 минут</h2>
+        <p>Создайте рабочее пространство и пригласите команду.</p>
+        <form id="startForm"><input type="email" required placeholder="Рабочий e-mail" aria-label="E-mail"><button class="btn btn--indigo">Начать бесплатно</button></form>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="container foot"><span>© Taskly</span><span>Демо-сайт для портфолио · компании в блоке логотипов вымышлены</span></div></footer>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const people = { А: "#4f46e5", М: "#ec4899", Д: "#10b981", К: "#f59e0b" };
+    const labels = { Дизайн: ["#fdf2f8", "#db2777"], Код: ["#eef0ff", "#4f46e5"], Тексты: ["#ecfdf5", "#059669"], SEO: ["#fffbeb", "#d97706"] };
+    const cols = [
+      ["todo", "Нужно сделать", [["Тексты для главной", "Тексты", "М", "пт"], ["Подключить аналитику", "SEO", "Д", "пн"], ["Форма заявки", "Код", "А", "ср"]]],
+      ["doing", "В работе", [["Макет каталога", "Дизайн", "К", "сегодня"], ["Вёрстка шапки", "Код", "А", "завтра"]]],
+      ["done", "Готово", [["Логотип", "Дизайн", "К", "✓"]]],
+    ];
+    $("board").innerHTML = cols.map(([id, title, tasks]) => `
+      <div class="col" data-col="${id}"><h4>${title}<b>${tasks.length}</b></h4>
+        ${tasks.map(([t, l, p, d]) => `<div class="task" draggable="true"><span class="lbl" style="background:${labels[l][0]};color:${labels[l][1]}">${l}</span><div>${t}</div>
+          <div class="meta"><span>📅 ${d}</span><span class="ava" style="background:${people[p]}">${p}</span></div></div>`).join("")}
+      </div>`).join("");
+
+    const updateCounts = () => document.querySelectorAll(".col").forEach(c => c.querySelector("h4 b").textContent = c.querySelectorAll(".task").length);
+    let dragged = null;
+
+    function dropInto(col, x, y) {
+      if (!dragged || !col) return;
+      const after = [...col.querySelectorAll(".task:not(.dragging)")].find(t => y < t.getBoundingClientRect().top + t.offsetHeight / 2);
+      after ? col.insertBefore(dragged, after) : col.appendChild(dragged);
+      if (col.dataset.col === "done") celebrate(x, y);
+      updateCounts();
+    }
+
+    // Мышь: HTML5 drag and drop
+    document.addEventListener("dragstart", e => { if (e.target.classList?.contains("task")) { dragged = e.target; e.target.classList.add("dragging"); } });
+    document.addEventListener("dragend", e => { e.target.classList?.remove("dragging"); document.querySelectorAll(".col").forEach(c => c.classList.remove("over")); });
+    document.querySelectorAll(".col").forEach(col => {
+      col.addEventListener("dragover", e => { e.preventDefault(); col.classList.add("over"); });
+      col.addEventListener("dragleave", e => { if (!col.contains(e.relatedTarget)) col.classList.remove("over"); });
+      col.addEventListener("drop", e => { e.preventDefault(); col.classList.remove("over"); dropInto(col, e.clientX, e.clientY); dragged = null; });
+    });
+
+    // Тач: телефоны не поддерживают HTML5 DnD, поэтому свой вариант
+    document.addEventListener("touchstart", e => {
+      const t = e.target.closest(".task"); if (!t) return;
+      dragged = t; t.classList.add("dragging");
+    }, { passive: true });
+    document.addEventListener("touchmove", e => {
+      if (!dragged) return;
+      e.preventDefault();
+      const p = e.touches[0];
+      document.querySelectorAll(".col").forEach(c => c.classList.toggle("over", c === document.elementFromPoint(p.clientX, p.clientY)?.closest(".col")));
+    }, { passive: false });
+    document.addEventListener("touchend", e => {
+      if (!dragged) return;
+      const p = e.changedTouches[0];
+      const col = document.elementFromPoint(p.clientX, p.clientY)?.closest(".col");
+      dragged.classList.remove("dragging");
+      document.querySelectorAll(".col").forEach(c => c.classList.remove("over"));
+      dropInto(col, p.clientX, p.clientY);
+      dragged = null;
+    });
+
+    function celebrate(x, y) {
+      const colors = ["#4f46e5", "#ec4899", "#10b981", "#f59e0b", "#a855f7"];
+      for (let i = 0; i < 24; i++) {
+        const c = document.createElement("i");
+        c.className = "confetti";
+        c.style.cssText = `left:${x}px;top:${y}px;position:fixed;background:${colors[i % 5]};--x:${(Math.random() - .5) * 220}px;--y:${(Math.random() - .3) * 200}px`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 950);
+      }
+      toast("Задача выполнена 🎉");
+    }
+
+    const plans = [
+      { n: "Старт", p: 0, f: ["До 3 участников", "3 доски", "Telegram-уведомления", "История за 30 дней"], cta: "Начать" },
+      { n: "Команда", p: 390, f: ["Безлимит досок", "Аналитика нагрузки", "Интеграции", "Гостевой доступ", "Приоритетная поддержка"], pro: true, cta: "Попробовать 14 дней" },
+      { n: "Бизнес", p: 690, f: ["Всё из «Команды»", "SSO и роли", "Свой сервер", "Персональный менеджер", "SLA 99.9%"], cta: "Связаться" },
+    ];
+    let yearly = false;
+    function renderPlans() {
+      const seats = +$("seats").value;
+      $("seatsVal").textContent = seats;
+      $("plans").innerHTML = plans.map(pl => {
+        const per = yearly ? Math.round(pl.p * .8) : pl.p;
+        const total = per * seats;
+        return `<div class="plan${pl.pro ? " plan--pro" : ""}"><h3>${pl.n}${pl.pro ? "<span>Популярный</span>" : ""}</h3>
+          <div class="price">${per ? per + " ₽" : "0 ₽"}<small>${per ? " / чел. в мес" : " навсегда"}</small></div>
+          <div class="per">${per ? `Для ${seats} чел.: <b>${total.toLocaleString("ru-RU")} ₽/мес</b>` : seats > 3 ? "Лимит: до 3 участников" : ""}</div>
+          <ul>${pl.f.map(f => `<li>${f}</li>`).join("")}</ul>
+          <a href="#start" class="btn${pl.pro ? " btn--indigo" : " btn--line"}">${pl.cta}</a></div>`;
+      }).join("");
+    }
+    $("seg").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      yearly = b.dataset.y === "1";
+      $("seg").querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+      renderPlans();
+    });
+    $("seats").addEventListener("input", renderPlans);
+    renderPlans();
+
+    $("startForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast("Письмо для входа отправлено на почту ✉️"); });
+    let tt;
+    function toast(m) { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2400); }
+  </script>
+</body>
+</html>
