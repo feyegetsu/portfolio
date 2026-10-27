@@ -126,8 +126,35 @@ h3 { font-size: 1.08rem; font-weight: 500; margin-bottom: 8px; }
 .win-body b { font-family: var(--font-head); font-size: 1.1rem; color: #fff; }
 .win-body span { height: 8px; border-radius: 4px; background: rgba(255,255,255,.35); width: 70%; }
 .win-body span + span { width: 45%; }
-.win-body--cafe { background: linear-gradient(135deg, #3b2418, #8a5a3c 60%, #d6a77a); }
-.win-body--saas { background: linear-gradient(135deg, #4f46e5, #a855f7 60%, #ec4899); }
+.win-body--cafe { background: linear-gradient(100deg, rgba(20,12,8,.85), rgba(20,12,8,.2)), url("https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=70") center / cover; }
+.win-body--flowers { background: linear-gradient(100deg, rgba(45,34,38,.8), rgba(45,34,38,.1)), url("https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=600&q=70") center / cover; }
+.stack-win { animation: float 7s ease-in-out infinite; }
+.stack-win--2 { animation-delay: -3.5s; }
+@keyframes float { 50% { translate: 0 -12px; } }
+
+/* Подсветка карточек за курсором */
+.card, .work, .why__item, .steps li { position: relative; isolation: isolate; }
+.card::before, .work::before, .why__item::before, .steps li::before { pointer-events: none; }
+.card::after, .work::after, .why__item::after, .steps li::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx, -100%) var(--my, -100%), rgba(124, 92, 255, .16), transparent 45%);
+  opacity: 0; transition: opacity .3s;
+}
+.card:hover::after, .work:hover::after, .why__item:hover::after, .steps li:hover::after { opacity: 1; }
+.work::after { z-index: 2; background: radial-gradient(500px circle at var(--mx, -100%) var(--my, -100%), rgba(124, 92, 255, .12), transparent 40%); }
+
+/* Переливающаяся рамка у блока результата калькулятора */
+.calc__result::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 0; pointer-events: none;
+  background: conic-gradient(from var(--angle, 0deg), transparent 60%, var(--accent-2), var(--accent), transparent 90%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: spin-border 5s linear infinite;
+}
+.calc__result > * { position: relative; z-index: 1; }
+@property --angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@keyframes spin-border { to { --angle: 360deg; } }
+
+.btn { will-change: transform; }
 
 .ticker { margin-top: 90px; border-block: 1px solid var(--line); overflow: hidden; padding: 16px 0; background: rgba(16, 19, 26, .6); position: relative; z-index: 1; }
 .ticker div { display: flex; width: max-content; animation: ticker 40s linear infinite; }
@@ -311,7 +338,7 @@ legend { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color
   .grid--3 { grid-template-columns: 1fr 1fr; }
   .steps { grid-template-columns: 1fr 1fr; }
   .phone { max-width: 380px; width: 100%; margin: 0 auto; }
-  .calc__result { position: static; }
+  .calc__result { position: relative; top: 0; }
 }
 @media (max-width: 760px) {
   .header .btn--small { display: none; }

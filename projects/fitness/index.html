@@ -36,9 +36,24 @@
     nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; color: var(--muted); }
     nav a:hover { color: var(--text); }
 
-    .hero { padding: 90px 0 70px; position: relative; overflow: hidden; }
-    .hero::before { content: ""; position: absolute; width: 600px; height: 600px; right: -150px; top: -150px; background: radial-gradient(circle, rgba(198, 255, 61, .18), transparent 60%); }
-    .hero__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; position: relative; }
+    .hero { padding: 120px 0 100px; position: relative; overflow: hidden; min-height: 88vh; display: flex; align-items: center; }
+    .hero > .container { width: 100%; }
+    .hero__bg { position: absolute; inset: -10% 0; background: url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=2000&q=75") center / cover; }
+    .hero::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(8,9,11,.96) 30%, rgba(8,9,11,.6) 65%, rgba(8,9,11,.4)), radial-gradient(circle at 80% 20%, rgba(198, 255, 61, .2), transparent 50%), linear-gradient(0deg, var(--bg), transparent 25%); }
+    .stat { backdrop-filter: blur(8px); background: rgba(18, 20, 24, .75) !important; }
+
+    .dirs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+    .dir { position: relative; height: 340px; border-radius: var(--r); overflow: hidden; display: flex; align-items: flex-end; padding: 24px; isolation: isolate; }
+    .dir img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform 1s cubic-bezier(.2,.8,.2,1), filter .5s; filter: grayscale(.4); }
+    .dir::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(8,9,11,.92), rgba(8,9,11,.1) 60%); }
+    .dir:hover img { transform: scale(1.08); filter: grayscale(0); }
+    .dir h3 { font-family: "Russo One", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 1.5rem; }
+    .dir p { color: var(--muted); font-size: 14px; max-height: 0; overflow: hidden; transition: max-height .5s, margin .5s; }
+    .dir:hover p { max-height: 80px; margin-top: 6px; }
+    .dir span { position: absolute; top: 20px; right: 20px; background: var(--lime); color: #111; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 99px; }
+    @media (max-width: 900px) { .dirs { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .dirs { grid-template-columns: 1fr; } .dir { height: 240px; } .dir p { max-height: 80px; margin-top: 6px; } }
+    .hero__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; position: relative; z-index: 2; }
     .hero h1 { font-size: clamp(3rem, 9vw, 7rem); }
     .hero p { font-size: 1.15rem; color: var(--muted); margin: 24px 0 34px; max-width: 520px; }
     .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -136,16 +151,17 @@
   </header>
 
   <section class="hero">
+    <div class="hero__bg" data-parallax="0.3"></div>
     <div class="container hero__grid">
-      <div>
+      <div data-reveal>
         <span class="live"><i></i> Сейчас в клубе: <b id="now">34</b> человека</span>
         <h1>Сильнее <span>каждый</span> день</h1>
         <p>Зал 2 000 м², 40+ групповых тренировок в неделю, бассейн 25 м и сауна. Открыто круглосуточно, без выходных.</p>
         <div class="hero__cta"><a href="#trial" class="btn">Первая тренировка бесплатно</a><a href="#schedule" class="btn btn--ghost">Расписание</a></div>
       </div>
-      <div class="stats">
+      <div class="stats" data-stagger>
         <div class="stat"><b>24/7</b><span>без выходных</span></div>
-        <div class="stat"><b>2000</b><span>м² площадь</span></div>
+        <div class="stat"><b data-count="2000">2000</b><span>м² площадь</span></div>
         <div class="stat stat--wide">
           <svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#22252c" stroke-width="3"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#c6ff3d" stroke-width="3" stroke-dasharray="87 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
           <div><b style="font-size:1.6rem">87%</b><span>клиентов продлевают абонемент</span></div>
@@ -155,6 +171,21 @@
   </section>
 
   <div class="marquee" aria-hidden="true"><div id="marq"></div></div>
+
+  <section style="padding-bottom:0">
+    <div class="container">
+      <h2 data-reveal>Направ<span>ления</span></h2>
+      <p class="muted" data-reveal>Найдите своё: от тяжёлой атлетики до йоги на закате.</p>
+      <div class="dirs" data-stagger>
+        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=75" alt="Силовая тренировка"><span>Хит</span><div><h3>Силовые</h3><p>Свободные веса, тренажёры Hammer Strength и помосты для становой.</p></div></a>
+        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=75" alt="Групповая тренировка"><div><h3>Групповые</h3><p>Функциональный тренинг, пилатес, зумба и ещё 20 программ.</p></div></a>
+        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=75" alt="Йога"><div><h3>Йога</h3><p>Хатха, виньяса и растяжка в отдельном светлом зале.</p></div></a>
+        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=75" alt="Функциональная тренировка с канатами"><div><h3>Функционал</h3><p>Канаты, сани, гири. Выносливость и жиросжигание.</p></div></a>
+        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=75" alt="Кроссфит"><span>Новое</span><div><h3>Кроссфит</h3><p>WOD каждый день под присмотром сертифицированного тренера.</p></div></a>
+        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=75" alt="Персональная тренировка"><div><h3>Персональные</h3><p>Программа под вашу цель: рельеф, сила, здоровая спина.</p></div></a>
+      </div>
+    </div>
+  </section>
 
   <section id="schedule">
     <div class="container">
@@ -192,8 +223,9 @@
   </section>
 
   <footer>
-    <div class="container foot"><span>© PULSE Fitness · ул. Примерная, 1</span><span>Демо-сайт для портфолио</span></div>
+    <div class="container foot"><span>© PULSE Fitness · ул. Примерная, 1</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
   </footer>
+  <script src="../shared/motion.js" defer></script>
   <div class="toast" id="toast"></div>
 
   <script>

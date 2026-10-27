@@ -140,6 +140,43 @@ document.querySelectorAll(".card, .work, .steps li, .why__item, .faq, .calc").fo
   io.observe(el);
 });
 
+// ---------- Живость: подсветка за курсором, «магнитные» кнопки, счётчики ----------
+const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (finePointer && !reduceMotion) {
+  document.addEventListener("pointermove", (e) => {
+    const el = e.target.closest(".card, .work, .why__item, .steps li");
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+  });
+  document.querySelectorAll(".hero__actions .btn, .contact__links .btn, .header .btn").forEach((b) => {
+    b.addEventListener("pointermove", (e) => {
+      const r = b.getBoundingClientRect();
+      b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px, ${(e.clientY - r.top - r.height / 2) * 0.3}px)`;
+    });
+    b.addEventListener("pointerleave", () => { b.style.transform = ""; });
+  });
+}
+
+const countIO = new IntersectionObserver((entries) => entries.forEach((e) => {
+  if (!e.isIntersecting) return;
+  const el = e.target;
+  const to = +el.dataset.count;
+  countIO.unobserve(el);
+  if (reduceMotion) return;
+  const start = performance.now();
+  const step = (t) => {
+    const p = Math.min(1, (t - start) / 1200);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+  setTimeout(() => { el.textContent = to; }, 1400);
+}));
+document.querySelectorAll("[data-count]").forEach((el) => countIO.observe(el));
+
 // ---------- Симуляция Telegram-бота ----------
 const chat = $("chat");
 const keys = $("keys");

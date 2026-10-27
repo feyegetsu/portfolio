@@ -58,9 +58,13 @@
     .perks span { width: 38px; height: 38px; border-radius: 12px; background: #fff; display: grid; place-items: center; box-shadow: 0 6px 18px -10px rgba(0,0,0,.25); }
 
     .hero__art { position: relative; aspect-ratio: 1; }
-    .blob { position: absolute; inset: 6%; border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%; background: linear-gradient(140deg, #f7c9d1, #f3dfe3 40%, #dde8d9); animation: morph 10s ease-in-out infinite; }
+    .blob { position: absolute; inset: 4%; border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%; background: linear-gradient(140deg, #f7c9d1, #f3dfe3 40%, #dde8d9); animation: morph 10s ease-in-out infinite; overflow: hidden; box-shadow: 0 40px 80px -40px rgba(201, 93, 112, .6); }
+    .blob img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.05); animation: kb 18s ease-in-out infinite alternate; }
     @keyframes morph { 50% { border-radius: 58% 42% 55% 45% / 42% 58% 42% 58%; } }
-    .bouquet { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(8rem, 20vw, 15rem); filter: drop-shadow(0 30px 30px rgba(201, 93, 112, .3)); }
+    @keyframes kb { to { transform: scale(1.18) translate(-2%, 2%); } }
+    .float-card { animation: bob 5s ease-in-out infinite; }
+    .fc2 { animation-delay: -2.5s; }
+    @keyframes bob { 50% { transform: translateY(-10px); } }
     .float-card { position: absolute; background: #fff; border-radius: 16px; padding: 12px 16px; box-shadow: 0 16px 40px -18px rgba(45, 34, 38, .35); font-size: 13px; display: flex; gap: 10px; align-items: center; }
     .float-card b { display: block; font-size: 14px; }
     .fc1 { left: 0; bottom: 18%; } .fc2 { right: 0; top: 14%; }
@@ -77,8 +81,14 @@
     .product { background: var(--card); border-radius: var(--r); overflow: hidden; transition: transform .3s, box-shadow .3s; animation: in .4s both; }
     .product:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -24px rgba(45, 34, 38, .35); }
     @keyframes in { from { opacity: 0; transform: translateY(14px); } }
-    .product__img { aspect-ratio: 1; display: grid; place-items: center; font-size: 5.5rem; position: relative; }
-    .product__tag { position: absolute; top: 14px; left: 14px; background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+    .product__img { aspect-ratio: 4 / 5; position: relative; overflow: hidden; }
+    .product__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s cubic-bezier(.2,.8,.2,1); }
+    .product:hover .product__img img { transform: scale(1.08); }
+    .product__tag { position: absolute; z-index: 1; top: 14px; left: 14px; background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+    .quick { position: absolute; left: 14px; right: 14px; bottom: 14px; padding: 12px; border: 0; border-radius: 999px; background: rgba(255,255,255,.92); backdrop-filter: blur(6px); font-weight: 600; font-size: 14px; color: var(--ink); transform: translateY(140%); transition: transform .35s cubic-bezier(.2,.8,.2,1), background .2s; }
+    .quick:hover { background: var(--rose); color: #fff; }
+    .product:hover .quick { transform: none; }
+    @media (hover: none) { .quick { display: none; } }
     .product__body { padding: 18px; }
     .product__body h3 { font-size: 1.45rem; }
     .product__body p { font-size: 13px; color: var(--muted); min-height: 40px; }
@@ -94,7 +104,7 @@
     .step h3 { font-size: 1.5rem; margin: 10px 0 6px; }
     .step p { color: var(--muted); font-size: 15px; }
 
-    .subscribe { background: linear-gradient(120deg, #2d2226, #4a3138); color: #fff; border-radius: 32px; padding: 60px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
+    .subscribe { background: linear-gradient(100deg, rgba(45,34,38,.95) 35%, rgba(45,34,38,.55)), url("https://images.unsplash.com/photo-1457089328109-e5d9bd499191?auto=format&fit=crop&w=1600&q=70") center / cover; color: #fff; border-radius: 32px; padding: 60px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
     .subscribe p { opacity: .75; }
     .subscribe form { display: flex; gap: 10px; flex-wrap: wrap; }
     .subscribe input { flex: 1; min-width: 200px; padding: 15px 18px; border-radius: 999px; border: 0; font: 15px "Manrope", sans-serif; }
@@ -115,7 +125,8 @@
     .x { border: 0; background: #fff; width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; }
     .drawer__body { flex: 1; overflow-y: auto; padding: 16px 24px; }
     .line { display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
-    .line__img { width: 64px; height: 64px; border-radius: 16px; display: grid; place-items: center; font-size: 2rem; flex-shrink: 0; }
+    .line__img { width: 64px; height: 64px; border-radius: 16px; overflow: hidden; flex-shrink: 0; }
+    .line__img img { width: 100%; height: 100%; object-fit: cover; }
     .line__info { flex: 1; }
     .line__info b { display: block; font-size: 15px; }
     .qty { display: inline-flex; align-items: center; gap: 10px; margin-top: 6px; background: #fff; border-radius: 999px; padding: 2px; }
@@ -168,7 +179,7 @@
 
   <section class="hero">
     <div class="container hero__grid">
-      <div>
+      <div data-reveal="left">
         <span class="pill">🚚 Доставка за 90 минут · бесплатно от 5 000 ₽</span>
         <h1>Букеты, которые <em>говорят</em> за вас</h1>
         <p>Собираем из свежих цветов в день заказа. Перед отправкой пришлём фото букета, чтобы вы точно знали, что получит адресат.</p>
@@ -182,9 +193,8 @@
           <div><span>💌</span>Открытка<br>в подарок</div>
         </div>
       </div>
-      <div class="hero__art" aria-hidden="true">
-        <div class="blob"></div>
-        <div class="bouquet">💐</div>
+      <div class="hero__art" aria-hidden="true" data-reveal="zoom" style="--d:150ms">
+        <div class="blob"><img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1000&q=75" alt=""></div>
         <div class="float-card fc1">⭐ <div><b>4.9 из 5</b>2 300+ отзывов</div></div>
         <div class="float-card fc2">⏱ <div><b>от 90 минут</b>по всему городу</div></div>
       </div>
@@ -213,7 +223,7 @@
     <div class="container">
       <h2>Как это работает</h2>
       <p class="muted">Три шага от заказа до улыбки.</p>
-      <div class="steps">
+      <div class="steps" data-stagger>
         <div class="step"><b>01</b><h3>Выбираете букет</h3><p>В каталоге или пишете флористу в Telegram, если нужно что-то особенное.</p></div>
         <div class="step"><b>02</b><h3>Получаете фото</h3><p>Флорист собирает букет и присылает фото. Если что-то не нравится, переделаем.</p></div>
         <div class="step"><b>03</b><h3>Курьер доставляет</h3><p>В удобный интервал, бережно, в фирменной упаковке с водой.</p></div>
@@ -223,7 +233,7 @@
 
   <section id="subscribe">
     <div class="container">
-      <div class="subscribe">
+      <div class="subscribe" data-reveal="zoom">
         <div>
           <h2>Цветы по подписке</h2>
           <p>Свежий букет раз в неделю домой или в офис. Скидка 20% и бесплатная доставка.</p>
@@ -239,9 +249,10 @@
   <footer>
     <div class="container foot">
       <span>© Пион &amp; Ко · Цветочная мастерская</span>
-      <span>Демо-сайт для портфолио</span>
+      <span>Демо-сайт для портфолио · фото: Unsplash</span>
     </div>
   </footer>
+  <script src="../shared/motion.js" defer></script>
 
   <div class="overlay" id="overlay"></div>
   <aside class="drawer" id="drawer" aria-label="Корзина">
@@ -264,20 +275,22 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    // photo — id снимка на Unsplash
     const products = [
-      { id: 1, name: "Утренний сад", desc: "Пионовидные розы, эвкалипт, маттиола", price: 4900, old: 5600, cat: "Авторские", e: "💐", bg: "#fbe3e7", pop: 10, tag: "Хит" },
-      { id: 2, name: "Тюльпаны микс", desc: "25 голландских тюльпанов", price: 3200, cat: "Монобукеты", e: "🌷", bg: "#fde7ee", pop: 9 },
-      { id: 3, name: "Классика", desc: "51 красная роза Эквадор, 60 см", price: 8900, cat: "Розы", e: "🌹", bg: "#fbdcdc", pop: 8, tag: "Премиум" },
-      { id: 4, name: "Солнечный день", desc: "Подсолнухи, ромашки, злаки", price: 2700, cat: "Авторские", e: "🌻", bg: "#fdf1d6", pop: 7 },
-      { id: 5, name: "Лавандовое поле", desc: "Лаванда, лизиантус, гипсофила", price: 3900, cat: "Авторские", e: "🪻", bg: "#ece6f7", pop: 6, tag: "Новинка" },
-      { id: 6, name: "Нежность", desc: "Кустовые розы в шляпной коробке", price: 5400, cat: "В коробке", e: "🌸", bg: "#fde8f0", pop: 8 },
-      { id: 7, name: "Белые розы", desc: "25 белых роз, лента", price: 4200, cat: "Розы", e: "🤍", bg: "#f3f0ee", pop: 5 },
-      { id: 8, name: "Зелёный офис", desc: "Монстера в керамическом кашпо", price: 3500, cat: "Растения", e: "🪴", bg: "#e3eee1", pop: 4 },
-      { id: 9, name: "Ягодный десерт", desc: "Розы, гортензия и клубника в шоколаде", price: 6300, cat: "В коробке", e: "🍓", bg: "#fcdfe3", pop: 7 },
-      { id: 10, name: "Гортензии", desc: "7 голубых гортензий", price: 4600, cat: "Монобукеты", e: "💠", bg: "#e2ecf7", pop: 5 },
-      { id: 11, name: "Суккуленты", desc: "Композиция во флорариуме", price: 2900, cat: "Растения", e: "🌵", bg: "#e8efe0", pop: 3 },
-      { id: 12, name: "Пионы", desc: "15 розовых пионов Сара Бернар", price: 5900, cat: "Монобукеты", e: "🌺", bg: "#fbe0e6", pop: 9, tag: "Сезон" },
+      { id: 1, name: "Утренний сад", desc: "Розы, гвоздики, эвкалипт и маттиола", price: 4900, old: 5600, cat: "Авторские", photo: "1487530811176-3780de880c2d", bg: "#fbe3e7", pop: 10, tag: "Хит" },
+      { id: 2, name: "Тюльпаны микс", desc: "25 голландских тюльпанов", price: 3200, cat: "Монобукеты", photo: "1468327768560-75b778cbb551", bg: "#fde7ee", pop: 9 },
+      { id: 3, name: "Классика", desc: "51 красная роза Эквадор, 60 см", price: 8900, cat: "Розы", photo: "1519378058457-4c29a0a2efac", bg: "#fbdcdc", pop: 8, tag: "Премиум" },
+      { id: 4, name: "Солнечный день", desc: "Подсолнухи и злаки", price: 2700, cat: "Авторские", photo: "1455659817273-f96807779a8a", bg: "#fdf1d6", pop: 7 },
+      { id: 5, name: "Яркое настроение", desc: "Микс сезонных цветов в крафте", price: 3900, cat: "Авторские", photo: "1526047932273-341f2a7631f9", bg: "#ece6f7", pop: 6, tag: "Новинка" },
+      { id: 6, name: "Нежность", desc: "Пионовидные розы и гортензия", price: 5400, cat: "Авторские", photo: "1563241527-3004b7be0ffd", bg: "#fde8f0", pop: 8 },
+      { id: 7, name: "Ромашки", desc: "Букет полевых ромашек", price: 1900, cat: "Монобукеты", photo: "1508784411316-02b8cd4d3a3a", bg: "#f3f0ee", pop: 5 },
+      { id: 8, name: "Кактус в кашпо", desc: "Цветущий кактус, керамика", price: 1500, cat: "Растения", photo: "1509937528035-ad76254b0356", bg: "#e3eee1", pop: 4 },
+      { id: 9, name: "Розовые тюльпаны", desc: "15 тюльпанов в вазе", price: 2600, cat: "Монобукеты", photo: "1561181286-d3fee7d55364", bg: "#fcdfe3", pop: 7 },
+      { id: 10, name: "Лилии", desc: "5 ароматных розовых лилий", price: 3300, cat: "Монобукеты", photo: "1502977249166-824b3a8a4d6d", bg: "#e2ecf7", pop: 5 },
+      { id: 11, name: "Суккулент", desc: "Эхеверия в мятном горшке", price: 1200, cat: "Растения", photo: "1485955900006-10f4d324d411", bg: "#e8efe0", pop: 3 },
+      { id: 12, name: "Пионовидные розы", desc: "Кустовые розы Бомбастик", price: 5900, cat: "Розы", photo: "1591886960571-74d43a9d4166", bg: "#fbe0e6", pop: 9, tag: "Сезон" },
     ];
+    const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
     const FREE_DELIVERY = 5000, DELIVERY = 390;
     const rub = n => n.toLocaleString("ru-RU") + " ₽";
 
@@ -306,7 +319,7 @@
         .sort((a, b) => sort === "asc" ? a.price - b.price : sort === "desc" ? b.price - a.price : b.pop - a.pop);
       $("grid").innerHTML = list.map((p, i) => `
         <article class="product" style="animation-delay:${i * 40}ms">
-          <div class="product__img" style="background:${p.bg}">${p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}${p.e}</div>
+          <div class="product__img" style="background:${p.bg}">${p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${p.name}"><button class="quick" data-id="${p.id}">В корзину</button></div>
           <div class="product__body">
             <h3>${p.name}</h3>
             <p>${p.desc}</p>
@@ -318,7 +331,7 @@
         </article>`).join("");
     }
     $("grid").addEventListener("click", e => {
-      const b = e.target.closest(".add"); if (!b) return;
+      const b = e.target.closest(".add, .quick"); if (!b) return;
       const id = b.dataset.id;
       cart[id] = (cart[id] || 0) + 1;
       save();
@@ -340,7 +353,7 @@
       }
       $("cartBody").innerHTML = lines.map(l => `
         <div class="line">
-          <div class="line__img" style="background:${l.bg}">${l.e}</div>
+          <div class="line__img" style="background:${l.bg}"><img src="${ph(l.photo, 160)}" alt=""></div>
           <div class="line__info"><b>${l.name}</b>
             <div class="qty"><button data-d="-1" data-id="${l.id}" aria-label="Меньше">−</button>${l.q}<button data-d="1" data-id="${l.id}" aria-label="Больше">+</button></div>
           </div>

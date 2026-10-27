@@ -41,11 +41,12 @@
     .hero { padding: 10px 0 40px; }
     .hero__box {
       border-radius: 32px; color: #fff; padding: 70px 56px 56px; position: relative; overflow: hidden; min-height: 520px;
-      background: linear-gradient(180deg, rgba(10, 30, 24, .1), rgba(10, 30, 24, .75)), linear-gradient(160deg, #a8c6d8 0%, #e9d9c2 45%, #c9a678 100%);
+      background: #1f3d33;
       display: flex; flex-direction: column; justify-content: flex-end;
     }
-    .skyline { position: absolute; left: 0; right: 0; bottom: 0; height: 70%; opacity: .9; }
-    .hero__box > *:not(.skyline) { position: relative; z-index: 1; }
+    .hero__bg { position: absolute; inset: -12% 0; background: url("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=75") center / cover; }
+    .hero__box::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(10, 30, 24, .05) 20%, rgba(10, 30, 24, .82)); }
+    .hero__box > *:not(.hero__bg) { position: relative; z-index: 2; }
     .hero h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); max-width: 760px; }
     .hero p { opacity: .85; font-size: 1.1rem; margin: 16px 0 30px; max-width: 520px; }
     .search { background: #fff; color: var(--ink); border-radius: 22px; padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 6px; max-width: 900px; }
@@ -68,7 +69,17 @@
     .obj:hover { transform: translateY(-5px); box-shadow: 0 24px 40px -26px rgba(0, 0, 0, .35); }
     @keyframes in { from { opacity: 0; transform: translateY(12px); } }
     .obj__img { aspect-ratio: 4 / 3; position: relative; overflow: hidden; }
-    .obj__img svg { width: 100%; height: 100%; display: block; }
+    .obj__img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1s cubic-bezier(.2,.8,.2,1); }
+    .obj:hover .obj__img img { transform: scale(1.07); }
+    .obj__img::after { content: ""; position: absolute; inset: 50% 0 0; background: linear-gradient(0deg, rgba(0,0,0,.35), transparent); pointer-events: none; }
+    .m-main { height: 100%; min-height: 300px; position: relative; }
+    .m-main img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: mfade .4s; }
+    @keyframes mfade { from { opacity: .3; } }
+    .modal__img { position: relative; display: flex; flex-direction: column; }
+    .m-thumbs { position: absolute; left: 14px; bottom: 14px; display: flex; gap: 8px; }
+    .m-thumbs button { width: 64px; height: 46px; border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,.6); padding: 0; opacity: .75; transition: .2s; }
+    .m-thumbs button.on, .m-thumbs button:hover { opacity: 1; border-color: #fff; }
+    .m-thumbs img { width: 100%; height: 100%; object-fit: cover; }
     .obj__tags { position: absolute; top: 14px; left: 14px; display: flex; gap: 6px; }
     .obj__tags span { background: rgba(255, 255, 255, .92); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
     .heart { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .92); font-size: 1.1rem; transition: transform .2s; }
@@ -102,7 +113,8 @@
     .modal.open { opacity: 1; pointer-events: auto; }
     .modal__box { background: #fff; border-radius: 28px; max-width: 860px; width: 100%; max-height: 90vh; overflow-y: auto; display: grid; grid-template-columns: 1.1fr 1fr; transform: translateY(20px); transition: .3s; }
     .modal.open .modal__box { transform: none; }
-    .modal__img svg { width: 100%; height: 100%; min-height: 280px; display: block; }
+    .modal__img { min-height: 320px; border-radius: 28px 0 0 28px; overflow: hidden; }
+    @media (max-width: 980px) { .modal__img { border-radius: 28px 28px 0 0; } }
     .modal__b { padding: 32px; position: relative; }
     .close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--bg); }
     .modal__b h3 { font-size: 1.6rem; margin: 8px 0 14px; padding-right: 30px; }
@@ -144,22 +156,10 @@
   <section class="hero">
     <div class="container">
       <div class="hero__box">
-        <svg class="skyline" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-          <g fill="#1f3d33" opacity=".55">
-            <rect x="30" y="140" width="90" height="220"/><rect x="130" y="80" width="70" height="280"/><rect x="210" y="170" width="110" height="190"/>
-            <rect x="340" y="40" width="80" height="320"/><rect x="430" y="120" width="120" height="240"/><rect x="570" y="10" width="70" height="350"/>
-            <rect x="650" y="150" width="100" height="210"/><rect x="770" y="70" width="90" height="290"/><rect x="880" y="130" width="130" height="230"/>
-            <rect x="1030" y="60" width="80" height="300"/><rect x="1120" y="160" width="80" height="200"/>
-          </g>
-          <g fill="#ffe7b5" opacity=".7">
-            <rect x="350" y="70" width="12" height="16"/><rect x="380" y="110" width="12" height="16"/><rect x="590" y="50" width="10" height="14"/>
-            <rect x="610" y="120" width="10" height="14"/><rect x="790" y="100" width="12" height="16"/><rect x="820" y="160" width="12" height="16"/>
-            <rect x="1050" y="90" width="12" height="16"/><rect x="150" y="120" width="10" height="14"/><rect x="460" y="160" width="12" height="16"/>
-          </g>
-        </svg>
-        <h1>Найдём квартиру, в которой захочется жить</h1>
-        <p>1 800+ проверенных объектов. Юрист проверит документы, ипотечный брокер найдёт ставку ниже, чем в банке.</p>
-        <form class="search" id="search">
+        <div class="hero__bg" data-parallax="0.2"></div>
+        <h1 data-reveal>Найдём квартиру, в которой захочется жить</h1>
+        <p data-reveal style="--d:120ms"><span data-count="1800" data-suffix="+">1 800+</span> проверенных объектов. Юрист проверит документы, ипотечный брокер найдёт ставку ниже, чем в банке.</p>
+        <form class="search" id="search" data-reveal style="--d:240ms">
           <label>Тип<select id="sType"><option value="all">Любой</option><option value="new">Новостройка</option><option value="resale">Вторичка</option></select></label>
           <label>Район<select id="sDistrict"><option value="all">Все районы</option></select></label>
           <label>Бюджет до<select id="sBudget"><option value="99">Любой</option><option value="8">8 млн ₽</option><option value="12">12 млн ₽</option><option value="20">20 млн ₽</option></select></label>
@@ -189,7 +189,7 @@
     <div class="container">
       <h2>Ипотечный калькулятор</h2>
       <p class="muted" style="margin-bottom:26px">Рассчитайте платёж. Брокер поможет получить одобрение в 5 банках за один день.</p>
-      <div class="mort">
+      <div class="mort" data-reveal>
         <div>
           <div class="programs" id="programs">
             <button class="prog active" data-rate="6">Семейная 6%</button>
@@ -217,8 +217,9 @@
   </section>
 
   <footer>
-    <div class="container foot"><span>© Агентство недвижимости «Квадрат»</span><span>Демо-сайт для портфолио · не является публичной офертой</span></div>
+    <div class="container foot"><span>© Агентство недвижимости «Квадрат»</span><span>Демо-сайт для портфолио · не является публичной офертой · фото: Unsplash</span></div>
   </footer>
+  <script src="../shared/motion.js" defer></script>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true">
     <div class="modal__box">
@@ -242,7 +243,19 @@
     const $ = id => document.getElementById(id);
     const fmt = n => n.toLocaleString("ru-RU");
     const districts = ["Центральный", "Приморский", "Северный", "Парковый"];
-    const palettes = [["#cfe0ea", "#8fb3c7", "#4d7a8f"], ["#efe2cf", "#d4b48a", "#9a7349"], ["#dfe9df", "#a9c5a9", "#5f8a6a"], ["#e8e0f0", "#b9a7cf", "#76629a"], ["#f3dcd2", "#d9a28d", "#a3634c"]];
+    const P = {
+      living1: "1560448204-e02f11c3d0e2", living2: "1502672260266-1c1ef2d93688", white: "1522708323590-d24dbb6b0267",
+      blue: "1493809842364-78817add7ffb", kitchen1: "1484154218962-a197022b5858", kitchen2: "1556912173-3bb406ef7e77",
+      yellow: "1586023492125-27b2c045efd7", dining: "1560185007-cde436f6a4d0", art: "1505691938895-1758d7feb511",
+      villa: "1600596542815-ffad4c1539a9", modern: "1600585154340-be6161a56a0c", pool: "1512917774080-9991f1c4c750",
+      block: "1545324418-cc1a3fa10c00", forest: "1449844908441-8829872d2607", cottage: "1480074568708-e7b720bb3f09",
+    };
+    const photoSets = [
+      [P.white, P.kitchen1, P.art], [P.living1, P.kitchen2, P.dining], [P.yellow, P.kitchen1, P.white],
+      [P.modern, P.living2, P.kitchen2], [P.blue, P.dining, P.kitchen1], [P.art, P.white, P.kitchen2],
+      [P.villa, P.living1, P.dining], [P.dining, P.blue, P.kitchen1], [P.kitchen2, P.yellow, P.art],
+      [P.living2, P.kitchen1, P.blue], [P.block, P.white, P.yellow], [P.pool, P.living1, P.kitchen2],
+    ];
     const objects = [
       [1, 6.4, 38, 7, 16, "new", "ЖК «Северное сияние»", 2], [2, 9.8, 54, 12, 24, "new", "ЖК «Парк Авеню»", 3],
       [0, 5.2, 26, 3, 9, "resale", "ул. Садовая, 14", 0], [3, 18.5, 86, 15, 22, "new", "ЖК «Морской бриз»", 1],
@@ -250,23 +263,11 @@
       [3, 24.0, 112, 20, 25, "new", "Клубный дом «Олимп»", 0], [2, 8.6, 58, 2, 9, "resale", "ул. Лесная, 31", 2],
       [1, 6.9, 36, 5, 12, "resale", "ул. Портовая, 3", 1], [3, 14.3, 78, 6, 14, "resale", "ул. Цветочная, 22", 3],
       [0, 6.1, 29, 18, 24, "new", "ЖК «Северное сияние»", 2], [2, 13.7, 66, 11, 18, "new", "ЖК «Морской бриз»", 1],
-    ].map(([rooms, price, area, floor, floors, type, title, d], i) => ({ id: i + 1, rooms, price, area, floor, floors, type, title, district: districts[d], pal: palettes[i % palettes.length] }));
+    ].map(([rooms, price, area, floor, floors, type, title, d], i) => ({ id: i + 1, rooms, price, area, floor, floors, type, title, district: districts[d], photos: photoSets[i] }));
 
-    // Иллюстрация вместо фото: здание, которое отличается у каждого объекта
-    function building(o) {
-      const [sky, mid, dark] = o.pal;
-      const cols = 3 + (o.id % 3), rows = Math.min(8, Math.max(3, Math.round(o.floors / 3)));
-      const w = 70 + cols * 34, h = 60 + rows * 30, x = 200 - w / 2, y = 290 - h;
-      let win = "";
-      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-        const lit = (r * 7 + c * 3 + o.id) % 5 === 0;
-        win += `<rect x="${x + 22 + c * 34}" y="${y + 24 + r * 30}" width="20" height="18" rx="2" fill="${lit ? "#ffe7b5" : "rgba(255,255,255,.55)"}"/>`;
-      }
-      return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <rect width="400" height="300" fill="${sky}"/><circle cx="${60 + o.id * 23 % 280}" cy="70" r="26" fill="#fff" opacity=".6"/>
-        <rect x="20" y="${y + 50}" width="70" height="${290 - y - 50}" fill="${mid}" opacity=".6"/><rect x="310" y="${y + 30}" width="80" height="${290 - y - 30}" fill="${mid}" opacity=".6"/>
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${dark}"/>${win}
-        <rect y="288" width="400" height="12" fill="${mid}"/></svg>`;
+    // Фото объекта (Unsplash): первое — обложка, остальные — галерея в карточке
+    function building(o, w = 700, idx = 0) {
+      return `<img loading="lazy" src="https://images.unsplash.com/photo-${o.photos[idx]}?auto=format&fit=crop&w=${w}&q=75" alt="${o.title}">`;
     }
 
     let favs = new Set((() => { try { return JSON.parse(localStorage.getItem("kvadrat-favs")) || []; } catch { return []; } })());
@@ -327,7 +328,11 @@
 
     function openModal(id) {
       const o = objects.find(x => x.id === id);
-      $("mImg").innerHTML = building(o);
+      $("mImg").innerHTML = `<div class="m-main">${building(o, 1100)}</div><div class="m-thumbs">${o.photos.map((_, i) => `<button data-i="${i}" class="${i ? "" : "on"}">${building(o, 200, i)}</button>`).join("")}</div>`;
+      $("mImg").querySelectorAll(".m-thumbs button").forEach(b => b.onclick = () => {
+        $("mImg").querySelector(".m-main").innerHTML = building(o, 1100, +b.dataset.i);
+        $("mImg").querySelectorAll(".m-thumbs button").forEach(x => x.classList.toggle("on", x === b));
+      });
       $("mPrice").textContent = `${o.price.toFixed(1).replace(".", ",")} млн ₽`;
       $("mTitle").textContent = `${roomLabel(o.rooms)}, ${o.area} м²`;
       $("mAddr").textContent = `${o.title} · ${o.district} район`;

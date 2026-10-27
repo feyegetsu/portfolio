@@ -84,6 +84,24 @@
     .bars i:nth-child(5) { background: var(--indigo); }
     .big-num { font: 800 3rem "Inter Tight", sans-serif; color: var(--indigo); margin-top: 14px; }
 
+    /* Story & reviews */
+    .story { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; }
+    .story__img { position: relative; border-radius: 24px; overflow: hidden; height: 400px; }
+    .story__img img { width: 100%; height: 100%; object-fit: cover; }
+    .story__chip { position: absolute; right: 18px; bottom: 18px; background: #fff; border-radius: 16px; padding: 14px 18px; box-shadow: 0 20px 40px -20px rgba(13,15,26,.5); display: grid; animation: bob 5s ease-in-out infinite; }
+    .story__chip b { font: 800 2rem "Inter Tight", sans-serif; color: var(--indigo); line-height: 1.1; }
+    .story__chip span { font-size: 13px; color: var(--muted); }
+    @keyframes bob { 50% { transform: translateY(-8px); } }
+    .reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+    .review { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; transition: transform .3s, box-shadow .3s; }
+    .review:hover { transform: translateY(-4px); box-shadow: 0 24px 40px -28px rgba(13,15,26,.4); }
+    .review blockquote { font-size: 16px; line-height: 1.55; }
+    .review figcaption { display: flex; gap: 12px; align-items: center; }
+    .review img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+    .review b { display: block; font-size: 14px; }
+    .review span { font-size: 13px; color: var(--muted); }
+    @media (max-width: 900px) { .story, .reviews { grid-template-columns: 1fr; } .story__img { height: 280px; } }
+
     /* Pricing */
     .pricing__ctrl { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin: 30px 0 40px; }
     .seg { display: inline-flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
@@ -153,7 +171,7 @@
       <div class="hero__cta"><a href="#start" class="btn btn--indigo">Начать бесплатно</a><a href="#features" class="btn btn--line">Как это работает</a></div>
       <small>14 дней бесплатно · без привязки карты</small>
 
-      <div class="app">
+      <div class="app" data-reveal="zoom" style="--d:200ms">
         <div class="app__bar"><i></i><i></i><i></i><span>Taskly · Запуск сайта</span><em class="app__hint">Перетащите карточку ↔</em></div>
         <div class="board" id="board"></div>
       </div>
@@ -168,7 +186,7 @@
   <section id="features" style="padding-top:40px">
     <div class="container">
       <div class="center"><h2>Всё, что нужно команде</h2><p class="muted">Без лишних функций, которыми никто не пользуется.</p></div>
-      <div class="bento">
+      <div class="bento" data-stagger>
         <div class="tile t1">
           <h3>Напоминания в Telegram</h3>
           <p>Бот пишет, когда вам назначили задачу или подходит срок. Отметить задачу выполненной можно прямо из чата.</p>
@@ -179,6 +197,24 @@
         <div class="tile t4"><h3>Быстрый старт</h3><p>Команда разберётся за</p><div class="big-num">5 мин</div></div>
         <div class="tile t5"><h3>Безопасность</h3><p>Данные хранятся в РФ, шифрование и ежедневные бэкапы.</p></div>
       </div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="container story">
+      <div class="story__img" data-reveal="left">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1100&q=75" alt="Команда работает вместе">
+        <div class="story__chip"><b data-count="38" data-suffix="%">38%</b><span>меньше сорванных сроков</span></div>
+      </div>
+      <div data-reveal="right">
+        <h2>Команды тратят меньше времени на «а где это?»</h2>
+        <p class="muted">В среднем команда находит нужную задачу за 4 секунды вместо листания чата. Мы посчитали по 3 000 рабочих пространств.</p>
+      </div>
+    </div>
+    <div class="container reviews" data-stagger>
+      <figure class="review"><blockquote>«Перенесли всё из чатов за вечер. Наконец видно, кто что делает и когда сдаёт.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Мария</b><span>Руководитель студии дизайна</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Telegram-бот — киллер-фича. Разработчики отмечают задачи, не открывая браузер.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Алексей</b><span>CTO, интернет-магазин</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Пробовали три сервиса. Этот единственный, которым команда пользуется без напоминаний.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Ольга</b><span>Маркетинговое агентство</span></div></figcaption></figure>
     </div>
   </section>
 
@@ -214,7 +250,8 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Taskly</span><span>Демо-сайт для портфолио · компании в блоке логотипов вымышлены</span></div></footer>
+  <footer><div class="container foot"><span>© Taskly</span><span>Демо-сайт для портфолио · компании, отзывы и цифры вымышлены · фото: Unsplash</span></div></footer>
+  <script src="../shared/motion.js" defer></script>
   <div class="toast" id="toast"></div>
 
   <script>
