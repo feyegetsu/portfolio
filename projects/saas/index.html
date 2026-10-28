@@ -254,6 +254,7 @@
   </section>
 
   <footer><div class="container foot"><span>© Taskly</span><span>Демо-сайт для портфолио · компании, отзывы и цифры вымышлены · фото: Unsplash</span></div></footer>
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
   <div class="toast" id="toast"></div>
 
@@ -353,7 +354,14 @@
     $("seats").addEventListener("input", renderPlans);
     renderPlans();
 
-    $("startForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast("Письмо для входа отправлено на почту ✉️"); });
+    $("startForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("saas", { kind: "signup", email: e.target.querySelector("input").value, data: { seats: +$("seats").value, yearly } }));
+      } catch { return; }
+      e.target.reset();
+      toast("Письмо для входа отправлено на почту ✉️");
+    });
     let tt;
     function toast(m) { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2400); }
   </script>

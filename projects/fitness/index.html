@@ -229,6 +229,7 @@
   <footer>
     <div class="container foot"><span>© PULSE Fitness · ул. Примерная, 1</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
   </footer>
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
   <div class="toast" id="toast"></div>
 
@@ -286,11 +287,23 @@
         </div>`;
       }).join("");
     }
-    $("classes").addEventListener("click", e => {
+    // Запись на групповое занятие уходит в API; контакты спрашиваем один раз и запоминаем
+    $("classes").addEventListener("click", async e => {
       const b = e.target.closest("[data-id]"); if (!b || b.disabled) return;
       const c = schedule[day].find(x => x.id === b.dataset.id);
-      c.booked = !c.booked; c.taken += c.booked ? 1 : -1;
-      toast(c.booked ? `Вы записаны: ${c.n}, ${c.t}` : "Запись отменена");
+      if (c.booked) { toast("Отменить запись можно у администратора клуба"); return; }
+      let contact;
+      try { contact = await PortfolioAPI.askContact(`Запись: ${c.n}, ${c.t}`); } catch { return; }
+      const d = week[day];
+      const startsAt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${c.t}:00`;
+      b.disabled = true;
+      try {
+        await PortfolioAPI.createBooking("fitness", { resource: c.n, service: `${c.t} · тренер ${c.coach}`, starts_at: startsAt, ...contact });
+        c.booked = true; c.taken += 1;
+        toast(`Вы записаны: ${c.n}, ${c.t}`);
+      } catch (err) {
+        toast(err.message);
+      }
       renderClasses();
     });
     renderClasses();
@@ -319,7 +332,15 @@
     });
     renderPlans();
 
-    $("trialForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast("Заявка принята! Тренер позвонит сегодня"); });
+    $("trialForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const [name, phone] = e.target.querySelectorAll("input");
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("fitness", { kind: "trial", name: name.value, phone: phone.value }));
+      } catch { return; }
+      e.target.reset();
+      toast("Заявка принята! Тренер позвонит сегодня");
+    });
     let tt;
     function toast(m) { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2500); }
   </script>

@@ -267,6 +267,7 @@
     </div>
   </footer>
 
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
   <script>
     const ph = (id, w = 700) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
@@ -319,11 +320,20 @@
     const date = document.getElementById("date");
     date.min = date.value = new Date().toISOString().split("T")[0];
 
-    // В реальном проекте заявка уходит в Telegram администратору
-    document.getElementById("form").addEventListener("submit", e => {
+    // Заявка уходит в API (в демо — в админку в этом же браузере)
+    document.getElementById("form").addEventListener("submit", async e => {
       e.preventDefault();
+      const f = e.target.elements;
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("cafe", {
+          kind: "table", name: f["name"].value, phone: f["phone"].value,
+          data: { date: f["date"].value, time: f["time"].value, guests: f["guests"].value },
+        }));
+      } catch { return; }
       e.target.querySelector(".fields").style.display = "none";
-      document.getElementById("success").style.display = "block";
+      const ok = document.getElementById("success");
+      ok.style.display = "block";
+      ok.insertAdjacentHTML("beforeend", PortfolioAPI.adminLink("leads"));
     });
   </script>
 </body>

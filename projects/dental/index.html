@@ -252,6 +252,7 @@
       <span>Имеются противопоказания, необходима консультация специалиста · Демо-сайт · фото: Unsplash</span>
     </div>
   </footer>
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <script>
@@ -300,9 +301,16 @@
       $("quizBody").innerHTML = `<div class="result"><div class="big">🎁</div><h3>${title}</h3>
         <p class="muted">Примерная стоимость: <b style="color:var(--ink)">${f(min).toLocaleString("ru-RU")} – ${f(max).toLocaleString("ru-RU")} ₽</b><br>Точную цену врач назовёт на бесплатной консультации.</p>
         <form id="quizForm"><input required type="tel" placeholder="Телефон для записи (${answers[2]})" aria-label="Телефон"><button class="btn">Закрепить скидку 15%</button></form></div>`;
-      $("quizForm").onsubmit = e => {
+      $("quizForm").onsubmit = async e => {
         e.preventDefault();
+        const range = `${f(min).toLocaleString("ru-RU")} – ${f(max).toLocaleString("ru-RU")} ₽`;
+        try {
+          await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("dental", {
+            kind: "quiz", phone: e.target.querySelector("input").value, data: { result: title, range, time: answers[2] },
+          }));
+        } catch { return; }
         $("quizBody").innerHTML = `<div class="result"><div class="big">✅</div><h3>Скидка закреплена!</h3><p class="muted">Перезвоним и запишем на удобное время.</p>
+          ${PortfolioAPI.adminLink("leads")}<br>
           <button class="btn btn--soft" style="margin-top:16px" id="again">Пройти заново</button></div>`;
         $("again").onclick = () => { step = 0; answers = []; renderQuiz(); };
       };
@@ -313,8 +321,16 @@
     });
     renderQuiz();
 
-    $("bookForm").addEventListener("submit", e => {
-      e.preventDefault(); e.target.style.display = "none"; $("bookOk").style.display = "block";
+    $("bookForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const [name, phone] = e.target.querySelectorAll("input");
+      const doctor = e.target.querySelector("select").value;
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("dental", { kind: "consult", name: name.value, phone: phone.value, data: { doctor } }));
+      } catch { return; }
+      e.target.style.display = "none";
+      $("bookOk").style.display = "block";
+      $("bookOk").insertAdjacentHTML("beforeend", PortfolioAPI.adminLink("leads"));
     });
   </script>
 </body>

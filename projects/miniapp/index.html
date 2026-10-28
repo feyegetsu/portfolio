@@ -8,6 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦊</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="../shared/api.js"></script>
   <style>
     /* Цвета берутся из темы Telegram (переменные --tg-theme-* выставляет SDK), в браузере работают запасные значения */
     :root {
@@ -80,6 +81,8 @@
     .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; }
     .card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .card:active .card__img img { transform: scale(.97); }
+    .card--off .card__img img { filter: grayscale(1); opacity: .5; }
+    .card--off .add { opacity: .6; cursor: not-allowed; }
     .badge { position: absolute; left: 8px; top: 8px; background: #d42a1f; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
     .card__b { padding: 10px 10px 12px; display: flex; flex-direction: column; flex: 1; }
     .card__b b { font-size: 15px; line-height: 1.25; }
@@ -347,6 +350,12 @@
     // ---------- Экраны ----------
     function cardHTML(it) {
       const q = qtyOf(it.id);
+      if (it.off) {
+        return `<article class="card card--off">
+          <div class="card__img"><img loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+          <div class="card__b"><b>${it.name}</b><small>${it.w}</small><button class="add" disabled>Закончилось</button></div>
+        </article>`;
+      }
       const control = q
         ? (it.sizes
           ? `<button class="add" data-open="${it.id}" style="background:var(--btn);color:var(--btn-text)">В корзине: ${q}</button>`
@@ -443,7 +452,7 @@
             <label class="radio"><input type="radio" name="pay" value="tg" checked><div>Картой в Telegram<small>безопасно, через платёжного провайдера</small></div></label>
             <label class="radio"><input type="radio" name="pay" value="cash"><div>${state.mode === "delivery" ? "Курьеру при получении" : "На кассе"}<small>наличными или картой</small></div></label>
           </div>
-          <p class="hint-text" style="margin-top:4px">Это демо: заказ никуда не отправится, а оплата не спишется.</p>
+          <p class="hint-text" style="margin-top:4px">Это демо: заказ попадёт в админку, а оплата не спишется.</p>
         </form>`;
       setMain(`Заказать · ${rub(t.total)}`, () => {
         const form = $("checkoutForm");
@@ -453,29 +462,79 @@
       });
     }
 
-    let order = null, orderTimer = null;
-    function placeOrder() {
+    // ---------- Заказ через API ----------
+    // Этапы заказа в API: new → cooking → delivering → done (у самовывоза без delivering)
+    const FLOW = { delivery: ["new", "cooking", "delivering", "done"], pickup: ["new", "cooking", "done"] };
+    let order = null, pollTimer = null, kitchenTimer = null;
+
+    async function placeOrder() {
       const t = totals();
-      order = { no: Math.floor(1000 + Math.random() * 9000), total: t.total, mode: state.mode, stage: 0, eta: state.mode === "delivery" ? 42 : 20 };
+      const f = $("checkoutForm").elements;
+      // ref «1» — позиция ровно как в каталоге (цену проверит сервер), «1:2:0» — с размером и добавками
+      const items = state.cart.map((l) => {
+        const it = findItem(l.id);
+        const plain = (l.size == null || l.size === 1) && !l.extras.length;
+        const mods = [l.size != null && l.size !== 1 ? SIZES[l.size][0] : "", ...l.extras.map((e) => EXTRAS[e][0].toLowerCase())].filter(Boolean);
+        return { ref: plain ? String(l.id) : `${l.id}:${l.size ?? ""}:${l.extras.join("-")}`, name: it.name + (mods.length ? ` (${mods.join(", ")})` : ""), qty: l.qty, price: linePrice(l) };
+      });
+      if (t.delivery) items.push({ ref: "delivery", name: "Доставка", qty: 1, price: t.delivery });
+      const comment = [f.comment && f.comment.value, state.promo && `Промокод ${state.promo}`, f.time.value === "later" ? "Ко времени" : "", f.pay.value === "cash" ? "Оплата при получении" : "Оплата в Telegram"].filter(Boolean).join(" · ");
+      $("mainBtn").textContent = "Отправляем…";
+      if (inTG) tg.MainButton.showProgress();
+      let res;
+      try {
+        res = await PortfolioAPI.createOrder("miniapp", {
+          items, name: f.name.value, phone: f.phone.value, address: f.address ? f.address.value : "", mode: state.mode, comment,
+        });
+      } catch (err) {
+        toast(err.message);
+        haptic("heavy");
+        if (err.status === 409) loadCatalog();  // позиция ушла в стоп-лист — обновим меню
+        return renderCheckout();
+      } finally {
+        if (inTG) tg.MainButton.hideProgress();
+      }
+      if (inTG && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+      order = { no: res.id, total: t.total, mode: state.mode, status: res.status };
       state.cart = []; state.promo = null;
       history = [];
       go("status", false);
-      clearInterval(orderTimer);
-      // Демо: этапы заказа сменяются каждые несколько секунд
-      orderTimer = setInterval(() => {
-        const last = order.mode === "delivery" ? 3 : 2;
-        if (order.stage >= last) return clearInterval(orderTimer);
-        order.stage++;
-        order.eta = Math.max(0, order.eta - (order.mode === "delivery" ? 14 : 10));
-        if (state.screen === "status") renderStatus();
-        haptic("medium");
-      }, 3500);
+      trackOrder();
+    }
+
+    // Статус берём из API: его меняет ресторан в админке. В демо «кухня» сама двигает заказ, пока статус не сменили руками.
+    function trackOrder() {
+      clearInterval(pollTimer); clearInterval(kitchenTimer);
+      pollTimer = setInterval(async () => {
+        try {
+          const s = await PortfolioAPI.orderStatus("miniapp", order.no);
+          if (s.status !== order.status) {
+            order.status = s.status;
+            haptic("medium");
+            if (state.screen === "status") renderStatus();
+          }
+          if (s.status === "done" || s.status === "cancelled") { clearInterval(pollTimer); clearInterval(kitchenTimer); }
+        } catch { /* нет сети — попробуем позже */ }
+      }, 2000);
+      if (PortfolioAPI.mode === "demo") {
+        kitchenTimer = setInterval(() => {
+          const flow = FLOW[order.mode];
+          const next = flow[flow.indexOf(order.status) + 1];
+          if (next) PortfolioAPI.demoAdvanceOrder(order.no, next);
+        }, 6000);
+      }
     }
 
     function renderStatus() {
       const steps = order.mode === "delivery"
-        ? [["Заказ принят", "Ресторан подтвердил"], ["Готовим", "Пицца в печи 🔥"], ["Курьер в пути", "Алексей, синий самокат"], ["Доставлено", "Приятного аппетита!"]]
+        ? [["Заказ принят", "Ресторан подтвердил"], ["Готовим", "Пицца в печи 🔥"], ["Курьер в пути", "Курьер уже едет к вам"], ["Доставлено", "Приятного аппетита!"]]
         : [["Заказ принят", "Ресторан подтвердил"], ["Готовим", "Скоро будет готово"], ["Можно забирать", "Покажите номер заказа"]];
+      if (order.status === "cancelled") {
+        $("view").innerHTML = `<div class="status"><div class="status__icon">😔</div><h2>Заказ №${order.no} отменён</h2><p>Ресторан свяжется с вами, чтобы всё объяснить.</p></div>`;
+        return setMain("Вернуться в меню", () => { history = []; go("menu", false); });
+      }
+      order.stage = Math.max(0, FLOW[order.mode].indexOf(order.status));
+      order.eta = order.mode === "delivery" ? [42, 30, 15, 0][order.stage] : [20, 10, 0][order.stage];
       const done = order.stage === steps.length - 1;
       $("view").innerHTML = `
         <div class="status">
@@ -488,7 +547,7 @@
           <div class="tstep ${i < order.stage || done ? "done" : i === order.stage ? "now" : ""}">
             <span class="tdot">${i < order.stage || done ? "✓" : ""}</span><div>${title}<br><small>${i <= order.stage ? sub : "ожидается"}</small></div>
           </div>`).join("")}</div>
-        <p class="hint-text" style="text-align:center">В настоящем приложении статус приходит от бота, а уведомления дублируются в чат.</p>`;
+        <p class="hint-text" style="text-align:center">Статус меняет ресторан в админке, экран обновляется сам.${PortfolioAPI.mode === "demo" ? ` <a href="../../admin/#orders" target="_blank" rel="noopener" style="color:var(--link)">Открыть админку</a>` : ""}</p>`;
       setMain(done ? "Заказать ещё" : "Вернуться в меню", () => { history = []; go("menu", false); });
     }
 
@@ -499,6 +558,7 @@
     // ---------- Шторка товара ----------
     let sheetItem = null, sheetSize = 1, sheetExtras = [];
     function openSheet(id) {
+      if (findItem(id).off) return;
       sheetItem = findItem(id); sheetSize = 1; sheetExtras = [];
       renderSheet();
       $("sheet").classList.add("on"); $("sheetBg").classList.add("on");
@@ -582,7 +642,26 @@
     $("themeToggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
     if (!inTG && matchMedia("(prefers-color-scheme: dark)").matches) { $("themeToggle").checked = true; document.documentElement.classList.add("dark"); }
 
+    // Цены и стоп-лист приходят из каталога, которым управляют в админке
+    async function loadCatalog() {
+      try {
+        const list = await PortfolioAPI.catalog("miniapp");
+        for (const c of list) {
+          const it = MENU.find((m) => String(m.id) === c.ref);
+          if (it) { it.price = c.price; it.off = !c.active; }
+        }
+        // Если позиция закончилась, убираем её из корзины
+        const before = state.cart.length;
+        state.cart = state.cart.filter((l) => !findItem(l.id).off);
+        if (state.cart.length < before) toast("Часть блюд закончилась и убрана из корзины");
+        // Оформление не перерисовываем, чтобы не стереть введённые данные
+        if (["menu", "cart"].includes(state.screen) && !$("sheet").classList.contains("on")) render();
+      } catch { /* меню работает и со встроенными ценами */ }
+    }
+
     render();
+    loadCatalog();
+    PortfolioAPI.onChange(loadCatalog);
   </script>
 </body>
 </html>

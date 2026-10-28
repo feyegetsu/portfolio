@@ -250,6 +250,7 @@
   <footer>
     <div class="container foot"><span>© МоторЛайн · ул. Промышленная, 15 · Ежедневно 8:00–21:00</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
   </footer>
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
   <div class="toast" id="toast"></div>
 
@@ -306,7 +307,23 @@
       requestAnimationFrame(step);
     }
     $("date").min = $("date").value = new Date().toISOString().split("T")[0];
-    $("bookForm").addEventListener("submit", e => { e.preventDefault(); toast("Вы записаны! Мастер-приёмщик перезвонит для подтверждения"); e.target.reset(); $("date").value = $("date").min; });
+    // Запись на ремонт уходит в API вместе с выбранными работами и расчётом
+    $("bookForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const [car, phone, date] = e.target.querySelectorAll("input");
+      const picked = [...document.querySelectorAll(".work input:checked")].map(i => works[i.value]);
+      const total = picked.reduce((s, w) => s + round(w[2] * k), 0);
+      const carType = document.querySelector(".car.active").textContent.trim();
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("autoservice", {
+          kind: "repair", phone: phone.value, message: car.value,
+          data: { date: date.value, car: carType, works: picked.map(w => w[0]), total },
+        }));
+      } catch { return; }
+      toast("Вы записаны! Мастер-приёмщик перезвонит для подтверждения");
+      e.target.reset();
+      $("date").value = $("date").min;
+    });
 
     const stages = [["Автомобиль принят", "Осмотр и фотофиксация"], ["Диагностика", "Мастер нашёл причину"], ["Согласование", "Смета отправлена вам в Telegram"], ["Ремонт", "Работы выполняются"], ["Контроль качества", "Тест-драйв мастером"], ["Готово к выдаче", "Можно забирать"]];
     $("statusForm").addEventListener("submit", e => {

@@ -40,6 +40,12 @@ $("ticker").innerHTML = [...niches, ...niches].map((n) => `<span>${n}</span>`).j
 // ---------- Работы и кейсы ----------
 // goal — задача бизнеса, done — что сделано, tech — как устроено внутри
 const projects = [
+  { slug: "admin", title: "Админка и API", niche: "Бэкенд", cat: "backend", isNew: true, url: "admin/", code: "backend",
+    text: "Общий бэкенд для всех сайтов: заявки, записи, заказы, каталог, роли сотрудников и живая админ-панель.",
+    tags: ["FastAPI", "PostgreSQL", "JWT", "pytest", "Docker"],
+    goal: "Заявки с сайтов должны куда-то приходить, а владелец должен ими управлять без программиста и без доступа к коду.",
+    done: ["API на FastAPI: заявки, запись на время, заказы, каталог, статистика, выгрузка в CSV", "Админка: дашборд, таблицы с поиском и фильтрами, статусы, стоп-лист и цены, команда", "Роли «владелец», «администратор», «сотрудник» и доступ только к своим сайтам", "Все 9 демо-сайтов отправляют формы в API; изменения в админке сразу видны на сайте"],
+    tech: ["Двойная запись на один слот невозможна даже при гонке: уникальный ключ в БД, а не проверка в коде", "Цены заказа берутся из каталога на сервере: подменить цену из браузера нельзя", "Валидация телефонов, honeypot от ботов и лимит заявок с одного IP", "23 автотеста на pytest в CI, Docker и docker-compose с PostgreSQL", "На GitHub Pages сервера нет, поэтому клиент работает в демо-режиме: тот же контракт и правила, данные в браузере"] },
   { slug: "miniapp", title: "Сытый Лис", niche: "Telegram Mini App", cat: "tg", isNew: true, phone: true,
     text: "Доставка еды внутри Telegram: меню, размеры пиццы, промокод, оформление и статус заказа.",
     tags: ["Mini App", "Telegram WebApp API", "Тема Telegram"],
@@ -101,9 +107,9 @@ const projects = [
     done: ["Меню и корзина на inline-кнопках", "Заказ сохраняется в базу и приходит администратору", "Кнопка «Готов» у админа уведомляет клиента", "Рассылка акций командой /broadcast"],
     tech: ["aiogram 3, асинхронный polling", "Токен и ID админа в .env, в репозитории только пример", "Проверка кода в CI на каждый пуш"] },
 ];
-const cats = { all: "Все", tg: "Telegram", services: "Услуги", shop: "Магазины", food: "Общепит", startup: "Стартапы" };
-const caseUrl = (p) => (p.bot ? "#bot" : `projects/${p.slug}/`);
-const codeUrl = (p) => `${CONFIG.repo}/tree/main/projects/${p.slug}`;
+const cats = { all: "Все", backend: "Бэкенд", tg: "Telegram", services: "Услуги", shop: "Магазины", food: "Общепит", startup: "Стартапы" };
+const caseUrl = (p) => p.url || (p.bot ? "#bot" : `projects/${p.slug}/`);
+const codeUrl = (p) => `${CONFIG.repo}/tree/main/${p.code || `projects/${p.slug}`}`;
 
 $("filters").innerHTML = Object.entries(cats)
   .map(([k, v], i) => `<button class="chip${i ? "" : " active"}" aria-pressed="${!i}" data-cat="${k}">${v}<span>${k === "all" ? projects.length : projects.filter((p) => p.cat === k).length}</span></button>`)
@@ -138,7 +144,7 @@ $("worksGrid").innerHTML = projects.map(workCard).join("");
 document.querySelectorAll(".work__shot").forEach((img) => {
   img.addEventListener("error", () => {
     const f = document.createElement("iframe");
-    f.src = `projects/${img.dataset.slug}/`;
+    f.src = caseUrl(projects.find((p) => p.slug === img.dataset.slug));
     f.title = "Превью";
     f.tabIndex = -1;
     f.setAttribute("aria-hidden", "true");
@@ -187,7 +193,7 @@ function openCase(slug, push = true) {
       <div class="frame frame--${device}" id="caseFrame">
         ${p.bot
           ? `<div class="case__bot"><div class="mini-msg">Привет! 👋 Я бот кофейни «Зерно»</div><div class="mini-msg mini-msg--me">📋 Меню</div><div class="mini-msg">☕ Кофе\n• Капучино — 220 ₽\n• Латте — 240 ₽</div><div class="mini-msg mini-msg--me">✅ Оформить</div><div class="mini-msg">🎉 Заказ №4821 принят!</div><a class="btn btn--small" href="#bot" data-close>Попробовать симуляцию ↓</a></div>`
-          : `<iframe src="projects/${p.slug}/${p.phone ? "?embed" : ""}" title="Демо: ${p.title}" loading="lazy"></iframe>`}
+          : `<iframe src="${caseUrl(p)}${p.phone ? "?embed" : ""}" title="Демо: ${p.title}" loading="lazy"></iframe>`}
       </div>
       <p class="case__hint">${p.bot ? "Живая симуляция бота ниже на странице" : "Сайт живой: можно кликать прямо здесь"}</p>
     </div>

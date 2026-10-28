@@ -93,13 +93,14 @@ def create_order(site: SiteDep, body: OrderIn, db: DB):
     items = [i.model_dump() for i in body.items]
     if site.catalog:
         # Цены и наличие берём из каталога, а не из запроса: клиент не может подменить цену
+        # ref «1» — позиция ровно как в каталоге, «1:2:0» — с модификаторами: наличие проверяем по базовой позиции
         catalog = {c.ref: c for c in db.scalars(select(CatalogItem).where(CatalogItem.site == site.slug))}
         for item in items:
-            known = catalog.get(item["ref"])
-            if known and not known.active:
-                raise HTTPException(status.HTTP_409_CONFLICT, f"«{known.name}» закончилось")
-            if known:
-                item["price"] = known.price
+            base = catalog.get(item["ref"].split(":")[0])
+            if base and not base.active:
+                raise HTTPException(status.HTTP_409_CONFLICT, f"«{base.name}» закончилось")
+            if base and base.ref == item["ref"]:
+                item["price"] = base.price
 
     order = Order(
         site=site.slug, items=items, total=sum(i["price"] * i["qty"] for i in items),

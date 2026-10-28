@@ -90,6 +90,16 @@ def test_order_uses_catalog_price_and_stop_list(client, owner):
     assert client.post("/api/v1/sites/miniapp/orders", json=body).status_code == 409
 
 
+def test_modified_item_checks_base_stop_list(client, owner):
+    catalog = client.get("/api/v1/admin/catalog", params={"site": "miniapp"}, headers=owner).json()
+    pepperoni = next(c for c in catalog if c["ref"] == "2")
+    body = {"items": [{"ref": "2:2:0", "name": "Пепперони (35 см)", "qty": 1, "price": 819}], "name": "Иван", "phone": PHONE, "mode": "pickup"}
+    r = client.post("/api/v1/sites/miniapp/orders", json=body)
+    assert client.get(f"/api/v1/sites/miniapp/orders/{r.json()['id']}").json()["total"] == 819  # цена с модификатором сохраняется
+    client.patch(f"/api/v1/admin/catalog/item/{pepperoni['id']}", json={"active": False}, headers=owner)
+    assert client.post("/api/v1/sites/miniapp/orders", json=body).status_code == 409
+
+
 def test_delivery_needs_address(client):
     body = {"items": [{"name": "Букет", "qty": 1, "price": 3000}], "name": "Иван", "phone": PHONE, "mode": "delivery"}
     assert client.post("/api/v1/sites/florist/orders", json=body).status_code == 422

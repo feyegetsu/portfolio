@@ -255,6 +255,7 @@
       <span>Демо-сайт для портфолио · фото: Unsplash</span>
     </div>
   </footer>
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <div class="overlay" id="overlay"></div>
@@ -264,7 +265,8 @@
     <form class="drawer__foot" id="checkout" hidden>
       <div class="total"><span>Итого</span><b id="cartTotal">0 ₽</b></div>
       <p class="hint" id="deliveryHint"></p>
-      <input required name="phone" type="tel" placeholder="Ваш телефон" aria-label="Телефон">
+      <input required name="name" placeholder="Ваше имя" aria-label="Имя" autocomplete="name">
+      <input required name="phone" type="tel" placeholder="Ваш телефон" aria-label="Телефон" autocomplete="tel">
       <input required name="address" placeholder="Адрес доставки" aria-label="Адрес">
       <div class="two">
         <input required name="date" type="date" id="date" aria-label="Дата">
@@ -387,12 +389,34 @@
     $("date").min = $("date").value = new Date().toISOString().split("T")[0];
 
     // В реальном проекте заказ уходит в CRM и Telegram флористу
-    $("checkout").addEventListener("submit", e => {
+    // Заказ уходит в API: состав корзины, доставка отдельной строкой, дата и интервал в комментарии
+    $("checkout").addEventListener("submit", async e => {
       e.preventDefault();
+      const f = e.target.elements;
+      const items = Object.entries(cart).filter(([, q]) => q > 0).map(([id, qty]) => {
+        const p = products.find(x => x.id == id);
+        return { ref: String(p.id), name: p.name, qty, price: p.price };
+      });
+      const sum = items.reduce((s, i) => s + i.price * i.qty, 0);
+      if (sum < FREE_DELIVERY) items.push({ ref: "delivery", name: "Доставка", qty: 1, price: DELIVERY });
+      let res;
+      try {
+        res = await PortfolioAPI.submit(e.target, () => PortfolioAPI.createOrder("florist", {
+          items, name: f["name"].value, phone: f["phone"].value, address: f["address"].value, mode: "delivery",
+          comment: `Доставка ${new Date(f["date"].value).toLocaleDateString("ru-RU")}, ${f["slot"].value}`,
+        }));
+      } catch { return; }
       cart = {}; save(); openCart(false);
-      toast("Заказ оформлен! Флорист пришлёт фото букета 📸");
+      toast(`Заказ №${res.id} оформлен! Флорист пришлёт фото букета 📸`);
     });
-    $("subForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast("Вы подписаны на рассылку 💌"); });
+    $("subForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("florist", { kind: "subscribe", email: e.target.querySelector("input").value }));
+      } catch { return; }
+      e.target.reset();
+      toast("Вы подписаны на рассылку 💌");
+    });
 
     let tt;
     function toast(msg) {

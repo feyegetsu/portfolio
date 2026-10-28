@@ -36,6 +36,18 @@ def main():
             page.screenshot(path=OUT / f"{slug}.jpg", type="jpeg", quality=72)
             print("ok", slug)
 
+        # Админка: входим демо-аккаунтом владельца и снимаем дашборд и заказы
+        page.goto(f"{BASE}/admin/")
+        page.click('[data-email="demo@feyegetsu.dev"]')
+        page.wait_for_selector(".kpi")
+        settle(page)
+        page.screenshot(path=OUT / "admin.jpg", type="jpeg", quality=78)
+        page.click('[data-view="orders"]')
+        page.wait_for_selector(".order")
+        page.wait_for_timeout(800)
+        page.screenshot(path=OUT / "admin-orders.jpg", type="jpeg", quality=78)
+        print("ok admin")
+
         # OG-картинка: первый экран главной в формате 1200×630
         page.set_viewport_size({"width": 1200, "height": 630})
         page.goto(f"{BASE}/")

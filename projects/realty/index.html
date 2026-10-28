@@ -223,6 +223,7 @@
   <footer>
     <div class="container foot"><span>© Агентство недвижимости «Квадрат»</span><span>Демо-сайт для портфолио · не является публичной офертой · фото: Unsplash</span></div>
   </footer>
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Карточка квартиры">
@@ -330,8 +331,9 @@
     });
     $("grid").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList.contains("obj")) openModal(+e.target.dataset.id); });
 
+    let modalObj = null;
     function openModal(id) {
-      const o = objects.find(x => x.id === id);
+      const o = modalObj = objects.find(x => x.id === id);
       $("mImg").innerHTML = `<div class="m-main">${building(o, 1100)}</div><div class="m-thumbs">${o.photos.map((_, i) => `<button data-i="${i}" class="${i ? "" : "on"}">${building(o, 200, i)}</button>`).join("")}</div>`;
       $("mImg").querySelectorAll(".m-thumbs button").forEach(b => b.onclick = () => {
         $("mImg").querySelector(".m-main").innerHTML = building(o, 1100, +b.dataset.i);
@@ -349,7 +351,16 @@
     $("mClose").onclick = closeModal;
     $("modal").addEventListener("click", e => e.target === $("modal") && closeModal());
     document.addEventListener("keydown", e => e.key === "Escape" && closeModal());
-    $("mForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); closeModal(); toast("Заявка на просмотр отправлена, агент перезвонит"); });
+    // Заявка на просмотр уходит в API вместе с объектом
+    $("mForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const o = modalObj;
+      const object = `${roomLabel(o.rooms)}, ${o.area} м², ${o.title}`;
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("realty", { kind: "viewing", phone: e.target.querySelector("input").value, data: { object, price: `${o.price} млн ₽` } }));
+      } catch { return; }
+      e.target.reset(); closeModal(); toast("Заявка на просмотр отправлена, агент перезвонит");
+    });
 
     // Ипотека: аннуитетный платёж
     function monthly(loan, rate, years) {

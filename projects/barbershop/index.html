@@ -237,6 +237,7 @@
     </div>
   </footer>
 
+  <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <script>
@@ -314,8 +315,6 @@
     });
     const hours = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
-    // Псевдослучайно «занятые» слоты, стабильные для дня
-    const busy = (dayIdx, h) => ((dayIdx + 3) * 7 + h * 5) % 4 === 0;
 
     const daysEl = document.getElementById("days");
     const timesEl = document.getElementById("times");
@@ -333,34 +332,71 @@
       daysEl.appendChild(b);
     });
 
-    function renderTimes(dayIdx) {
+    const ANY = "Любой мастер";
+    const pad = n => String(n).padStart(2, "0");
+    const dayKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const masterNames = () => state.master && state.master.name !== ANY ? [state.master.name] : masters.map(m => m.name);
+
+    // Занятые слоты приходят из API. Для «любого мастера» слот занят, только если заняты все мастера.
+    async function busyTimes(day) {
+      const lists = await Promise.all(masterNames().map(m => PortfolioAPI.busySlots("barbershop", m, dayKey(day.date)).catch(() => [])));
+      return hours.filter(h => lists.every(l => l.includes(h)));
+    }
+
+    let renderId = 0;
+    async function renderTimes(dayIdx) {
+      const id = ++renderId;
       const now = new Date();
+      state.time = null;
+      steps[2].querySelector("[data-next]").disabled = true;
       timesEl.innerHTML = "";
-      hours.forEach((h, hi) => {
+      const buttons = hours.map(h => {
         const b = document.createElement("button");
         b.className = "opt time";
         b.textContent = h;
-        const past = dayIdx === 0 && parseInt(h) <= now.getHours();
-        b.disabled = past || busy(dayIdx, hi);
+        b.disabled = dayIdx === 0 && parseInt(h) <= now.getHours();
         b.onclick = () => {
           timesEl.querySelectorAll(".time").forEach(o => o.classList.remove("selected"));
           b.classList.add("selected");
           state.time = h; enableNext();
         };
         timesEl.appendChild(b);
+        return b;
       });
+      const taken = await busyTimes(days[dayIdx]);
+      if (id !== renderId) return;  // пользователь уже выбрал другой день
+      buttons.forEach(b => { if (taken.includes(b.textContent)) { b.disabled = true; b.title = "Занято"; } });
     }
     daysEl.firstChild.click();
 
-    document.querySelectorAll("[data-next]").forEach(b => b.onclick = () => go(current + 1));
+    document.querySelectorAll("[data-next]").forEach(b => b.onclick = () => {
+      go(current + 1);
+      if (current === 2 && state.day) renderTimes(days.indexOf(state.day));  // мастер мог смениться
+    });
     document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => go(current - 1));
 
-    // В реальном проекте здесь отправка заявки в Telegram-бот администратора
-    document.getElementById("form").addEventListener("submit", e => {
+    // Запись уходит в API. Для «любого мастера» пробуем мастеров по очереди, пока слот не окажется свободным.
+    document.getElementById("form").addEventListener("submit", async e => {
       e.preventDefault();
-      const name = e.target.elements["name"].value;
-      document.getElementById("doneText").textContent =
-        `${name}, ждём вас ${state.day.label} в ${state.time}. Мастер: ${state.master.name}. Напомним за 2 часа до визита.`;
+      const f = e.target.elements;
+      const startsAt = `${dayKey(state.day.date)}T${state.time}:00`;
+      let booked = null;
+      try {
+        await PortfolioAPI.submit(e.target, async () => {
+          for (const master of masterNames()) {
+            try {
+              await PortfolioAPI.createBooking("barbershop", { resource: master, service: state.service.name, starts_at: startsAt, name: f["name"].value, phone: f["phone"].value });
+              booked = master;
+              return;
+            } catch (err) {
+              if (err.status !== 409) throw err;
+            }
+          }
+          throw new PortfolioAPI.ApiError("Это время уже заняли, выберите другое", 409);
+        });
+      } catch { return; }
+      document.getElementById("doneText").innerHTML =
+        `${f["name"].value.replace(/[<>&]/g, "")}, ждём вас ${state.day.label} в ${state.time}. Мастер: ${booked}. Напомним за 2 часа до визита.<br>${PortfolioAPI.adminLink("bookings")}`;
       go(4);
     });
   </script>

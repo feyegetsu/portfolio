@@ -56,6 +56,7 @@
       <a href="#top" class="logo">feyegetsu<span>.dev</span></a>
       <nav class="nav" id="nav">
         <a href="#works">Работы</a>
+        <a href="#backend">Админка</a>
         <a href="#services">Услуги</a>
         <a href="#bot">Боты</a>
         <a href="#calc">Стоимость</a>
@@ -81,7 +82,7 @@
             <a href="#calc" class="btn btn--ghost">Рассчитать стоимость</a>
           </div>
           <ul class="hero__facts">
-            <li><b data-count="10">10</b><span>живых проектов</span></li>
+            <li><b data-count="11">11</b><span>живых проектов</span></li>
             <li><b>от 5 дней</b><span>срок запуска</span></li>
             <li><b>30 дней</b><span>поддержки бесплатно</span></li>
           </ul>
@@ -120,6 +121,7 @@
         <div class="works" id="worksGrid"></div>
         <noscript>
           <ul class="works-fallback">
+            <li><a href="admin/">Админка и API — заявки, записи и заказы со всех сайтов</a></li>
             <li><a href="projects/miniapp/">Сытый Лис — Telegram Mini App доставки еды</a></li>
             <li><a href="projects/florist/">Пион &amp; Ко — интернет-магазин цветов</a></li>
             <li><a href="projects/dental/">Белая линия — стоматология с квизом</a></li>
@@ -131,6 +133,30 @@
             <li><a href="projects/saas/">Taskly — лендинг SaaS-сервиса</a></li>
           </ul>
         </noscript>
+      </div>
+    </section>
+
+    <!-- BACKEND -->
+    <section class="section section--alt" id="backend">
+      <div class="container backend">
+        <div>
+          <p class="eyebrow">Не только витрина</p>
+          <h2>Заявки попадают в админку, а не в никуда</h2>
+          <p class="section__lead">У всех демо-сайтов общий бэкенд. Оставьте заявку на любом сайте, запишитесь в барбершоп или закажите в Mini App и откройте админку: всё уже там. Поменяйте цену или статус заказа, и сайт обновится сам.</p>
+          <ul class="checks">
+            <li>API на FastAPI, PostgreSQL, JWT, роли сотрудников</li>
+            <li>Дашборд, заявки, записи, заказы, каталог, команда</li>
+            <li>Автотесты в CI, Docker, документация API</li>
+          </ul>
+          <div class="hero__actions">
+            <a href="admin/" class="btn" target="_blank" rel="noopener">Открыть админку</a>
+            <a href="https://github.com/feyegetsu/portfolio/tree/main/backend" class="btn btn--ghost" target="_blank" rel="noopener">Код API</a>
+          </div>
+          <p class="backend__login">Демо-вход: <code>demo@feyegetsu.dev</code> / <code>demo</code></p>
+        </div>
+        <a class="backend__shot" href="admin/" target="_blank" rel="noopener" aria-label="Открыть админку">
+          <img src="assets/previews/admin.jpg" alt="Админ-панель: дашборд с заявками и заказами" loading="lazy" decoding="async">
+        </a>
       </div>
     </section>
 
