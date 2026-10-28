@@ -7,6 +7,7 @@
   <meta name="description" content="Мужские стрижки и уход за бородой. Онлайн-запись к мастеру за 30 секунд.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" imagesizes="100vw" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=optional">
@@ -58,7 +59,7 @@
     .gallery figure:hover img { filter: grayscale(0); transform: scale(1.06); }
     .gallery figcaption { position: absolute; left: 16px; bottom: 14px; font: 700 1.1rem "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .06em; opacity: 0; transform: translateY(8px); transition: .4s; }
     .gallery figure:hover figcaption { opacity: 1; transform: none; }
-    @media (max-width: 760px) { .gallery { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px) { .gallery { grid-template-columns: 1fr 1fr; } .hero::after { display: none; } }
     .hero h1 { font-size: clamp(2.8rem, 8vw, 6rem); max-width: 800px; }
     .hero h1 span { color: var(--gold); }
     .hero p { color: var(--muted); font-size: 1.1rem; margin: 22px 0 36px; max-width: 480px; }
