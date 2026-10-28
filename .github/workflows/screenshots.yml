@@ -1,11 +1,24 @@
-name: Screenshots
+name: Assets
 
-# Запускается вручную: делает свежие скриншоты демо и OG-картинку
+# При каждом изменении сайта: свежие скриншоты, OG-картинка и замер Lighthouse.
+# Результат коммитится в assets/, README и карточки берут его оттуда.
 on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "assets/**"
+      - "**.md"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: assets
+  cancel-in-progress: true
+
 jobs:
-  shots:
+  assets:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,18 +27,44 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install Playwright
         run: |
           pip install playwright==1.47.0
           python -m playwright install --with-deps chromium
 
-      - name: Take screenshots
+      - name: Start local server
         run: |
           python -m http.server 8000 >/dev/null 2>&1 &
           sleep 1
-          python tools/screenshots.py http://localhost:8000
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: assets/
+      - name: Screenshots
+        run: python tools/screenshots.py http://localhost:8000
+
+      - name: Lighthouse
+        run: |
+          mkdir -p .lh
+          run() {
+            npx -y lighthouse@12.2.1 "http://localhost:8000/$2" $3 --output=json --output-path=".lh/$1.json" \
+              --chrome-flags="--headless=new --no-sandbox" --quiet || true
+          }
+          run home-mobile ""
+          run home-desktop "" --preset=desktop
+          for p in miniapp florist dental cafe barbershop fitness autoservice realty saas; do
+            run "$p" "projects/$p/"
+          done
+          python tools/lh_summary.py .lh > assets/lighthouse.json
+          cat assets/lighthouse.json
+
+      - name: Commit assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets
+          git diff --cached --quiet && exit 0
+          git commit -m "Обновить скриншоты и замеры Lighthouse [skip ci]"
+          git pull --rebase
+          git push

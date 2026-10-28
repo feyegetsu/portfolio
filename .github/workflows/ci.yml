@@ -36,14 +36,3 @@ jobs:
           # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages
           args: --offline --no-progress --exclude-path 404.html --exclude '^data:' './**/*.html'
           fail: true
-
-  lighthouse:
-    name: Lighthouse
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: treosh/lighthouse-ci-action@v12
-        with:
-          configPath: ./lighthouserc.json
-          uploadArtifacts: true
-          temporaryPublicStorage: true
