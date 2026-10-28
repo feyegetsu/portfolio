@@ -9,7 +9,7 @@
         "seo": 100
       },
       "lcp": "1.8 s",
-      "cls": "0.082",
+      "cls": "0.088",
       "issues": [],
       "a11y": {}
     },
@@ -20,7 +20,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
+      "lcp": "2.0 s",
       "cls": "0",
       "issues": [],
       "a11y": {}
@@ -33,7 +33,7 @@
         "seo": 100
       },
       "lcp": "2.0 s",
-      "cls": "0.005",
+      "cls": "0.004",
       "issues": [],
       "a11y": {}
     },
@@ -75,38 +75,40 @@
     },
     "home-desktop": {
       "scores": {
-        "performance": 100,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.8 s",
+      "lcp": "0.9 s",
       "cls": "0.032",
       "issues": [],
       "a11y": {}
     },
     "home-mobile": {
       "scores": {
-        "performance": 97,
+        "performance": 85,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.6 s",
+      "lcp": "3.4 s",
       "cls": "0.059",
       "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
         "Max Potential First Input Delay"
       ],
       "a11y": {}
     },
     "miniapp": {
       "scores": {
-        "performance": 92,
+        "performance": 90,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.6 s",
+      "lcp": "2.7 s",
       "cls": "0",
       "issues": [
         "First Contentful Paint",
@@ -117,12 +119,12 @@
     },
     "realty": {
       "scores": {
-        "performance": 100,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.7 s",
+      "lcp": "1.8 s",
       "cls": "0.04",
       "issues": [],
       "a11y": {}
@@ -134,8 +136,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.9 s",
-      "cls": "0.028",
+      "lcp": "1.3 s",
+      "cls": "0.014",
       "issues": [],
       "a11y": {}
     }
