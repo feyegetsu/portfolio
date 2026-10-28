@@ -6,9 +6,12 @@
   <title>PULSE — фитнес-клуб 24/7</title>
   <meta name="description" content="Фитнес-клуб 24/7: тренажёрный зал, групповые тренировки, бассейн. Первая тренировка бесплатно.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=swap"></noscript>
   <style>
     :root { --bg: #08090b; --card: #121418; --line: #22252c; --lime: #c6ff3d; --text: #f3f4f6; --muted: #8b919c; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +39,7 @@
     nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; color: var(--muted); }
     nav a:hover { color: var(--text); }
 
-    .hero { padding: 120px 0 100px; position: relative; overflow: hidden; min-height: 88vh; display: flex; align-items: center; }
+    .hero { padding: 120px 0 100px; position: relative; overflow: hidden; min-height: 88vh; display: flex; align-items: flex-start; }
     .hero > .container { width: 100%; }
     .hero__bg { position: absolute; width: 100%; height: 120%; top: -10%; left: 0; object-fit: cover; }
     .hero::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(8,9,11,.96) 30%, rgba(8,9,11,.6) 65%, rgba(8,9,11,.4)), radial-gradient(circle at 80% 20%, rgba(198, 255, 61, .2), transparent 50%), linear-gradient(0deg, var(--bg), transparent 25%); }
@@ -53,7 +56,7 @@
     .dir span { position: absolute; top: 20px; right: 20px; background: var(--lime); color: #111; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 99px; }
     @media (max-width: 900px) { .dirs { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 560px) { .dirs { grid-template-columns: 1fr; } .dir { height: 240px; } .dir p { max-height: 80px; margin-top: 6px; } }
-    .hero__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; position: relative; z-index: 2; }
+    .hero__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: start; position: relative; z-index: 2; }
     .hero h1 { font-size: clamp(3rem, 9vw, 7rem); }
     .hero p { font-size: 1.15rem; color: var(--muted); margin: 24px 0 34px; max-width: 520px; }
     .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -124,7 +127,7 @@
 
     footer { padding: 40px 0; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 90px; }
     .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--lime); color: #111; font-weight: 600; padding: 13px 22px; border-radius: 14px; z-index: 50; transition: transform .35s; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, calc(100% + 60px)); background: var(--lime); color: #111; font-weight: 600; padding: 13px 22px; border-radius: 14px; z-index: 50; transition: transform .35s; }
     .toast.show { transform: translate(-50%, 0); }
 
     @media (max-width: 900px) {
@@ -151,10 +154,10 @@
   </header>
 
   <section class="hero">
-    <img class="hero__bg" data-parallax="0.3" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=700 700w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
+    <img class="hero__bg" data-parallax="0.3" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
     <div class="container hero__grid">
       <div>
-        <span class="live"><i></i> Сейчас в клубе: <b id="now">34</b> человека</span>
+        <span class="live"><i></i> Сейчас в клубе: <b id="now" style="display:inline-block;min-width:2ch;font-variant-numeric:tabular-nums">34</b> человека</span>
         <h1>Сильнее <span>каждый</span> день</h1>
         <p>Зал 2 000 м², 40+ групповых тренировок в неделю, бассейн 25 м и сауна. Открыто круглосуточно, без выходных.</p>
         <div class="hero__cta"><a href="#trial" class="btn">Первая тренировка бесплатно</a><a href="#schedule" class="btn btn--ghost">Расписание</a></div>

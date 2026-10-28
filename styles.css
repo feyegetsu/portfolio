@@ -31,7 +31,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; border-radius: 6px; }
 [hidden] { display: none !important; }
 
-.skip { position: absolute; left: 16px; top: -60px; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 100; }
+.skip { position: absolute; left: 16px; top: -60px; background: #6a45f5; color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 100; }
 .skip:focus { top: 12px; }
 
 .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
@@ -47,7 +47,7 @@ h3 { font-size: 1.08rem; font-weight: 500; margin-bottom: 8px; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; padding: 14px 26px; border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), #9b6bff);
+  background: linear-gradient(135deg, #6a45f5, #7c4dff);
   color: #fff; font-weight: 600; border: 1px solid transparent;
   transition: transform .2s var(--ease), box-shadow .2s, border-color .2s;
   font-size: 15px; white-space: nowrap;
@@ -222,7 +222,7 @@ h2 + .grid, h2 + .steps, h2 + .stack { margin-top: 36px; }
 .work__links a:first-child { color: #c4b5ff; }
 .work__links a:hover { text-decoration: underline; }
 
-.chip span { margin-left: 6px; font-size: 12px; opacity: .7; }
+.chip span { margin-left: 6px; font-size: 12px; }
 .works-fallback { display: grid; gap: 10px; }
 .works-fallback a { color: #c4b5ff; text-decoration: underline; }
 button.work__preview { border: 0; padding: 0; width: 100%; cursor: pointer; text-align: left; color: inherit; font: inherit; }
@@ -396,7 +396,7 @@ legend { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color
 .footer__inner { display: flex; justify-content: space-between; }
 
 /* Toast */
-.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--text); color: var(--bg); font-weight: 600; padding: 12px 22px; border-radius: 999px; font-size: 14px; z-index: 90; transition: transform .35s var(--ease); max-width: calc(100% - 32px); text-align: center; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, calc(100% + 60px)); background: var(--text); color: var(--bg); font-weight: 600; padding: 12px 22px; border-radius: 999px; font-size: 14px; z-index: 90; transition: transform .35s var(--ease); max-width: calc(100% - 32px); text-align: center; }
 .toast.show { transform: translate(-50%, 0); }
 
 /* Reveal on scroll */

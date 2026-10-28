@@ -50,6 +50,16 @@ def main():
         page.screenshot(path=OUT.parent / "hero.jpg", type="jpeg", quality=80)
         print("ok hero")
 
+        # Сетка работ и открытый кейс
+        page.locator("#works").scroll_into_view_if_needed()
+        page.wait_for_timeout(2500)
+        page.locator("#works").screenshot(path=OUT.parent / "works.jpg", type="jpeg", quality=78)
+        print("ok works")
+        page.goto(f"{BASE}/#case-miniapp")
+        settle(page)
+        page.screenshot(path=OUT.parent / "case.jpg", type="jpeg", quality=80)
+        print("ok case")
+
         # Мобильные кадры для README
         mobile = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True, locale="ru-RU")
         m = mobile.new_page()

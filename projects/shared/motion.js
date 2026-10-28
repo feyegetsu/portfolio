@@ -99,6 +99,11 @@
     const suffix = el.dataset.suffix || "";
     const fmt = (n) => n.toLocaleString("ru-RU", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suffix;
     if (reduce) { el.textContent = fmt(to); return; }
+    // Резервируем итоговую ширину, чтобы соседние элементы не прыгали, пока число растёт
+    el.textContent = fmt(to);
+    if (getComputedStyle(el).display === "inline") el.style.display = "inline-block";
+    el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+    el.style.fontVariantNumeric = "tabular-nums";
     const start = performance.now();
     const dur = 1600;
     const step = (t) => {

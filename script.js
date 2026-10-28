@@ -322,6 +322,8 @@ const countIO = new IntersectionObserver((entries) => entries.forEach((e) => {
   const to = +el.dataset.count;
   countIO.unobserve(el);
   if (reduceMotion) return;
+  el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+  el.style.fontVariantNumeric = "tabular-nums";
   const start = performance.now();
   const step = (t) => {
     const p = Math.min(1, (t - start) / 1200);

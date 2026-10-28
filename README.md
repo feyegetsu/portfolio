@@ -39,6 +39,12 @@
 <img src="assets/previews/realty-mobile.jpg" width="30%" alt="Каталог недвижимости на телефоне">
 </div>
 
+### Кейсы
+
+У каждого проекта есть кейс: задача бизнеса, что сделано, как устроено внутри, и живое превью, которое можно переключать между компьютером и телефоном. На кейс можно дать прямую ссылку, например [#case-miniapp](https://feyegetsu.github.io/portfolio/#case-miniapp).
+
+<img src="assets/case.jpg" alt="Кейс проекта с живым превью" width="100%">
+
 ## Качество, которое можно проверить
 
 Цифры не написаны руками: их считает Lighthouse в GitHub Actions при каждом изменении сайта и кладёт в [`assets/lighthouse.json`](assets/lighthouse.json).

@@ -15,8 +15,8 @@
       --bg2: var(--tg-theme-secondary-bg-color, #f1f2f6);
       --text: var(--tg-theme-text-color, #111318);
       --hint: var(--tg-theme-hint-color, #646a76);
-      --link: var(--tg-theme-link-color, #2481cc);
-      --btn: var(--tg-theme-button-color, #ff7a1a);
+      --link: var(--tg-theme-link-color, #1d6aab);
+      --btn: var(--tg-theme-button-color, #c25000);
       --btn-text: var(--tg-theme-button-text-color, #ffffff);
       --sep: color-mix(in srgb, var(--hint) 22%, transparent);
       --r: 18px;
@@ -171,7 +171,8 @@
     body.in-tg .toast { position: fixed; top: 12px; }
 
     @media (max-width: 900px) {
-      .stage { grid-template-columns: 1fr; gap: 30px; justify-items: center; padding: 24px 16px; }
+      .stage { grid-template-columns: minmax(0, 1fr); gap: 30px; justify-items: center; padding: 24px 16px; }
+      .intro { max-width: 100%; }
       .intro { text-align: center; }
       .intro ul { text-align: left; max-width: 420px; margin-inline: auto; }
       .intro p { margin-inline: auto; }

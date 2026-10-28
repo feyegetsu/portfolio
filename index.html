@@ -40,9 +40,12 @@
     }
   }
   </script>
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap"></noscript>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -172,7 +175,7 @@
         <p class="eyebrow">Что вы получаете</p>
         <h2>Не просто сайт</h2>
         <div class="grid grid--4 why">
-          <div class="why__item"><b>⚡ 95+</b><h3>Скорость</h3><p>Оценка Google PageSpeed. Сайт открывается мгновенно даже с мобильного интернета.</p></div>
+          <div class="why__item"><b>⚡ Lighthouse</b><h3>Скорость</h3><p>Каждое изменение замеряется инструментом Google. Цифры этого портфолио открыты <a href="https://github.com/feyegetsu/portfolio#качество-которое-можно-проверить" target="_blank" rel="noopener" style="color:#c4b5ff;text-decoration:underline">на GitHub</a>.</p></div>
           <div class="why__item"><b>📱 100%</b><h3>Адаптив</h3><p>Идеально выглядит на телефонах, а с них приходит 70–80% клиентов.</p></div>
           <div class="why__item"><b>🔍 SEO</b><h3>Видно в поиске</h3><p>Мета-теги, разметка, карта сайта. Регистрация в Яндекс.Картах и 2ГИС.</p></div>
           <div class="why__item"><b>📊 Метрика</b><h3>Аналитика</h3><p>Видно, сколько людей пришло, откуда и сколько оставили заявку.</p></div>

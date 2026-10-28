@@ -6,12 +6,15 @@
   <title>Пион и Ко — доставка цветов за 90 минут</title>
   <meta name="description" content="Авторские букеты с доставкой по городу за 90 минут. Фото букета перед отправкой.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"></noscript>
   <style>
     :root {
-      --bg: #fdf8f5; --ink: #2d2226; --muted: #6f6065; --rose: #e07a8b; --rose-d: #c95d70;
+      --bg: #fdf8f5; --ink: #2d2226; --muted: #6f6065; --rose: #c2485d; --rose-d: #a63a4e;
       --sage: #9bb19a; --card: #fff; --line: #f0e4e0; --r: 22px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -141,7 +144,7 @@
     .drawer__foot .btn { justify-content: center; }
     .hint { font-size: 12px; color: var(--muted); }
 
-    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); background: var(--ink); color: #fff; padding: 13px 22px; border-radius: 999px; font-size: 14px; z-index: 80; transition: transform .35s; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, calc(100% + 60px)); background: var(--ink); color: #fff; padding: 13px 22px; border-radius: 999px; font-size: 14px; z-index: 80; transition: transform .35s; }
     .toast.show { transform: translate(-50%, 0); }
 
     @media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
