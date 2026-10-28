@@ -34,88 +34,244 @@ burger.addEventListener("click", () => setMenu(!nav.classList.contains("open")))
 nav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setMenu(false)));
 
 // ---------- Бегущая строка ниш ----------
-const niches = ["Кофейни", "Рестораны", "Барбершопы", "Салоны красоты", "Клиники", "Фитнес", "Автосервисы", "Цветы", "Недвижимость", "Стартапы"];
+const niches = ["Кофейни", "Доставка еды", "Рестораны","Барбершопы", "Салоны красоты", "Клиники", "Фитнес", "Автосервисы", "Цветы", "Недвижимость", "Стартапы"];
 $("ticker").innerHTML = [...niches, ...niches].map((n) => `<span>${n}</span>`).join("");
 
-// ---------- Работы ----------
+// ---------- Работы и кейсы ----------
+// goal — задача бизнеса, done — что сделано, tech — как устроено внутри
 const projects = [
-  { slug: "cafe", title: "Кофейня «Зерно»", niche: "Общепит", cat: "food",
-    text: "Сайт кофейни с меню по категориям и бронью столика.", tags: ["Меню", "Бронь", "Адаптив"] },
+  { slug: "miniapp", title: "Сытый Лис", niche: "Telegram Mini App", cat: "tg", isNew: true, phone: true,
+    text: "Доставка еды внутри Telegram: меню, размеры пиццы, промокод, оформление и статус заказа.",
+    tags: ["Mini App", "Telegram WebApp API", "Тема Telegram"],
+    goal: "Ресторану доставки нужен канал заказов без комиссии агрегаторов и без разработки мобильного приложения.",
+    done: ["Меню с поиском и «липкими» категориями, которые подсвечиваются при прокрутке", "Шторка товара: размер пиццы и добавки с пересчётом цены", "Корзина, доставка или самовывоз, промокод, бесплатная доставка от суммы", "Оформление с автоподстановкой имени из Telegram и живой статус заказа"],
+    tech: ["Цвета берутся из темы Telegram через CSS-переменные SDK, поэтому приложение выглядит родным в светлой и тёмной теме", "Нативные MainButton, BackButton и вибрация; в обычном браузере их заменяют свои элементы", "Всё на чистом JS, без сборки: открывается мгновенно даже на слабом интернете"] },
   { slug: "florist", title: "Пион & Ко", niche: "Интернет-магазин", cat: "shop",
-    text: "Магазин цветов: каталог, фильтры, корзина с сохранением, оформление доставки.", tags: ["Корзина", "Фильтры", "localStorage"] },
-  { slug: "barbershop", title: "Барбершоп BLADE", niche: "Красота", cat: "services",
-    text: "Онлайн-запись в 3 шага: услуга, мастер, свободное время.", tags: ["Онлайн-запись", "Слоты"] },
+    text: "Магазин цветов: каталог с фильтрами, корзина с сохранением, оформление доставки.",
+    tags: ["Корзина", "Фильтры", "localStorage"],
+    goal: "Цветочной мастерской нужен магазин, где букет можно выбрать и оформить с телефона за минуту.",
+    done: ["Каталог с фильтром по категориям и сортировкой по цене и популярности", "Выезжающая корзина с изменением количества и подсказкой до бесплатной доставки", "Оформление: адрес, дата и интервал доставки", "Подписка на цветы и быстрая кнопка «В корзину» на фото"],
+    tech: ["Корзина хранится в localStorage и переживает перезагрузку; без него страница тоже работает", "Закрытие корзины по Esc и по клику на фон, блокировка прокрутки под ней", "Анимации отключаются при системной настройке «уменьшить движение»"] },
   { slug: "dental", title: "Стоматология «Белая линия»", niche: "Медицина", cat: "services",
-    text: "Клиника с прайсом по вкладкам и квизом, который считает стоимость лечения.", tags: ["Квиз", "Прайс", "Лиды"] },
+    text: "Клиника с прайсом по вкладкам и квизом, который считает стоимость лечения.",
+    tags: ["Квиз", "Прайс", "Лиды"],
+    goal: "Клинике нужно снять страх «сколько это будет стоить» и получать больше заявок на первичную консультацию.",
+    done: ["Квиз из трёх вопросов с расчётом примерной стоимости и закреплением скидки", "Прайс по направлениям, переключается без перезагрузки", "Карточки врачей, фото клиники и форма записи к конкретному врачу"],
+    tech: ["Квиз — маленький конечный автомат: шаги и итог считаются из данных, вопросы легко менять", "Обязательная медицинская оговорка в подвале", "Счётчики и появление блоков из общего модуля анимаций"] },
+  { slug: "cafe", title: "Кофейня «Зерно»", niche: "Общепит", cat: "food",
+    text: "Сайт кофейни с меню по категориям, галереей и бронью столика.",
+    tags: ["Меню", "Бронь", "Параллакс"],
+    goal: "Кофейне нужен сайт, который передаёт атмосферу и превращает просмотр меню в визит.",
+    done: ["Первый экран с интерьером на весь экран и параллаксом", "Меню с фото, переключение категорий без перезагрузки", "Галерея атмосферы и форма брони с выбором даты, времени и числа гостей"],
+    tech: ["Нельзя выбрать прошедшую дату брони", "Фото подгружаются лениво и в нужном размере", "Шапка становится плотной при прокрутке"] },
+  { slug: "barbershop", title: "Барбершоп BLADE", niche: "Красота", cat: "services",
+    text: "Онлайн-запись в 3 шага: услуга, мастер, свободное время.",
+    tags: ["Онлайн-запись", "Слоты"],
+    goal: "Барбершопу нужно разгрузить администратора: клиенты должны записываться сами, в любое время.",
+    done: ["Запись в три шага с прогресс-баром и сводкой перед подтверждением", "Календарь на неделю, занятые и прошедшие слоты недоступны", "Галерея работ и карточки мастеров"],
+    tech: ["Сегодняшние слоты, которые уже прошли, блокируются по текущему времени", "Занятость слотов стабильна для каждого дня и не прыгает при переключении", "Чёрно-белые фото становятся цветными при наведении"] },
   { slug: "fitness", title: "Фитнес-клуб PULSE", niche: "Спорт", cat: "services",
-    text: "Расписание на неделю с записью на занятия и абонементы с переключением периода.", tags: ["Расписание", "Тарифы"] },
+    text: "Расписание на неделю с записью на занятия и абонементы с переключением периода.",
+    tags: ["Расписание", "Тарифы"],
+    goal: "Клубу нужно, чтобы клиенты сами записывались на групповые занятия и видели свободные места.",
+    done: ["Расписание на 7 дней с фильтром по типу тренировок", "Запись и отмена в один клик, счётчик свободных мест", "Направления с фото и тарифы с переключением «месяц / год»"],
+    tech: ["Расписание и заполненность генерируются из данных для каждого дня", "Пустой результат фильтра показывает подсказку, а не пустоту", "Живой счётчик «сейчас в клубе»"] },
   { slug: "autoservice", title: "Автосервис «МоторЛайн»", niche: "Авто", cat: "services",
-    text: "Калькулятор стоимости ремонта и отслеживание статуса машины по номеру заказа.", tags: ["Калькулятор", "Статус заказа"] },
+    text: "Калькулятор стоимости ремонта и отслеживание статуса машины по номеру заказа.",
+    tags: ["Калькулятор", "Статус заказа"],
+    goal: "Автосервису нужно вызвать доверие: честная цена до визита и прозрачный ремонт.",
+    done: ["Калькулятор: тип машины меняет коэффициент, итог и время работ считаются сразу", "Запись на ремонт прямо из калькулятора", "«Где моя машина?»: этапы ремонта по номеру заказа"],
+    tech: ["Итог плавно «набегает», но всегда приходит к точной сумме, даже в фоновой вкладке", "Номер заказа экранируется перед выводом на страницу", "Иконки нарисованы SVG, без шрифтов-иконок"] },
   { slug: "realty", title: "Агентство «Квадрат»", niche: "Недвижимость", cat: "shop",
-    text: "Каталог квартир с фильтрами и избранным, карточка объекта, ипотечный калькулятор.", tags: ["Каталог", "Ипотека", "Модалки"] },
+    text: "Каталог квартир с фильтрами и избранным, карточка объекта с галереей, ипотечный калькулятор.",
+    tags: ["Каталог", "Ипотека", "Галерея"],
+    goal: "Агентству нужен каталог, где клиент быстро сужает выбор и сразу понимает платёж по ипотеке.",
+    done: ["Фильтры по комнатам, цене, типу и району, избранное", "Карточка объекта с галереей и платежом по ипотеке", "Ипотечный калькулятор с программами и долей переплаты"],
+    tech: ["Аннуитетный платёж по формуле банка, переплата на круговой диаграмме", "Избранное сохраняется между визитами", "Карточки открываются и с клавиатуры, модалка закрывается по Esc"] },
   { slug: "saas", title: "Taskly", niche: "IT-стартап", cat: "startup",
-    text: "Лендинг SaaS-сервиса с интерактивной канбан-доской и расчётом тарифа по числу людей.", tags: ["Drag & Drop", "Тарифы"] },
-  { slug: "cafe-bot", title: "Бот для заказов", niche: "Telegram-бот", cat: "bots", bot: true,
-    text: "Бот кафе на aiogram 3: меню, корзина, заказы в SQLite, уведомления админу, рассылки.", tags: ["Python", "aiogram", "SQLite"] },
+    text: "Лендинг SaaS-сервиса с интерактивной канбан-доской и расчётом тарифа по числу людей.",
+    tags: ["Drag & Drop", "Тарифы"],
+    goal: "Стартапу нужно показать продукт в действии прямо на лендинге и довести до регистрации.",
+    done: ["Канбан-доска на первом экране: карточки перетаскиваются между колонками", "Тарифы с ползунком числа участников и скидкой за год", "Bento-сетка возможностей, отзывы и FAQ"],
+    tech: ["Перетаскивание работает и мышью (HTML5 DnD), и пальцем (свои touch-события)", "Конфетти при переносе задачи в «Готово»", "Карточки вставляются по позиции курсора, а не только в конец"] },
+  { slug: "cafe-bot", title: "Бот для заказов", niche: "Telegram-бот", cat: "tg", bot: true,
+    text: "Бот кафе на aiogram 3: меню, корзина, заказы в SQLite, уведомления админу, рассылки.",
+    tags: ["Python", "aiogram 3", "SQLite"],
+    goal: "Кафе нужно принимать заказы в Telegram и мгновенно передавать их на кухню.",
+    done: ["Меню и корзина на inline-кнопках", "Заказ сохраняется в базу и приходит администратору", "Кнопка «Готов» у админа уведомляет клиента", "Рассылка акций командой /broadcast"],
+    tech: ["aiogram 3, асинхронный polling", "Токен и ID админа в .env, в репозитории только пример", "Проверка кода в CI на каждый пуш"] },
 ];
-const cats = { all: "Все", food: "Общепит", services: "Услуги", shop: "Магазины", startup: "Стартапы", bots: "Боты" };
+const cats = { all: "Все", tg: "Telegram", services: "Услуги", shop: "Магазины", food: "Общепит", startup: "Стартапы" };
+const caseUrl = (p) => (p.bot ? "#bot" : `projects/${p.slug}/`);
+const codeUrl = (p) => `${CONFIG.repo}/tree/main/projects/${p.slug}`;
 
 $("filters").innerHTML = Object.entries(cats)
-  .map(([k, v], i) => `<button class="chip${i ? "" : " active"}" role="tab" aria-selected="${!i}" data-cat="${k}">${v}</button>`)
+  .map(([k, v], i) => `<button class="chip${i ? "" : " active"}" aria-pressed="${!i}" data-cat="${k}">${v}<span>${k === "all" ? projects.length : projects.filter((p) => p.cat === k).length}</span></button>`)
   .join("");
 
 function workCard(p) {
-  const href = p.bot ? "#bot" : `projects/${p.slug}/`;
   const preview = p.bot
     ? `<div class="work__bot"><div class="mini-msg">📋 Меню</div><div class="mini-msg mini-msg--me">☕ Капучино ×2</div><div class="mini-msg">🎉 Заказ №4821 принят!</div></div>`
-    : `<iframe data-src="projects/${p.slug}/" title="Превью: ${p.title}" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>`;
+    : `<img class="work__shot" src="assets/previews/${p.slug}.jpg" alt="" loading="lazy" decoding="async" data-slug="${p.slug}">`;
   return `
     <article class="work" data-cat="${p.cat}">
-      <a class="work__preview${p.bot ? " work__preview--bot" : ""}" href="${href}" aria-label="Открыть ${p.title}">
+      <button class="work__preview${p.bot ? " work__preview--bot" : ""}" data-case="${p.slug}" aria-label="Кейс: ${p.title}">
         ${preview}
-        <span class="work__open">${p.bot ? "Попробовать ↓" : "Открыть демо ↗"}</span>
-      </a>
+        ${p.isNew ? '<span class="work__new">Новое</span>' : ""}
+        <span class="work__open">Смотреть кейс</span>
+      </button>
       <div class="work__body">
         <span class="work__niche">${p.niche}</span>
         <h3>${p.title}</h3>
         <p>${p.text}</p>
         <ul class="tags">${p.tags.map((t) => `<li>${t}</li>`).join("")}</ul>
         <div class="work__links">
-          <a href="${href}">${p.bot ? "Демо в браузере" : "Смотреть сайт"}</a>
-          <a href="${CONFIG.repo}/tree/main/projects/${p.slug}" target="_blank" rel="noopener">Код →</a>
+          <button data-case="${p.slug}">Подробнее о кейсе</button>
+          <a href="${caseUrl(p)}"${p.bot ? "" : ' target="_blank" rel="noopener"'}>${p.bot ? "Демо ↓" : "Открыть ↗"}</a>
         </div>
       </div>
     </article>`;
 }
 $("worksGrid").innerHTML = projects.map(workCard).join("");
 
+// Если скриншота ещё нет, показываем живой сайт в уменьшенном iframe
+document.querySelectorAll(".work__shot").forEach((img) => {
+  img.addEventListener("error", () => {
+    const f = document.createElement("iframe");
+    f.src = `projects/${img.dataset.slug}/`;
+    f.title = "Превью";
+    f.tabIndex = -1;
+    f.setAttribute("aria-hidden", "true");
+    f.loading = "lazy";
+    img.replaceWith(f);
+    const fit = () => { f.style.transform = `scale(${f.parentElement.clientWidth / 1280})`; };
+    fit();
+    new ResizeObserver(fit).observe(f.parentElement);
+  }, { once: true });
+});
+
 $("filters").addEventListener("click", (e) => {
   const b = e.target.closest(".chip");
   if (!b) return;
   document.querySelectorAll(".chip").forEach((c) => {
     c.classList.toggle("active", c === b);
-    c.setAttribute("aria-selected", c === b);
+    c.setAttribute("aria-pressed", c === b);
   });
   document.querySelectorAll(".work").forEach((w) => {
     w.hidden = b.dataset.cat !== "all" && w.dataset.cat !== b.dataset.cat;
   });
 });
 
-// Живые превью: сайт рендерится в iframe шириной 1280px и масштабируется под карточку
-const fitFrame = (frame) => { frame.style.transform = `scale(${frame.parentElement.clientWidth / 1280})`; };
-const ro = new ResizeObserver((entries) => entries.forEach((e) => {
-  const f = e.target.querySelector("iframe");
-  if (f) fitFrame(f);
-}));
-const frameIO = new IntersectionObserver((entries) => entries.forEach((e) => {
-  if (!e.isIntersecting) return;
-  const f = e.target;
-  f.src = f.dataset.src;
-  fitFrame(f);
-  ro.observe(f.parentElement);
-  frameIO.unobserve(f);
-}), { rootMargin: "300px" });
-document.querySelectorAll(".work iframe").forEach((f) => frameIO.observe(f));
+// ---------- Модалка кейса ----------
+const caseEl = $("case");
+let caseIdx = -1;
+let lastFocus = null;
+
+function openCase(slug, push = true) {
+  const i = projects.findIndex((p) => p.slug === slug);
+  if (i < 0) return;
+  const p = projects[i];
+  caseIdx = i;
+  if (!caseEl.open) {
+    lastFocus = document.activeElement;
+    caseEl.showModal();
+    document.body.classList.add("lock");
+  }
+  const device = p.phone || p.bot ? "phone" : "desktop";
+  caseEl.querySelector(".case__inner").innerHTML = `
+    <div class="case__stage">
+      <div class="case__devices" role="group" aria-label="Устройство">
+        <button data-device="desktop" aria-pressed="${device === "desktop"}" ${p.bot ? "disabled" : ""}>Компьютер</button>
+        <button data-device="phone" aria-pressed="${device === "phone"}">Телефон</button>
+      </div>
+      <div class="frame frame--${device}" id="caseFrame">
+        ${p.bot
+          ? `<div class="case__bot"><div class="mini-msg">Привет! 👋 Я бот кофейни «Зерно»</div><div class="mini-msg mini-msg--me">📋 Меню</div><div class="mini-msg">☕ Кофе\n• Капучино — 220 ₽\n• Латте — 240 ₽</div><div class="mini-msg mini-msg--me">✅ Оформить</div><div class="mini-msg">🎉 Заказ №4821 принят!</div><a class="btn btn--small" href="#bot" data-close>Попробовать симуляцию ↓</a></div>`
+          : `<iframe src="projects/${p.slug}/${p.phone ? "?embed" : ""}" title="Демо: ${p.title}" loading="lazy"></iframe>`}
+      </div>
+      <p class="case__hint">${p.bot ? "Живая симуляция бота ниже на странице" : "Сайт живой: можно кликать прямо здесь"}</p>
+    </div>
+    <article class="case__text">
+      <span class="work__niche">${p.niche}</span>
+      <h2 id="caseTitle">${p.title}</h2>
+      <p class="case__lead">${p.text}</p>
+      <h3>Задача</h3><p>${p.goal}</p>
+      <h3>Что сделано</h3><ul class="checks">${p.done.map((d) => `<li>${d}</li>`).join("")}</ul>
+      <h3>Под капотом</h3><ul class="case__tech">${p.tech.map((d) => `<li>${d}</li>`).join("")}</ul>
+      <ul class="tags">${p.tags.map((t) => `<li>${t}</li>`).join("")}</ul>
+      <div class="case__actions">
+        ${p.bot ? "" : `<a class="btn" href="${caseUrl(p)}" target="_blank" rel="noopener">Открыть сайт ↗</a>`}
+        <a class="btn btn--ghost" href="${codeUrl(p)}" target="_blank" rel="noopener">Код на GitHub</a>
+      </div>
+      <div class="case__nav">
+        <button data-step="-1">← ${projects[(i - 1 + projects.length) % projects.length].title}</button>
+        <button data-step="1">${projects[(i + 1) % projects.length].title} →</button>
+      </div>
+    </article>`;
+  caseEl.setAttribute("aria-labelledby", "caseTitle");
+  fitCaseFrame();
+  caseEl.querySelector(".case__scroll").scrollTop = 0;
+  if (push) history.replaceState(null, "", `#case-${slug}`);
+}
+
+// В режиме «Компьютер» сайт рендерится на ширине 1280px и уменьшается под рамку, как настоящий монитор
+function fitCaseFrame() {
+  const frame = $("caseFrame");
+  const f = frame && frame.querySelector("iframe");
+  if (!f) return;
+  if (frame.classList.contains("frame--desktop")) {
+    const k = frame.clientWidth / 1280;
+    Object.assign(f.style, { width: "1280px", height: `${frame.clientHeight / k}px`, transform: `scale(${k})`, transformOrigin: "0 0" });
+  } else {
+    Object.assign(f.style, { width: "", height: "", transform: "" });
+  }
+}
+addEventListener("resize", () => caseEl.open && fitCaseFrame());
+
+function closeCase() {
+  if (!caseEl.open) return;
+  caseEl.close();
+}
+caseEl.addEventListener("close", () => {
+  document.body.classList.remove("lock");
+  caseEl.querySelector(".case__inner").innerHTML = "";
+  if (location.hash.startsWith("#case-")) history.replaceState(null, "", "#works");
+  if (lastFocus) lastFocus.focus();
+});
+caseEl.addEventListener("click", (e) => {
+  if (e.target === caseEl) return closeCase();
+  const t = e.target.closest("button, a");
+  if (!t) return;
+  if (t.matches("[data-close]")) {
+    closeCase();
+    if (t.getAttribute("href") === "#bot") $("bot").scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  if (t.dataset.step) openCase(projects[(caseIdx + +t.dataset.step + projects.length) % projects.length].slug);
+  if (t.dataset.device && !t.disabled) {
+    $("caseFrame").className = `frame frame--${t.dataset.device}`;
+    caseEl.querySelectorAll("[data-device]").forEach((b) => b.setAttribute("aria-pressed", b === t));
+    // ждём, пока рамка поменяет размер
+    setTimeout(fitCaseFrame, 460);
+    fitCaseFrame();
+  }
+});
+caseEl.addEventListener("keydown", (e) => {
+  if (e.target.closest("input, textarea")) return;
+  if (e.key === "ArrowRight") openCase(projects[(caseIdx + 1) % projects.length].slug);
+  if (e.key === "ArrowLeft") openCase(projects[(caseIdx - 1 + projects.length) % projects.length].slug);
+});
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-case]");
+  if (t && !caseEl.contains(t)) openCase(t.dataset.case);
+});
+// Прямые ссылки вида #case-florist
+const fromHash = () => {
+  const m = location.hash.match(/^#case-([\w-]+)$/);
+  if (m) openCase(m[1], false);
+};
+addEventListener("hashchange", fromHash);
+fromHash();
 
 // ---------- Услуги ----------
 const icon = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;

@@ -10,7 +10,36 @@
   <meta property="og:title" content="Сайты и Telegram-боты, которые приводят клиентов">
   <meta property="og:description" content="Сайты для кафе, салонов, клиник и магазинов. Telegram-боты для заказов и записи. Под ключ, от 5 дней.">
   <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "feyegetsu.dev",
+    "description": "Разработка сайтов, Telegram-ботов и Telegram Mini App для малого бизнеса.",
+    "url": "https://feyegetsu.github.io/portfolio/",
+    "image": "https://feyegetsu.github.io/portfolio/assets/og-image.jpg",
+    "areaServed": "RU",
+    "knowsLanguage": "ru",
+    "sameAs": ["https://github.com/feyegetsu"],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Услуги",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Лендинг" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 15000, "priceCurrency": "RUB" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Сайт заведения" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 30000, "priceCurrency": "RUB" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Telegram-бот" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 10000, "priceCurrency": "RUB" } }
+      ]
+    }
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -49,8 +78,7 @@
             <a href="#calc" class="btn btn--ghost">Рассчитать стоимость</a>
           </div>
           <ul class="hero__facts">
-            <li><b data-count="9">9</b><span>демо-проектов</span></li>
-
+            <li><b data-count="10">10</b><span>живых проектов</span></li>
             <li><b>от 5 дней</b><span>срок запуска</span></li>
             <li><b>30 дней</b><span>поддержки бесплатно</span></li>
           </ul>
@@ -82,9 +110,9 @@
           <div>
             <p class="eyebrow">Портфолио</p>
             <h2>Работы</h2>
-            <p class="section__lead">Демо-проекты для разных ниш. Всё живое: открывайте, кликайте, оформляйте заказы.</p>
+            <p class="section__lead">Демо-проекты для разных ниш. Каждый можно потрогать: открывайте кейс, кликайте, оформляйте заказы.</p>
           </div>
-          <div class="filters" id="filters" role="tablist" aria-label="Фильтр работ"></div>
+          <div class="filters" id="filters" role="group" aria-label="Фильтр работ"></div>
         </div>
         <div class="works" id="worksGrid"></div>
       </div>
@@ -135,6 +163,23 @@
           <div class="why__item"><b>📱 100%</b><h3>Адаптив</h3><p>Идеально выглядит на телефонах, а с них приходит 70–80% клиентов.</p></div>
           <div class="why__item"><b>🔍 SEO</b><h3>Видно в поиске</h3><p>Мета-теги, разметка, карта сайта. Регистрация в Яндекс.Картах и 2ГИС.</p></div>
           <div class="why__item"><b>📊 Метрика</b><h3>Аналитика</h3><p>Видно, сколько людей пришло, откуда и сколько оставили заявку.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VS BUILDERS -->
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Честное сравнение</p>
+        <h2>Почему не конструктор</h2>
+        <p class="section__lead">Tilda и Wix хороши для старта. Но у бизнеса, который растёт, быстро упирается в их потолок.</p>
+        <div class="vs">
+          <div class="vs__row vs__head"><span></span><span>Конструктор</span><span>Код под ключ</span></div>
+          <div class="vs__row"><span>Ежемесячная плата</span><span>подписка каждый месяц, пока сайт работает</span><span><b>0 ₽</b>, только хостинг и домен</span></div>
+          <div class="vs__row"><span>Скорость загрузки</span><span>грузит лишние скрипты платформы</span><span><b>только нужный код</b></span></div>
+          <div class="vs__row"><span>Уникальные функции</span><span>то, что есть в блоках</span><span><b>калькуляторы, запись, Mini App</b></span></div>
+          <div class="vs__row"><span>Если захотите уйти</span><span>сайт остаётся на платформе</span><span><b>код ваш</b>, переносится куда угодно</span></div>
+          <div class="vs__row"><span>Связка с Telegram</span><span>через сторонние сервисы</span><span><b>напрямую</b>, бот и заявки в одном месте</span></div>
         </div>
       </div>
     </section>
@@ -255,7 +300,14 @@
     </div>
   </footer>
 
+  <dialog class="case" id="case">
+    <div class="case__scroll">
+      <button class="case__close" data-close aria-label="Закрыть">✕</button>
+      <div class="case__inner"></div>
+    </div>
+  </dialog>
+
   <div class="toast" id="toast" role="status"></div>
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>

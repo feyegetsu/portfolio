@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  bot:
+    name: Telegram-бот (Python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/cafe-bot
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -r requirements.txt ruff==0.6.9
+      - name: Lint
+        run: ruff check --select E,F,W,B,UP --ignore E501 .
+      - name: Import check
+        # Импортируем модуль без запуска polling: проверяем, что зависимости и хендлеры собираются
+        run: BOT_TOKEN=123:test ADMIN_ID=1 python -c "import bot; print('handlers:', len(bot.dp.message.handlers) + len(bot.dp.callback_query.handlers))"
+
+  links:
+    name: Битые ссылки
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages
+          args: --offline --no-progress --exclude-path 404.html --exclude '^data:' './**/*.html'
+          fail: true
+
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

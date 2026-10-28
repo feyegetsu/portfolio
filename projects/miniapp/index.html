@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Сытый Лис — Telegram Mini App доставки еды</title>
+  <meta name="description" content="Демо Telegram Mini App: меню, корзина, промокод, оформление и отслеживание заказа прямо в Telegram.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦊</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    /* Цвета берутся из темы Telegram (переменные --tg-theme-* выставляет SDK), в браузере работают запасные значения */
+    :root {
+      --bg: var(--tg-theme-bg-color, #ffffff);
+      --bg2: var(--tg-theme-secondary-bg-color, #f1f2f6);
+      --text: var(--tg-theme-text-color, #111318);
+      --hint: var(--tg-theme-hint-color, #8a8f9c);
+      --link: var(--tg-theme-link-color, #2481cc);
+      --btn: var(--tg-theme-button-color, #ff7a1a);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --sep: color-mix(in srgb, var(--hint) 22%, transparent);
+      --r: 18px;
+    }
+    :root.dark {
+      --bg: #17212b; --bg2: #0e1621; --text: #f5f5f5; --hint: #708499; --link: #6ab3f3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Inter, sans-serif; color: var(--text); background: var(--bg2); }
+    button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+    img { display: block; max-width: 100%; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Обёртка: в браузере показываем «телефон», в Telegram — на весь экран ---------- */
+    .stage { min-height: 100vh; display: grid; grid-template-columns: 1fr 400px; gap: 60px; align-items: center; max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+    .intro h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -.02em; margin: 16px 0; }
+    .intro p { color: var(--hint); font-size: 1.05rem; line-height: 1.6; max-width: 480px; }
+    .intro ul { list-style: none; margin: 26px 0; display: grid; gap: 12px; }
+    .intro li { display: flex; gap: 12px; align-items: flex-start; line-height: 1.5; }
+    .intro li b { width: 28px; height: 28px; flex-shrink: 0; border-radius: 9px; background: color-mix(in srgb, var(--btn) 15%, transparent); color: var(--btn); display: grid; place-items: center; font-size: 14px; }
+    .back-link { display: inline-flex; gap: 8px; align-items: center; color: var(--link); text-decoration: none; font-size: 14px; }
+    .pill { display: inline-block; background: #229ed9; color: #fff; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 99px; }
+    .theme-switch { display: inline-flex; gap: 8px; align-items: center; padding: 10px 16px; border-radius: 12px; background: var(--bg); font-size: 14px; margin-top: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+
+    .phone { width: 400px; height: 820px; max-height: calc(100vh - 40px); border-radius: 52px; padding: 12px; background: #0b0b0d; box-shadow: 0 50px 100px -40px rgba(0,0,0,.6), inset 0 0 0 2px #2b2b30; position: relative; }
+    .screen { width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: var(--bg2); display: flex; flex-direction: column; position: relative; isolation: isolate; }
+    .tg-head { flex-shrink: 0; height: 92px; padding: 44px 16px 0; background: var(--bg); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--sep); }
+    .tg-head .close { color: var(--link); font-size: 15px; }
+    .tg-head .title { flex: 1; text-align: center; font-weight: 600; font-size: 16px; }
+    .tg-head .title small { display: block; font-weight: 400; color: var(--hint); font-size: 12px; }
+    .tg-head .dots { color: var(--link); font-size: 22px; line-height: 1; }
+    .notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 32px; background: #0b0b0d; border-radius: 20px; z-index: 5; }
+
+    /* В Telegram рамка не нужна */
+    body.in-tg { background: var(--bg2); }
+    body.in-tg .stage { display: block; padding: 0; max-width: none; min-height: 0; }
+    body.in-tg .intro, body.in-tg .tg-head, body.in-tg .notch, body.in-tg .main-btn { display: none; }
+    body.in-tg .phone { width: auto; height: auto; max-height: none; padding: 0; border-radius: 0; box-shadow: none; background: none; }
+    body.in-tg .screen { border-radius: 0; min-height: 100vh; height: auto; overflow: visible; }
+    body.in-tg .view { overflow: visible; }
+
+    /* ---------- Приложение ---------- */
+    .view { flex: 1; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; padding-bottom: 90px; }
+    .view::-webkit-scrollbar { display: none; }
+    .hero { margin: 12px; border-radius: var(--r); padding: 18px; color: #fff; position: relative; overflow: hidden; min-height: 130px; display: flex; flex-direction: column; justify-content: flex-end;
+      background: linear-gradient(90deg, rgba(20,10,0,.75), rgba(20,10,0,.1)), url("https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=70") center / cover; }
+    .hero b { font-size: 20px; line-height: 1.2; }
+    .hero span { font-size: 13px; opacity: .85; margin-top: 4px; }
+    .hero code { background: rgba(255,255,255,.2); padding: 1px 6px; border-radius: 6px; font-family: inherit; font-weight: 700; }
+    .search { margin: 0 12px 4px; position: relative; }
+    .search input { width: 100%; padding: 11px 14px 11px 38px; border-radius: 12px; border: 0; background: var(--bg); color: var(--text); font: inherit; font-size: 15px; outline: none; }
+    .search::before { content: "⌕"; position: absolute; left: 13px; top: 50%; transform: translateY(-52%); color: var(--hint); font-size: 18px; }
+    .cats { position: sticky; top: 0; z-index: 3; display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px; background: var(--bg2); scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .cat { flex-shrink: 0; padding: 8px 14px; border-radius: 99px; background: var(--bg); font-size: 14px; font-weight: 500; transition: background .2s, color .2s; }
+    .cat.on { background: var(--btn); color: var(--btn-text); }
+    .section-title { font-size: 20px; font-weight: 700; margin: 14px 14px 10px; scroll-margin-top: 56px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px; }
+    .card { background: var(--bg); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; animation: up .35s both; }
+    @keyframes up { from { opacity: 0; transform: translateY(10px); } }
+    .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; }
+    .card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .card:active .card__img img { transform: scale(.97); }
+    .badge { position: absolute; left: 8px; top: 8px; background: #ff3b30; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
+    .card__b { padding: 10px 10px 12px; display: flex; flex-direction: column; flex: 1; }
+    .card__b b { font-size: 15px; line-height: 1.25; }
+    .card__b small { color: var(--hint); font-size: 12px; margin: 2px 0 10px; }
+    .add { margin-top: auto; width: 100%; padding: 9px; border-radius: 12px; background: var(--bg2); font-weight: 600; font-size: 14px; transition: transform .1s; }
+    .add:active { transform: scale(.96); }
+    .counter { margin-top: auto; display: flex; align-items: center; justify-content: space-between; background: var(--btn); color: var(--btn-text); border-radius: 12px; font-weight: 700; overflow: hidden; }
+    .counter button { width: 40px; height: 36px; font-size: 20px; color: var(--btn-text); }
+    .empty { text-align: center; color: var(--hint); padding: 40px 20px; }
+
+    /* Нижняя кнопка (имитация MainButton вне Telegram) */
+    .main-btn { position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 6; padding: 15px; border-radius: 14px; background: var(--btn); color: var(--btn-text); font-weight: 600; font-size: 16px; display: flex; justify-content: center; gap: 8px; transition: transform .25s cubic-bezier(.2,.8,.2,1), opacity .25s; box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--btn) 80%, transparent); }
+    .main-btn.off { transform: translateY(140%); opacity: 0; pointer-events: none; }
+    .main-btn:active { filter: brightness(.95); }
+
+    /* Шторка товара */
+    .sheet-bg { position: absolute; inset: 0; background: rgba(0,0,0,.45); z-index: 7; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .sheet-bg.on { opacity: 1; pointer-events: auto; }
+    .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; background: var(--bg); border-radius: 22px 22px 0 0; transform: translateY(105%); transition: transform .35s cubic-bezier(.2,.8,.2,1); max-height: 88%; overflow-y: auto; padding-bottom: 90px; }
+    .sheet.on { transform: none; }
+    body.in-tg .sheet, body.in-tg .sheet-bg { position: fixed; }
+    .sheet__img { aspect-ratio: 4 / 3; position: relative; }
+    .sheet__img img { width: 100%; height: 100%; object-fit: cover; }
+    .sheet__x { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; font-size: 16px; }
+    .sheet__grab { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 40px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.7); }
+    .sheet__b { padding: 18px; }
+    .sheet__b h2 { font-size: 22px; }
+    .sheet__b p { color: var(--hint); font-size: 14px; line-height: 1.5; margin: 6px 0 16px; }
+    .seg { display: flex; background: var(--bg2); border-radius: 12px; padding: 3px; margin-bottom: 14px; }
+    .seg button { flex: 1; padding: 9px 4px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--hint); }
+    .seg button.on { background: var(--bg); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+    .label { font-size: 13px; color: var(--hint); margin: 4px 0 8px; }
+    .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt { padding: 8px 12px; border-radius: 12px; background: var(--bg2); font-size: 13px; border: 1.5px solid transparent; }
+    .opt.on { border-color: var(--btn); color: var(--btn); }
+
+    /* Корзина и оформление */
+    .page-title { font-size: 26px; font-weight: 800; margin: 18px 16px 12px; letter-spacing: -.02em; }
+    .group { background: var(--bg); border-radius: var(--r); margin: 0 12px 12px; overflow: hidden; }
+    .group__title { font-size: 13px; color: var(--hint); text-transform: uppercase; letter-spacing: .04em; margin: 16px 28px 6px; }
+    .line { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--sep); }
+    .line:last-child { border-bottom: 0; }
+    .line img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
+    .line__info { flex: 1; min-width: 0; }
+    .line__info b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .line__info small { color: var(--hint); font-size: 13px; }
+    .mini-counter { display: flex; align-items: center; gap: 4px; background: var(--bg2); border-radius: 10px; }
+    .mini-counter button { width: 30px; height: 30px; font-size: 18px; color: var(--btn); }
+    .mini-counter span { min-width: 16px; text-align: center; font-weight: 600; font-size: 14px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--sep); font-size: 15px; }
+    .row:last-child { border-bottom: 0; }
+    .row span { color: var(--hint); }
+    .row.total { font-weight: 800; font-size: 18px; }
+    .row.total span { color: var(--text); }
+    .row.discount b { color: #34c759; }
+    .promo { display: flex; gap: 8px; padding: 10px; }
+    .field { width: 100%; padding: 12px 14px; border-radius: 12px; border: 0; background: var(--bg2); color: var(--text); font: inherit; font-size: 15px; outline: none; }
+    .field:focus { box-shadow: 0 0 0 2px var(--btn); }
+    .promo button { padding: 0 16px; border-radius: 12px; background: var(--bg2); color: var(--link); font-weight: 600; font-size: 14px; white-space: nowrap; }
+    .promo-msg { font-size: 13px; padding: 0 14px 12px; }
+    .ok { color: #34c759; } .err { color: #ff3b30; }
+    .stack { display: grid; gap: 8px; padding: 12px; }
+    .radio { display: flex; gap: 12px; align-items: center; padding: 13px 14px; border-bottom: 1px solid var(--sep); font-size: 15px; cursor: pointer; }
+    .radio:last-child { border-bottom: 0; }
+    .radio input { accent-color: var(--btn); width: 18px; height: 18px; }
+    .radio small { display: block; color: var(--hint); font-size: 12px; }
+    .hint-text { font-size: 13px; color: var(--hint); padding: 0 28px; line-height: 1.45; }
+
+    /* Статус заказа */
+    .status { text-align: center; padding: 26px 18px 10px; }
+    .status__icon { width: 96px; height: 96px; margin: 0 auto 14px; border-radius: 50%; background: color-mix(in srgb, var(--btn) 15%, transparent); display: grid; place-items: center; font-size: 44px; animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
+    @keyframes pop { from { transform: scale(.4); opacity: 0; } }
+    .status h2 { font-size: 24px; }
+    .status p { color: var(--hint); margin-top: 6px; font-size: 15px; }
+    .eta { font-size: 40px; font-weight: 800; letter-spacing: -.02em; margin: 14px 0 2px; }
+    .track { padding: 6px 16px; }
+    .tstep { display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; position: relative; font-size: 15px; }
+    .tstep::before { content: ""; position: absolute; left: 14px; top: 38px; bottom: -12px; width: 2px; background: var(--sep); }
+    .tstep:last-child::before { display: none; }
+    .tdot { width: 30px; height: 30px; border-radius: 50%; background: var(--bg2); display: grid; place-items: center; font-size: 14px; z-index: 1; transition: background .4s; }
+    .tstep.done .tdot { background: var(--btn); color: var(--btn-text); }
+    .tstep.now .tdot { background: var(--bg); box-shadow: 0 0 0 2px var(--btn); animation: ring 1.4s infinite; }
+    @keyframes ring { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--btn) 25%, transparent); } }
+    .tstep small { color: var(--hint); font-size: 13px; }
+    .tstep:not(.done):not(.now) { color: var(--hint); }
+
+    .toast { position: absolute; left: 50%; top: 104px; transform: translate(-50%, -20px); background: rgba(0,0,0,.82); color: #fff; padding: 9px 16px; border-radius: 12px; font-size: 14px; z-index: 9; opacity: 0; transition: .3s; pointer-events: none; white-space: nowrap; }
+    .toast.on { opacity: 1; transform: translate(-50%, 0); }
+    body.in-tg .toast { position: fixed; top: 12px; }
+
+    @media (max-width: 900px) {
+      .stage { grid-template-columns: 1fr; gap: 30px; justify-items: center; padding: 24px 16px; }
+      .intro { text-align: center; }
+      .intro ul { text-align: left; max-width: 420px; margin-inline: auto; }
+      .intro p { margin-inline: auto; }
+    }
+    @media (max-width: 460px) {
+      .stage { padding: 0; gap: 0; }
+      .intro { padding: 20px 16px 24px; }
+      .phone { width: 100%; height: 100svh; max-height: none; border-radius: 0; padding: 0; box-shadow: none; background: none; }
+      .screen { border-radius: 0; }
+      .notch { display: none; }
+      .tg-head { height: 56px; padding-top: 0; }
+    }
+    /* ?embed — только приложение, без описания (для превью в портфолио) */
+    body.embed .stage { display: block; padding: 0; max-width: none; min-height: 0; }
+    body.embed .intro, body.embed .notch { display: none; }
+    body.embed .phone { width: 100%; height: 100vh; max-height: none; border-radius: 0; padding: 0; box-shadow: none; background: none; }
+    body.embed .screen { border-radius: 0; }
+    body.embed .tg-head { height: 56px; padding-top: 0; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="intro">
+      <a class="back-link" href="../../">← Вернуться в портфолио</a>
+      <div style="margin-top:22px"><span class="pill">Telegram Mini App · демо</span></div>
+      <h1>Доставка еды прямо внутри Telegram</h1>
+      <p>Клиенту не нужно скачивать приложение или искать сайт: он открывает бота и заказывает в пару касаний. Справа живое демо, попробуйте оформить заказ.</p>
+      <ul>
+        <li><b>1</b><span>Подстраивается под тему Telegram: светлую, тёмную или свою.</span></li>
+        <li><b>2</b><span>Нативная кнопка Telegram внизу, кнопка «Назад» и вибрация при нажатиях.</span></li>
+        <li><b>3</b><span>Корзина, размеры пиццы, промокод <b style="display:inline;background:none;width:auto;height:auto;color:inherit">FOX10</b>, доставка или самовывоз.</span></li>
+        <li><b>4</b><span>Заказ уходит в бота, клиент видит статус в реальном времени.</span></li>
+      </ul>
+      <label class="theme-switch"><input type="checkbox" id="themeToggle"> Тёмная тема Telegram</label>
+    </div>
+
+    <div class="phone">
+      <div class="screen" id="screen">
+        <div class="notch" aria-hidden="true"></div>
+        <div class="tg-head">
+          <button class="close" id="headBack">Закрыть</button>
+          <div class="title">Сытый Лис<small>мини-приложение</small></div>
+          <span class="dots" aria-hidden="true">⋯</span>
+        </div>
+
+        <main class="view" id="view"></main>
+
+        <button class="main-btn off" id="mainBtn"></button>
+        <div class="sheet-bg" id="sheetBg"></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp;
+    const inTG = !!(tg && tg.initData);
+    if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");
+    if (inTG) {
+      document.body.classList.add("in-tg");
+      tg.ready();
+      tg.expand();
+    }
+
+    const $ = (id) => document.getElementById(id);
+    const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
+    const rub = (n) => n.toLocaleString("ru-RU") + " ₽";
+    const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const haptic = (type = "light") => { if (inTG && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(type); };
+
+    // ---------- Данные ----------
+    const CATS = [["pizza", "🍕 Пицца"], ["burgers", "🍔 Бургеры"], ["rolls", "🍣 Роллы"], ["bowls", "🥗 Боулы"], ["pasta", "🍝 Горячее"], ["drinks", "🥤 Напитки"]];
+    const MENU = [
+      { id: 1, cat: "pizza", name: "Маргарита", desc: "Томатный соус, моцарелла, базилик, оливковое масло.", w: "30 см · 520 г", price: 549, photo: "1574071318508-1cdbab80d002", sizes: true, hit: true },
+      { id: 2, cat: "pizza", name: "Пепперони", desc: "Пикантная пепперони, моцарелла, фирменный томатный соус.", w: "30 см · 560 г", price: 649, photo: "1628840042765-356cda07504e", sizes: true },
+      { id: 3, cat: "pizza", name: "Овощная", desc: "Перец, томаты черри, шампиньоны, руккола, моцарелла.", w: "30 см · 590 г", price: 599, photo: "1565299624946-b28f40a0ae38", sizes: true },
+      { id: 4, cat: "pizza", name: "Четыре сезона", desc: "Ветчина, грибы, артишоки, оливки. Каждая четверть со своим вкусом.", w: "30 см · 610 г", price: 699, photo: "1590947132387-155cc02f3212", sizes: true },
+      { id: 5, cat: "burgers", name: "Классик", desc: "Говяжья котлета 150 г, чеддер, томат, маринованный огурец, соус.", w: "320 г", price: 429, photo: "1568901346375-23c9450c58cd", hit: true },
+      { id: 6, cat: "burgers", name: "Пулд-порк", desc: "Томлёная свинина в соусе BBQ, капустный салат, бриошь.", w: "350 г", price: 469, photo: "1606755962773-d324e0a13086" },
+      { id: 7, cat: "burgers", name: "Бургер + фри", desc: "Классический бургер и картофель фри с соусом на выбор.", w: "480 г", price: 549, photo: "1561758033-d89a9ad46330" },
+      { id: 8, cat: "rolls", name: "Филадельфия", desc: "Лосось, сливочный сыр, огурец. 8 штук.", w: "250 г", price: 589, photo: "1579871494447-9811cf80d66c", hit: true },
+      { id: 9, cat: "rolls", name: "Сет «Лис»", desc: "Филадельфия, калифорния, запечённый ролл с угрём. 24 штуки.", w: "780 г", price: 1590, photo: "1553621042-f6e147245754" },
+      { id: 10, cat: "rolls", name: "Нигири микс", desc: "Лосось, тунец, угорь, креветка. 8 штук.", w: "240 г", price: 690, photo: "1617196034796-73dfa7b1fd56" },
+      { id: 11, cat: "bowls", name: "Боул с курицей", desc: "Киноа, курица терияки, авокадо, эдамаме, кунжутный соус.", w: "380 г", price: 459, photo: "1546069901-ba9599a7e63c" },
+      { id: 12, cat: "bowls", name: "Поке с лососем", desc: "Рис, лосось, манго, огурец, водоросли чука.", w: "360 г", price: 549, photo: "1512621776951-a57141f2eefd" },
+      { id: 13, cat: "pasta", name: "Паста с морепродуктами", desc: "Лингвини, креветки, мидии, томатный соус, чеснок.", w: "340 г", price: 589, photo: "1563379926898-05f4575a45d8" },
+      { id: 14, cat: "pasta", name: "Пенне арабьята", desc: "Острый томатный соус, пармезан, петрушка.", w: "320 г", price: 399, photo: "1621996346565-e3dbc646d9a9" },
+      { id: 15, cat: "pasta", name: "Стейк с фри", desc: "Мачете из говядины, картофель фри, соус демиглас.", w: "390 г", price: 890, photo: "1600891964092-4316c288032e" },
+      { id: 16, cat: "drinks", name: "Лимонады", desc: "Маракуйя, клубника-базилик или классический. 0,4 л.", w: "400 мл", price: 219, photo: "1544145945-f90425340c7e" },
+    ];
+    const SIZES = [["25 см", -120], ["30 см", 0], ["35 см", 170]];
+    const EXTRAS = [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]];
+    const PROMOS = { FOX10: 0.1, LIS: 0.15 };
+    const FREE_FROM = 1500, DELIVERY = 199;
+
+    // Корзина: ключ строки = товар + размер + добавки
+    const state = { screen: "menu", cart: [], promo: null, mode: "delivery", query: "" };
+    let history = [];
+
+    const findItem = (id) => MENU.find((m) => m.id === id);
+    const lineKey = (id, size, extras) => `${id}|${size}|${extras.slice().sort().join(",")}`;
+    const linePrice = (l) => {
+      const it = findItem(l.id);
+      return it.price + (l.size != null ? SIZES[l.size][1] : 0) + l.extras.reduce((s, e) => s + EXTRAS[e][1], 0);
+    };
+    const qtyOf = (id) => state.cart.filter((l) => l.id === id).reduce((s, l) => s + l.qty, 0);
+    const totals = () => {
+      const sum = state.cart.reduce((s, l) => s + linePrice(l) * l.qty, 0);
+      const discount = state.promo ? Math.round(sum * PROMOS[state.promo]) : 0;
+      const delivery = state.mode === "pickup" || sum - discount >= FREE_FROM || !sum ? 0 : DELIVERY;
+      return { sum, discount, delivery, total: sum - discount + delivery, count: state.cart.reduce((s, l) => s + l.qty, 0) };
+    };
+
+    function addToCart(id, size = null, extras = []) {
+      const it = findItem(id);
+      if (it.sizes && size == null) size = 1;
+      const key = lineKey(id, size, extras);
+      const line = state.cart.find((l) => l.key === key);
+      line ? line.qty++ : state.cart.push({ key, id, size, extras, qty: 1 });
+      haptic("light");
+    }
+    function changeQty(key, d) {
+      const line = state.cart.find((l) => l.key === key);
+      if (!line) return;
+      line.qty += d;
+      if (line.qty <= 0) state.cart = state.cart.filter((l) => l !== line);
+      haptic("soft");
+    }
+
+    // ---------- Навигация ----------
+    function go(screen, push = true) {
+      if (push && state.screen !== screen) history.push(state.screen);
+      state.screen = screen;
+      render();
+      $("view").scrollTop = 0;
+      if (inTG) window.scrollTo(0, 0);
+    }
+    function back() {
+      if ($("sheet").classList.contains("on")) return closeSheet();
+      if (state.screen === "status") { history = []; return go("menu", false); }
+      const prev = history.pop();
+      if (prev) go(prev, false);
+    }
+
+    // ---------- Главная кнопка: в Telegram нативная, в браузере своя ----------
+    let mainAction = null;
+    function setMain(text, action) {
+      mainAction = action;
+      if (inTG) {
+        if (text) { tg.MainButton.setText(text); tg.MainButton.show(); } else tg.MainButton.hide();
+        state.screen === "menu" && !$("sheet").classList.contains("on") ? tg.BackButton.hide() : tg.BackButton.show();
+      } else {
+        $("mainBtn").textContent = text || "";
+        $("mainBtn").classList.toggle("off", !text);
+        $("headBack").textContent = state.screen === "menu" && !$("sheet").classList.contains("on") ? "Закрыть" : "‹ Назад";
+      }
+    }
+    $("mainBtn").addEventListener("click", () => mainAction && mainAction());
+    $("headBack").addEventListener("click", () => {
+      if (state.screen === "menu" && !$("sheet").classList.contains("on")) toast("В Telegram здесь закроется приложение");
+      else back();
+    });
+    if (inTG) {
+      tg.MainButton.onClick(() => mainAction && mainAction());
+      tg.BackButton.onClick(back);
+    }
+
+    // ---------- Экраны ----------
+    function cardHTML(it) {
+      const q = qtyOf(it.id);
+      const control = q
+        ? (it.sizes
+          ? `<button class="add" data-open="${it.id}" style="background:var(--btn);color:var(--btn-text)">В корзине: ${q}</button>`
+          : `<div class="counter"><button data-minus="${it.id}" aria-label="Убрать">−</button>${q}<button data-plus="${it.id}" aria-label="Добавить">+</button></div>`)
+        : `<button class="add" data-${it.sizes ? "open" : "plus"}="${it.id}">${it.sizes ? "от " : ""}${rub(it.price + (it.sizes ? SIZES[0][1] : 0))}</button>`;
+      return `<article class="card">
+        <div class="card__img" data-open="${it.id}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+        <div class="card__b"><b>${it.name}</b><small>${it.w}</small>${control}</div>
+      </article>`;
+    }
+
+    function renderMenu() {
+      const q = state.query.trim().toLowerCase();
+      const list = q ? MENU.filter((m) => (m.name + m.desc).toLowerCase().includes(q)) : MENU;
+      const sections = q
+        ? (list.length ? `<div class="grid" style="margin-top:8px">${list.map(cardHTML).join("")}</div>` : `<div class="empty">Ничего не нашли 🦊<br>Попробуйте «пицца» или «лосось»</div>`)
+        : CATS.map(([c, title]) => `<h2 class="section-title" id="sec-${c}">${title}</h2><div class="grid">${MENU.filter((m) => m.cat === c).map(cardHTML).join("")}</div>`).join("");
+      $("view").innerHTML = `
+        <div class="hero"><b>−10% на первый заказ</b><span>Промокод <code>FOX10</code> · доставка от 35 минут</span></div>
+        <div class="search"><input id="search" type="search" placeholder="Найти блюдо" value="${esc(state.query)}" aria-label="Поиск по меню"></div>
+        ${q ? "" : `<nav class="cats" id="cats">${CATS.map(([c, t], i) => `<button class="cat${i ? "" : " on"}" data-cat="${c}">${t}</button>`).join("")}</nav>`}
+        ${sections}`;
+      const t = totals();
+      setMain(t.count ? `Корзина · ${rub(t.total)}` : "", () => go("cart"));
+      const input = $("search");
+      input.oninput = () => {
+        state.query = input.value;
+        const pos = input.selectionStart;
+        renderMenu();
+        const again = $("search");
+        again.focus();
+        again.setSelectionRange(pos, pos);
+      };
+    }
+
+    function renderCart() {
+      if (!state.cart.length) {
+        $("view").innerHTML = `<h1 class="page-title">Корзина</h1><div class="empty" style="padding-top:80px"><div style="font-size:56px">🛒</div><p style="margin-top:12px">Пока пусто. Загляните в меню.</p></div>`;
+        return setMain("Открыть меню", () => go("menu"));
+      }
+      const t = totals();
+      $("view").innerHTML = `
+        <h1 class="page-title">Корзина</h1>
+        <div class="group">${state.cart.map((l) => {
+          const it = findItem(l.id);
+          const meta = [l.size != null ? SIZES[l.size][0] : it.w, ...l.extras.map((e) => EXTRAS[e][0].toLowerCase())].join(", ");
+          return `<div class="line"><img src="${ph(it.photo, 160)}" alt="">
+            <div class="line__info"><b>${it.name}</b><small>${meta} · ${rub(linePrice(l))}</small></div>
+            <div class="mini-counter"><button data-dec="${l.key}" aria-label="Меньше">−</button><span>${l.qty}</span><button data-inc="${l.key}" aria-label="Больше">+</button></div></div>`;
+        }).join("")}</div>
+        <div class="seg" style="margin:0 12px 12px" id="mode">
+          <button data-mode="delivery" class="${state.mode === "delivery" ? "on" : ""}">🛵 Доставка</button>
+          <button data-mode="pickup" class="${state.mode === "pickup" ? "on" : ""}">🏃 Самовывоз</button>
+        </div>
+        <div class="group">
+          <form class="promo" id="promoForm"><input class="field" id="promoInput" placeholder="Промокод" value="${state.promo || ""}" autocomplete="off" aria-label="Промокод"><button>${state.promo ? "Убрать" : "Применить"}</button></form>
+          <div class="promo-msg" id="promoMsg">${state.promo ? `<span class="ok">Промокод ${state.promo} применён: −${PROMOS[state.promo] * 100}%</span>` : '<span style="color:var(--hint)">Попробуйте FOX10</span>'}</div>
+        </div>
+        <div class="group">
+          <div class="row"><span>Товары (${t.count})</span><b>${rub(t.sum)}</b></div>
+          ${t.discount ? `<div class="row discount"><span>Скидка</span><b>−${rub(t.discount)}</b></div>` : ""}
+          ${state.mode === "delivery" ? `<div class="row"><span>Доставка</span><b>${t.delivery ? rub(t.delivery) : "бесплатно"}</b></div>` : ""}
+          <div class="row total"><span>Итого</span><b>${rub(t.total)}</b></div>
+        </div>
+        ${state.mode === "delivery" && t.delivery ? `<p class="hint-text">Добавьте ещё на ${rub(FREE_FROM - (t.sum - t.discount))}, и доставка будет бесплатной.</p>` : ""}`;
+      setMain(`Оформить · ${rub(t.total)}`, () => go("checkout"));
+    }
+
+    function renderCheckout() {
+      const t = totals();
+      const user = inTG && tg.initDataUnsafe && tg.initDataUnsafe.user;
+      $("view").innerHTML = `
+        <h1 class="page-title">Оформление</h1>
+        <form id="checkoutForm">
+          <div class="group__title">${state.mode === "delivery" ? "Куда доставить" : "Откуда забрать"}</div>
+          <div class="group stack">
+            ${state.mode === "delivery"
+              ? `<input class="field" name="address" required placeholder="Улица, дом, квартира" aria-label="Адрес">
+                 <input class="field" name="comment" placeholder="Подъезд, этаж, код домофона" aria-label="Комментарий">`
+              : `<div style="padding:4px 2px;font-size:15px">📍 ул. Примерная, 15 · ежедневно 10:00–23:00</div>`}
+          </div>
+          <div class="group__title">Контакты</div>
+          <div class="group stack">
+            <input class="field" name="name" required placeholder="Имя" value="${user ? esc(user.first_name || "") : ""}" aria-label="Имя">
+            <input class="field" name="phone" type="tel" required placeholder="Телефон" aria-label="Телефон">
+          </div>
+          <div class="group__title">Когда</div>
+          <div class="group">
+            <label class="radio"><input type="radio" name="time" value="asap" checked><div>Как можно скорее<small>${state.mode === "delivery" ? "35–50 минут" : "через 20 минут"}</small></div></label>
+            <label class="radio"><input type="radio" name="time" value="later"><div>Ко времени<small>выберем в чате с курьером</small></div></label>
+          </div>
+          <div class="group__title">Оплата</div>
+          <div class="group">
+            <label class="radio"><input type="radio" name="pay" value="tg" checked><div>Картой в Telegram<small>безопасно, через платёжного провайдера</small></div></label>
+            <label class="radio"><input type="radio" name="pay" value="cash"><div>${state.mode === "delivery" ? "Курьеру при получении" : "На кассе"}<small>наличными или картой</small></div></label>
+          </div>
+          <p class="hint-text" style="margin-top:4px">Это демо: заказ никуда не отправится, а оплата не спишется.</p>
+        </form>`;
+      setMain(`Заказать · ${rub(t.total)}`, () => {
+        const form = $("checkoutForm");
+        if (!form.reportValidity()) { haptic("heavy"); return; }
+        if (inTG && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+        placeOrder();
+      });
+    }
+
+    let order = null, orderTimer = null;
+    function placeOrder() {
+      const t = totals();
+      order = { no: Math.floor(1000 + Math.random() * 9000), total: t.total, mode: state.mode, stage: 0, eta: state.mode === "delivery" ? 42 : 20 };
+      state.cart = []; state.promo = null;
+      history = [];
+      go("status", false);
+      clearInterval(orderTimer);
+      // Демо: этапы заказа сменяются каждые несколько секунд
+      orderTimer = setInterval(() => {
+        const last = order.mode === "delivery" ? 3 : 2;
+        if (order.stage >= last) return clearInterval(orderTimer);
+        order.stage++;
+        order.eta = Math.max(0, order.eta - (order.mode === "delivery" ? 14 : 10));
+        if (state.screen === "status") renderStatus();
+        haptic("medium");
+      }, 3500);
+    }
+
+    function renderStatus() {
+      const steps = order.mode === "delivery"
+        ? [["Заказ принят", "Ресторан подтвердил"], ["Готовим", "Пицца в печи 🔥"], ["Курьер в пути", "Алексей, синий самокат"], ["Доставлено", "Приятного аппетита!"]]
+        : [["Заказ принят", "Ресторан подтвердил"], ["Готовим", "Скоро будет готово"], ["Можно забирать", "Покажите номер заказа"]];
+      const done = order.stage === steps.length - 1;
+      $("view").innerHTML = `
+        <div class="status">
+          <div class="status__icon">${done ? "🎉" : order.stage === 2 && order.mode === "delivery" ? "🛵" : "🦊"}</div>
+          <h2>Заказ №${order.no}</h2>
+          <p>${rub(order.total)} · ${order.mode === "delivery" ? "доставка" : "самовывоз"}</p>
+          ${done ? "" : `<div class="eta">${order.eta} мин</div><p style="margin:0">примерное время</p>`}
+        </div>
+        <div class="group track">${steps.map(([title, sub], i) => `
+          <div class="tstep ${i < order.stage || done ? "done" : i === order.stage ? "now" : ""}">
+            <span class="tdot">${i < order.stage || done ? "✓" : ""}</span><div>${title}<br><small>${i <= order.stage ? sub : "ожидается"}</small></div>
+          </div>`).join("")}</div>
+        <p class="hint-text" style="text-align:center">В настоящем приложении статус приходит от бота, а уведомления дублируются в чат.</p>`;
+      setMain(done ? "Заказать ещё" : "Вернуться в меню", () => { history = []; go("menu", false); });
+    }
+
+    function render() {
+      ({ menu: renderMenu, cart: renderCart, checkout: renderCheckout, status: renderStatus })[state.screen]();
+    }
+
+    // ---------- Шторка товара ----------
+    let sheetItem = null, sheetSize = 1, sheetExtras = [];
+    function openSheet(id) {
+      sheetItem = findItem(id); sheetSize = 1; sheetExtras = [];
+      renderSheet();
+      $("sheet").classList.add("on"); $("sheetBg").classList.add("on");
+      setMain(`Добавить · ${rub(sheetPrice())}`, () => { addToCart(sheetItem.id, sheetItem.sizes ? sheetSize : null, sheetExtras); closeSheet(); toast(`${sheetItem.name} в корзине`); });
+    }
+    const sheetPrice = () => sheetItem.price + (sheetItem.sizes ? SIZES[sheetSize][1] : 0) + sheetExtras.reduce((s, e) => s + EXTRAS[e][1], 0);
+    function renderSheet() {
+      const it = sheetItem;
+      $("sheet").innerHTML = `
+        <div class="sheet__img"><img src="${ph(it.photo, 800)}" alt="${it.name}"><span class="sheet__grab"></span><button class="sheet__x" data-close aria-label="Закрыть">✕</button></div>
+        <div class="sheet__b">
+          <h2>${it.name}</h2><p>${it.desc}<br>${it.sizes ? SIZES[sheetSize][0] + " · " : ""}${it.w.replace(/^\d+ см · /, "")}</p>
+          ${it.sizes ? `<div class="label">Размер</div><div class="seg">${SIZES.map(([s], i) => `<button data-size="${i}" class="${i === sheetSize ? "on" : ""}">${s}</button>`).join("")}</div>
+          <div class="label">Добавить по вкусу</div><div class="opts">${EXTRAS.map(([e, p], i) => `<button class="opt ${sheetExtras.includes(i) ? "on" : ""}" data-extra="${i}">${e} +${p} ₽</button>`).join("")}</div>` : ""}
+        </div>`;
+      if (inTG) tg.MainButton.setText(`Добавить · ${rub(sheetPrice())}`);
+      else $("mainBtn").textContent = `Добавить · ${rub(sheetPrice())}`;
+    }
+    function closeSheet() {
+      $("sheet").classList.remove("on"); $("sheetBg").classList.remove("on");
+      render();
+    }
+    $("sheetBg").addEventListener("click", closeSheet);
+    $("sheet").addEventListener("click", (e) => {
+      const t = e.target.closest("button"); if (!t) return;
+      if (t.dataset.close !== undefined) return closeSheet();
+      if (t.dataset.size) { sheetSize = +t.dataset.size; haptic("soft"); }
+      if (t.dataset.extra) { const i = +t.dataset.extra; sheetExtras = sheetExtras.includes(i) ? sheetExtras.filter((x) => x !== i) : [...sheetExtras, i]; haptic("soft"); }
+      renderSheet();
+    });
+
+    // ---------- События в списке ----------
+    $("view").addEventListener("click", (e) => {
+      const t = e.target.closest("[data-open],[data-plus],[data-minus],[data-cat],[data-inc],[data-dec],[data-mode]");
+      if (!t) return;
+      const d = t.dataset;
+      if (d.open) return openSheet(+d.open);
+      if (d.plus) { addToCart(+d.plus); return render(); }
+      if (d.minus) { const l = state.cart.find((x) => x.id === +d.minus); if (l) changeQty(l.key, -1); return render(); }
+      if (d.inc) { changeQty(d.inc, 1); return render(); }
+      if (d.dec) { changeQty(d.dec, -1); return render(); }
+      if (d.mode) { state.mode = d.mode; haptic("soft"); return render(); }
+      if (d.cat) {
+        const sec = $("sec-" + d.cat);
+        const scroller = inTG ? document.scrollingElement : $("view");
+        const top = sec.getBoundingClientRect().top - scroller.getBoundingClientRect?.().top + scroller.scrollTop - 52;
+        inTG ? window.scrollTo({ top: sec.getBoundingClientRect().top + scrollY - 52, behavior: "smooth" }) : $("view").scrollTo({ top, behavior: "smooth" });
+      }
+    });
+    $("view").addEventListener("submit", (e) => {
+      if (e.target.id !== "promoForm") return;
+      e.preventDefault();
+      if (state.promo) { state.promo = null; return render(); }
+      const code = $("promoInput").value.trim().toUpperCase();
+      if (PROMOS[code]) { state.promo = code; haptic("medium"); render(); toast(`Скидка ${PROMOS[code] * 100}% применена`); }
+      else { $("promoMsg").innerHTML = '<span class="err">Такого промокода нет</span>'; haptic("heavy"); }
+    });
+
+    // Подсветка категории при прокрутке меню
+    $("view").addEventListener("scroll", () => {
+      if (state.screen !== "menu" || state.query) return;
+      let current = CATS[0][0];
+      for (const [c] of CATS) {
+        const s = $("sec-" + c);
+        if (s && s.getBoundingClientRect().top - $("view").getBoundingClientRect().top < 120) current = c;
+      }
+      document.querySelectorAll(".cat").forEach((b) => {
+        const on = b.dataset.cat === current;
+        if (on && !b.classList.contains("on")) b.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+        b.classList.toggle("on", on);
+      });
+    }, { passive: true });
+
+    let tt;
+    function toast(msg) {
+      $("toast").textContent = msg; $("toast").classList.add("on");
+      clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("on"), 1800);
+    }
+
+    // Переключатель темы для демо в браузере
+    $("themeToggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
+    if (!inTG && matchMedia("(prefers-color-scheme: dark)").matches) { $("themeToggle").checked = true; document.documentElement.classList.add("dark"); }
+
+    render();
+  </script>
+</body>
+</html>
