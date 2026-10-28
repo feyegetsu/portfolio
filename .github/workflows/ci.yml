@@ -53,6 +53,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: lycheeverse/lychee-action@v2
         with:
-          # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages
-          args: --offline --no-progress --exclude-path 404.html --exclude '^data:' './**/*.html'
+          # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages.
+          # assets/ генерирует воркфлоу Assets после пуша, поэтому эти файлы здесь не проверяем.
+          args: --offline --no-progress --exclude-path 404.html --exclude '^data:' --exclude 'assets/' './**/*.html'
           fail: true
