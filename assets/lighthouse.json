@@ -3,38 +3,43 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 98,
+        "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
-      "cls": "0.088",
+      "lcp": "2.5 s",
+      "cls": "0.082",
       "issues": [],
       "a11y": {}
     },
     "barbershop": {
       "scores": {
-        "performance": 99,
+        "performance": 88,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
+      "lcp": "3.9 s",
       "cls": "0",
-      "issues": [],
+      "issues": [
+        "Largest Contentful Paint",
+        "Time to Interactive"
+      ],
       "a11y": {}
     },
     "cafe": {
       "scores": {
-        "performance": 99,
+        "performance": 91,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
-      "cls": "0.004",
-      "issues": [],
+      "lcp": "3.5 s",
+      "cls": "0.003",
+      "issues": [
+        "Largest Contentful Paint"
+      ],
       "a11y": {}
     },
     "dental": {
@@ -44,32 +49,34 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.7 s",
+      "lcp": "1.2 s",
       "cls": "0.032",
       "issues": [],
       "a11y": {}
     },
     "fitness": {
       "scores": {
-        "performance": 100,
+        "performance": 94,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
+      "lcp": "3.1 s",
       "cls": "0",
-      "issues": [],
+      "issues": [
+        "Largest Contentful Paint"
+      ],
       "a11y": {}
     },
     "florist": {
       "scores": {
-        "performance": 99,
+        "performance": 98,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
-      "cls": "0.036",
+      "lcp": "2.2 s",
+      "cls": "0.043",
       "issues": [],
       "a11y": {}
     },
@@ -87,23 +94,21 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 85,
+        "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.4 s",
+      "lcp": "2.3 s",
       "cls": "0.059",
       "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
         "Max Potential First Input Delay"
       ],
       "a11y": {}
     },
     "miniapp": {
       "scores": {
-        "performance": 90,
+        "performance": 91,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
@@ -124,7 +129,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
+      "lcp": "1.9 s",
       "cls": "0.04",
       "issues": [],
       "a11y": {}
@@ -136,8 +141,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.3 s",
-      "cls": "0.014",
+      "lcp": "1.2 s",
+      "cls": "0.013",
       "issues": [],
       "a11y": {}
     }
