@@ -26,6 +26,26 @@ jobs:
         # Импортируем модуль без запуска polling: проверяем, что зависимости и хендлеры собираются
         run: BOT_TOKEN=123:test ADMIN_ID=1 python -c "import bot; print('handlers:', len(bot.dp.message.handlers) + len(bot.dp.callback_query.handlers))"
 
+  api:
+    name: API (FastAPI)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check --select E,F,W,B,UP --ignore E501 .
+      - name: Tests
+        run: pytest -v
+      - name: Docker image builds
+        run: docker build -t portfolio-api .
+
   links:
     name: Битые ссылки
     runs-on: ubuntu-latest
