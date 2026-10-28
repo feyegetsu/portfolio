@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-28",
+  "pages": {
+    "autoservice": {
+      "scores": {
+        "performance": 77,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "5.0 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Time to Interactive",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "barbershop": {
+      "scores": {
+        "performance": 50,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "5.3 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Speed Index",
+        "Cumulative Layout Shift",
+        "Time to Interactive"
+      ]
+    },
+    "cafe": {
+      "scores": {
+        "performance": 74,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "5.0 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Speed Index",
+        "Time to Interactive"
+      ]
+    },
+    "dental": {
+      "scores": {
+        "performance": 99,
+        "accessibility": 93,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.8 s",
+      "issues": [
+        "Background and foreground colors do not have a sufficient contrast ratio.",
+        "Heading elements are not in a sequentially-descending order"
+      ]
+    },
+    "fitness": {
+      "scores": {
+        "performance": 73,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "3.6 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Cumulative Layout Shift",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "florist": {
+      "scores": {
+        "performance": 98,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.2 s",
+      "issues": [
+        "Background and foreground colors do not have a sufficient contrast ratio.",
+        "Elements with visible text labels do not have matching accessible names."
+      ]
+    },
+    "home-desktop": {
+      "scores": {
+        "performance": 94,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.4 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "home-mobile": {
+      "scores": {
+        "performance": 80,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.6 s",
+      "issues": [
+        "Total Blocking Time",
+        "Max Potential First Input Delay",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "miniapp": {
+      "scores": {
+        "performance": 92,
+        "accessibility": 87,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.6 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Speed Index",
+        "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names.",
+        "Buttons do not have an accessible name",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "realty": {
+      "scores": {
+        "performance": 83,
+        "accessibility": 93,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "3.8 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Time to Interactive",
+        "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names.",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ]
+    },
+    "saas": {
+      "scores": {
+        "performance": 89,
+        "accessibility": 94,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.9 s",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Background and foreground colors do not have a sufficient contrast ratio.",
+        "Heading elements are not in a sequentially-descending order"
+      ]
+    }
+  }
+}
