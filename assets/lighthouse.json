@@ -15,69 +15,61 @@
     },
     "barbershop": {
       "scores": {
-        "performance": 88,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.9 s",
+      "lcp": "2.1 s",
       "cls": "0",
-      "issues": [
-        "Largest Contentful Paint",
-        "Time to Interactive"
-      ],
+      "issues": [],
       "a11y": {}
     },
     "cafe": {
-      "scores": {
-        "performance": 88,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.8 s",
-      "cls": "0.004",
-      "issues": [
-        "Largest Contentful Paint",
-        "Time to Interactive"
-      ],
-      "a11y": {}
-    },
-    "dental": {
       "scores": {
         "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
+      "lcp": "2.0 s",
+      "cls": "0.005",
+      "issues": [],
+      "a11y": {}
+    },
+    "dental": {
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.7 s",
       "cls": "0.032",
       "issues": [],
       "a11y": {}
     },
     "fitness": {
       "scores": {
-        "performance": 93,
+        "performance": 100,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.1 s",
+      "lcp": "1.8 s",
       "cls": "0",
-      "issues": [
-        "Largest Contentful Paint"
-      ],
+      "issues": [],
       "a11y": {}
     },
     "florist": {
       "scores": {
-        "performance": 98,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
-      "cls": "0.043",
+      "lcp": "2.0 s",
+      "cls": "0.036",
       "issues": [],
       "a11y": {}
     },
@@ -88,7 +80,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.6 s",
+      "lcp": "0.8 s",
       "cls": "0.032",
       "issues": [],
       "a11y": {}
@@ -100,9 +92,11 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
+      "lcp": "1.6 s",
       "cls": "0.059",
-      "issues": [],
+      "issues": [
+        "Max Potential First Input Delay"
+      ],
       "a11y": {}
     },
     "miniapp": {
@@ -123,12 +117,12 @@
     },
     "realty": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.9 s",
+      "lcp": "1.7 s",
       "cls": "0.04",
       "issues": [],
       "a11y": {}
@@ -140,8 +134,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.5 s",
-      "cls": "0.031",
+      "lcp": "0.9 s",
+      "cls": "0.028",
       "issues": [],
       "a11y": {}
     }
