@@ -3,166 +3,213 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 77,
-        "accessibility": 96,
+        "performance": 88,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "5.0 s",
+      "lcp": "3.0 s",
+      "cls": "0.082",
       "issues": [
         "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Time to Interactive",
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ]
+        "Largest Contentful Paint"
+      ],
+      "a11y": {}
     },
     "barbershop": {
       "scores": {
-        "performance": 50,
+        "performance": 77,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "5.3 s",
+      "lcp": "4.2 s",
+      "cls": "0.077",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
         "Speed Index",
-        "Cumulative Layout Shift",
         "Time to Interactive"
-      ]
+      ],
+      "a11y": {}
     },
     "cafe": {
       "scores": {
-        "performance": 74,
+        "performance": 83,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "5.0 s",
+      "lcp": "3.9 s",
+      "cls": "0.006",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
-        "Speed Index",
         "Time to Interactive"
-      ]
+      ],
+      "a11y": {}
     },
     "dental": {
       "scores": {
-        "performance": 99,
-        "accessibility": 93,
+        "performance": 82,
+        "accessibility": 95,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
-      "issues": [
-        "Background and foreground colors do not have a sufficient contrast ratio.",
-        "Heading elements are not in a sequentially-descending order"
-      ]
-    },
-    "fitness": {
-      "scores": {
-        "performance": 73,
-        "accessibility": 96,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.6 s",
+      "lcp": "3.0 s",
+      "cls": "0.178",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
         "Cumulative Layout Shift",
         "Background and foreground colors do not have a sufficient contrast ratio."
-      ]
+      ],
+      "a11y": {
+        "color-contrast": [
+          "<a href=\"#quiz\" class=\"btn btn--soft\">",
+          "<b>",
+          "<b>",
+          "<b>"
+        ]
+      }
+    },
+    "fitness": {
+      "scores": {
+        "performance": 81,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "3.3 s",
+      "cls": "0.154",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Cumulative Layout Shift"
+      ],
+      "a11y": {}
     },
     "florist": {
+      "scores": {
+        "performance": 86,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "3.3 s",
+      "cls": "0.043",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ],
+      "a11y": {
+        "color-contrast": [
+          "<span class=\"pill\">",
+          "<em>",
+          "<a href=\"#catalog\" class=\"btn\">"
+        ]
+      }
+    },
+    "home-desktop": {
       "scores": {
         "performance": 98,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.2 s",
+      "lcp": "0.9 s",
+      "cls": "0.044",
       "issues": [
-        "Background and foreground colors do not have a sufficient contrast ratio.",
-        "Elements with visible text labels do not have matching accessible names."
-      ]
-    },
-    "home-desktop": {
-      "scores": {
-        "performance": 94,
-        "accessibility": 96,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "1.4 s",
-      "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
         "Background and foreground colors do not have a sufficient contrast ratio."
-      ]
+      ],
+      "a11y": {
+        "color-contrast": [
+          "<span>"
+        ]
+      }
     },
     "home-mobile": {
       "scores": {
-        "performance": 80,
+        "performance": 81,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.6 s",
+      "lcp": "3.9 s",
+      "cls": "0",
       "issues": [
-        "Total Blocking Time",
+        "First Contentful Paint",
+        "Largest Contentful Paint",
         "Max Potential First Input Delay",
+        "Time to Interactive",
         "Background and foreground colors do not have a sufficient contrast ratio."
-      ]
+      ],
+      "a11y": {
+        "color-contrast": [
+          "<span>"
+        ]
+      }
     },
     "miniapp": {
       "scores": {
-        "performance": 92,
-        "accessibility": 87,
+        "performance": 90,
+        "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.6 s",
+      "lcp": "2.7 s",
+      "cls": "0",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
         "Speed Index",
-        "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names.",
-        "Buttons do not have an accessible name",
         "Background and foreground colors do not have a sufficient contrast ratio."
-      ]
+      ],
+      "a11y": {
+        "color-contrast": [
+          "<a class=\"back-link\" href=\"../../\">",
+          "<button class=\"close\" id=\"headBack\">",
+          "<button class=\"cat on\" data-cat=\"pizza\">"
+        ]
+      }
     },
     "realty": {
       "scores": {
-        "performance": 83,
-        "accessibility": 93,
+        "performance": 88,
+        "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.8 s",
+      "lcp": "3.1 s",
+      "cls": "0.055",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
-        "Time to Interactive",
-        "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names.",
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ]
+        "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names."
+      ],
+      "a11y": {
+        "aria-dialog-name": [
+          "<div class=\"modal\" id=\"modal\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"mTitle\">"
+        ]
+      }
     },
     "saas": {
       "scores": {
-        "performance": 89,
-        "accessibility": 94,
+        "performance": 76,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.9 s",
+      "lcp": "4.2 s",
+      "cls": "0.031",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
-        "Background and foreground colors do not have a sufficient contrast ratio.",
-        "Heading elements are not in a sequentially-descending order"
-      ]
+        "Speed Index",
+        "Time to Interactive"
+      ],
+      "a11y": {}
     }
   }
 }
