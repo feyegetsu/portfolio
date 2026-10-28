@@ -55,8 +55,8 @@
     .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 18px; background: #f6f7fb; overflow-x: auto; }
     .col { background: #eef0f6; border-radius: 14px; padding: 12px; min-height: 260px; min-width: 220px; transition: background .2s; }
     .col.over { background: var(--indigo-l); outline: 2px dashed var(--indigo); outline-offset: -2px; }
-    .col h4 { font-size: 13px; display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--muted); font-weight: 600; }
-    .col h4 b { background: #fff; padding: 0 8px; border-radius: 99px; color: var(--ink); }
+    .col__title { font-size: 13px; display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--muted); font-weight: 600; }
+    .col__title b { background: #fff; padding: 0 8px; border-radius: 99px; color: var(--ink); }
     .task { background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(13, 15, 26, .06); cursor: grab; user-select: none; transition: transform .15s, box-shadow .15s; font-size: 14px; }
     .task:hover { box-shadow: 0 6px 16px -8px rgba(13, 15, 26, .3); }
     .task.dragging { opacity: .4; }
@@ -67,7 +67,7 @@
     @keyframes fall { to { transform: translate(var(--x), var(--y)) rotate(540deg); opacity: 0; } }
 
     .logos { padding: 50px 0; text-align: center; color: var(--muted); font-size: 14px; }
-    .logos div { display: flex; justify-content: center; gap: 46px; flex-wrap: wrap; margin-top: 18px; font: 700 1.3rem "Inter Tight", sans-serif; color: #b4b7c7; }
+    .logos div { display: flex; justify-content: center; gap: 46px; flex-wrap: wrap; margin-top: 18px; font: 700 1.3rem "Inter Tight", sans-serif; color: #8a8ea0; }
 
     section { padding: 90px 0; }
     .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 44px; }
@@ -264,12 +264,12 @@
       ["done", "Готово", [["Логотип", "Дизайн", "К", "✓"]]],
     ];
     $("board").innerHTML = cols.map(([id, title, tasks]) => `
-      <div class="col" data-col="${id}"><h4>${title}<b>${tasks.length}</b></h4>
+      <div class="col" data-col="${id}"><div class="col__title">${title}<b>${tasks.length}</b></div>
         ${tasks.map(([t, l, p, d]) => `<div class="task" draggable="true"><span class="lbl" style="background:${labels[l][0]};color:${labels[l][1]}">${l}</span><div>${t}</div>
           <div class="meta"><span>📅 ${d}</span><span class="ava" style="background:${people[p]}">${p}</span></div></div>`).join("")}
       </div>`).join("");
 
-    const updateCounts = () => document.querySelectorAll(".col").forEach(c => c.querySelector("h4 b").textContent = c.querySelectorAll(".task").length);
+    const updateCounts = () => document.querySelectorAll(".col").forEach(c => c.querySelector(".col__title b").textContent = c.querySelectorAll(".task").length);
     let dragged = null;
 
     function dropInto(col, x, y) {

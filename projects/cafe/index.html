@@ -47,7 +47,7 @@
     nav a:hover { opacity: 1; } nav a:hover::after { transform: scaleX(1); }
 
     .hero { min-height: 100vh; display: flex; align-items: center; color: #fff; position: relative; overflow: hidden; background: var(--dark); }
-    .hero__bg { position: absolute; inset: -8% 0; background: url("https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=2000&q=75") center / cover; will-change: transform; }
+    .hero__bg { position: absolute; width: 100%; height: 120%; top: -10%; left: 0; object-fit: cover; will-change: transform; }
     .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(20, 12, 8, .88) 25%, rgba(20, 12, 8, .35) 70%, rgba(20, 12, 8, .2)); }
     .hero .container { position: relative; z-index: 1; }
     .hero h1 { font-size: clamp(2.8rem, 7.5vw, 5.6rem); max-width: 720px; }
@@ -159,16 +159,16 @@
   </header>
 
   <section class="hero">
-    <div class="hero__bg" data-parallax="0.25"></div>
+    <img class="hero__bg" data-parallax="0.25" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;q=60&amp;w=700 700w, https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
     <div class="container">
-      <span class="eyebrow" data-reveal>Specialty coffee · с 2016 года</span>
-      <h1 data-reveal style="--d:100ms">Кофе, ради которого стоит <em>проснуться</em></h1>
-      <p data-reveal style="--d:200ms">Обжариваем зёрна сами, печём круассаны каждое утро и знаем постоянных гостей по имени.</p>
-      <div class="hero__btns" data-reveal style="--d:300ms">
+      <span class="eyebrow">Specialty coffee · с 2016 года</span>
+      <h1>Кофе, ради которого стоит <em>проснуться</em></h1>
+      <p>Обжариваем зёрна сами, печём круассаны каждое утро и знаем постоянных гостей по имени.</p>
+      <div class="hero__btns">
         <a href="#menu" class="btn">Смотреть меню →</a>
         <a href="#book" class="btn btn--light">Забронировать стол</a>
       </div>
-      <div class="hero__meta" data-reveal style="--d:400ms">
+      <div class="hero__meta">
         <div><b data-count="12">12</b><span>сортов зерна</span></div>
         <div><b data-count="4.9" data-decimals="1">4,9</b><span>рейтинг на картах</span></div>
         <div><b data-count="300" data-suffix="+">300+</b><span>чашек в день</span></div>

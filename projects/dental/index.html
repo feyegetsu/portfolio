@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #f5f8fc; --ink: #0f2137; --muted: #61738a; --blue: #1d6fe0; --blue-l: #e6f0ff; --mint: #19b394; --line: #e2e9f2; --r: 20px; }
+    :root { --bg: #f5f8fc; --ink: #0f2137; --muted: #61738a; --blue: #1d6fe0; --blue-l: #e6f0ff; --mint: #0b8a70; --line: #e2e9f2; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: "Golos Text", system-ui, sans-serif; background: #fff; color: var(--ink); line-height: 1.6; }
@@ -59,7 +59,7 @@
     .clinic figure:hover img { transform: scale(1.06); }
     .clinic figcaption { position: absolute; left: 14px; bottom: 14px; background: rgba(255,255,255,.92); padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; }
     @media (max-width: 760px) { .clinic { grid-template-columns: 1fr; } .clinic figure { height: 220px; } }
-    .hero__card h3 { text-align: center; margin-bottom: 18px; }
+    .hero__card .card-title { text-align: center; margin-bottom: 18px; font-size: 1.17rem; }
     .offer { display: flex; justify-content: space-between; padding: 14px 0; border-top: 1px dashed var(--line); font-size: 15px; }
     .offer b { color: var(--mint); }
     .sticker { position: absolute; top: -16px; right: -10px; background: var(--mint); color: #fff; padding: 10px 16px; border-radius: 14px; font-weight: 700; transform: rotate(6deg); box-shadow: 0 10px 20px -10px var(--mint); }
@@ -162,10 +162,10 @@
           <div><b>5 лет</b><span>гарантии на импланты</span></div>
         </div>
       </div>
-      <div class="hero__card" data-reveal="right" style="--d:150ms">
+      <div class="hero__card">
         <div class="sticker">−15% в октябре</div>
-        <div class="hero__photo"><img src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=900&q=75" alt="Белоснежная улыбка пациентки"></div>
-        <h3>Первый визит</h3>
+        <div class="hero__photo"><img fetchpriority="high" src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=900&q=75" alt="Белоснежная улыбка пациентки"></div>
+        <h2 class="card-title">Первый визит</h2>
         <div class="offer"><span>Консультация и осмотр</span><b>0 ₽</b></div>
         <div class="offer"><span>3D-снимок челюсти</span><b>0 ₽</b></div>
         <div class="offer"><span>План лечения с ценами</span><b>0 ₽</b></div>

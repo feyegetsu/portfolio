@@ -14,7 +14,7 @@
       --bg: var(--tg-theme-bg-color, #ffffff);
       --bg2: var(--tg-theme-secondary-bg-color, #f1f2f6);
       --text: var(--tg-theme-text-color, #111318);
-      --hint: var(--tg-theme-hint-color, #8a8f9c);
+      --hint: var(--tg-theme-hint-color, #646a76);
       --link: var(--tg-theme-link-color, #2481cc);
       --btn: var(--tg-theme-button-color, #ff7a1a);
       --btn-text: var(--tg-theme-button-text-color, #ffffff);
@@ -22,7 +22,7 @@
       --r: 18px;
     }
     :root.dark {
-      --bg: #17212b; --bg2: #0e1621; --text: #f5f5f5; --hint: #708499; --link: #6ab3f3;
+      --bg: #17212b; --bg2: #0e1621; --text: #f5f5f5; --hint: #93a5b8; --link: #6ab3f3;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Inter, sans-serif; color: var(--text); background: var(--bg2); }
@@ -38,7 +38,7 @@
     .intro li { display: flex; gap: 12px; align-items: flex-start; line-height: 1.5; }
     .intro li b { width: 28px; height: 28px; flex-shrink: 0; border-radius: 9px; background: color-mix(in srgb, var(--btn) 15%, transparent); color: var(--btn); display: grid; place-items: center; font-size: 14px; }
     .back-link { display: inline-flex; gap: 8px; align-items: center; color: var(--link); text-decoration: none; font-size: 14px; }
-    .pill { display: inline-block; background: #229ed9; color: #fff; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 99px; }
+    .pill { display: inline-block; background: #1b77a6; color: #fff; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 99px; }
     .theme-switch { display: inline-flex; gap: 8px; align-items: center; padding: 10px 16px; border-radius: 12px; background: var(--bg); font-size: 14px; margin-top: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
 
     .phone { width: 400px; height: 820px; max-height: calc(100vh - 40px); border-radius: 52px; padding: 12px; background: #0b0b0d; box-shadow: 0 50px 100px -40px rgba(0,0,0,.6), inset 0 0 0 2px #2b2b30; position: relative; }
@@ -80,7 +80,7 @@
     .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; }
     .card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .card:active .card__img img { transform: scale(.97); }
-    .badge { position: absolute; left: 8px; top: 8px; background: #ff3b30; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
+    .badge { position: absolute; left: 8px; top: 8px; background: #d42a1f; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
     .card__b { padding: 10px 10px 12px; display: flex; flex-direction: column; flex: 1; }
     .card__b b { font-size: 15px; line-height: 1.25; }
     .card__b small { color: var(--hint); font-size: 12px; margin: 2px 0 10px; }
@@ -220,9 +220,9 @@
 
         <main class="view" id="view"></main>
 
-        <button class="main-btn off" id="mainBtn"></button>
+        <button class="main-btn off" id="mainBtn" aria-hidden="true" tabindex="-1"></button>
         <div class="sheet-bg" id="sheetBg"></div>
-        <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Карточка блюда"></div>
         <div class="toast" id="toast" role="status"></div>
       </div>
     </div>
@@ -328,6 +328,8 @@
       } else {
         $("mainBtn").textContent = text || "";
         $("mainBtn").classList.toggle("off", !text);
+        $("mainBtn").setAttribute("aria-hidden", !text);
+        $("mainBtn").tabIndex = text ? 0 : -1;
         $("headBack").textContent = state.screen === "menu" && !$("sheet").classList.contains("on") ? "Закрыть" : "‹ Назад";
       }
     }

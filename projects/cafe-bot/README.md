@@ -20,6 +20,10 @@ python bot.py
 
 Свой Telegram ID можно узнать у бота [@userinfobot](https://t.me/userinfobot).
 
+## Проверка
+
+При каждом пуше [CI](../../.github/workflows/ci.yml) прогоняет линтер `ruff` и импортирует модуль: так видно, что зависимости ставятся, а все хендлеры регистрируются.
+
 ## Стек
 
 Python 3.10+, aiogram 3, SQLite

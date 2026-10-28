@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #f6f5f2; --ink: #141414; --muted: #737373; --green: #1f5c4a; --green-l: #e4efe9; --gold: #d8b26e; --line: #e6e3dc; --r: 20px; }
+    :root { --bg: #f6f5f2; --ink: #141414; --muted: #5e5e5e; --green: #1f5c4a; --green-l: #e4efe9; --gold: #d8b26e; --line: #e6e3dc; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: "Onest", system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; }
@@ -44,7 +44,7 @@
       background: #1f3d33;
       display: flex; flex-direction: column; justify-content: flex-end;
     }
-    .hero__bg { position: absolute; inset: -12% 0; background: url("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=75") center / cover; }
+    .hero__bg { position: absolute; width: 100%; height: 120%; top: -10%; left: 0; object-fit: cover; }
     .hero__box::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(10, 30, 24, .05) 20%, rgba(10, 30, 24, .82)); }
     .hero__box > *:not(.hero__bg) { position: relative; z-index: 2; }
     .hero h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); max-width: 760px; }
@@ -156,10 +156,10 @@
   <section class="hero">
     <div class="container">
       <div class="hero__box">
-        <div class="hero__bg" data-parallax="0.2"></div>
-        <h1 data-reveal>Найдём квартиру, в которой захочется жить</h1>
-        <p data-reveal style="--d:120ms"><span data-count="1800" data-suffix="+">1 800+</span> проверенных объектов. Юрист проверит документы, ипотечный брокер найдёт ставку ниже, чем в банке.</p>
-        <form class="search" id="search" data-reveal style="--d:240ms">
+        <img class="hero__bg" data-parallax="0.2" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=700 700w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
+        <h1>Найдём квартиру, в которой захочется жить</h1>
+        <p><span data-count="1800" data-suffix="+">1 800+</span> проверенных объектов. Юрист проверит документы, ипотечный брокер найдёт ставку ниже, чем в банке.</p>
+        <form class="search" id="search">
           <label>Тип<select id="sType"><option value="all">Любой</option><option value="new">Новостройка</option><option value="resale">Вторичка</option></select></label>
           <label>Район<select id="sDistrict"><option value="all">Все районы</option></select></label>
           <label>Бюджет до<select id="sBudget"><option value="99">Любой</option><option value="8">8 млн ₽</option><option value="12">12 млн ₽</option><option value="20">20 млн ₽</option></select></label>
@@ -221,7 +221,7 @@
   </footer>
   <script src="../shared/motion.js" defer></script>
 
-  <div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <div class="modal__box">
       <div class="modal__img" id="mImg"></div>
       <div class="modal__b">

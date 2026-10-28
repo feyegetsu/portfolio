@@ -1,42 +1,89 @@
-# Сайты и Telegram-боты для бизнеса
+<div align="center">
 
-Портфолио веб-разработчика: сайты для кафе, салонов, клиник, магазинов и Telegram-боты для заказов и записи.
+# feyegetsu.dev
 
-**Сайт:** https://feyegetsu.github.io/portfolio/
+**Сайты, Telegram-боты и Mini App для малого бизнеса**
 
-## Проекты
+[![CI](https://github.com/feyegetsu/portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/ci.yml)
+[![Assets](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml)
+![HTML/CSS/JS](https://img.shields.io/badge/stack-HTML%20·%20CSS%20·%20JS%20·%20Python-7c5cff)
+![No frameworks](https://img.shields.io/badge/фреймворки-0-22d3ee)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-| Проект | Ниша | Что внутри |
-|---|---|---|
-| [Кофейня «Зерно»](projects/cafe/) | Общепит | Меню по категориям, бронь столика |
-| [Пион & Ко](projects/florist/) | Интернет-магазин | Каталог с фильтрами и сортировкой, корзина с сохранением, оформление доставки |
-| [Барбершоп BLADE](projects/barbershop/) | Красота | Онлайн-запись в 3 шага: услуга → мастер → свободный слот |
-| [Стоматология «Белая линия»](projects/dental/) | Медицина | Прайс по вкладкам, квиз с расчётом стоимости лечения |
-| [Фитнес-клуб PULSE](projects/fitness/) | Спорт | Расписание на неделю с записью, тарифы с переключением периода |
-| [Автосервис «МоторЛайн»](projects/autoservice/) | Авто | Калькулятор стоимости ремонта, отслеживание статуса заказа |
-| [Агентство «Квадрат»](projects/realty/) | Недвижимость | Каталог с фильтрами и избранным, карточка объекта, ипотечный калькулятор |
-| [Taskly](projects/saas/) | IT-стартап | Канбан-доска с drag & drop (мышь и тач), расчёт тарифа по числу людей |
-| [Бот для кафе](projects/cafe-bot/) | Telegram-бот | Меню, корзина, заказы в SQLite, уведомления админу, рассылки |
+### [Открыть портфолио →](https://feyegetsu.github.io/portfolio/)
 
-## Принципы
+<img src="assets/hero.jpg" alt="Главная страница портфолио" width="100%">
 
-- **Без фреймворков и сборки.** Чистые HTML, CSS и JavaScript, открываются с любого хостинга.
-- **Адаптив.** Каждая страница проверена на ширине телефона.
-- **Доступность.** Семантическая разметка, фокус с клавиатуры, учёт `prefers-reduced-motion`.
-- **Каждый демо-сайт — один файл** плюс общий [`projects/shared/motion.js`](projects/shared/motion.js) с анимациями: появление при прокрутке, параллакс, счётчики, плавная загрузка фото. Подключаются через data-атрибуты, без библиотек.
-- **Фото** с [Unsplash](https://unsplash.com) (бесплатная лицензия, разрешено коммерческое использование), подгружаются с их CDN в нужном размере.
+</div>
 
-## Структура
+## Что внутри
+
+**10 живых проектов** для разных ниш. Каждый можно потрогать: оформить заказ, записаться, посчитать ипотеку. На главной у каждого проекта есть кейс с задачей, решением, техническими деталями и интерактивным превью в рамке компьютера или телефона.
+
+| | Проект | Ниша | Ключевая фишка |
+|---|---|---|---|
+| <img src="assets/previews/miniapp.jpg" width="160"> | [**Сытый Лис**](https://feyegetsu.github.io/portfolio/projects/miniapp/) | Telegram Mini App | Доставка еды внутри Telegram: тема, MainButton, вибрация, статус заказа |
+| <img src="assets/previews/florist.jpg" width="160"> | [**Пион & Ко**](https://feyegetsu.github.io/portfolio/projects/florist/) | Интернет-магазин | Каталог с фильтрами, корзина с сохранением, доставка по интервалам |
+| <img src="assets/previews/dental.jpg" width="160"> | [**Белая линия**](https://feyegetsu.github.io/portfolio/projects/dental/) | Медицина | Квиз, который считает стоимость лечения |
+| <img src="assets/previews/realty.jpg" width="160"> | [**Квадрат**](https://feyegetsu.github.io/portfolio/projects/realty/) | Недвижимость | Фильтры, избранное, галерея объекта, ипотечный калькулятор |
+| <img src="assets/previews/saas.jpg" width="160"> | [**Taskly**](https://feyegetsu.github.io/portfolio/projects/saas/) | IT-стартап | Канбан с drag & drop мышью и пальцем, расчёт тарифа |
+| <img src="assets/previews/autoservice.jpg" width="160"> | [**МоторЛайн**](https://feyegetsu.github.io/portfolio/projects/autoservice/) | Авто | Калькулятор ремонта, отслеживание статуса машины |
+| <img src="assets/previews/fitness.jpg" width="160"> | [**PULSE**](https://feyegetsu.github.io/portfolio/projects/fitness/) | Спорт | Расписание на неделю с записью и свободными местами |
+| <img src="assets/previews/barbershop.jpg" width="160"> | [**BLADE**](https://feyegetsu.github.io/portfolio/projects/barbershop/) | Красота | Онлайн-запись в 3 шага со свободными слотами |
+| <img src="assets/previews/cafe.jpg" width="160"> | [**Зерно**](https://feyegetsu.github.io/portfolio/projects/cafe/) | Общепит | Меню с фото, галерея, бронь столика |
+| 🤖 | [**Бот для заказов**](projects/cafe-bot/) | Telegram-бот | Python + aiogram 3: корзина, заказы в SQLite, уведомления админу, рассылки |
+
+<div align="center">
+<img src="assets/previews/miniapp-mobile.jpg" width="30%" alt="Mini App на телефоне">
+<img src="assets/previews/florist-mobile.jpg" width="30%" alt="Магазин цветов на телефоне">
+<img src="assets/previews/realty-mobile.jpg" width="30%" alt="Каталог недвижимости на телефоне">
+</div>
+
+## Качество, которое можно проверить
+
+Цифры не написаны руками: их считает Lighthouse в GitHub Actions при каждом изменении сайта и кладёт в [`assets/lighthouse.json`](assets/lighthouse.json).
+
+<!-- LIGHTHOUSE:START -->
+_Замер появится после первого прогона Actions._
+<!-- LIGHTHOUSE:END -->
+
+- **CI на каждый пуш.** Бот проходит линтер `ruff` и проверку импорта, все HTML-страницы проверяются на битые ссылки.
+- **Скриншоты обновляются сами.** Playwright снимает каждый проект и OG-картинку и коммитит их в `assets/`.
+- **Доступность.** Семантическая разметка, фокус с клавиатуры, модальные окна на `<dialog>`, учёт `prefers-reduced-motion`.
+- **SEO.** Мета-теги, Open Graph, JSON-LD `ProfessionalService`, `sitemap.xml`, `robots.txt`, canonical.
+
+## Как устроено
 
 ```
-index.html, styles.css, script.js   главная страница портфолио
-favicon.svg, 404.html
+index.html, styles.css, script.js   главная: кейсы, калькулятор стоимости, симуляция бота
 projects/
-  cafe/  florist/  barbershop/  dental/
-  fitness/  autoservice/  realty/  saas/   демо-сайты
-  cafe-bot/                                Telegram-бот (Python, aiogram 3)
+  miniapp/                          Telegram Mini App (Telegram WebApp API)
+  florist/ dental/ realty/ saas/
+  autoservice/ fitness/ barbershop/ cafe/
+  shared/motion.js                  анимации через data-атрибуты: появление, параллакс, счётчики
+  cafe-bot/                         Telegram-бот на Python (aiogram 3, SQLite)
+tools/
+  screenshots.py                    скриншоты и OG-картинка (Playwright)
+  lh_summary.py                     сводка отчётов Lighthouse
+.github/workflows/
+  ci.yml                            линтер бота и проверка ссылок
+  screenshots.yml                   скриншоты и Lighthouse с автокоммитом
 ```
 
-## Настройка
+**Почему без фреймворков.** Для сайтов малого бизнеса важнее всего скорость загрузки с мобильного и простота поддержки. Чистые HTML, CSS и JS открываются с любого хостинга, не требуют сборки, а каждый демо-проект — один файл, который легко взять за основу под реального клиента.
 
-Контакты задаются в одном месте: объект `CONFIG` в начале [`script.js`](script.js).
+## Запуск локально
+
+```bash
+git clone https://github.com/feyegetsu/portfolio.git
+cd portfolio
+python -m http.server 8000
+```
+
+Откройте http://localhost:8000. Контакты на главной задаются в одном месте: объект `CONFIG` в начале [`script.js`](script.js).
+
+Бот запускается отдельно, инструкция в [`projects/cafe-bot/README.md`](projects/cafe-bot/README.md).
+
+## Лицензия
+
+Код распространяется по лицензии [MIT](LICENSE). Фото загружаются с [Unsplash](https://unsplash.com/license), шрифты с Google Fonts. Компании, люди, отзывы и цифры в демо-проектах вымышлены.
