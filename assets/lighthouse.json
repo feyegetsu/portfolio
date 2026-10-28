@@ -3,113 +3,83 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 88,
+        "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.0 s",
-      "cls": "0.082",
-      "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint"
-      ],
+      "lcp": "2.5 s",
+      "cls": "0.088",
+      "issues": [],
       "a11y": {}
     },
     "barbershop": {
       "scores": {
-        "performance": 77,
+        "performance": 80,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "4.2 s",
-      "cls": "0.077",
+      "lcp": "4.0 s",
+      "cls": "0.168",
       "issues": [
-        "First Contentful Paint",
         "Largest Contentful Paint",
-        "Speed Index",
+        "Cumulative Layout Shift",
         "Time to Interactive"
       ],
       "a11y": {}
     },
     "cafe": {
       "scores": {
-        "performance": 83,
+        "performance": 94,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.9 s",
-      "cls": "0.006",
+      "lcp": "3.0 s",
+      "cls": "0.002",
       "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Time to Interactive"
+        "Largest Contentful Paint"
       ],
       "a11y": {}
     },
     "dental": {
       "scores": {
-        "performance": 82,
-        "accessibility": 95,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.0 s",
-      "cls": "0.178",
-      "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Cumulative Layout Shift",
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "<a href=\"#quiz\" class=\"btn btn--soft\">",
-          "<b>",
-          "<b>",
-          "<b>"
-        ]
-      }
-    },
-    "fitness": {
-      "scores": {
-        "performance": 81,
+        "performance": 100,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.3 s",
-      "cls": "0.154",
+      "lcp": "0.9 s",
+      "cls": "0.032",
+      "issues": [],
+      "a11y": {}
+    },
+    "fitness": {
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.5 s",
+      "cls": "0.241",
       "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
         "Cumulative Layout Shift"
       ],
       "a11y": {}
     },
     "florist": {
       "scores": {
-        "performance": 86,
-        "accessibility": 96,
+        "performance": 99,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.3 s",
+      "lcp": "1.5 s",
       "cls": "0.043",
-      "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "<span class=\"pill\">",
-          "<em>",
-          "<a href=\"#catalog\" class=\"btn\">"
-        ]
-      }
+      "issues": [],
+      "a11y": {}
     },
     "home-desktop": {
       "scores": {
@@ -118,8 +88,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.9 s",
-      "cls": "0.044",
+      "lcp": "1.1 s",
+      "cls": "0.032",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -131,18 +101,14 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 81,
+        "performance": 98,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.9 s",
-      "cls": "0",
+      "lcp": "2.1 s",
+      "cls": "0.058",
       "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Max Potential First Input Delay",
-        "Time to Interactive",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
@@ -153,62 +119,42 @@
     },
     "miniapp": {
       "scores": {
-        "performance": 90,
-        "accessibility": 96,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "2.7 s",
-      "cls": "0",
-      "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Speed Index",
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "<a class=\"back-link\" href=\"../../\">",
-          "<button class=\"close\" id=\"headBack\">",
-          "<button class=\"cat on\" data-cat=\"pizza\">"
-        ]
-      }
-    },
-    "realty": {
-      "scores": {
-        "performance": 88,
-        "accessibility": 96,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.1 s",
-      "cls": "0.055",
-      "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
-        "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names."
-      ],
-      "a11y": {
-        "aria-dialog-name": [
-          "<div class=\"modal\" id=\"modal\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"mTitle\">"
-        ]
-      }
-    },
-    "saas": {
-      "scores": {
-        "performance": 76,
+        "performance": 92,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "4.2 s",
-      "cls": "0.031",
+      "lcp": "2.6 s",
+      "cls": "0",
       "issues": [
         "First Contentful Paint",
         "Largest Contentful Paint",
-        "Speed Index",
-        "Time to Interactive"
+        "Speed Index"
       ],
+      "a11y": {}
+    },
+    "realty": {
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.9 s",
+      "cls": "0.04",
+      "issues": [],
+      "a11y": {}
+    },
+    "saas": {
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "0.9 s",
+      "cls": "0.028",
+      "issues": [],
       "a11y": {}
     }
   }
