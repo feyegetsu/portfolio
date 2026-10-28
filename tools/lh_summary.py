@@ -41,7 +41,8 @@ def collect(folder: str) -> dict:
             audit = audits.get(aid, {})
             if audit.get("score") == 0:
                 items = (audit.get("details") or {}).get("items") or []
-                elements[aid] = [(i.get("node") or {}).get("snippet", "")[:140] for i in items[:4]]
+                nodes = [i.get("node") or {} for i in items[:4]]
+                elements[aid] = [f"{n.get('selector', '')} {n.get('snippet', '')}"[:160] for n in nodes]
         pages[report.stem] = {
             "scores": {c: round((cats.get(c, {}).get("score") or 0) * 100) for c in CATEGORIES},
             "lcp": audits.get("largest-contentful-paint", {}).get("displayValue"),

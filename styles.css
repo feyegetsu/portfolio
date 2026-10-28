@@ -66,7 +66,7 @@ h3 { font-size: 1.08rem; font-weight: 500; margin-bottom: 8px; }
 }
 .header__inner { display: flex; align-items: center; gap: 32px; height: 68px; }
 .logo { font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; }
-.logo span { color: var(--accent); }
+.logo span { color: #9277ff; }
 .nav { display: flex; gap: 28px; margin-left: auto; }
 .nav a { color: var(--muted); font-size: 15px; transition: color .2s; }
 .nav a:hover { color: var(--text); }

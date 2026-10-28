@@ -228,16 +228,23 @@ function fitCaseFrame() {
 }
 addEventListener("resize", () => caseEl.open && fitCaseFrame());
 
-function closeCase() {
-  if (!caseEl.open) return;
-  caseEl.close();
-}
-caseEl.addEventListener("close", () => {
+// Уборка после закрытия делается сразу, не дожидаясь события close: в фоновых вкладках оно может прийти с опозданием
+function cleanupCase() {
+  if (!document.body.classList.contains("lock")) return;
   document.body.classList.remove("lock");
   caseEl.querySelector(".case__inner").innerHTML = "";
   if (location.hash.startsWith("#case-")) history.replaceState(null, "", "#works");
   if (lastFocus) lastFocus.focus();
+}
+function closeCase() {
+  if (caseEl.open) caseEl.close();
+  cleanupCase();
+}
+caseEl.addEventListener("cancel", (e) => {
+  e.preventDefault();
+  closeCase();
 });
+caseEl.addEventListener("close", cleanupCase);
 caseEl.addEventListener("click", (e) => {
   if (e.target === caseEl) return closeCase();
   const t = e.target.closest("button, a");
