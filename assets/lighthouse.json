@@ -3,13 +3,13 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 81,
+        "performance": 84,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
-      "cls": "0.336",
+      "lcp": "1.8 s",
+      "cls": "0.322",
       "issues": [
         "Cumulative Layout Shift"
       ],
@@ -17,32 +17,35 @@
     },
     "barbershop": {
       "scores": {
-        "performance": 96,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.8 s",
+      "lcp": "2.0 s",
       "cls": "0",
-      "issues": [
-        "Largest Contentful Paint"
-      ],
+      "issues": [],
       "a11y": {}
     },
     "cafe": {
       "scores": {
-        "performance": 89,
-        "accessibility": 100,
+        "performance": 86,
+        "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.8 s",
-      "cls": "0.004",
+      "lcp": "4.3 s",
+      "cls": "0.016",
       "issues": [
         "Largest Contentful Paint",
-        "Time to Interactive"
+        "Time to Interactive",
+        "Background and foreground colors do not have a sufficient contrast ratio."
       ],
-      "a11y": {}
+      "a11y": {
+        "color-contrast": [
+          "section.hero > div.container > div.arch > div.note <div class=\"note hand\">"
+        ]
+      }
     },
     "dental": {
       "scores": {
@@ -52,7 +55,7 @@
         "seo": 100
       },
       "lcp": "1.7 s",
-      "cls": "0.033",
+      "cls": "0.032",
       "issues": [
         "Uses ARIA roles on incompatible elements"
       ],
@@ -66,12 +69,12 @@
     },
     "fitness": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.9 s",
+      "lcp": "1.8 s",
       "cls": "0",
       "issues": [],
       "a11y": {}
@@ -83,8 +86,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
-      "cls": "0.044",
+      "lcp": "2.1 s",
+      "cls": "0.036",
       "issues": [],
       "a11y": {}
     },
@@ -102,12 +105,12 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 79,
+        "performance": 77,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "4.0 s",
+      "lcp": "4.2 s",
       "cls": "0.059",
       "issues": [
         "First Contentful Paint",
@@ -119,7 +122,7 @@
     },
     "miniapp": {
       "scores": {
-        "performance": 91,
+        "performance": 90,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
@@ -135,13 +138,13 @@
     },
     "realty": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "1.8 s",
-      "cls": "0.003",
+      "cls": "0.004",
       "issues": [],
       "a11y": {}
     },
@@ -152,8 +155,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.2 s",
-      "cls": "0.028",
+      "lcp": "1.3 s",
+      "cls": "0.017",
       "issues": [],
       "a11y": {}
     }
