@@ -178,7 +178,7 @@
     }
     function save(db) { store.set(KEY, JSON.stringify(db)); }
     // Маленькая задержка, как у сети: интерфейс честно показывает состояние «отправляется»
-    const later = (fn) => new Promise((resolve, reject) => setTimeout(() => { try { resolve(fn()); } catch (e) { reject(e); } }, 250));
+    const later = (fn) => new Promise((resolve, reject) => setTimeout(() => { try { resolve(fn()); } catch (e) { reject(e); } }, 60));
     const site = (slug, flag) => {
       const s = SITE[slug];
       if (!s) throw new ApiError("Сайт не найден", 404);

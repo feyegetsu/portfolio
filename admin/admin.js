@@ -194,17 +194,38 @@
   }
 
   // ---------- Заявки ----------
+  // Поля из форм сайтов: подписи и формат значений для человека, а не для программиста
+  const FIELD = {
+    object: ["Объект"], price: ["Цена"], doctor: ["Врач"], result: ["Подобрано"], range: ["Стоимость"], time: ["Время"],
+    date: ["Дата", (v) => (/^\d{4}-\d\d-\d\d$/.test(v) ? new Date(`${v}T12:00:00`).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) : v)],
+    guests: ["Гостей"], car: ["Машина"], works: ["Работы"], total: ["Сумма", rub], seats: ["Участников"],
+    yearly: ["Оплата", (v) => (v ? "за год" : "помесячно")], email: ["Почта"], master: ["Мастер"], service: ["Услуга"], comment: ["Комментарий"],
+  };
+  const fmtValue = (v) => (Array.isArray(v) ? v.map(fmtValue).join(", ")
+    : v && typeof v === "object" ? Object.values(v).map(fmtValue).join(", ")
+    : typeof v === "boolean" ? (v ? "да" : "нет") : String(v));
+  function leadDetails(l) {
+    const rows = Object.entries(l.data || {})
+      .filter(([k, v]) => v !== "" && v != null && !(k === "email" && v === l.email))
+      .map(([k, v]) => {
+        const [label, fmt] = FIELD[k] || [k];
+        return `<div><dt>${esc(label)}</dt><dd>${esc(fmt ? fmt(v) : fmtValue(v))}</dd></div>`;
+      });
+    if (!l.message && !rows.length) return '<span class="muted">—</span>';
+    return `${l.message ? `<p class="lead-msg">${esc(l.message)}</p>` : ""}${rows.length ? `<dl class="kv">${rows.join("")}</dl>` : ""}`;
+  }
+
   function leadTable(items, compact = false) {
     if (!items.length) return '<div class="empty">Заявок пока нет</div>';
-    return `<div class="table-wrap"><table>
-      <thead><tr><th>Дата</th><th>Сайт</th><th>Тип</th><th>Клиент</th>${compact ? "" : "<th>Детали</th>"}<th>Статус</th></tr></thead>
+    return `<div class="table-wrap"><table class="cards">
+      <thead><tr><th>Дата</th><th>Сайт</th><th>Тип</th><th>Клиент</th>${compact ? "" : "<th>Детали</th>"}<th class="center">Статус</th></tr></thead>
       <tbody>${items.map((l) => `<tr data-id="lead-${l.id}">
-        <td class="mono">${fmtDate(l.created_at)}</td>
-        <td>${siteTag(l.site)}</td>
-        <td>${esc(KIND[l.kind] || l.kind)}</td>
-        <td>${esc(l.name || "—")}<small>${esc(l.phone || l.email)}</small></td>
-        ${compact ? "" : `<td>${esc(l.message)}${Object.keys(l.data || {}).length ? `<small>${esc(Object.entries(l.data).filter(([, v]) => v !== "" && v != null).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`).join(" · "))}</small>` : ""}</td>`}
-        <td>${statusSelect("lead", l.id, l.status, LEAD_STATUS)}</td>
+        <td class="mono" data-label="Дата">${fmtDate(l.created_at)}</td>
+        <td data-label="Сайт">${siteTag(l.site)}</td>
+        <td data-label="Тип">${esc(KIND[l.kind] || l.kind)}</td>
+        <td data-label="Клиент">${esc(l.name || "—")}<small>${l.phone ? `<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>` : esc(l.email)}</small></td>
+        ${compact ? "" : `<td data-label="Детали" class="wide">${leadDetails(l)}</td>`}
+        <td class="center" data-label="Статус">${statusSelect("lead", l.id, l.status, LEAD_STATUS)}</td>
       </tr>`).join("")}</tbody></table></div>`;
   }
 
@@ -287,12 +308,12 @@
       <form class="add-form panel" id="addItem"><input name="name" placeholder="Название" required aria-label="Название">
         <input name="category" placeholder="Категория" aria-label="Категория"><input name="price" type="number" min="0" placeholder="Цена" required aria-label="Цена">
         <button class="btn btn--primary">Добавить</button></form>
-      <div class="table-wrap"><table><thead><tr><th>Позиция</th><th>Категория</th><th>Цена, ₽</th><th>В продаже</th><th></th></tr></thead>
+      <div class="table-wrap"><table class="cards"><thead><tr><th>Позиция</th><th>Категория</th><th>Цена, ₽</th><th class="center">В продаже</th><th></th></tr></thead>
       <tbody>${items.map((c) => `<tr>
-        <td><b>${esc(c.name)}</b><small>${siteTag(c.site)}</small></td><td>${esc(c.category)}</td>
-        <td><input class="price-input mono" type="number" min="0" value="${c.price}" data-price="${c.id}" aria-label="Цена: ${esc(c.name)}"></td>
-        <td><label class="switch"><input type="checkbox" data-active="${c.id}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
-        <td><button class="btn btn--sm btn--danger" data-del="${c.id}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
+        <td class="wide"><b>${esc(c.name)}</b><small>${siteTag(c.site)}</small></td><td data-label="Категория">${esc(c.category)}</td>
+        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="0" value="${c.price}" data-price="${c.id}" aria-label="Цена: ${esc(c.name)}"></td>
+        <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${c.id}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
+        <td class="actions"><button class="btn btn--sm btn--danger" data-del="${c.id}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
       </tr>`).join("")}</tbody></table></div>`;
     $("addItem").onsubmit = async (e) => {
       e.preventDefault();
@@ -306,13 +327,13 @@
   async function team() {
     const users = await api.admin.users();
     $("content").innerHTML = `
-      <div class="table-wrap"><table><thead><tr><th>Сотрудник</th><th>Роль</th><th>Доступ</th><th></th></tr></thead>
-      <tbody>${users.map((u) => `<tr><td><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td><td>${ROLE_NAME[u.role]}</td>
-        <td>${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</td>
-        <td>${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<button class="btn btn--sm btn--danger" data-remove="${u.id}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
+      <div class="table-wrap"><table class="cards"><thead><tr><th>Сотрудник</th><th>Роль</th><th>Доступ</th><th></th></tr></thead>
+      <tbody>${users.map((u) => `<tr><td class="wide"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td><td data-label="Роль">${ROLE_NAME[u.role]}</td>
+        <td data-label="Доступ">${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</td>
+        <td class="actions">${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<button class="btn btn--sm btn--danger" data-remove="${u.id}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
       <form class="panel" id="addUser" style="display:grid;gap:12px">
         <h2>Добавить сотрудника</h2>
-        <div class="add-form" style="grid-template-columns:1fr 1fr 1fr 160px">
+        <div class="add-form add-form--user">
           <input name="name" placeholder="Имя" required aria-label="Имя"><input name="email" type="email" placeholder="E-mail" required aria-label="E-mail">
           <input name="password" type="password" minlength="8" placeholder="Пароль от 8 символов" required aria-label="Пароль">
           <select name="role" aria-label="Роль"><option value="staff">Сотрудник</option><option value="admin">Администратор</option><option value="owner">Владелец</option></select>

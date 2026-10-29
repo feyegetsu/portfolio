@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
   <title>Белая линия — стоматология без боли и страха</title>
   <meta name="description" content="Современная стоматология: лечение, имплантация, отбеливание. Бесплатная консультация и план лечения.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦷</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap"></noscript>
   <style>
+    :root { color-scheme: light only; }
     :root { --bg: #f5f8fc; --ink: #0f2137; --muted: #61738a; --blue: #1d6fe0; --blue-l: #e6f0ff; --mint: #0b8a70; --line: #e2e9f2; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: "Golos Text", system-ui, sans-serif; background: #fff; color: var(--ink); line-height: 1.6; }
     a { color: inherit; text-decoration: none; }
-    button { font: inherit; cursor: pointer; }
+    button { font: inherit; cursor: pointer; color: inherit; }
     .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
     h1, h2, h3 { line-height: 1.15; font-weight: 700; letter-spacing: -.02em; }
     h2 { font-size: clamp(1.8rem, 4vw, 2.7rem); margin-bottom: 12px; }
@@ -114,6 +116,30 @@
     .ok { display: none; text-align: center; padding: 20px; }
     .ok div { font-size: 3rem; }
 
+    /* Кликабельные фото клиники и карточки врачей */
+    .clinic figure { cursor: pointer; }
+    .clinic figure:focus-visible, .doc:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .clinic figcaption i { font-style: normal; color: var(--blue); margin-left: 6px; }
+    button.doc { display: block; width: 100%; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+    .doc__b em { display: block; font-style: normal; color: var(--blue); font-weight: 600; font-size: 14px; margin-top: 12px; }
+
+    .info { border: 0; padding: 0; margin: auto; width: min(760px, calc(100% - 24px)); max-height: calc(100% - 24px); border-radius: 26px; color: var(--ink); background: #fff; box-shadow: 0 40px 90px -30px rgba(15, 33, 55, .55); }
+    .info::backdrop { background: rgba(15, 33, 55, .55); backdrop-filter: blur(4px); }
+    .info[open] { animation: info-in .3s cubic-bezier(.2,.8,.2,1); }
+    @keyframes info-in { from { opacity: 0; transform: translateY(20px) scale(.98); } }
+    .info__grid { display: grid; grid-template-columns: 1fr 1.15fr; }
+    .info__ph { min-height: 100%; background: var(--blue-l); }
+    .info__ph img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .info__b { padding: 32px 30px 28px; }
+    .info__b small { color: var(--blue); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+    .info__b h3 { font-size: 1.6rem; margin: 6px 0 10px; }
+    .info__b > p { color: var(--muted); }
+    .info__b ul { list-style: none; margin: 18px 0 22px; display: grid; gap: 9px; }
+    .info__b li { position: relative; padding-left: 26px; font-size: 15px; }
+    .info__b li::before { content: "✓"; position: absolute; left: 0; color: var(--mint); font-weight: 700; }
+    .info__close { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.92); font-size: 18px; box-shadow: 0 6px 16px -8px rgba(15,33,55,.5); z-index: 1; }
+    @media (max-width: 680px) { .info__grid { grid-template-columns: 1fr; } .info__ph { height: 240px; } .info__b { padding: 24px 22px; } }
+
     footer { padding: 40px 0; color: var(--muted); font-size: 14px; }
     .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 
@@ -126,6 +152,8 @@
     }
     @media (max-width: 480px) { .doctors { grid-template-columns: 1fr; } .quiz__box { padding: 22px; } .prow { padding: 16px; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+    h1, h2, h3, .logo { font-family: "Nunito", "Golos Text", system-ui, sans-serif; }
+    h1, h2 { font-weight: 900; letter-spacing: -.01em; }
   </style>
 </head>
 <body>
@@ -181,9 +209,9 @@
       <h2 data-reveal>Клиника, в которую не страшно</h2>
       <p class="muted" data-reveal>Светлые кабинеты, современное оборудование и врачи, которые объясняют каждый шаг.</p>
       <div class="clinic">
-        <figure data-reveal="zoom"><img loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=75" alt="Кабинет клиники"><figcaption>Кабинеты</figcaption></figure>
-        <figure data-reveal="zoom" style="--d:120ms"><img loading="lazy" src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=75" alt="Врач с пациентом"><figcaption>Приём</figcaption></figure>
-        <figure data-reveal="zoom" style="--d:240ms"><img loading="lazy" src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=700&q=75" alt="Стоматологическое кресло"><figcaption>Оборудование</figcaption></figure>
+        <figure data-reveal="zoom" data-info="rooms" tabindex="0" role="button" aria-label="Кабинеты: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=75" alt="Кабинет клиники"><figcaption>Кабинеты <i>Подробнее →</i></figcaption></figure>
+        <figure data-reveal="zoom" style="--d:120ms" data-info="visit" tabindex="0" role="button" aria-label="Приём: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=75" alt="Врач с пациентом"><figcaption>Приём <i>Подробнее →</i></figcaption></figure>
+        <figure data-reveal="zoom" style="--d:240ms" data-info="tech" tabindex="0" role="button" aria-label="Оборудование: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=700&q=75" alt="Стоматологическое кресло"><figcaption>Оборудование <i>Подробнее →</i></figcaption></figure>
       </div>
     </div>
   </section>
@@ -215,10 +243,10 @@
       <h2>Наши врачи</h2>
       <p class="muted">Каждый врач проходит обучение минимум раз в год.</p>
       <div class="doctors" data-stagger>
-        <div class="doc"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=500&q=75" alt="Анна Соколова"></div><div class="doc__b"><h3>Анна Соколова</h3><p>Главный врач, терапевт</p><span>Стаж 16 лет</span></div></div>
-        <div class="doc"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=500&q=75" alt="Михаил Орлов"></div><div class="doc__b"><h3>Михаил Орлов</h3><p>Хирург-имплантолог</p><span>Стаж 12 лет</span></div></div>
-        <div class="doc"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=75" alt="Елена Ким"></div><div class="doc__b"><h3>Елена Ким</h3><p>Ортодонт, элайнеры</p><span>Стаж 9 лет</span></div></div>
-        <div class="doc"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=500&q=75" alt="Павел Лебедев"></div><div class="doc__b"><h3>Павел Лебедев</h3><p>Ортопед, виниры</p><span>Стаж 11 лет</span></div></div>
+        <button class="doc" data-doc="0" aria-label="Анна Соколова: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=500&q=75" alt="Анна Соколова"></div><div class="doc__b"><h3>Анна Соколова</h3><p>Главный врач, терапевт</p><span>Стаж 16 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="1" aria-label="Михаил Орлов: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=500&q=75" alt="Михаил Орлов"></div><div class="doc__b"><h3>Михаил Орлов</h3><p>Хирург-имплантолог</p><span>Стаж 12 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="2" aria-label="Елена Ким: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=75" alt="Елена Ким"></div><div class="doc__b"><h3>Елена Ким</h3><p>Ортодонт, элайнеры</p><span>Стаж 9 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="3" aria-label="Павел Лебедев: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=500&q=75" alt="Павел Лебедев"></div><div class="doc__b"><h3>Павел Лебедев</h3><p>Ортопед, виниры</p><span>Стаж 11 лет</span><em>О враче →</em></div></button>
       </div>
     </div>
   </section>
@@ -245,6 +273,20 @@
       </div>
     </div>
   </section>
+
+  <dialog class="info" id="info" aria-labelledby="infoTitle">
+    <button class="info__close" id="infoClose" aria-label="Закрыть">✕</button>
+    <div class="info__grid">
+      <div class="info__ph"><img id="infoImg" alt=""></div>
+      <div class="info__b">
+        <small id="infoKicker"></small>
+        <h3 id="infoTitle"></h3>
+        <p id="infoText"></p>
+        <ul id="infoList"></ul>
+        <a href="#book" class="btn" id="infoCta">Записаться на консультацию</a>
+      </div>
+    </div>
+  </dialog>
 
   <footer>
     <div class="container foot">
@@ -320,6 +362,53 @@
       answers.push(questions[step].a[b.dataset.i][2]); step++; renderQuiz();
     });
     renderQuiz();
+
+    // Подробности о клинике и врачах
+    const clinicInfo = {
+      rooms: ["О клинике", "Кабинеты", "6 отдельных кабинетов со звукоизоляцией: соседи не слышат бормашину, а вы не слышите соседей.", ["Отдельный детский кабинет с мультиками на потолке", "Стерилизация по классу B, инструменты вскрываем при вас", "Зона ожидания с кофе и Wi-Fi", "Парковка для пациентов у входа"]],
+      visit: ["О клинике", "Как проходит приём", "Первый визит занимает около часа. Врач осматривает, делает снимок и составляет план лечения с ценами. Лечить в этот день не обязательно.", ["Осмотр и консультация бесплатно", "План лечения с фиксированной ценой", "Анестезия подбирается под вас, включена в стоимость", "Напоминание о визите в Telegram за день"]],
+      tech: ["О клинике", "Оборудование", "Диагностика и лечение на оборудовании, которое позволяет видеть больше и лечить точнее.", ["3D-томограф Planmeca: снимок за 10 секунд с минимальной дозой", "Микроскоп Carl Zeiss для лечения каналов", "Интраоральный сканер вместо слепочной массы", "Отбеливание ZOOM 4 за один визит"]],
+    };
+    const doctorsInfo = [
+      ["Терапевт · стаж 16 лет", "Лечит кариес и каналы под микроскопом. Возглавляет клинику и лично проверяет каждый план лечения.", ["Лечение каналов под микроскопом", "Художественная реставрация зубов", "Повышение квалификации в Германии, 2024", "Принимает пн, ср, пт"]],
+      ["Хирург-имплантолог · стаж 12 лет", "Установил более 3 000 имплантов. Проводит удаление зубов мудрости и костную пластику.", ["Имплантация Osstem и Straumann", "Протокол All-on-4 за один день", "Сертифицированный специалист Straumann", "Принимает вт, чт, сб"]],
+      ["Ортодонт · стаж 9 лет", "Выравнивает зубы взрослым и детям. Показывает 3D-модель будущей улыбки ещё до начала лечения.", ["Брекеты и элайнеры", "Детская ортодонтия с 6 лет", "Цифровое планирование лечения", "Принимает пн, ср, сб"]],
+      ["Ортопед · стаж 11 лет", "Восстанавливает зубы коронками и винирами. Подбирает цвет так, что реставрацию не отличить от своего зуба.", ["Виниры E.max и коронки из циркония", "Протезирование на имплантах", "Цифровой подбор цвета", "Принимает вт, чт, пт"]],
+    ];
+    const info = $("info");
+    let infoDoctor = null;
+    function openInfo(img, alt, [kicker, text, list], title) {
+      $("infoImg").src = img.replace(/w=\d+/, "w=900");
+      $("infoImg").alt = alt;
+      $("infoKicker").textContent = kicker;
+      $("infoTitle").textContent = title;
+      $("infoText").textContent = text;
+      $("infoList").innerHTML = list.map(li => `<li>${li}</li>`).join("");
+      $("infoCta").textContent = infoDoctor ? `Записаться к врачу` : "Записаться на консультацию";
+      info.showModal();
+    }
+    document.querySelectorAll("[data-info]").forEach(f => {
+      const open = () => {
+        const [kicker, title, text, list] = clinicInfo[f.dataset.info];
+        const img = f.querySelector("img");
+        infoDoctor = null;
+        openInfo(img.src, img.alt, [kicker, text, list], title);
+      };
+      f.addEventListener("click", open);
+      f.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open()));
+    });
+    document.querySelectorAll("[data-doc]").forEach(b => b.addEventListener("click", () => {
+      const img = b.querySelector("img");
+      infoDoctor = +b.dataset.doc + 1;
+      openInfo(img.src, img.alt, doctorsInfo[b.dataset.doc], img.alt);
+    }));
+    $("infoClose").onclick = () => info.close();
+    info.addEventListener("click", e => e.target === info && info.close());
+    $("infoCta").addEventListener("click", () => {
+      // Запись к выбранному врачу: подставляем его в форму
+      if (infoDoctor) document.querySelector("#bookForm select").selectedIndex = infoDoctor;
+      info.close();
+    });
 
     $("bookForm").addEventListener("submit", async e => {
       e.preventDefault();

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
   <title>Taskly — задачи команды в одном месте</title>
   <meta name="description" content="Таск-менеджер для небольших команд: доски, сроки, интеграция с Telegram. 14 дней бесплатно.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%234f46e5'/><path d='M28 52l14 14 30-32' stroke='white' stroke-width='12' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
@@ -13,12 +14,13 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"></noscript>
   <style>
+    :root { color-scheme: light only; }
     :root { --bg: #fbfbfd; --ink: #0d0f1a; --muted: #6b7086; --indigo: #4f46e5; --indigo-l: #eef0ff; --line: #e8e9f1; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
     a { color: inherit; text-decoration: none; }
-    button { font: inherit; cursor: pointer; }
+    button { font: inherit; cursor: pointer; color: inherit; }
     .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
     h1, h2, h3 { font-family: "Inter Tight", "Inter", sans-serif; letter-spacing: -.035em; line-height: 1.05; }
     h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); margin-bottom: 14px; }
@@ -168,7 +170,7 @@
 
   <section class="hero" style="padding-bottom:0">
     <div class="container">
-      <span class="announce">Новое: интеграция с Telegram <b>Подробнее →</b></span>
+      <a href="#telegram" class="announce">Новое: бот Taskly в Telegram <b>Подробнее →</b></a>
       <h1>Все задачи команды. <span class="grad">Без хаоса в чатах.</span></h1>
       <p>Taskly собирает задачи, сроки и обсуждения в одном месте и напоминает о дедлайнах прямо в Telegram.</p>
       <div class="hero__cta"><a href="#start" class="btn btn--indigo">Начать бесплатно</a><a href="#features" class="btn btn--line">Как это работает</a></div>
@@ -190,7 +192,7 @@
     <div class="container">
       <div class="center"><h2>Всё, что нужно команде</h2><p class="muted">Без лишних функций, которыми никто не пользуется.</p></div>
       <div class="bento" data-stagger>
-        <div class="tile t1">
+        <div class="tile t1" id="telegram" style="scroll-margin-top:90px">
           <h3>Напоминания в Telegram</h3>
           <p>Бот пишет, когда вам назначили задачу или подходит срок. Отметить задачу выполненной можно прямо из чата.</p>
           <div class="tg"><div>🔔 Вам назначена задача «Макет главной»</div><div>⏰ Завтра дедлайн: «Тексты для лендинга»</div></div>

@@ -34,8 +34,25 @@ burger.addEventListener("click", () => setMenu(!nav.classList.contains("open")))
 nav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setMenu(false)));
 
 // ---------- Бегущая строка ниш ----------
-const niches = ["Кофейни", "Доставка еды", "Рестораны","Барбершопы", "Салоны красоты", "Клиники", "Фитнес", "Автосервисы", "Цветы", "Недвижимость", "Стартапы"];
-$("ticker").innerHTML = [...niches, ...niches].map((n) => `<span>${n}</span>`).join("");
+const niches = [
+  ["Кофейни", '<path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8zM6 2v3M10 2v3M14 2v3"/>'],
+  ["Доставка еды", '<path d="M5 17a2 2 0 1 0 4 0 2 2 0 1 0-4 0M15 17a2 2 0 1 0 4 0 2 2 0 1 0-4 0M9 17h6M3 11h11V6H3zM14 9h4l3 4v4h-2"/>'],
+  ["Рестораны", '<path d="M4 3v8a3 3 0 0 0 6 0V3M7 3v18M17 21V3c-2 1-3 4-3 8h3"/>'],
+  ["Барбершопы", '<path d="M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.1 8.1 20 20M8.1 15.9 20 4"/>'],
+  ["Салоны красоты", '<path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/>'],
+  ["Клиники", '<path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11zM12 9v5M9.5 11.5h5"/>'],
+  ["Фитнес", '<path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/>'],
+  ["Автосервисы", '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>'],
+  ["Цветы", '<path d="M12 22V12M12 12a4 4 0 1 1 4-4 4 4 0 1 1-4 4zM12 12a4 4 0 1 0-4-4M12 18c-3 0-5-2-5-4 2 0 5 1 5 4zM12 18c3 0 5-2 5-4-2 0-5 1-5 4z"/>'],
+  ["Недвижимость", '<path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6"/>'],
+  ["Стартапы", '<path d="M5 15c-1 1-1.5 4-1.5 4.5S7 20 8 19M14 4c3-1 6-1 6-1s0 3-1 6l-6 6-5-5zM9 10H5l-2 3 4 1M14 15v4l-3 2-1-4"/>'],
+];
+const tick = niches.map(([n, d]) => `<span><i class="orb"><svg viewBox="0 0 24 24">${d}</svg></i>${n}</span>`).join("");
+$("ticker").innerHTML = tick + tick;
+
+// ---------- Кнопка «наверх» ----------
+const toTop = $("toTop");
+addEventListener("scroll", () => toTop.classList.toggle("show", scrollY > innerHeight * 0.8), { passive: true });
 
 // ---------- Работы и кейсы ----------
 // goal — задача бизнеса, done — что сделано, tech — как устроено внутри
@@ -62,7 +79,7 @@ const projects = [
     text: "Клиника с прайсом по вкладкам и квизом, который считает стоимость лечения.",
     tags: ["Квиз", "Прайс", "Лиды"],
     goal: "Клинике нужно снять страх «сколько это будет стоить» и получать больше заявок на первичную консультацию.",
-    done: ["Квиз из трёх вопросов с расчётом примерной стоимости и закреплением скидки", "Прайс по направлениям, переключается без перезагрузки", "Карточки врачей, фото клиники и форма записи к конкретному врачу"],
+    done: ["Квиз из трёх вопросов с расчётом примерной стоимости и закреплением скидки", "Прайс по направлениям, переключается без перезагрузки", "Кликабельные карточки врачей и клиники: специализация, график, оборудование", "Кнопка «Записаться к врачу» сама выбирает врача в форме записи"],
     tech: ["Квиз — маленький конечный автомат: шаги и итог считаются из данных, вопросы легко менять", "Обязательная медицинская оговорка в подвале", "Счётчики и появление блоков из общего модуля анимаций"] },
   { slug: "cafe", title: "Кофейня «Зерно»", niche: "Общепит", cat: "food",
     text: "Сайт кофейни с меню по категориям, галереей и бронью столика.",
@@ -183,7 +200,7 @@ function openCase(slug, push = true) {
     caseEl.showModal();
     document.body.classList.add("lock");
   }
-  const device = p.phone || p.bot ? "phone" : "desktop";
+  const device = p.phone || p.bot || matchMedia("(max-width: 760px)").matches ? "phone" : "desktop";
   caseEl.querySelector(".case__inner").innerHTML = `
     <div class="case__stage">
       <div class="case__devices" role="group" aria-label="Устройство">
@@ -196,6 +213,7 @@ function openCase(slug, push = true) {
           : `<iframe src="${caseUrl(p)}${p.phone ? "?embed" : ""}" title="Демо: ${p.title}" loading="lazy"></iframe>`}
       </div>
       <p class="case__hint">${p.bot ? "Живая симуляция бота ниже на странице" : "Сайт живой: можно кликать прямо здесь"}</p>
+      ${p.bot ? "" : `<a class="btn case__open" href="${caseUrl(p)}" target="_blank" rel="noopener">Открыть на весь экран ↗</a>`}
     </div>
     <article class="case__text">
       <span class="work__niche">${p.niche}</span>
@@ -206,7 +224,7 @@ function openCase(slug, push = true) {
       <h3>Под капотом</h3><ul class="case__tech">${p.tech.map((d) => `<li>${d}</li>`).join("")}</ul>
       <ul class="tags">${p.tags.map((t) => `<li>${t}</li>`).join("")}</ul>
       <div class="case__actions">
-        ${p.bot ? "" : `<a class="btn" href="${caseUrl(p)}" target="_blank" rel="noopener">Открыть сайт ↗</a>`}
+        ${p.bot ? "" : `<a class="btn case__site" href="${caseUrl(p)}" target="_blank" rel="noopener">Открыть сайт ↗</a>`}
         <a class="btn btn--ghost" href="${codeUrl(p)}" target="_blank" rel="noopener">Код на GitHub</a>
       </div>
       <div class="case__nav">
@@ -225,39 +243,47 @@ function fitCaseFrame() {
   const frame = $("caseFrame");
   const f = frame && frame.querySelector("iframe");
   if (!f) return;
-  if (frame.classList.contains("frame--desktop")) {
-    const k = frame.clientWidth / 1280;
-    Object.assign(f.style, { width: "1280px", height: `${frame.clientHeight / k}px`, transform: `scale(${k})`, transformOrigin: "0 0" });
+  // В режиме «Телефон» на узком экране сайт рисуется на ширине обычного смартфона (390px) и тоже уменьшается
+  const base = frame.classList.contains("frame--desktop") ? 1280 : frame.clientWidth < 390 ? 390 : 0;
+  if (base) {
+    const k = frame.clientWidth / base;
+    Object.assign(f.style, { width: `${base}px`, height: `${frame.clientHeight / k}px`, transform: `scale(${k})`, transformOrigin: "0 0", position: "absolute", top: "0", left: "0" });
   } else {
-    Object.assign(f.style, { width: "", height: "", transform: "" });
+    Object.assign(f.style, { width: "", height: "", transform: "", position: "", top: "", left: "" });
   }
 }
 addEventListener("resize", () => caseEl.open && fitCaseFrame());
 
 // Уборка после закрытия делается сразу, не дожидаясь события close: в фоновых вкладках оно может прийти с опозданием
-function cleanupCase() {
+function cleanupCase(restoreFocus = true) {
   if (!document.body.classList.contains("lock")) return;
   document.body.classList.remove("lock");
   caseEl.querySelector(".case__inner").innerHTML = "";
   if (location.hash.startsWith("#case-")) history.replaceState(null, "", "#works");
-  if (lastFocus) lastFocus.focus();
+  // preventScroll: иначе фокус прокручивает страницу обратно к карточке
+  if (lastFocus && restoreFocus) lastFocus.focus({ preventScroll: true });
 }
-function closeCase() {
+function closeCase(restoreFocus = true) {
   if (caseEl.open) caseEl.close();
-  cleanupCase();
+  cleanupCase(restoreFocus);
 }
 caseEl.addEventListener("cancel", (e) => {
   e.preventDefault();
   closeCase();
 });
-caseEl.addEventListener("close", cleanupCase);
+caseEl.addEventListener("close", () => cleanupCase());
 caseEl.addEventListener("click", (e) => {
   if (e.target === caseEl) return closeCase();
   const t = e.target.closest("button, a");
   if (!t) return;
   if (t.matches("[data-close]")) {
-    closeCase();
-    if (t.getAttribute("href") === "#bot") $("bot").scrollIntoView({ behavior: "smooth" });
+    if (t.getAttribute("href") === "#bot") {
+      e.preventDefault();
+      closeCase(false);
+      // Прыжок к симуляции: после закрытия окна, когда страница снова прокручивается
+      history.replaceState(null, "", "#bot");
+      setTimeout(() => $("bot").querySelector(".phone").scrollIntoView({ behavior: "smooth", block: "center" }), 30);
+    } else closeCase();
     return;
   }
   if (t.dataset.step) openCase(projects[(caseIdx + +t.dataset.step + projects.length) % projects.length].slug);
@@ -367,15 +393,22 @@ function addMsg(text, who = "bot") {
   chat.scrollTop = chat.scrollHeight;
 }
 
+// Пока бот «печатает», старые кнопки остаются на месте, но не нажимаются:
+// раскладка не прыгает, и второй быстрый тап не попадает в новую кнопку
+let keysReadyAt = 0;
 function setKeys(buttons) {
   keys.innerHTML = "";
+  keys.classList.remove("busy");
+  keysReadyAt = performance.now() + 250;
   buttons.forEach(({ label, action, wide }) => {
     const b = document.createElement("button");
+    b.type = "button";
     b.textContent = label;
     if (wide) b.classList.add("wide");
     b.addEventListener("click", () => {
+      if (keys.classList.contains("busy") || performance.now() < keysReadyAt) return;
+      keys.classList.add("busy");
       addMsg(label, "user");
-      keys.innerHTML = "";
       botReply(action);
     });
     keys.appendChild(b);
