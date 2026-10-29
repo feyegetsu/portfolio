@@ -52,7 +52,13 @@ $("ticker").innerHTML = tick + tick;
 
 // ---------- Кнопка «наверх» ----------
 const toTop = $("toTop");
-addEventListener("scroll", () => toTop.classList.toggle("show", scrollY > innerHeight * 0.8), { passive: true });
+const updateTop = () => {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  toTop.style.setProperty("--p", max > 0 ? Math.min(1, scrollY / max).toFixed(3) : 0);
+  toTop.classList.toggle("show", scrollY > 240);
+};
+addEventListener("scroll", updateTop, { passive: true });
+updateTop();
 
 // ---------- Работы и кейсы ----------
 // goal — задача бизнеса, done — что сделано, tech — как устроено внутри

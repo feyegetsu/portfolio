@@ -8,6 +8,7 @@
  *   data-tilt              карточка слегка наклоняется за курсором
  *   img[data-fade]         картинка плавно проявляется после загрузки
  *   header[data-shrink]    получает класс .scrolled, когда страницу прокрутили
+ *   кнопка «наверх»        добавляется сама, цвет берётся у первой кнопки .btn на странице
  */
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -79,6 +80,8 @@
     addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
+    toTopButton();
+
     // Наклон карточек за курсором
     if (!reduce && matchMedia("(hover: hover)").matches) {
       document.querySelectorAll("[data-tilt]").forEach((el) => {
@@ -91,6 +94,43 @@
         el.addEventListener("mouseleave", () => { el.style.transform = ""; });
       });
     }
+  }
+
+  // Кнопка «наверх» с кольцом прогресса прокрутки, в цветах сайта
+  function toTopButton() {
+    const sample = document.querySelector(".btn");
+    const cs = sample ? getComputedStyle(sample) : null;
+    const bg = cs && cs.backgroundColor !== "rgba(0, 0, 0, 0)" ? cs.backgroundColor : "#111";
+    const fg = cs ? cs.color : "#fff";
+    const style = document.createElement("style");
+    style.textContent = `
+      .pf-top { position: fixed; right: 18px; bottom: 18px; z-index: 45; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+        background: ${bg}; color: ${fg}; box-shadow: 0 14px 28px -12px rgba(0, 0, 0, .55); opacity: 0; translate: 0 20px; scale: .8; pointer-events: none;
+        transition: opacity .3s, translate .4s cubic-bezier(.2,.8,.2,1), scale .4s cubic-bezier(.2,.8,.2,1); -webkit-tap-highlight-color: transparent; }
+      .pf-top.show { opacity: 1; translate: 0 0; scale: 1; pointer-events: auto; animation: pf-bob 3s ease-in-out infinite; }
+      .pf-top:hover { scale: 1.08; animation-play-state: paused; }
+      @keyframes pf-bob { 50% { translate: 0 -5px; } }
+      .pf-top svg { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; }
+      .pf-top circle { fill: none; stroke: currentColor; stroke-width: 2.5; }
+      .pf-top .track { opacity: .25; }
+      .pf-top .bar { stroke-linecap: round; stroke-dasharray: 144.5; stroke-dashoffset: calc(144.5 - 144.5 * var(--p, 0)); }
+      .pf-top i { font-style: normal; font-size: 20px; line-height: 1; font-weight: 700; }
+      @media (prefers-reduced-motion: reduce) { .pf-top.show { animation: none; } }`;
+    document.head.appendChild(style);
+    const a = document.createElement("a");
+    a.href = "#";
+    a.className = "pf-top";
+    a.setAttribute("aria-label", "Наверх");
+    a.innerHTML = '<svg viewBox="0 0 52 52" aria-hidden="true"><circle class="track" cx="26" cy="26" r="23"/><circle class="bar" cx="26" cy="26" r="23"/></svg><i aria-hidden="true">↑</i>';
+    a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }); });
+    document.body.appendChild(a);
+    const update = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      a.style.setProperty("--p", max > 0 ? Math.min(1, scrollY / max).toFixed(3) : 0);
+      a.classList.toggle("show", scrollY > 240);
+    };
+    addEventListener("scroll", update, { passive: true });
+    update();
   }
 
   function countUp(el) {

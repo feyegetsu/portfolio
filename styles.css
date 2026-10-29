@@ -157,32 +157,33 @@ h3 { font-size: 1.08rem; font-weight: 500; margin-bottom: 8px; }
 .btn { will-change: transform; }
 
 .ticker {
-  margin-top: 90px; border-block: 1px solid rgba(124, 92, 255, .35); overflow: hidden; padding: 18px 0; position: relative; z-index: 1;
-  background: linear-gradient(90deg, rgba(124, 92, 255, .14), rgba(34, 211, 238, .08) 50%, rgba(124, 92, 255, .14));
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  margin-top: 90px; border-block: 1px solid var(--line); overflow: hidden; padding: 20px 0; position: relative; z-index: 1;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
-.ticker > div { display: flex; width: max-content; animation: ticker 26s linear infinite; }
-.ticker:hover > div { animation-play-state: paused; }
-.ticker span { font-family: var(--font-head); font-size: 1.05rem; color: #f1f3f8; padding: 0 22px; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
-.orb {
-  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0;
-  background: radial-gradient(circle at 32% 28%, #fff 0, #d9ceff 12%, #8b6cff 42%, #4a2fc4 78%, #2a1a7a 100%);
-  box-shadow: inset -3px -4px 8px rgba(20, 8, 70, .55), 0 0 18px -2px rgba(124, 92, 255, .75);
-}
-.ticker span:nth-child(even) .orb { background: radial-gradient(circle at 32% 28%, #fff 0, #c9f6ff 12%, #3fd8f2 42%, #0d8aa6 78%, #08495a 100%); box-shadow: inset -3px -4px 8px rgba(3, 40, 52, .55), 0 0 18px -2px rgba(34, 211, 238, .7); }
-.orb svg { width: 17px; height: 17px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .35)); }
+.ticker > div { display: flex; width: max-content; animation: ticker 30s linear infinite; }
+.ticker span { font-family: var(--font-head); font-size: 1.1rem; font-weight: 500; color: #f4f5f8; padding: 0 30px; display: flex; align-items: center; gap: 10px; white-space: nowrap; position: relative; }
+.ticker span::after { content: ""; position: absolute; right: -2px; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--line); transform: translateY(-50%); }
+.orb { display: flex; }
+.orb svg { width: 20px; height: 20px; display: block; fill: none; stroke: var(--accent-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ticker span:nth-child(even) .orb svg { stroke: #a993ff; }
 @keyframes ticker { to { transform: translateX(-50%); } }
 
-/* Кнопка «наверх» */
+/* Кнопка «наверх»: кольцо вокруг стрелки показывает, сколько страницы пройдено */
 .to-top {
-  position: fixed; right: 20px; bottom: 20px; z-index: 40; width: 50px; height: 50px; border-radius: 50%;
-  display: grid; place-items: center; background: linear-gradient(135deg, #6a45f5, #7c4dff); color: #fff;
-  box-shadow: 0 14px 30px -10px rgba(124, 92, 255, .8); opacity: 0; transform: translateY(16px) scale(.9); pointer-events: none;
-  transition: opacity .25s, transform .25s var(--ease);
+  position: fixed; right: 20px; bottom: 20px; z-index: 40; width: 54px; height: 54px; border-radius: 50%;
+  display: grid; place-items: center; background: rgba(21, 25, 34, .88); backdrop-filter: blur(8px); color: #fff;
+  box-shadow: 0 14px 30px -12px rgba(124, 92, 255, .9); opacity: 0; translate: 0 20px; scale: .8; pointer-events: none;
+  transition: opacity .3s, translate .4s var(--ease), scale .4s var(--ease);
 }
-.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
-.to-top:hover { transform: translateY(-3px); }
-.to-top svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.to-top.show { opacity: 1; translate: 0 0; scale: 1; pointer-events: auto; animation: bob 3s ease-in-out infinite; }
+.to-top:hover { scale: 1.08; animation-play-state: paused; }
+.to-top:hover .to-top__arrow { translate: 0 -3px; }
+@keyframes bob { 50% { translate: 0 -5px; } }
+.to-top__ring { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; }
+.to-top__ring circle { fill: none; stroke-width: 3; }
+.to-top__ring .track { stroke: rgba(255, 255, 255, .1); }
+.to-top__ring .bar { stroke: url(#topGrad); stroke-linecap: round; stroke-dasharray: 150.8; stroke-dashoffset: calc(150.8 - 150.8 * var(--p, 0)); }
+.to-top__arrow { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: translate .25s; }
 body.lock .to-top { display: none; }
 
 /* Sections */
@@ -483,7 +484,7 @@ legend { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color
   .stack-win--1 { left: 0; transform: rotate(-4deg); }
   .stack-win--2 { right: 0; transform: rotate(3deg); }
   .hero { overflow: clip; }
-  .to-top { right: 16px; bottom: 16px; width: 46px; height: 46px; }
+  .to-top { right: 14px; bottom: 14px; width: 50px; height: 50px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

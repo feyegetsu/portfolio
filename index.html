@@ -349,7 +349,10 @@
     </div>
   </dialog>
 
-  <a href="#top" class="to-top" id="toTop" aria-label="Наверх"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
+  <a href="#top" class="to-top" id="toTop" aria-label="Наверх">
+    <svg class="to-top__ring" viewBox="0 0 54 54" aria-hidden="true"><defs><linearGradient id="topGrad"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><circle class="track" cx="27" cy="27" r="24"/><circle class="bar" cx="27" cy="27" r="24"/></svg>
+    <svg class="to-top__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
   <div class="toast" id="toast" role="status"></div>
   <script src="script.js" defer></script>
 </body>

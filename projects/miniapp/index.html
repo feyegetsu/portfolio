@@ -603,9 +603,14 @@
       if (d.mode) { state.mode = d.mode; haptic("soft"); return render(); }
       if (d.cat) {
         const sec = $("sec-" + d.cat);
-        const scroller = inTG ? document.scrollingElement : $("view");
-        const top = sec.getBoundingClientRect().top - scroller.getBoundingClientRect?.().top + scroller.scrollTop - 52;
-        inTG ? window.scrollTo({ top: sec.getBoundingClientRect().top + scrollY - 52, behavior: "smooth" }) : $("view").scrollTo({ top, behavior: "smooth" });
+        const offset = $("cats").offsetHeight + 8;
+        // Пока меню едет к разделу, подсветка стоит на выбранной категории, а не мигает по пути
+        catLock = d.cat;
+        clearTimeout(catLockTimer);
+        catLockTimer = setTimeout(() => { catLock = null; }, 900);
+        highlightCat(d.cat);
+        if (inTG) window.scrollTo({ top: sec.getBoundingClientRect().top + scrollY - offset, behavior: "smooth" });
+        else $("view").scrollTo({ top: sec.getBoundingClientRect().top - $("view").getBoundingClientRect().top + $("view").scrollTop - offset, behavior: "smooth" });
       }
     });
     $("view").addEventListener("submit", (e) => {
@@ -617,20 +622,39 @@
       else { $("promoMsg").innerHTML = '<span class="err">Такого промокода нет</span>'; haptic("heavy"); }
     });
 
-    // Подсветка категории при прокрутке меню
-    $("view").addEventListener("scroll", () => {
-      if (state.screen !== "menu" || state.query) return;
-      let current = CATS[0][0];
-      for (const [c] of CATS) {
-        const s = $("sec-" + c);
-        if (s && s.getBoundingClientRect().top - $("view").getBoundingClientRect().top < 120) current = c;
-      }
-      document.querySelectorAll(".cat").forEach((b) => {
+    // Подсветка категории при прокрутке меню.
+    // Полоса категорий прокручивается только по горизонтали: scrollIntoView здесь прерывал бы прокрутку самого меню
+    let catLock = null, catLockTimer;
+    function highlightCat(current) {
+      const bar = $("cats");
+      if (!bar) return;
+      bar.querySelectorAll(".cat").forEach((b) => {
         const on = b.dataset.cat === current;
-        if (on && !b.classList.contains("on")) b.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+        if (on && !b.classList.contains("on")) bar.scrollTo({ left: b.offsetLeft - (bar.clientWidth - b.offsetWidth) / 2, behavior: "smooth" });
         b.classList.toggle("on", on);
       });
-    }, { passive: true });
+    }
+    function onMenuScroll() {
+      if (state.screen !== "menu" || state.query || !$("cats")) return;
+      if (catLock) {
+        clearTimeout(catLockTimer);
+        catLockTimer = setTimeout(() => { catLock = null; }, 150);
+        return;
+      }
+      const top = inTG ? 0 : $("view").getBoundingClientRect().top;
+      const edge = $("cats").offsetHeight + 40;
+      let current = CATS[0][0];
+      for (const [c] of CATS) {
+        const sec = $("sec-" + c);
+        if (sec && sec.getBoundingClientRect().top - top < edge) current = c;
+      }
+      // У самого низа последний раздел не доезжает до верха, но выбран именно он
+      const sc = inTG ? document.scrollingElement : $("view");
+      if (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 4) current = CATS[CATS.length - 1][0];
+      highlightCat(current);
+    }
+    $("view").addEventListener("scroll", onMenuScroll, { passive: true });
+    addEventListener("scroll", () => inTG && onMenuScroll(), { passive: true });
 
     let tt;
     function toast(msg) {
