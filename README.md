@@ -30,9 +30,9 @@
 | <img src="assets/previews/realty.jpg" width="160"> | [**Квадрат**](https://feyegetsu.github.io/portfolio/projects/realty/) | Недвижимость | Фильтры, избранное, галерея объекта, ипотечный калькулятор |
 | <img src="assets/previews/saas.jpg" width="160"> | [**Taskly**](https://feyegetsu.github.io/portfolio/projects/saas/) | IT-стартап | Канбан с drag & drop мышью и пальцем, расчёт тарифа |
 | <img src="assets/previews/autoservice.jpg" width="160"> | [**МоторЛайн**](https://feyegetsu.github.io/portfolio/projects/autoservice/) | Авто | Калькулятор ремонта, отслеживание статуса машины |
-| <img src="assets/previews/fitness.jpg" width="160"> | [**PULSE**](https://feyegetsu.github.io/portfolio/projects/fitness/) | Спорт | Расписание на неделю с записью и свободными местами |
-| <img src="assets/previews/barbershop.jpg" width="160"> | [**BLADE**](https://feyegetsu.github.io/portfolio/projects/barbershop/) | Красота | Онлайн-запись в 3 шага со свободными слотами |
-| <img src="assets/previews/cafe.jpg" width="160"> | [**Зерно**](https://feyegetsu.github.io/portfolio/projects/cafe/) | Общепит | Меню с фото, галерея, бронь столика |
+| <img src="assets/previews/fitness.jpg" width="160"> | [**PULSE**](https://feyegetsu.github.io/portfolio/projects/fitness/) | Спорт | Сайт-плакат: расписание с записью и свободными местами |
+| <img src="assets/previews/barbershop.jpg" width="160"> | [**BLADE**](https://feyegetsu.github.io/portfolio/projects/barbershop/) | Красота | Олдскульная вывеска и онлайн-запись в 3 шага |
+| <img src="assets/previews/cafe.jpg" width="160"> | [**Зерно**](https://feyegetsu.github.io/portfolio/projects/cafe/) | Общепит | Вёрстка в стиле газеты: печатное меню, полароиды, бронь-билет |
 | 🤖 | [**Бот для заказов**](projects/cafe-bot/) | Telegram-бот | Python + aiogram 3: корзина, заказы в SQLite, уведомления админу, рассылки |
 
 ### Бэкенд и админка

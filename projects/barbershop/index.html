@@ -8,7 +8,7 @@
   <meta name="description" content="Мужские стрижки и уход за бородой. Онлайн-запись к мастеру за 30 секунд.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" imagesizes="100vw" fetchpriority="high">
+  <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" imagesizes="(max-width: 1120px) 100vw, 1080px" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=optional">
@@ -25,6 +25,8 @@
     h1, h2, h3 { font-family: "Oswald", Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; line-height: 1.1; }
     h2 { font-size: clamp(2rem, 4.5vw, 3rem); margin-bottom: 12px; }
     h2 em { color: var(--gold); font-style: normal; }
+    section > .container > h2 { text-align: center; }
+    section > .container > h2 + .lead { margin: 0 auto; text-align: center; }
     .lead { color: var(--muted); max-width: 560px; }
     .btn {
       display: inline-block; padding: 15px 30px; background: var(--gold); color: #111; font-weight: 600;
@@ -46,14 +48,31 @@
     nav { display: flex; gap: 30px; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
     nav a:hover { color: var(--gold); }
 
-    .hero { padding: 150px 0 130px; margin-top: -77px; position: relative; overflow: hidden; min-height: 92vh; display: flex; align-items: center; }
-    .hero__bg { position: absolute; width: 100%; height: 120%; top: -10%; left: 0; object-fit: cover; filter: grayscale(.35) contrast(1.05); }
-    .hero::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(12,12,12,.95) 30%, rgba(12,12,12,.55) 70%, rgba(12,12,12,.35)), linear-gradient(0deg, var(--bg), transparent 30%); }
-    .hero::after {
-      content: "BLADE"; position: absolute; right: -2%; bottom: -8%; font: 700 clamp(8rem, 24vw, 20rem) "Oswald", sans-serif;
-      color: transparent; -webkit-text-stroke: 1px rgba(201,161,74,.25); pointer-events: none; z-index: 1;
-    }
-    .hero .container { position: relative; z-index: 2; width: 100%; }
+    /* Олдскульная вывеска: всё по центру, эмблема, орнамент, фото в золотой раме */
+    .pole { height: 10px; background: repeating-linear-gradient(-45deg, #b3261e 0 14px, #f2efe6 14px 28px, #1f3a6b 28px 42px, #f2efe6 42px 56px); animation: pole 2.5s linear infinite; background-size: 79px 10px; }
+    @keyframes pole { to { background-position: 79px 0; } }
+    .hero { padding: 64px 0 90px; text-align: center; position: relative; background: radial-gradient(ellipse at 50% 0%, rgba(201, 161, 74, .14), transparent 60%); }
+    .emblem { width: 150px; height: 150px; margin: 0 auto 26px; position: relative; display: grid; place-items: center; }
+    .emblem svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 30s linear infinite; }
+    .emblem text { font: 500 11px "Oswald", sans-serif; letter-spacing: .32em; fill: var(--gold); }
+    .emblem b { width: 92px; height: 92px; border-radius: 50%; border: 1px solid var(--gold); outline: 1px solid var(--gold); outline-offset: 4px; display: grid; place-items: center; font-size: 2.2rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .orn { display: flex; align-items: center; justify-content: center; gap: 16px; color: var(--gold); font: 500 13px "Oswald", sans-serif; letter-spacing: .3em; text-transform: uppercase; }
+    .orn::before, .orn::after { content: ""; height: 1px; width: min(120px, 18vw); background: linear-gradient(90deg, transparent, var(--gold)); }
+    .orn::after { transform: scaleX(-1); }
+    .hero h1 { font-size: clamp(2.6rem, 7vw, 5.4rem); margin: 18px auto 0; max-width: 900px; letter-spacing: .04em; }
+    .hero h1 span { color: var(--gold); display: block; }
+    .hero p { color: var(--muted); font-size: 1.1rem; margin: 22px auto 34px; max-width: 520px; }
+    .hero__btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .frame { position: relative; margin: 64px auto 0; max-width: 1080px; padding: 12px; border: 1px solid var(--gold); outline: 1px solid rgba(201, 161, 74, .45); outline-offset: 6px; }
+    .frame img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; filter: sepia(.25) contrast(1.05); display: block; }
+    .frame::before, .frame::after { content: "✦"; position: absolute; top: -13px; color: var(--gold); background: var(--bg); padding: 0 8px; font-size: 14px; }
+    .frame::before { left: 24px; } .frame::after { right: 24px; }
+    .ribbon { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); display: flex; background: var(--gold); color: #111; white-space: nowrap; box-shadow: 0 16px 30px -14px #000; }
+    .ribbon div { padding: 12px 28px; text-align: center; line-height: 1.1; }
+    .ribbon div + div { border-left: 1px solid rgba(0, 0, 0, .2); }
+    .ribbon b { font: 700 1.8rem "Oswald", sans-serif; display: block; }
+    .ribbon span { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
 
     .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
     .gallery figure { aspect-ratio: 3 / 4; overflow: hidden; position: relative; }
@@ -61,19 +80,15 @@
     .gallery figure:hover img { filter: grayscale(0); transform: scale(1.06); }
     .gallery figcaption { position: absolute; left: 16px; bottom: 14px; font: 700 1.1rem "Oswald", sans-serif; text-transform: uppercase; letter-spacing: .06em; opacity: 0; transform: translateY(8px); transition: .4s; }
     .gallery figure:hover figcaption { opacity: 1; transform: none; }
-    @media (max-width: 760px) { .gallery { grid-template-columns: 1fr 1fr; } .hero::after { display: none; } }
-    .hero h1 { font-size: clamp(2.8rem, 8vw, 6rem); max-width: 800px; }
-    .hero h1 span { color: var(--gold); }
-    .hero p { color: var(--muted); font-size: 1.1rem; margin: 22px 0 36px; max-width: 480px; }
-    .hero__stats { display: flex; gap: 50px; margin-top: 60px; flex-wrap: wrap; }
-    .hero__stats b { font: 700 2.4rem "Oswald", sans-serif; color: var(--gold); display: block; }
-    .hero__stats span { color: var(--muted); font-size: 14px; }
+    @media (max-width: 760px) { .gallery { grid-template-columns: 1fr 1fr; } }
 
     section { padding: 90px 0; }
     .alt { background: #111; }
 
-    .services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 60px; margin-top: 40px; }
-    .service { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .board { margin-top: 40px; border: 1px solid var(--gold); outline: 1px solid rgba(201, 161, 74, .45); outline-offset: 6px; padding: 34px 44px 24px; background: linear-gradient(180deg, #141210, #0f0e0c); }
+    .board__title { text-align: center; margin-bottom: 8px; }
+    .services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 60px; }
+    .service { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 20px 0; border-bottom: 1px dashed rgba(201, 161, 74, .25); }
     .service b { font-size: 1.1rem; font-weight: 500; }
     .service small { display: block; color: var(--muted); font-size: 14px; }
     .service span { font: 700 1.4rem "Oswald", sans-serif; color: var(--gold); white-space: nowrap; }
@@ -126,6 +141,15 @@
     @media (max-width: 860px) {
       nav { display: none; }
       .services, .masters { grid-template-columns: 1fr; }
+      .board { padding: 24px 18px 12px; }
+      .orn { white-space: nowrap; gap: 10px; letter-spacing: .18em; font-size: 12px; }
+      .emblem { width: 116px; height: 116px; margin-bottom: 18px; }
+      .emblem b { width: 70px; height: 70px; font-size: 1.7rem; }
+      .hero { padding-top: 40px; }
+      .ribbon div { padding: 10px 14px; }
+      .ribbon b { font-size: 1.35rem; }
+      .ribbon span { font-size: 10px; letter-spacing: .04em; }
+      .frame img { aspect-ratio: 4 / 3; }
       .fields { grid-template-columns: 1fr; }
       .step { padding: 22px; }
       .progress div { font-size: 11px; padding: 14px 4px; }
@@ -135,6 +159,7 @@
 <body>
   <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
 
+  <div class="pole" aria-hidden="true"></div>
   <header class="header" data-shrink>
     <div class="container head">
       <a href="#" class="logo">BL<span>A</span>DE</a>
@@ -148,23 +173,33 @@
   </header>
 
   <section class="hero">
-    <img class="hero__bg" data-parallax="0.3" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
     <div class="container">
+      <div class="emblem" aria-hidden="true">
+        <svg viewBox="0 0 150 150"><defs><path id="ring" d="M75 75m-62 0a62 62 0 1 1 124 0a62 62 0 1 1-124 0"/></defs><text><textPath href="#ring">BLADE · BARBERSHOP · EST. 2018 ·</textPath></text></svg>
+        <b>✂</b>
+      </div>
+      <div class="orn">Москва · с 2018 года</div>
       <h1>Мужские стрижки <span>без компромиссов</span></h1>
       <p>Стрижки, бритьё и уход за бородой от мастеров с опытом от 5 лет. Записаться онлайн можно за 30 секунд.</p>
-      <div><a href="#booking" class="btn">Онлайн-запись</a></div>
-      <div class="hero__stats">
-        <div><b data-count="7">7</b><span>лет работы</span></div>
-        <div><b data-count="12000" data-suffix="+">12 000+</b><span>стрижек</span></div>
-        <div><b data-count="4.9" data-decimals="1">4,9</b><span>средняя оценка</span></div>
+      <div class="hero__btns"><a href="#booking" class="btn">Онлайн-запись</a><a href="#services" class="btn btn--ghost">Прайс</a></div>
+      <div class="frame">
+        <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 1120px) 100vw, 1080px" alt="Зал барбершопа" fetchpriority="high" decoding="async">
+        <div class="ribbon">
+          <div><b data-count="7">7</b><span>лет работы</span></div>
+          <div><b data-count="12000" data-suffix="+">12 000+</b><span>стрижек</span></div>
+          <div><b data-count="4.9" data-decimals="1">4,9</b><span>оценка</span></div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="alt" id="services">
     <div class="container">
-      <h2 data-reveal>Услуги и <em>цены</em></h2>
-      <div class="services" id="servicesList" data-stagger></div>
+      <div class="board">
+        <div class="orn board__title">Прайс</div>
+        <h2 data-reveal style="text-align:center">Услуги и <em>цены</em></h2>
+        <div class="services" id="servicesList" data-stagger></div>
+      </div>
     </div>
   </section>
 
