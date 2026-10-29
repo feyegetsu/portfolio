@@ -3,13 +3,13 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 82,
+        "performance": 83,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "1.9 s",
-      "cls": "0.336",
+      "cls": "0.316",
       "issues": [
         "Cumulative Layout Shift"
       ],
@@ -106,14 +106,18 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 99,
+        "performance": 92,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
+      "lcp": "2.6 s",
       "cls": "0.059",
-      "issues": [],
+      "issues": [
+        "Largest Contentful Paint",
+        "Total Blocking Time",
+        "Max Potential First Input Delay"
+      ],
       "a11y": {}
     },
     "miniapp": {
@@ -134,14 +138,16 @@
     },
     "realty": {
       "scores": {
-        "performance": 99,
+        "performance": 93,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
+      "lcp": "3.1 s",
       "cls": "0.005",
-      "issues": [],
+      "issues": [
+        "Largest Contentful Paint"
+      ],
       "a11y": {}
     },
     "saas": {
@@ -152,7 +158,7 @@
         "seo": 100
       },
       "lcp": "1.5 s",
-      "cls": "0.028",
+      "cls": "0.016",
       "issues": [],
       "a11y": {}
     }
