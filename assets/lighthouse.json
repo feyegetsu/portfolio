@@ -1,108 +1,119 @@
 {
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "pages": {
     "autoservice": {
+      "scores": {
+        "performance": 81,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.5 s",
+      "cls": "0.336",
+      "issues": [
+        "Cumulative Layout Shift"
+      ],
+      "a11y": {}
+    },
+    "barbershop": {
       "scores": {
         "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
-      "cls": "0.082",
-      "issues": [],
+      "lcp": "2.8 s",
+      "cls": "0",
+      "issues": [
+        "Largest Contentful Paint"
+      ],
       "a11y": {}
     },
-    "barbershop": {
+    "cafe": {
       "scores": {
-        "performance": 88,
+        "performance": 89,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.9 s",
-      "cls": "0",
+      "lcp": "3.8 s",
+      "cls": "0.004",
       "issues": [
         "Largest Contentful Paint",
         "Time to Interactive"
       ],
       "a11y": {}
     },
-    "cafe": {
-      "scores": {
-        "performance": 91,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.5 s",
-      "cls": "0.003",
-      "issues": [
-        "Largest Contentful Paint"
-      ],
-      "a11y": {}
-    },
     "dental": {
       "scores": {
         "performance": 100,
-        "accessibility": 100,
+        "accessibility": 99,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.2 s",
-      "cls": "0.032",
-      "issues": [],
-      "a11y": {}
+      "lcp": "1.7 s",
+      "cls": "0.033",
+      "issues": [
+        "Uses ARIA roles on incompatible elements"
+      ],
+      "a11y": {
+        "aria-allowed-role": [
+          "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" data-info=\"rooms\" tabindex=\"0\" role=\"button\" aria-label=\"Кабинеты: подробнее\">",
+          "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:120ms\" data-info=\"visit\" tabindex=\"0\" role=\"button\" aria-label=\"Приём: подро",
+          "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:240ms\" data-info=\"tech\" tabindex=\"0\" role=\"button\" aria-label=\"Оборудование:"
+        ]
+      }
     },
     "fitness": {
-      "scores": {
-        "performance": 94,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.1 s",
-      "cls": "0",
-      "issues": [
-        "Largest Contentful Paint"
-      ],
-      "a11y": {}
-    },
-    "florist": {
-      "scores": {
-        "performance": 98,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "2.2 s",
-      "cls": "0.043",
-      "issues": [],
-      "a11y": {}
-    },
-    "home-desktop": {
       "scores": {
         "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
+      "lcp": "1.9 s",
+      "cls": "0",
+      "issues": [],
+      "a11y": {}
+    },
+    "florist": {
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.0 s",
+      "cls": "0.044",
+      "issues": [],
+      "a11y": {}
+    },
+    "home-desktop": {
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
       "lcp": "0.9 s",
-      "cls": "0.032",
+      "cls": "0.093",
       "issues": [],
       "a11y": {}
     },
     "home-mobile": {
       "scores": {
-        "performance": 96,
+        "performance": 79,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.3 s",
+      "lcp": "4.0 s",
       "cls": "0.059",
       "issues": [
-        "Max Potential First Input Delay"
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Speed Index",
+        "Time to Interactive"
       ],
       "a11y": {}
     },
@@ -129,8 +140,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.9 s",
-      "cls": "0.04",
+      "lcp": "1.8 s",
+      "cls": "0.003",
       "issues": [],
       "a11y": {}
     },
@@ -142,7 +153,7 @@
         "seo": 100
       },
       "lcp": "1.2 s",
-      "cls": "0.013",
+      "cls": "0.028",
       "issues": [],
       "a11y": {}
     }
