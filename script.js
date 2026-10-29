@@ -60,6 +60,36 @@ const updateTop = () => {
 addEventListener("scroll", updateTop, { passive: true });
 updateTop();
 
+// ---------- Навигация по разделам справа ----------
+// Активным считается раздел, который пересёк линию на 40% высоты экрана; при смене название на секунду показывается
+const rail = $("rail");
+const railLinks = [...rail.querySelectorAll("a")];
+const railSecs = railLinks.map((a) => $(a.dataset.sec));
+let railActive = -1, flashTimer;
+function updateRail() {
+  const line = innerHeight * 0.4;
+  let i = 0;
+  railSecs.forEach((s, k) => { if (s && s.getBoundingClientRect().top <= line) i = k; });
+  if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) i = railSecs.length - 1;
+  const max = document.documentElement.scrollHeight - innerHeight;
+  rail.style.setProperty("--rp", max > 0 ? Math.min(1, scrollY / max).toFixed(3) : 0);
+  if (i === railActive) return;
+  railLinks.forEach((a, k) => {
+    a.classList.toggle("on", k === i);
+    if (k === i) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+  });
+  if (railActive !== -1) {
+    railLinks.forEach((a) => a.classList.remove("flash"));
+    railLinks[i].classList.add("flash");
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => railLinks[i].classList.remove("flash"), 1200);
+  }
+  railActive = i;
+}
+addEventListener("scroll", updateRail, { passive: true });
+addEventListener("resize", updateRail);
+updateRail();
+
 // ---------- Работы и кейсы ----------
 // goal — задача бизнеса, done — что сделано, tech — как устроено внутри
 const projects = [

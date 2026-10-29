@@ -71,7 +71,7 @@
     <span id="top"></span>
 
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" id="hero">
       <div class="container hero__inner">
         <div class="hero__text">
           <p class="badge"><span class="dot"></span> Беру новые проекты</p>
@@ -227,7 +227,7 @@
     </section>
 
     <!-- PROCESS -->
-    <section class="section">
+    <section class="section" id="process">
       <div class="container">
         <p class="eyebrow">Как я работаю</p>
         <h2>От заявки до запуска</h2>
@@ -349,6 +349,18 @@
     </div>
   </dialog>
 
+  <nav class="rail" id="rail" aria-label="Разделы страницы">
+    <span class="rail__line" aria-hidden="true"><i></i></span>
+    <a href="#top" data-sec="hero"><span>Обо мне</span><i></i></a>
+    <a href="#works" data-sec="works"><span>Работы</span><i></i></a>
+    <a href="#backend" data-sec="backend"><span>Админка</span><i></i></a>
+    <a href="#services" data-sec="services"><span>Услуги</span><i></i></a>
+    <a href="#bot" data-sec="bot"><span>Боты</span><i></i></a>
+    <a href="#process" data-sec="process"><span>Как работаю</span><i></i></a>
+    <a href="#calc" data-sec="calc"><span>Стоимость</span><i></i></a>
+    <a href="#faq" data-sec="faq"><span>Вопросы</span><i></i></a>
+    <a href="#contact" data-sec="contact"><span>Контакты</span><i></i></a>
+  </nav>
   <a href="#top" class="to-top" id="toTop" aria-label="Наверх">
     <svg class="to-top__ring" viewBox="0 0 54 54" aria-hidden="true"><defs><linearGradient id="topGrad"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><circle class="track" cx="27" cy="27" r="24"/><circle class="bar" cx="27" cy="27" r="24"/></svg>
     <svg class="to-top__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
