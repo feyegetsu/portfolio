@@ -46,7 +46,8 @@
     .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 106px); position: relative; }
     .hero__poster { background: var(--lime); color: #0b0c0e; padding: 70px 56px 60px max(20px, calc((100vw - 1180px) / 2 + 20px)); display: flex; flex-direction: column; justify-content: space-between; gap: 34px; position: relative; overflow: hidden; }
     .hero__poster::after { content: "24/7"; position: absolute; right: -20px; bottom: -40px; font: 400 15rem/1 "Russo One", sans-serif; color: rgba(11, 12, 14, .06); pointer-events: none; }
-    .hero h1 { font-size: clamp(3.4rem, 8.4vw, 8.6rem); line-height: .86; letter-spacing: -.02em; }
+    .hero h1 { font-size: clamp(2.8rem, 6.4vw, 7rem); line-height: .9; letter-spacing: -.01em; }
+    @media (max-width: 900px) { .hero h1 { font-size: clamp(2.8rem, 14vw, 5.4rem); } }
     .hero h1 span { color: transparent; -webkit-text-stroke: 2px #0b0c0e; }
     .hero p { font-size: 1.1rem; max-width: 460px; font-weight: 500; }
     .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
@@ -68,7 +69,9 @@
     .ring { width: 54px; height: 54px; flex-shrink: 0; }
 
     /* Лента наискосок */
-    .tape { position: relative; z-index: 3; margin: -34px -2% 0; transform: rotate(-2.2deg); background: #0b0c0e; border-block: 3px solid var(--lime); overflow: hidden; padding: 14px 0; }
+    /* Обёртка обрезает края наклонной ленты, чтобы страница не прокручивалась вбок */
+    .tape-wrap { position: relative; z-index: 3; margin-top: -54px; padding: 20px 0; overflow: hidden; pointer-events: none; }
+    .tape { position: relative; margin: 0 -2%; transform: rotate(-2.2deg); background: #0b0c0e; border-block: 3px solid var(--lime); overflow: hidden; padding: 14px 0; }
     .tape div { display: flex; gap: 40px; width: max-content; animation: run 22s linear infinite; font: 400 1.5rem "Russo One", sans-serif; text-transform: uppercase; color: var(--lime); }
     .tape span::after { content: "/"; color: var(--text); margin-left: 40px; }
     @keyframes run { to { transform: translateX(-50%); } }
@@ -95,6 +98,18 @@
 
     section { padding: 90px 0; }
     section.hero { padding: 0; }
+
+    /* Клуб изнутри: плитки альбомов */
+    .club { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; margin-top: 40px; }
+    .club button { position: relative; height: 300px; padding: 0; border: 1px solid var(--line); background: #111; color: var(--text); overflow: hidden; cursor: pointer; text-align: left; font: inherit; isolation: isolate; }
+    .club img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; filter: grayscale(1) contrast(1.1); transition: filter .5s, transform 1s; }
+    .club button::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(8,9,11,.92), rgba(8,9,11,.05) 60%); }
+    .club button:hover img, .club button:focus-visible img { filter: none; transform: scale(1.05); }
+    .club button:hover, .club button:focus-visible { border-color: var(--lime); outline: none; }
+    .club b { position: absolute; left: 20px; bottom: 18px; font: 400 1.5rem "Russo One", sans-serif; text-transform: uppercase; line-height: 1.1; }
+    .club span { position: absolute; top: 14px; left: 14px; background: var(--lime); color: #0b0c0e; font-size: 12px; font-weight: 700; padding: 4px 10px; }
+    .club i { position: absolute; right: 18px; bottom: 18px; font-style: normal; color: var(--lime); font-weight: 700; font-size: 14px; }
+    @media (max-width: 900px) { .club { grid-template-columns: 1fr; } .club button { height: 200px; } }
 
     /* Schedule */
     .sched__top { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 20px; margin-bottom: 26px; }
@@ -155,7 +170,7 @@
       .hero, .trial { grid-template-columns: 1fr; }
       .hero__poster { padding: 44px 20px 54px; }
       .hero__photo { min-height: 420px; }
-      .tape { margin-top: -22px; }
+      .tape-wrap { margin-top: -42px; }
       .plans { grid-template-columns: 1fr; }
       .trial { padding: 32px 22px; }
       .cls { grid-template-columns: 70px 1fr; gap: 10px 16px; }
@@ -195,7 +210,7 @@
     </div>
   </section>
 
-  <div class="tape" aria-hidden="true"><div id="marq"></div></div>
+  <div class="tape-wrap" aria-hidden="true"><div class="tape"><div id="marq"></div></div></div>
 
   <section style="padding-bottom:0">
     <div class="container">
@@ -208,6 +223,18 @@
         <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=75" alt="Функциональная тренировка с канатами"><span class="num">04</span><div><h3>Функционал</h3><p>Канаты, сани, гири. Выносливость и жиросжигание.</p></div></a>
         <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=75" alt="Кроссфит"><span class="num">05</span><span class="tag">Новое</span><div><h3>Кроссфит</h3><p>WOD каждый день под присмотром сертифицированного тренера.</p></div></a>
         <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=75" alt="Персональная тренировка"><span class="num">06</span><div><h3>Персональные</h3><p>Программа под вашу цель: рельеф, сила, здоровая спина.</p></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="club" style="padding-bottom:0">
+    <div class="container">
+      <h2 data-reveal>Клуб <span>изнутри</span></h2>
+      <p class="muted" data-reveal>Посмотрите зал, бассейн и студии до первой тренировки.</p>
+      <div class="club">
+        <button data-album="gym"><img loading="lazy" src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=70" alt=""><span>10 фото</span><b>Тренажёрный зал</b><i>Смотреть →</i></button>
+        <button data-album="pool"><img loading="lazy" src="https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&w=800&q=70" alt=""><span>3 фото</span><b>Бассейн</b><i>Смотреть →</i></button>
+        <button data-album="group"><img loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=70" alt=""><span>9 фото</span><b>Групповые и йога</b><i>Смотреть →</i></button>
       </div>
     </div>
   </section>
@@ -252,6 +279,115 @@
   </footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
+  <script>
+    // Фотоальбомы: открываются по клику на [data-album], см. ../shared/gallery.js
+    window.PF_ALBUMS = {
+      "gym": {
+        "title": "Тренажёрный зал",
+        "photos": [
+          [
+            "1540497077202-7c8a3999166f",
+            "Кардиозона у окон"
+          ],
+          [
+            "1571902943202-507ec2618e8f",
+            "Силовая зона"
+          ],
+          [
+            "1593079831268-3381b0db4a77",
+            "Зона функционального тренинга"
+          ],
+          [
+            "1576678927484-cc907957088c",
+            "Гантели до 60 кг"
+          ],
+          [
+            "1558611848-73f7eb4001a1",
+            "Тренажёры Hammer Strength"
+          ],
+          [
+            "1534438327276-14e5300c3a48",
+            "Свободные веса"
+          ],
+          [
+            "1517836357463-d25dfeac3438",
+            "Помосты для становой"
+          ],
+          [
+            "1581009146145-b5ef050c2e1e",
+            "Тренировка с тренером"
+          ],
+          [
+            "1534258936925-c58bed479fcb",
+            "Жим лёжа"
+          ],
+          [
+            "1574680096145-d05b474e2155",
+            "Зона кроссфита"
+          ]
+        ]
+      },
+      "pool": {
+        "title": "Бассейн",
+        "photos": [
+          [
+            "1519315901367-f34ff9154487",
+            "Бассейн 25 метров"
+          ],
+          [
+            "1530549387789-4c1017266635",
+            "Утренние заплывы"
+          ],
+          [
+            "1560090995-01632a28895b",
+            "Шесть дорожек"
+          ]
+        ]
+      },
+      "group": {
+        "title": "Групповые и йога",
+        "photos": [
+          [
+            "1518611012118-696072aa579a",
+            "Функциональный тренинг"
+          ],
+          [
+            "1544367567-0f2fcb009e0b",
+            "Йога на закате"
+          ],
+          [
+            "1599058917212-d750089bc07e",
+            "Канаты"
+          ],
+          [
+            "1571019614242-c5c5dee9f50b",
+            "Персональная тренировка"
+          ],
+          [
+            "1526506118085-60ce8714f8c5",
+            "Растяжка"
+          ],
+          [
+            "1575052814086-f385e2e2ad1b",
+            "Хатха-йога"
+          ],
+          [
+            "1545205597-3d9d02c29597",
+            "Йога на выезде"
+          ],
+          [
+            "1600881333168-2ef49b341f30",
+            "Пилатес"
+          ],
+          [
+            "1603988363607-e1e4a66962c6",
+            "Гибкость и баланс"
+          ]
+        ]
+      }
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
   <div class="toast" id="toast"></div>
 
   <script>

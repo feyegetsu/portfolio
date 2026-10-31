@@ -456,16 +456,38 @@
   api.askContact = (title = "Ваши контакты") => new Promise((resolve, reject) => {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem("pf-contact")) || {}; } catch {}
+    // Стили окна задаются явно: сброс margin на сайтах и тёмная тема страницы не должны его ломать
+    if (!document.getElementById("pf-ask-css")) {
+      const sample = document.querySelector(".btn");
+      const accent = sample ? getComputedStyle(sample).backgroundColor : "#111";
+      const accentText = sample ? getComputedStyle(sample).color : "#fff";
+      const css = document.createElement("style");
+      css.id = "pf-ask-css";
+      css.textContent = `
+        .pf-ask { color-scheme: light; margin: auto; inset: 0; position: fixed; border: 0; border-radius: 20px; padding: 26px; width: min(380px, calc(100% - 32px)); max-height: calc(100% - 32px);
+          background: #fff; color: #14161a; font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, .6); }
+        .pf-ask[open] { animation: pf-ask-in .3s cubic-bezier(.2, .8, .2, 1); }
+        .pf-ask::backdrop { background: rgba(10, 12, 16, .6); backdrop-filter: blur(4px); }
+        @keyframes pf-ask-in { from { opacity: 0; transform: translateY(16px) scale(.97); } }
+        .pf-ask form { display: grid; gap: 12px; margin: 0; }
+        .pf-ask__title { font-size: 19px; font-weight: 700; padding-right: 36px; margin: 0; }
+        .pf-ask__sub { color: #62666f; font-size: 14px; margin: -6px 0 4px; }
+        .pf-ask input { width: 100%; box-sizing: border-box; margin: 0; padding: 13px 14px; border: 1.5px solid #d9dce2; border-radius: 12px; background: #fff; color: #14161a; font: 16px system-ui, sans-serif; outline: none; }
+        .pf-ask input:focus { border-color: ${accent}; box-shadow: 0 0 0 3px color-mix(in srgb, ${accent} 25%, transparent); }
+        .pf-ask__ok { margin: 4px 0 0; padding: 14px; border: 0; border-radius: 12px; background: ${accent}; color: ${accentText}; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+        .pf-ask__x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: #f1f2f4; color: #14161a; font-size: 16px; cursor: pointer; }`;
+      document.head.appendChild(css);
+    }
     const dlg = document.createElement("dialog");
-    dlg.style.cssText = "border:0;border-radius:18px;padding:24px;width:min(360px,calc(100% - 32px));font:15px system-ui,sans-serif;color:#111;box-shadow:0 30px 80px rgba(0,0,0,.4)";
-    dlg.innerHTML = `<form method="dialog" style="display:grid;gap:12px">
-      <b style="font-size:18px">${title}</b>
-      <input name="name" required placeholder="Имя" autocomplete="name" style="padding:12px;border:1px solid #ccc;border-radius:10px;font:inherit">
-      <input name="phone" type="tel" required placeholder="Телефон" autocomplete="tel" style="padding:12px;border:1px solid #ccc;border-radius:10px;font:inherit">
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button value="cancel" formnovalidate style="padding:10px 16px;border-radius:10px;border:1px solid #ccc;background:#fff;font:inherit;cursor:pointer">Отмена</button>
-        <button value="ok" style="padding:10px 16px;border-radius:10px;border:0;background:#111;color:#fff;font:inherit;font-weight:600;cursor:pointer">Продолжить</button>
-      </div></form>`;
+    dlg.className = "pf-ask";
+    dlg.innerHTML = `<form method="dialog">
+      <button class="pf-ask__x" value="cancel" formnovalidate aria-label="Закрыть">✕</button>
+      <p class="pf-ask__title">${title}</p>
+      <p class="pf-ask__sub">Оставьте контакты, и запись сохранится. В следующий раз заполнять не придётся.</p>
+      <input name="name" required placeholder="Имя" autocomplete="name" aria-label="Имя">
+      <input name="phone" type="tel" required placeholder="Телефон" autocomplete="tel" aria-label="Телефон">
+      <button class="pf-ask__ok" value="ok">Записаться</button>
+    </form>`;
     document.body.appendChild(dlg);
     const f = dlg.querySelector("form");
     f.elements.name.value = saved.name || "";

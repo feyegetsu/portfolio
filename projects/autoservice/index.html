@@ -56,6 +56,8 @@
     .why { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
     .why__img { position: relative; height: 440px; border-radius: 24px; overflow: hidden; }
     .why__img img { width: 100%; height: 100%; object-fit: cover; }
+    .why__photos { position: absolute; z-index: 2; top: 18px; right: 18px; padding: 11px 16px; border: 0; border-radius: 12px; background: rgba(23, 24, 26, .85); color: #fff; font-weight: 600; font-size: 14px; backdrop-filter: blur(6px); transition: background .2s, transform .2s; }
+    .why__photos:hover { background: var(--orange); transform: translateY(-2px); }
     .why__badge { position: absolute; left: 20px; bottom: 20px; background: var(--ink); color: #fff; padding: 16px 20px; border-radius: 16px; border-left: 4px solid var(--orange); }
     .why__badge b { font-size: 1.8rem; display: block; line-height: 1.1; }
     .why ul { list-style: none; display: grid; gap: 16px; margin-top: 24px; }
@@ -191,6 +193,7 @@
   <section style="padding-top:0">
     <div class="container why">
       <div class="why__img" data-reveal="left">
+        <button class="why__photos" data-album="service">📷 Фото сервиса · 11</button>
         <img loading="lazy" src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=75" alt="Автомобиль после обслуживания">
         <div class="why__badge"><b data-count="9400" data-suffix="+">9 400+</b>машин отремонтировали</div>
       </div>
@@ -256,6 +259,61 @@
   </footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
+  <script>
+    // Фотоальбомы: открываются по клику на [data-album], см. ../shared/gallery.js
+    window.PF_ALBUMS = {
+      "service": {
+        "title": "Наш сервис",
+        "photos": [
+          [
+            "1530046339160-ce3e530c7d2f",
+            "Цех на шесть постов"
+          ],
+          [
+            "1504222490345-c075b6008014",
+            "Мастер-приёмщик"
+          ],
+          [
+            "1615906655593-ad0386982a0f",
+            "Диагностика под капотом"
+          ],
+          [
+            "1619642751034-765dfdf7c58e",
+            "Ремонт двигателя"
+          ],
+          [
+            "1599256872237-5dcc0fbe9668",
+            "Ходовая на подъёмнике"
+          ],
+          [
+            "1613214149922-f1809c99b414",
+            "Шиномонтаж"
+          ],
+          [
+            "1632823469850-2f77dd9c7f93",
+            "Полировка фар"
+          ],
+          [
+            "1625047509248-ec889cbff17f",
+            "Моторный отсек после ТО"
+          ],
+          [
+            "1486262715619-67b85e0b08d3",
+            "Замена ремня ГРМ"
+          ],
+          [
+            "1487754180451-c456f719a1fc",
+            "Замена масла"
+          ],
+          [
+            "1580273916550-e323be2ae537",
+            "Готово к выдаче"
+          ]
+        ]
+      }
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
   <div class="toast" id="toast"></div>
 
   <script>

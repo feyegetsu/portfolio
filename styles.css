@@ -186,19 +186,33 @@ h3 { font-size: 1.08rem; font-weight: 500; margin-bottom: 8px; }
 .to-top__arrow { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: translate .25s; }
 body.lock .to-top { display: none; }
 
-/* Навигация по разделам справа: чёрточки, подписи появляются при наведении */
-.rail { position: fixed; right: 26px; top: 50%; translate: 0 -50%; z-index: 40; display: none; flex-direction: column; align-items: flex-end; gap: 4px; padding: 10px 0; }
-.rail__line { position: absolute; right: 13px; top: 18px; bottom: 18px; width: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
-.rail__line i { position: absolute; inset: 0 0 auto; height: calc(var(--rp, 0) * 100%); background: linear-gradient(var(--accent), var(--accent-2)); transition: height .2s linear; }
-.rail a { position: relative; display: flex; align-items: center; gap: 12px; height: 24px; padding-left: 12px; }
-.rail a i { width: 28px; height: 24px; position: relative; flex-shrink: 0; }
-.rail a i::before { content: ""; position: absolute; right: 8px; top: 50%; width: 12px; height: 2px; border-radius: 2px; translate: 0 -50%; background: #66708a; transition: width .3s var(--ease), background .3s, right .3s var(--ease); }
-.rail a:hover i::before { background: var(--text); width: 16px; }
-.rail a.on i::before { width: 24px; right: 2px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-.rail a span { font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap; padding: 4px 10px; border-radius: 8px; background: rgba(16, 19, 26, .9); border: 1px solid var(--line); backdrop-filter: blur(8px); opacity: 0; translate: 8px 0; transition: opacity .25s, translate .25s var(--ease), color .2s; pointer-events: none; }
-.rail:hover a span, .rail a:focus-visible span, .rail a.flash span { opacity: 1; translate: 0 0; }
-.rail a.on span { color: var(--text); border-color: rgba(124, 92, 255, .6); }
-.rail a:hover span { color: var(--text); }
+/* Навигация по разделам справа: чёрточки; при наведении за ними появляется панель с названиями глав */
+.rail { position: fixed; right: 22px; top: 50%; translate: 0 -50%; z-index: 40; display: none; flex-direction: column; align-items: flex-end; padding: 10px 0; transition: padding .3s var(--ease); }
+.rail:hover, .rail:focus-within { padding-left: 170px; }
+.rail::before {
+  content: ""; position: absolute; top: -4px; bottom: -4px; right: -10px; width: 210px; border-radius: 18px; pointer-events: none;
+  background: rgba(12, 14, 20, .9); border: 1px solid var(--line); backdrop-filter: blur(12px); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9);
+  opacity: 0; translate: 12px 0; transition: opacity .25s, translate .3s var(--ease);
+}
+.rail:hover::before, .rail:focus-within::before { opacity: 1; translate: 0 0; }
+.rail__line { position: absolute; right: 19px; width: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.rail__line i { position: absolute; left: 0; right: 0; top: 0; height: 0; background: linear-gradient(var(--accent), var(--accent-2)); border-radius: 2px; transition: height .15s linear; }
+.rail a { position: relative; display: block; width: 40px; height: 30px; }
+.rail a i { position: absolute; right: 12px; top: 50%; width: 16px; height: 2px; border-radius: 2px; translate: 0 -50%; background: #66708a; transition: width .3s var(--ease), background .3s, right .3s var(--ease), height .3s; }
+.rail a:hover i { background: var(--text); }
+.rail a.on i { width: 24px; right: 8px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.rail a span {
+  position: absolute; right: 44px; top: 50%; translate: 8px -50%; font-size: 13.5px; font-weight: 500; line-height: 1; color: var(--muted);
+  white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .2s, translate .3s var(--ease), color .2s;
+}
+.rail:hover a span, .rail:focus-within a span { opacity: 1; translate: 0 -50%; }
+.rail a:hover span, .rail a.on span { color: var(--text); }
+.rail a.on span { font-weight: 600; }
+/* Когда раздел сменился при прокрутке, его название ненадолго всплывает само */
+.rail:not(:hover):not(:focus-within) a.flash span {
+  opacity: 1; translate: 0 -50%; color: var(--text); padding: 7px 12px; border-radius: 10px;
+  background: rgba(12, 14, 20, .9); border: 1px solid rgba(124, 92, 255, .5); backdrop-filter: blur(8px);
+}
 @media (min-width: 1280px) { .rail { display: flex; } }
 body.lock .rail { display: none; }
 

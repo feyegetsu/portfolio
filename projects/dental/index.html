@@ -137,6 +137,7 @@
     .info__b ul { list-style: none; margin: 18px 0 22px; display: grid; gap: 9px; }
     .info__b li { position: relative; padding-left: 26px; font-size: 15px; }
     .info__b li::before { content: "✓"; position: absolute; left: 0; color: var(--mint); font-weight: 700; }
+    .info__actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .info__close { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.92); font-size: 18px; box-shadow: 0 6px 16px -8px rgba(15,33,55,.5); z-index: 1; }
     @media (max-width: 680px) { .info__grid { grid-template-columns: 1fr; } .info__ph { height: 240px; } .info__b { padding: 24px 22px; } }
 
@@ -209,9 +210,9 @@
       <h2 data-reveal>Клиника, в которую не страшно</h2>
       <p class="muted" data-reveal>Светлые кабинеты, современное оборудование и врачи, которые объясняют каждый шаг.</p>
       <div class="clinic">
-        <figure data-reveal="zoom" data-info="rooms" tabindex="0" role="button" aria-label="Кабинеты: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=75" alt="Кабинет клиники"><figcaption>Кабинеты <i>Подробнее →</i></figcaption></figure>
-        <figure data-reveal="zoom" style="--d:120ms" data-info="visit" tabindex="0" role="button" aria-label="Приём: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=75" alt="Врач с пациентом"><figcaption>Приём <i>Подробнее →</i></figcaption></figure>
-        <figure data-reveal="zoom" style="--d:240ms" data-info="tech" tabindex="0" role="button" aria-label="Оборудование: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=700&q=75" alt="Стоматологическое кресло"><figcaption>Оборудование <i>Подробнее →</i></figcaption></figure>
+        <figure data-reveal="zoom" data-info="rooms" tabindex="0" role="button" aria-label="Кабинеты: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=75" alt="Кабинет клиники"><figcaption>Кабинеты <i>Подробнее и фото →</i></figcaption></figure>
+        <figure data-reveal="zoom" style="--d:120ms" data-info="visit" tabindex="0" role="button" aria-label="Приём: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=75" alt="Врач с пациентом"><figcaption>Приём <i>Подробнее и фото →</i></figcaption></figure>
+        <figure data-reveal="zoom" style="--d:240ms" data-info="tech" tabindex="0" role="button" aria-label="Оборудование: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=700&q=75" alt="Стоматологическое кресло"><figcaption>Оборудование <i>Подробнее и фото →</i></figcaption></figure>
       </div>
     </div>
   </section>
@@ -283,7 +284,10 @@
         <h3 id="infoTitle"></h3>
         <p id="infoText"></p>
         <ul id="infoList"></ul>
-        <a href="#book" class="btn" id="infoCta">Записаться на консультацию</a>
+        <div class="info__actions">
+          <a href="#book" class="btn" id="infoCta">Записаться на консультацию</a>
+          <button type="button" class="btn btn--soft" id="infoPhotos" hidden>Смотреть фото</button>
+        </div>
       </div>
     </div>
   </dialog>
@@ -296,6 +300,83 @@
   </footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
+  <script>
+    // Фотоальбомы: открываются по клику на [data-album], см. ../shared/gallery.js
+    window.PF_ALBUMS = {
+      "rooms": {
+        "title": "Кабинеты",
+        "photos": [
+          [
+            "1629909613654-28e377c37b09",
+            "Кабинет терапевта"
+          ],
+          [
+            "1629909615184-74f495363b67",
+            "Детский кабинет"
+          ],
+          [
+            "1598256989800-fe5f95da9787",
+            "Кабинет хирурга"
+          ],
+          [
+            "1607613009820-a29f7bb81c04",
+            "Наборы для гигиены в подарок"
+          ]
+        ]
+      },
+      "visit": {
+        "title": "Как проходит приём",
+        "photos": [
+          [
+            "1606811841689-23dfddce3e95",
+            "Осмотр и консультация"
+          ],
+          [
+            "1631217868264-e5b90bb7e133",
+            "Обсуждаем план лечения"
+          ],
+          [
+            "1606811971618-4486d14f3f99",
+            "Лечение под анестезией"
+          ],
+          [
+            "1609840114035-3c981b782dfe",
+            "Элайнеры вместо брекетов"
+          ],
+          [
+            "1588776814546-daab30f310ce",
+            "Работа в четыре руки"
+          ],
+          [
+            "1666214280557-f1b5022eb634",
+            "Консилиум врачей"
+          ]
+        ]
+      },
+      "tech": {
+        "title": "Оборудование",
+        "photos": [
+          [
+            "1588776814546-1ffcf47267a5",
+            "3D-снимок челюсти"
+          ],
+          [
+            "1600170311833-c2cf5280ce49",
+            "Цифровое планирование"
+          ],
+          [
+            "1579684385127-1ef15d508118",
+            "Операционная"
+          ],
+          [
+            "1606265752439-1f18756aa5fc",
+            "Стерильные инструменты"
+          ]
+        ]
+      }
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
 
   <script>
     const $ = id => document.getElementById(id);
@@ -393,6 +474,9 @@
         const img = f.querySelector("img");
         infoDoctor = null;
         openInfo(img.src, img.alt, [kicker, text, list], title);
+        $("infoPhotos").hidden = false;
+        $("infoPhotos").dataset.key = f.dataset.info;
+        $("infoPhotos").textContent = `Смотреть фото · ${PFGallery.count(f.dataset.info)}`;
       };
       f.addEventListener("click", open);
       f.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open()));
@@ -401,8 +485,10 @@
       const img = b.querySelector("img");
       infoDoctor = +b.dataset.doc + 1;
       openInfo(img.src, img.alt, doctorsInfo[b.dataset.doc], img.alt);
+      $("infoPhotos").hidden = true;
     }));
     $("infoClose").onclick = () => info.close();
+    $("infoPhotos").onclick = () => { info.close(); PFGallery.open($("infoPhotos").dataset.key); };
     info.addEventListener("click", e => e.target === info && info.close());
     $("infoCta").addEventListener("click", () => {
       // Запись к выбранному врачу: подставляем его в форму

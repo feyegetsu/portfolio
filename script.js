@@ -61,18 +61,32 @@ addEventListener("scroll", updateTop, { passive: true });
 updateTop();
 
 // ---------- Навигация по разделам справа ----------
-// Активным считается раздел, который пересёк линию на 40% высоты экрана; при смене название на секунду показывается
+// Активный раздел — тот, что пересёк линию на 40% высоты экрана.
+// Линия прогресса доходит до чёрточки активного раздела и тянется к следующей по мере его прочтения
 const rail = $("rail");
 const railLinks = [...rail.querySelectorAll("a")];
 const railSecs = railLinks.map((a) => $(a.dataset.sec));
+const railLine = rail.querySelector(".rail__line");
+const railFill = railLine.querySelector("i");
 let railActive = -1, flashTimer;
 function updateRail() {
+  // На узких экранах полоса скрыта, считать нечего
+  if (getComputedStyle(rail).display === "none") return;
   const line = innerHeight * 0.4;
+  const tops = railSecs.map((s) => s.getBoundingClientRect().top);
   let i = 0;
-  railSecs.forEach((s, k) => { if (s && s.getBoundingClientRect().top <= line) i = k; });
-  if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) i = railSecs.length - 1;
-  const max = document.documentElement.scrollHeight - innerHeight;
-  rail.style.setProperty("--rp", max > 0 ? Math.min(1, scrollY / max).toFixed(3) : 0);
+  tops.forEach((t, k) => { if (t <= line) i = k; });
+  const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+  if (atEnd) i = railSecs.length - 1;
+  // Центры чёрточек относительно полосы
+  const centers = railLinks.map((a) => a.offsetTop + a.offsetHeight / 2);
+  const first = centers[0], last = centers[centers.length - 1];
+  railLine.style.top = `${first}px`;
+  railLine.style.height = `${last - first}px`;
+  let f = 0;
+  if (!atEnd && i < railSecs.length - 1) f = Math.min(1, Math.max(0, (line - tops[i]) / (tops[i + 1] - tops[i])));
+  const y = atEnd ? last : centers[i] + f * ((centers[i + 1] ?? centers[i]) - centers[i]);
+  railFill.style.height = `${y - first}px`;
   if (i === railActive) return;
   railLinks.forEach((a, k) => {
     a.classList.toggle("on", k === i);

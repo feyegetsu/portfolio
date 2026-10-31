@@ -117,6 +117,9 @@
     .polaroid:hover { rotate: 0deg; scale: 1.05; z-index: 1; }
     .polaroid img { aspect-ratio: 1; object-fit: cover; width: 100%; }
     .polaroid figcaption { font-family: "Caveat", cursive; font-size: 1.45rem; text-align: center; margin-top: 8px; color: var(--ink); }
+    .polaroid { cursor: pointer; }
+    .polaroid:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+    .polaroid figcaption small { display: block; font: 600 11px "Inter", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-top: 2px; }
 
     /* Бронь в виде билета */
     .book { display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; align-items: start; }
@@ -233,12 +236,12 @@
 
   <section id="photos">
     <div class="container">
-      <div class="sec-head" data-reveal><span class="no">№3</span><h2>Атмосфера</h2><span class="hand">заходите в гости</span></div>
+      <div class="sec-head" data-reveal><span class="no">№3</span><h2>Атмосфера</h2><span class="hand">нажмите на фото — там целый альбом</span></div>
       <div class="wall" data-stagger>
-        <figure class="polaroid" style="--r:-4deg"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=500&q=75" alt="Барная стойка кофейни"><figcaption>наша стойка</figcaption></figure>
-        <figure class="polaroid" style="--r:3deg"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=75" alt="Свежие круассаны"><figcaption>круассаны в 7:00</figcaption></figure>
-        <figure class="polaroid" style="--r:-2deg"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=75" alt="Вывеска кафе"><figcaption>вход со двора</figcaption></figure>
-        <figure class="polaroid" style="--r:5deg"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=75" alt="Латте на столе"><figcaption>латте-арт</figcaption></figure>
+        <figure class="polaroid" style="--r:-4deg" data-album="hall" tabindex="0" role="button" aria-label="Альбом «Наш зал»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=500&q=75" alt="Барная стойка кофейни"><figcaption>наша стойка<small>5 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:3deg" data-album="bakery" tabindex="0" role="button" aria-label="Альбом «Выпечка и десерты»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=75" alt="Свежие круассаны"><figcaption>круассаны в 7:00<small>9 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:-2deg" data-album="yard" tabindex="0" role="button" aria-label="Альбом «Двор и терраса»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=75" alt="Вывеска кафе"><figcaption>вход со двора<small>3 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:5deg" data-album="coffee" tabindex="0" role="button" aria-label="Альбом «Кофе»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=75" alt="Латте на столе"><figcaption>латте-арт<small>9 фото →</small></figcaption></figure>
       </div>
     </div>
   </section>
@@ -290,6 +293,136 @@
 
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
+  <script>
+    // Фотоальбомы: открываются по клику на [data-album], см. ../shared/gallery.js
+    window.PF_ALBUMS = {
+      "hall": {
+        "title": "Наш зал",
+        "photos": [
+          [
+            "1453614512568-c4024d13c247",
+            "Барная стойка"
+          ],
+          [
+            "1554118811-1e0d58224f24",
+            "Зал вечером"
+          ],
+          [
+            "1521017432531-fbd92d768814",
+            "Большой стол для встреч"
+          ],
+          [
+            "1525610553991-2bede1a236e2",
+            "Утро субботы"
+          ],
+          [
+            "1445116572660-236099ec97a0",
+            "Места у окна"
+          ]
+        ]
+      },
+      "bakery": {
+        "title": "Выпечка и десерты",
+        "photos": [
+          [
+            "1555507036-ab1f4038808a",
+            "Круассаны из печи"
+          ],
+          [
+            "1530610476181-d83430b64dcd",
+            "Утренняя партия"
+          ],
+          [
+            "1509440159596-0249088772ff",
+            "Хлеб на закваске"
+          ],
+          [
+            "1533134242443-d4fd215305ad",
+            "Ягодный тарт"
+          ],
+          [
+            "1578985545062-69928b1d9587",
+            "Шоколадный торт"
+          ],
+          [
+            "1571877227200-a0d98ea607e9",
+            "Тирамису"
+          ],
+          [
+            "1612240498936-65f5101365d2",
+            "Пончики по пятницам"
+          ],
+          [
+            "1486427944299-d1955d23e34d",
+            "Капкейки"
+          ],
+          [
+            "1549590143-d5855148a9d5",
+            "Наш пекарь за работой"
+          ]
+        ]
+      },
+      "yard": {
+        "title": "Двор и терраса",
+        "photos": [
+          [
+            "1501339847302-ac426a4a7cbb",
+            "Вход со двора"
+          ],
+          [
+            "1559925393-8be0ec4767c8",
+            "Летняя терраса"
+          ],
+          [
+            "1600093463592-8e36ae95ef56",
+            "Зелёный дворик"
+          ]
+        ]
+      },
+      "coffee": {
+        "title": "Кофе",
+        "photos": [
+          [
+            "1509042239860-f550ce710b93",
+            "Латте-арт"
+          ],
+          [
+            "1495474472287-4d71bcdd2085",
+            "Флэт уайт на эфиопии"
+          ],
+          [
+            "1514432324607-a09d9b4aefdd",
+            "Эспрессо"
+          ],
+          [
+            "1442512595331-e89e73853f31",
+            "Альтернатива: кемекс"
+          ],
+          [
+            "1504630083234-14187a9df0f5",
+            "Американо"
+          ],
+          [
+            "1511920170033-f8396924c348",
+            "Своя обжарка"
+          ],
+          [
+            "1498804103079-a6351b050096",
+            "Все напитки меню"
+          ],
+          [
+            "1517701604599-bb29b565090c",
+            "Айс-латте"
+          ],
+          [
+            "1497935586351-b67a49e012bf",
+            "Раф медовый"
+          ]
+        ]
+      }
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
   <script>
     const ph = (id, w = 160) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${w}&q=70`;
     const menu = {

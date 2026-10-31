@@ -92,6 +92,7 @@
     .counter { margin-top: auto; display: flex; align-items: center; justify-content: space-between; background: var(--btn); color: var(--btn-text); border-radius: 12px; font-weight: 700; overflow: hidden; }
     .counter button { width: 40px; height: 36px; font-size: 20px; color: var(--btn-text); }
     .empty { text-align: center; color: var(--hint); padding: 40px 20px; }
+    .found { margin: 10px 14px 0; font-size: 13px; color: var(--hint); }
 
     /* Нижняя кнопка (имитация MainButton вне Telegram) */
     .main-btn { position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 6; padding: 15px; border-radius: 14px; background: var(--btn); color: var(--btn-text); font-weight: 600; font-size: 16px; display: flex; justify-content: center; gap: 8px; transition: transform .25s cubic-bezier(.2,.8,.2,1), opacity .25s; box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--btn) 80%, transparent); }
@@ -367,28 +368,46 @@
       </article>`;
     }
 
+    // Поиск: по названию, составу и разделу меню, без учёта регистра и «ё»; все слова запроса должны найтись
+    const norm = (v) => v.toLowerCase().replace(/ё/g, "е");
+    const CAT_WORDS = { pizza: "пицца", burgers: "бургер", rolls: "роллы суши", bowls: "боул поке салат", pasta: "горячее паста", drinks: "напитки лимонад" };
+    const haystack = (m) => norm(`${m.name} ${m.desc} ${CAT_WORDS[m.cat] || ""}`);
+    function menuBody() {
+      const words = norm(state.query).split(/\s+/).filter(Boolean);
+      if (!words.length) {
+        return `<nav class="cats" id="cats">${CATS.map(([c, t], i) => `<button class="cat${i ? "" : " on"}" data-cat="${c}">${t}</button>`).join("")}</nav>
+          ${CATS.map(([c, title]) => `<h2 class="section-title" id="sec-${c}">${title}</h2><div class="grid">${MENU.filter((m) => m.cat === c).map(cardHTML).join("")}</div>`).join("")}`;
+      }
+      const list = MENU.filter((m) => words.every((w) => haystack(m).includes(w)));
+      return list.length
+        ? `<p class="found">Нашли: ${list.length}</p><div class="grid">${list.map(cardHTML).join("")}</div>`
+        : `<div class="empty">Ничего не нашли 🦊<br>Попробуйте «пицца» или «лосось»</div>`;
+    }
+
     function renderMenu() {
-      const q = state.query.trim().toLowerCase();
-      const list = q ? MENU.filter((m) => (m.name + m.desc).toLowerCase().includes(q)) : MENU;
-      const sections = q
-        ? (list.length ? `<div class="grid" style="margin-top:8px">${list.map(cardHTML).join("")}</div>` : `<div class="empty">Ничего не нашли 🦊<br>Попробуйте «пицца» или «лосось»</div>`)
-        : CATS.map(([c, title]) => `<h2 class="section-title" id="sec-${c}">${title}</h2><div class="grid">${MENU.filter((m) => m.cat === c).map(cardHTML).join("")}</div>`).join("");
+      // Меню уже на экране (например, нажали «+»): обновляем только карточки, сохраняя прокрутку и поле поиска
+      if ($("menuBody") && $("search")) {
+        const y = inTG ? scrollY : $("view").scrollTop;
+        $("menuBody").innerHTML = menuBody();
+        if (inTG) scrollTo(0, y); else $("view").scrollTop = y;
+        const t = totals();
+        setMain(t.count ? `Корзина · ${rub(t.total)}` : "", () => go("cart"));
+        onMenuScroll();
+        return;
+      }
       $("view").innerHTML = `
         <div class="hero"><b>−10% на первый заказ</b><span>Промокод <code>FOX10</code> · доставка от 35 минут</span></div>
-        <div class="search"><input id="search" type="search" placeholder="Найти блюдо" value="${esc(state.query)}" aria-label="Поиск по меню"></div>
-        ${q ? "" : `<nav class="cats" id="cats">${CATS.map(([c, t], i) => `<button class="cat${i ? "" : " on"}" data-cat="${c}">${t}</button>`).join("")}</nav>`}
-        ${sections}`;
+        <div class="search"><input id="search" type="search" placeholder="Найти блюдо" value="${esc(state.query)}" aria-label="Поиск по меню" autocomplete="off" enterkeyhint="search"></div>
+        <div id="menuBody">${menuBody()}</div>`;
       const t = totals();
       setMain(t.count ? `Корзина · ${rub(t.total)}` : "", () => go("cart"));
+      // При вводе перерисовываем только результаты: поле остаётся тем же, клавиатура на телефоне не дёргается
       const input = $("search");
       input.oninput = () => {
         state.query = input.value;
-        const pos = input.selectionStart;
-        renderMenu();
-        const again = $("search");
-        again.focus();
-        again.setSelectionRange(pos, pos);
+        $("menuBody").innerHTML = menuBody();
       };
+      input.onkeydown = (e) => { if (e.key === "Enter") input.blur(); };
     }
 
     function renderCart() {
