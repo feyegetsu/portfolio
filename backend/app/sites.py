@@ -26,5 +26,9 @@ SITES: dict[str, Site] = {
         Site("realty", "Агентство «Квадрат»", leads=True),
         Site("saas", "Taskly", leads=True),
         Site("miniapp", "Сытый Лис", orders=True, catalog=True),
+        Site("restaurant", "Ресторан «Терруар»", leads=True, bookings=True),
+        Site("sushi", "Суши «Кайсэн»", orders=True, catalog=True),
+        Site("gastrobar", "Гастробар «Соль и Солод»", leads=True, bookings=True),
+        Site("bar", "Бар «Полночь»", leads=True, bookings=True),
     ]
 }

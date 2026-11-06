@@ -14,6 +14,7 @@
   const KIND = {
     table: "Бронь столика", consult: "Консультация", quiz: "Квиз", viewing: "Просмотр", repair: "Запись на ремонт",
     signup: "Регистрация", trial: "Пробная тренировка", subscribe: "Подписка", class: "Занятие",
+    event: "Запись на событие", guestlist: "Гест-лист", certificate: "Сертификат", party: "Банкет",
   };
 
   // Бэкенд отдаёт created_at в UTC без часового пояса, демо — с «Z»; показываем в местном времени
@@ -200,6 +201,7 @@
     date: ["Дата", (v) => (/^\d{4}-\d\d-\d\d$/.test(v) ? new Date(`${v}T12:00:00`).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) : v)],
     guests: ["Гостей"], car: ["Машина"], works: ["Работы"], total: ["Сумма", rub], seats: ["Участников"],
     yearly: ["Оплата", (v) => (v ? "за год" : "помесячно")], email: ["Почта"], master: ["Мастер"], service: ["Услуга"], comment: ["Комментарий"],
+    event: ["Событие"], night: ["Вечер"], amount: ["Номинал", rub], occasion: ["Повод"], zone: ["Зона"], format: ["Формат"],
   };
   const fmtValue = (v) => (Array.isArray(v) ? v.map(fmtValue).join(", ")
     : v && typeof v === "object" ? Object.values(v).map(fmtValue).join(", ")

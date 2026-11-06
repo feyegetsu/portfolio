@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <title>Кайсэн — доставка суши и роллов</title>
+  <meta name="description" content="Доставка суши, роллов и рамена за 45 минут. Рыба приходит каждое утро, палочки и соусы бесплатно.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍣</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" fetchpriority="high">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"></noscript>
+  <style>
+    :root { color-scheme: light only; }
+    :root { --washi: #f5f0e6; --paper: #fbf8f2; --ink: #17140f; --muted: #6e665b; --red: #c8352b; --red-d: #a8281f; --line: #e5dccb; --gold: #b28a45; --r: 18px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "M PLUS Rounded 1c", system-ui, sans-serif; background: var(--washi); color: var(--ink); line-height: 1.6; overflow-x: clip; }
+    body.lock { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; color: inherit; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { line-height: 1.15; font-weight: 800; }
+    h2 { font-size: clamp(1.9rem, 4.2vw, 2.8rem); }
+    .muted { color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 26px; border-radius: 999px; background: var(--red); color: #fff; border: 0; font-weight: 700; transition: background .2s, transform .2s; }
+    .btn:hover { background: var(--red-d); transform: translateY(-2px); }
+    .btn--ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+    .btn--ghost:hover { background: var(--ink); color: #fff; }
+    .demo-bar { background: var(--ink); color: var(--washi); text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; }
+
+    header { position: sticky; top: 0; z-index: 40; background: rgba(245, 240, 230, .93); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .head { display: flex; align-items: center; gap: 26px; height: 70px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.35rem; }
+    .hanko { width: 40px; height: 40px; border-radius: 9px; background: var(--red); color: #fff; display: grid; place-items: center; font-size: 22px; font-weight: 700; transform: rotate(-4deg); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .35); }
+    .head nav { display: flex; gap: 22px; font-weight: 500; margin-left: 10px; }
+    .head nav a:hover { color: var(--red); }
+    .head__info { margin-left: auto; font-size: 13px; color: var(--muted); text-align: right; line-height: 1.3; }
+    .head__info b { color: var(--ink); display: block; font-size: 14px; }
+    .cart-btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: var(--ink); color: #fff; border: 0; font-weight: 700; }
+    .cart-btn i { font-style: normal; background: var(--red); border-radius: 99px; min-width: 22px; height: 22px; display: grid; place-items: center; font-size: 12px; padding: 0 6px; }
+    .cart-btn.bump { animation: bump .4s; }
+    @keyframes bump { 40% { transform: scale(1.1); } }
+
+    /* Первый экран: красное солнце и сет */
+    .hero { padding: 56px 0 70px; position: relative; overflow: hidden; }
+    .hero__kanji { position: absolute; left: -10px; top: 20px; writing-mode: vertical-rl; font-size: clamp(7rem, 16vw, 13rem); font-weight: 800; color: rgba(200, 53, 43, .07); line-height: 1; pointer-events: none; user-select: none; }
+    .hero__grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; position: relative; }
+    .tag { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 500; }
+    .tag i { width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; box-shadow: 0 0 0 4px rgba(47, 158, 68, .15); }
+    .hero h1 { font-size: clamp(2.6rem, 5.6vw, 4.6rem); margin: 18px 0; letter-spacing: -.02em; }
+    .hero h1 em { font-style: normal; color: var(--red); }
+    .hero p { font-size: 1.1rem; color: var(--muted); max-width: 470px; }
+    .check { margin-top: 28px; background: #fff; border-radius: var(--r); padding: 18px; border: 1px solid var(--line); max-width: 480px; box-shadow: 0 20px 40px -30px rgba(23, 20, 15, .4); }
+    .check label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .check__row { display: flex; gap: 10px; margin-top: 6px; }
+    .check__row select { flex: 1; }
+    .check__res { margin-top: 12px; font-size: 14px; min-height: 1.6em; }
+    .check__res b { color: var(--red); }
+    .sun { position: relative; aspect-ratio: 1; max-width: 520px; margin-left: auto; width: 100%; }
+    .sun::before { content: ""; position: absolute; inset: 6% 6% auto auto; width: 74%; aspect-ratio: 1; border-radius: 50%; background: var(--red); }
+    .sun__img { position: absolute; left: 0; bottom: 0; width: 78%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; border: 10px solid var(--paper); box-shadow: 0 40px 70px -35px rgba(23, 20, 15, .7); }
+    .sun__img img { width: 100%; height: 100%; object-fit: cover; }
+    .sun__stamp { position: absolute; right: 4%; bottom: 10%; background: var(--paper); border: 2px solid var(--red); color: var(--red); border-radius: 12px; padding: 10px 14px; font-weight: 800; transform: rotate(6deg); text-align: center; line-height: 1.1; }
+    .sun__stamp small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); }
+
+    .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 50px; }
+    .perk { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: flex; gap: 14px; align-items: center; }
+    .perk span { font-size: 1.6rem; }
+    .perk b { display: block; }
+    .perk small { color: var(--muted); }
+
+    /* Меню */
+    .menu { padding: 50px 0 90px; }
+    .cats { position: sticky; top: 70px; z-index: 20; background: var(--washi); display: flex; gap: 8px; overflow-x: auto; padding: 14px 0; margin-bottom: 10px; scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .cat { flex-shrink: 0; padding: 9px 18px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper); font-weight: 700; font-size: 14px; transition: .2s; }
+    .cat[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .sec-title { display: flex; align-items: baseline; gap: 12px; margin: 34px 0 16px; scroll-margin-top: 140px; }
+    .sec-title small { color: var(--red); font-weight: 700; font-size: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .item { background: var(--paper); border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s; }
+    .item:hover { transform: translateY(-4px); box-shadow: 0 24px 40px -28px rgba(23, 20, 15, .5); }
+    .item__ph { aspect-ratio: 4 / 3; overflow: hidden; position: relative; background: #eee5d4; }
+    .item__ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s; }
+    .item:hover .item__ph img { transform: scale(1.06); }
+    .badge { position: absolute; top: 10px; left: 10px; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
+    .item__b { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; gap: 4px; }
+    .item__b h3 { font-size: 1.05rem; }
+    .item__b p { font-size: 13px; color: var(--muted); flex: 1; }
+    .item__meta { font-size: 12px; color: var(--muted); }
+    .item__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; gap: 10px; }
+    .price { font-weight: 800; font-size: 1.15rem; }
+    .add { border: 0; border-radius: 999px; background: var(--red); color: #fff; font-weight: 700; padding: 8px 16px; }
+    .qty { display: inline-flex; align-items: center; background: var(--ink); color: #fff; border-radius: 999px; }
+    .qty button { width: 34px; height: 34px; border: 0; background: none; color: #fff; font-size: 18px; }
+    .qty span { min-width: 20px; text-align: center; font-weight: 700; }
+    .item--off { opacity: .55; }
+    .item--off img { filter: grayscale(1); }
+    .item--off .add { background: #9b948a; cursor: not-allowed; }
+
+    /* Как мы работаем */
+    .how { background: var(--ink); color: var(--washi); }
+    .how__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
+    .how__grid div { border-top: 2px solid var(--red); padding-top: 18px; }
+    .how__grid b { font-size: 2.6rem; color: var(--red); display: block; line-height: 1; }
+    .how__grid h3 { margin: 10px 0 6px; font-size: 1.2rem; }
+    .how__grid p { color: rgba(245, 240, 230, .7); font-size: 15px; }
+    section { padding: 90px 0; }
+
+    /* Корзина */
+    .overlay { position: fixed; inset: 0; background: rgba(23, 20, 15, .45); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 60; }
+    .overlay.on { opacity: 1; pointer-events: auto; }
+    .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: var(--paper); z-index: 70; transform: translateX(100%); transition: transform .35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; }
+    .drawer.on { transform: none; }
+    .drawer__head { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .drawer__head button { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--washi); font-size: 16px; }
+    .drawer__body { flex: 1; overflow-y: auto; padding: 16px 20px; display: grid; gap: 14px; align-content: start; }
+    .drawer__foot { padding: 16px 20px; border-top: 1px solid var(--line); background: #fff; }
+    .line { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; }
+    .line img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
+    .line b { display: block; font-size: 14px; }
+    .line small { color: var(--muted); }
+    .line .qty button { width: 28px; height: 28px; font-size: 16px; }
+    .free { background: var(--washi); border-radius: 12px; padding: 12px 14px; font-size: 13px; }
+    .free i { display: block; height: 6px; border-radius: 9px; background: #e5dccb; margin-top: 8px; overflow: hidden; }
+    .free i::after { content: ""; display: block; height: 100%; width: var(--w); background: var(--red); transition: width .4s; }
+    .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--washi); border-radius: 12px; padding: 4px; }
+    .seg button { border: 0; background: none; padding: 9px; border-radius: 9px; font-weight: 700; font-size: 14px; color: var(--muted); }
+    .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+    .sticks { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .sticks .qty { background: var(--washi); color: var(--ink); }
+    .sticks .qty button { color: var(--ink); }
+    input, select, textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); font: 16px "M PLUS Rounded 1c", sans-serif; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--red); }
+    .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.15rem; margin-bottom: 12px; }
+    .total small { display: block; font-weight: 500; font-size: 12px; color: var(--muted); }
+    .empty { text-align: center; color: var(--muted); padding: 40px 10px; }
+    .empty span { font-size: 3rem; display: block; }
+    .track { display: grid; gap: 0; }
+    .track div { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding-bottom: 20px; position: relative; color: var(--muted); }
+    .track div::before { content: ""; position: absolute; left: 14px; top: 28px; bottom: 0; width: 2px; background: var(--line); }
+    .track div:last-child::before { display: none; }
+    .track i { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: #fff; display: grid; place-items: center; font-style: normal; font-size: 13px; z-index: 1; }
+    .track .on { color: var(--ink); }
+    .track .on i { background: var(--red); border-color: var(--red); color: #fff; }
+    .track .now i { box-shadow: 0 0 0 6px rgba(200, 53, 43, .18); }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 999px; font-weight: 700; z-index: 80; transition: transform .3s; font-size: 14px; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    footer { padding: 36px 0; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); }
+    .foot { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+
+    @media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } .head nav, .head__info { display: none; } .cart-btn { margin-left: auto; } }
+    @media (max-width: 860px) {
+      .hero__grid { grid-template-columns: 1fr; }
+      .sun { max-width: 300px; margin: 0 auto; order: -1; }
+      .hero { padding-top: 30px; }
+      .perks, .how__grid { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+    @media (max-width: 420px) {
+      .item__b { padding: 10px 12px 12px; }
+      .item__foot { flex-direction: column; align-items: stretch; }
+      .add { width: 100%; }
+      .qty { justify-content: space-between; }
+      .check__row { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <a href="#" class="logo"><span class="hanko">海</span>Кайсэн</a>
+      <nav><a href="#menu">Меню</a><a href="#how">Как мы готовим</a><a href="#delivery">Доставка</a></nav>
+      <div class="head__info"><b>+7 (900) 000-00-00</b>ежедневно 11:00–23:00</div>
+      <button class="cart-btn" id="cartBtn" aria-label="Корзина">🛒 <span id="cartSum">Корзина</span><i id="cartCount">0</i></button>
+    </div>
+  </header>
+
+  <section class="hero" style="padding-bottom:40px" id="delivery">
+    <div class="hero__kanji" aria-hidden="true">海鮮</div>
+    <div class="container hero__grid">
+      <div>
+        <span class="tag"><i></i>Принимаем заказы · доставка 45 минут</span>
+        <h1>Рыба утром — <em>роллы</em> к ужину</h1>
+        <p>Лосось и тунец приходят каждое утро, рис варим порциями каждые два часа. Соберём заказ за 15 минут и привезём в термосумке.</p>
+        <div class="check">
+          <label for="zone">Проверьте, сколько ехать до вас</label>
+          <div class="check__row">
+            <select id="zone">
+              <option value="">Выберите район</option>
+              <option value="0">Центральный</option><option value="1">Петроградский</option><option value="2">Василеостровский</option>
+              <option value="3">Московский</option><option value="4">Приморский</option><option value="5">Пушкин</option>
+            </select>
+            <a href="#menu" class="btn">Выбрать роллы</a>
+          </div>
+          <p class="check__res" id="zoneRes" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="sun">
+        <div class="sun__img"><img src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" alt="Сет роллов на деревянной доске" fetchpriority="high"></div>
+        <div class="sun__stamp">07:00<small>рыба приезжает<br>каждое утро</small></div>
+      </div>
+    </div>
+    <div class="container perks">
+      <div class="perk"><span>🛵</span><div><b>Бесплатно от 1 500 ₽</b><small>иначе доставка 199 ₽</small></div></div>
+      <div class="perk"><span>🥢</span><div><b>Палочки и соусы</b><small>сколько нужно, бесплатно</small></div></div>
+      <div class="perk"><span>⏱️</span><div><b>Опоздали — ролл в подарок</b><small>если везём дольше часа</small></div></div>
+    </div>
+  </section>
+
+  <section class="menu" id="menu">
+    <div class="container">
+      <h2>Меню</h2>
+      <nav class="cats" id="cats" aria-label="Разделы меню"></nav>
+      <div id="menuBody"></div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="container">
+      <h2>Как мы готовим</h2>
+      <div class="how__grid">
+        <div><b>07:00</b><h3>Рыба приезжает утром</h3><p>Охлаждённый лосось и тунец, без заморозки. Что не продали за день, в роллы не идёт.</p></div>
+        <div><b>15 мин</b><h3>Собираем под заказ</h3><p>Не держим роллы на витрине. Повар начинает, как только вы оформили заказ.</p></div>
+        <div><b>+60°</b><h3>Термосумка</h3><p>Горячее приезжает горячим, роллы холодными: отсеки сумки разделены.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="container foot"><span>© Кайсэн · ул. Примерная, 5</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div></footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-label="Корзина" aria-hidden="true">
+    <div class="drawer__head"><h3 id="drawerTitle">Корзина</h3><button id="drawerClose" aria-label="Закрыть">✕</button></div>
+    <div class="drawer__body" id="drawerBody"></div>
+    <div class="drawer__foot" id="drawerFoot"></div>
+  </aside>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/motion.js" defer></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${Math.round(w * .75)}&q=70`;
+    const FREE_FROM = 1500, DELIVERY = 199;
+
+    // ref совпадает с каталогом в API: цены и наличие приходят оттуда, здесь значения по умолчанию
+    const CATS = ["Сеты", "Роллы", "Запечённые", "Нигири и сашими", "Горячее"];
+    const MENU = [
+      { ref: "s1", cat: "Сеты", name: "Сет «Кайсэн»", desc: "Филадельфия, Калифорния, Радуга и Красный дракон", meta: "32 шт · 1 120 г", photo: "1553621042-f6e147245754", price: 2490, hit: true },
+      { ref: "s2", cat: "Сеты", name: "Сет «Филадельфия»", desc: "Три вида Филадельфии: классика, с угрём и запечённая", meta: "24 шт · 860 г", photo: "1579871494447-9811cf80d66c", price: 1890 },
+      { ref: "s3", cat: "Сеты", name: "Сет для двоих", desc: "Филадельфия, маки с огурцом и нигири с лососем", meta: "20 шт · 640 г", photo: "1607301405390-d831c242f59b", price: 1390 },
+      { ref: "s4", cat: "Роллы", name: "Филадельфия", desc: "Лосось, сливочный сыр, огурец", meta: "8 шт · 260 г", photo: "1617196034183-421b4917c92d", price: 590, hit: true },
+      { ref: "s5", cat: "Роллы", name: "Калифорния", desc: "Краб, авокадо, огурец, икра масаго", meta: "8 шт · 230 г", photo: "1617196035154-1e7e6e28b0db", price: 490 },
+      { ref: "s6", cat: "Роллы", name: "Радуга", desc: "Лосось, тунец, авокадо, креветка сверху", meta: "8 шт · 250 г", photo: "1582450871972-ab5ca641643d", price: 650 },
+      { ref: "s7", cat: "Роллы", name: "Маки с огурцом", desc: "Огурец, кунжут. Лёгкий и свежий", meta: "6 шт · 110 г", photo: "1564489563601-c53cfc451e93", price: 190 },
+      { ref: "s8", cat: "Роллы", name: "Красный дракон", desc: "Тунец, угорь, соус унаги", meta: "8 шт · 270 г", photo: "1559410545-0bdcd187e0a6", price: 690 },
+      { ref: "s9", cat: "Запечённые", name: "Запечённый с лососем", desc: "Под сырной шапкой с соусом спайси", meta: "8 шт · 280 г", photo: "1580822184713-fc5400e7fe10", price: 560 },
+      { ref: "s10", cat: "Запечённые", name: "Запечённый с крабом", desc: "Снежный краб, сыр, соус японский майонез", meta: "8 шт · 270 г", photo: "1563612116625-3012372fccce", price: 520 },
+      { ref: "s11", cat: "Нигири и сашими", name: "Нигири с лососем", desc: "Рис, лосось, капля васаби", meta: "2 шт · 70 г", photo: "1615361200141-f45040f367be", price: 220 },
+      { ref: "s12", cat: "Нигири и сашими", name: "Сашими-ассорти", desc: "Лосось, тунец, гребешок, дайкон", meta: "12 кусочков · 240 г", photo: "1534482421-64566f976cfa", price: 990 },
+      { ref: "s13", cat: "Нигири и сашими", name: "Нигири микс", desc: "Лосось, тунец, угорь, креветка, гребешок", meta: "6 шт · 210 г", photo: "1562802378-063ec186a863", price: 690 },
+      { ref: "s14", cat: "Горячее", name: "Рамен тонкоцу", desc: "Свиной бульон 12 часов, чашу, яйцо, нори", meta: "500 г", photo: "1569718212165-3a8278d5f624", price: 590, hit: true },
+      { ref: "s15", cat: "Горячее", name: "Острый рамен с курицей", desc: "Бульон с мисо и чили, курица, кукуруза", meta: "500 г", photo: "1557872943-16a5ac26437e", price: 560 },
+      { ref: "s16", cat: "Горячее", name: "Гёдза со свининой", desc: "Жареные пельмени с соусом понзу", meta: "6 шт · 180 г", photo: "1496116218417-1a781b1c416c", price: 390 },
+      { ref: "s17", cat: "Горячее", name: "Якитори", desc: "Шашлычки из бедра курицы в соусе тарэ", meta: "4 шт · 200 г", photo: "1588767768106-1b20e51d9d68", price: 450 },
+    ];
+    const byRef = Object.fromEntries(MENU.map((m) => [m.ref, m]));
+
+    // ---------- Зоны доставки ----------
+    const ZONES = [["Центральный", 35], ["Петроградский", 40], ["Василеостровский", 45], ["Московский", 50], ["Приморский", 60], ["Пушкин", 80]];
+    $("zone").addEventListener("change", () => {
+      const z = ZONES[$("zone").value];
+      $("zoneRes").innerHTML = z ? `${z[0]}: привезём за <b>${z[1]}–${z[1] + 15} минут</b>. Бесплатно от ${rub(FREE_FROM)}.` : "";
+      try { localStorage.setItem("kaisen-zone", $("zone").value); } catch {}
+    });
+    try { const z = localStorage.getItem("kaisen-zone"); if (z) { $("zone").value = z; $("zone").dispatchEvent(new Event("change")); } } catch {}
+
+    // ---------- Корзина ----------
+    const state = { cart: load("kaisen-cart", {}), sticks: 2, mode: "delivery", order: null };
+    function load(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } }
+    const saveCart = () => { try { localStorage.setItem("kaisen-cart", JSON.stringify(state.cart)); } catch {} };
+    const lines = () => Object.entries(state.cart).filter(([ref, q]) => q > 0 && byRef[ref]).map(([ref, qty]) => ({ ...byRef[ref], qty }));
+    const subtotal = () => lines().reduce((s, l) => s + l.price * l.qty, 0);
+    const deliveryFee = () => (state.mode === "delivery" && subtotal() < FREE_FROM ? DELIVERY : 0);
+    function change(ref, d) {
+      const it = byRef[ref];
+      if (!it || (d > 0 && it.off)) return;
+      state.cart[ref] = Math.max(0, (state.cart[ref] || 0) + d);
+      if (!state.cart[ref]) delete state.cart[ref];
+      saveCart();
+      renderMenu();
+      renderCart();
+      if (d > 0) { $("cartBtn").classList.remove("bump"); void $("cartBtn").offsetWidth; $("cartBtn").classList.add("bump"); }
+    }
+
+    // ---------- Меню ----------
+    $("cats").innerHTML = CATS.map((c, i) => `<button class="cat" data-cat="${i}" aria-pressed="${!i}">${c}</button>`).join("");
+    function card(m) {
+      const q = state.cart[m.ref] || 0;
+      const control = m.off ? `<button class="add" disabled>Закончилось</button>`
+        : q ? `<div class="qty"><button data-dec="${m.ref}" aria-label="Убрать">−</button><span>${q}</span><button data-inc="${m.ref}" aria-label="Добавить">+</button></div>`
+        : `<button class="add" data-inc="${m.ref}">В корзину</button>`;
+      return `<article class="item${m.off ? " item--off" : ""}">
+        <div class="item__ph"><img loading="lazy" src="${ph(m.photo)}" alt="${m.name}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
+        <div class="item__b"><h3>${m.name}</h3><span class="item__meta">${m.meta}</span><p>${m.desc}</p>
+          <div class="item__foot"><span class="price">${rub(m.price)}</span>${control}</div></div></article>`;
+    }
+    function renderMenu() {
+      $("menuBody").innerHTML = CATS.map((c, i) => `<h3 class="sec-title" id="cat-${i}"><span style="font-size:1.5rem">${c}</span><small>${MENU.filter((m) => m.cat === c).length}</small></h3>
+        <div class="grid">${MENU.filter((m) => m.cat === c).map(card).join("")}</div>`).join("");
+    }
+    document.addEventListener("click", (e) => {
+      const t = e.target.closest("[data-inc],[data-dec]");
+      if (t) change(t.dataset.inc || t.dataset.dec, t.dataset.inc ? 1 : -1);
+    });
+    // Разделы: клик прокручивает, прокрутка подсвечивает текущий раздел
+    let catLock = 0;
+    $("cats").addEventListener("click", (e) => {
+      const b = e.target.closest(".cat"); if (!b) return;
+      catLock = Date.now() + 900;
+      highlight(+b.dataset.cat);
+      $(`cat-${b.dataset.cat}`).scrollIntoView({ behavior: "smooth" });
+    });
+    function highlight(i) {
+      document.querySelectorAll(".cat").forEach((b, k) => {
+        const on = k === i;
+        if (on && b.getAttribute("aria-pressed") !== "true") $("cats").scrollTo({ left: b.offsetLeft - ($("cats").clientWidth - b.offsetWidth) / 2, behavior: "smooth" });
+        b.setAttribute("aria-pressed", on);
+      });
+    }
+    addEventListener("scroll", () => {
+      if (Date.now() < catLock) return;
+      let cur = 0;
+      CATS.forEach((_, i) => { const s = $(`cat-${i}`); if (s && s.getBoundingClientRect().top < 200) cur = i; });
+      highlight(cur);
+    }, { passive: true });
+
+    // Цены и стоп-лист из каталога: администратор меняет их в админке
+    PortfolioAPI.catalog("sushi").then((items) => {
+      for (const c of items) if (byRef[c.ref]) { byRef[c.ref].price = c.price; byRef[c.ref].off = !c.active; }
+      for (const ref of Object.keys(state.cart)) if (byRef[ref] && byRef[ref].off) delete state.cart[ref];
+      renderMenu();
+      renderCart();
+    }).catch(() => {});
+
+    // ---------- Шторка корзины ----------
+    const openDrawer = () => { $("drawer").classList.add("on"); $("overlay").classList.add("on"); $("drawer").setAttribute("aria-hidden", "false"); document.body.classList.add("lock"); renderCart(); };
+    const closeDrawer = () => { $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); $("drawer").setAttribute("aria-hidden", "true"); document.body.classList.remove("lock"); };
+    $("cartBtn").onclick = openDrawer;
+    $("drawerClose").onclick = closeDrawer;
+    $("overlay").onclick = closeDrawer;
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && $("drawer").classList.contains("on")) closeDrawer(); });
+
+    function renderCart() {
+      const ls = lines();
+      const count = ls.reduce((s, l) => s + l.qty, 0);
+      $("cartCount").textContent = count;
+      $("cartSum").textContent = count ? rub(subtotal()) : "Корзина";
+      if (state.order) return renderTrack();
+      $("drawerTitle").textContent = "Корзина";
+      if (!ls.length) {
+        $("drawerBody").innerHTML = `<div class="empty"><span>🍣</span>Корзина пустая.<br>Загляните в меню, там вкусно.</div>`;
+        $("drawerFoot").innerHTML = `<a href="#menu" class="btn" style="width:100%" id="toMenu">В меню</a>`;
+        $("toMenu").onclick = closeDrawer;
+        return;
+      }
+      const sub = subtotal();
+      const left = Math.max(0, FREE_FROM - sub);
+      $("drawerBody").innerHTML = `
+        ${ls.map((l) => `<div class="line"><img src="${ph(l.photo, 120)}" alt=""><div><b>${l.name}</b><small>${rub(l.price)} · ${l.meta}</small></div>
+          <div class="qty"><button data-dec="${l.ref}" aria-label="Убрать">−</button><span>${l.qty}</span><button data-inc="${l.ref}" aria-label="Добавить">+</button></div></div>`).join("")}
+        <div class="sticks"><span>🥢 Палочки, персон</span><div class="qty"><button id="stMinus" aria-label="Меньше">−</button><span>${state.sticks}</span><button id="stPlus" aria-label="Больше">+</button></div></div>
+        ${state.mode === "delivery" ? `<div class="free">${left ? `Ещё <b>${rub(left)}</b> до бесплатной доставки` : "🎉 Доставка бесплатная"}<i style="--w:${Math.min(100, (sub / FREE_FROM) * 100)}%"></i></div>` : ""}
+        <form id="orderForm" style="display:grid;gap:10px">
+          <div class="seg" role="group" aria-label="Способ получения"><button type="button" data-mode="delivery" aria-pressed="${state.mode === "delivery"}">Доставка</button><button type="button" data-mode="pickup" aria-pressed="${state.mode === "pickup"}">Самовывоз</button></div>
+          ${state.mode === "delivery" ? `<input name="address" required placeholder="Улица, дом, квартира" aria-label="Адрес" autocomplete="street-address">` : `<p class="muted" style="font-size:14px">ул. Примерная, 5 · будет готово через 25 минут</p>`}
+          <select name="time" aria-label="Время"><option>Как можно скорее</option><option>К 19:00</option><option>К 20:00</option><option>К 21:00</option></select>
+          <input name="name" required placeholder="Имя" aria-label="Имя" autocomplete="name">
+          <input name="phone" required type="tel" placeholder="Телефон" aria-label="Телефон" autocomplete="tel">
+        </form>`;
+      const fee = deliveryFee();
+      $("drawerFoot").innerHTML = `<div class="total"><span>Итого<small>${fee ? `с доставкой ${rub(fee)}` : state.mode === "delivery" ? "доставка бесплатно" : "самовывоз"}</small></span><span>${rub(sub + fee)}</span></div>
+        <button class="btn" style="width:100%" type="submit" form="orderForm">Оформить заказ</button>`;
+      $("stMinus").onclick = () => { state.sticks = Math.max(0, state.sticks - 1); renderCart(); };
+      $("stPlus").onclick = () => { state.sticks = Math.min(10, state.sticks + 1); renderCart(); };
+      $("drawerBody").querySelectorAll("[data-mode]").forEach((b) => b.onclick = () => { state.mode = b.dataset.mode; renderCart(); });
+      $("orderForm").onsubmit = submitOrder;
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      const f = e.target;
+      const items = lines().map((l) => ({ ref: l.ref, name: l.name, qty: l.qty, price: l.price }));
+      const fee = deliveryFee();
+      if (fee) items.push({ ref: "delivery", name: "Доставка", qty: 1, price: fee });
+      const comment = [f.time.value, `палочки: ${state.sticks}`].join(" · ");
+      let res;
+      try {
+        res = await PortfolioAPI.submit(f, () => PortfolioAPI.createOrder("sushi", {
+          items, name: f.name.value, phone: f.phone.value, mode: state.mode, address: f.address ? f.address.value : "", comment,
+        }));
+      } catch { return; }
+      state.order = { id: res.id, status: res.status, mode: state.mode };
+      state.cart = {};
+      saveCart();
+      renderMenu();
+      renderCart();
+      trackOrder();
+    }
+
+    // ---------- Отслеживание заказа ----------
+    const FLOW = { delivery: ["new", "cooking", "delivering", "done"], pickup: ["new", "cooking", "done"] };
+    const STEPS = {
+      delivery: [["Заказ принят", "Повар уже читает чек"], ["Готовим", "Собираем роллы под заказ"], ["Курьер в пути", "Едет в термосумке"], ["Доставлено", "Приятного аппетита!"]],
+      pickup: [["Заказ принят", "Повар уже читает чек"], ["Готовим", "Собираем роллы под заказ"], ["Можно забирать", "Назовите номер заказа"]],
+    };
+    let poll, kitchen;
+    function trackOrder() {
+      clearInterval(poll); clearInterval(kitchen);
+      poll = setInterval(async () => {
+        try {
+          const s = await PortfolioAPI.orderStatus("sushi", state.order.id);
+          if (s.status !== state.order.status) { state.order.status = s.status; renderTrack(); }
+          if (s.status === "done" || s.status === "cancelled") { clearInterval(poll); clearInterval(kitchen); }
+        } catch { /* нет сети — спросим позже */ }
+      }, 2000);
+      // В демо «кухня» сама двигает заказ; в админке статус можно поменять вручную
+      if (PortfolioAPI.mode === "demo") kitchen = setInterval(() => {
+        const flow = FLOW[state.order.mode];
+        const next = flow[flow.indexOf(state.order.status) + 1];
+        if (next) PortfolioAPI.demoAdvanceOrder(state.order.id, next);
+      }, 6000);
+    }
+    function renderTrack() {
+      const o = state.order;
+      $("drawerTitle").textContent = `Заказ №${o.id}`;
+      if (o.status === "cancelled") {
+        $("drawerBody").innerHTML = `<div class="empty"><span>😔</span>Заказ отменён. Мы позвоним, чтобы объяснить причину.</div>`;
+      } else {
+        const idx = FLOW[o.mode].indexOf(o.status);
+        $("drawerBody").innerHTML = `<div class="track">${STEPS[o.mode].map(([t, d], i) => `<div class="${i <= idx ? "on" : ""}${i === idx ? " now" : ""}"><i>${i < idx ? "✓" : i + 1}</i><span><b>${t}</b><br><small>${d}</small></span></div>`).join("")}</div>
+          <p class="muted" style="font-size:13px">Статус обновляется сам. ${PortfolioAPI.mode === "demo" ? "В демо его двигает «кухня», а ещё его можно поменять в админке." : ""}</p>${PortfolioAPI.adminLink("orders")}`;
+      }
+      $("drawerFoot").innerHTML = `<button class="btn btn--ghost" style="width:100%" id="newOrder">Новый заказ</button>`;
+      $("newOrder").onclick = () => { clearInterval(poll); clearInterval(kitchen); state.order = null; renderCart(); closeDrawer(); };
+    }
+
+    renderMenu();
+    renderCart();
+  </script>
+</body>
+</html>

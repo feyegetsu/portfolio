@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <title>Терруар — ресторан сезонной кухни</title>
+  <meta name="description" content="Ресторан сезонной кухни: дегустационный сет из шести подач, винное сопровождение, бронь стола онлайн.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍂</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" imagesizes="(max-width: 900px) 100vw, 58vw" fetchpriority="high">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap"></noscript>
+  <style>
+    :root { color-scheme: light only; }
+    :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "IBM Plex Sans", system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; overflow-x: clip; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; color: inherit; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3, .logo { font-family: "Prata", Georgia, serif; font-weight: 400; line-height: 1.1; }
+    h2 { font-size: clamp(2rem, 4.6vw, 3.3rem); }
+    .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--brass); font-weight: 600; display: block; margin-bottom: 14px; }
+    .muted { color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 28px; background: var(--brass); color: #fff; border: 0; font-weight: 600; letter-spacing: .04em; transition: background .25s, transform .25s; }
+    .btn:hover { background: #9c7643; transform: translateY(-2px); }
+    .btn--line { background: transparent; border: 1px solid currentColor; }
+    .btn--line:hover { background: rgba(255, 255, 255, .08); }
+
+    .demo-bar { background: var(--green); color: var(--cream); text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; }
+
+    header { position: sticky; top: 0; z-index: 30; background: rgba(250, 247, 241, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 74px; gap: 20px; }
+    .head nav { display: flex; gap: 26px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+    .head nav a:hover { color: var(--brass); }
+    .logo { font-size: 1.6rem; letter-spacing: .32em; text-align: center; }
+    .logo small { display: block; font: 500 10px "IBM Plex Sans", sans-serif; letter-spacing: .3em; color: var(--brass); margin-top: 2px; }
+    .head .btn { justify-self: end; padding: 12px 22px; font-size: 14px; }
+
+    /* Первый экран: зелёная колонка и фото подачи */
+    .hero { display: grid; grid-template-columns: 5fr 7fr; min-height: calc(100vh - 108px); }
+    .hero__text { background: var(--green); color: var(--cream); padding: 70px 56px 56px max(20px, calc((100vw - 1200px) / 2 + 20px)); display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+    .season-badge { display: inline-flex; align-items: center; gap: 10px; align-self: flex-start; border: 1px solid rgba(242, 236, 224, .35); padding: 7px 14px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+    .season-badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--brass); }
+    .hero h1 { font-size: clamp(2.8rem, 5.4vw, 5rem); }
+    .hero h1 em { font-style: normal; color: var(--brass); }
+    .hero p { color: rgba(242, 236, 224, .78); max-width: 440px; font-size: 1.05rem; }
+    .hero__btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero__btns .btn--line { color: var(--cream); }
+    .hero__price { display: flex; gap: 34px; border-top: 1px solid rgba(242, 236, 224, .2); padding-top: 22px; flex-wrap: wrap; }
+    .hero__price b { font-family: "Prata", serif; font-weight: 400; font-size: 1.7rem; display: block; color: #fff; }
+    .hero__price span { font-size: 13px; color: rgba(242, 236, 224, .65); }
+    .hero__photo { position: relative; overflow: hidden; background: #2a2a24; }
+    .hero__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero__photo figcaption { position: absolute; left: 24px; bottom: 24px; background: rgba(250, 247, 241, .92); padding: 12px 18px; font-size: 14px; max-width: 320px; }
+    .hero__photo figcaption b { font-family: "Prata", serif; font-weight: 400; display: block; font-size: 1.1rem; }
+
+    section { padding: 100px 0; }
+
+    /* Сезоны и дегустационный сет */
+    .seasons { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); margin: 36px 0 30px; }
+    .season { padding: 18px 20px; background: none; border: 0; border-left: 1px solid var(--line); text-align: left; transition: background .25s; }
+    .season:first-child { border-left: 0; }
+    .season b { font-family: "Prata", serif; font-weight: 400; font-size: 1.3rem; display: block; }
+    .season small { color: var(--muted); font-size: 13px; }
+    .season[aria-selected="true"] { background: var(--green); color: var(--cream); }
+    .season[aria-selected="true"] small { color: rgba(242, 236, 224, .7); }
+    .season__now { display: inline-block; margin-left: 8px; font: 600 10px "IBM Plex Sans", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); vertical-align: middle; }
+    .set__head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 26px; }
+    .set__intro { max-width: 560px; color: var(--muted); }
+    .pairing { position: relative; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; }
+    .pairing input { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; }
+    .pairing__sw { width: 48px; height: 26px; border-radius: 99px; background: #d8d0bf; position: relative; transition: background .25s; flex-shrink: 0; }
+    .pairing__sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .25s; }
+    .pairing input:checked + .pairing__sw { background: var(--green); }
+    .pairing input:checked + .pairing__sw::after { transform: translateX(22px); }
+    .pairing input:focus-visible + .pairing__sw { outline: 2px solid var(--brass); outline-offset: 3px; }
+    .pairing b { display: block; }
+    .pairing small { color: var(--muted); }
+    .courses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 14px; scrollbar-width: thin; }
+    .course { scroll-snap-align: start; background: #fff; border: 1px solid var(--line); display: flex; flex-direction: column; animation: rise .5s both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+    .course__ph { aspect-ratio: 4 / 3; overflow: hidden; position: relative; background: var(--cream); }
+    .course__ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s; }
+    .course:hover .course__ph img { transform: scale(1.05); }
+    .course__no { position: absolute; top: 12px; left: 12px; background: var(--paper); font-family: "Prata", serif; padding: 4px 12px; font-size: 15px; }
+    .course__b { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .course__b h3 { font-size: 1.25rem; }
+    .course__b p { color: var(--muted); font-size: 14px; }
+    .course__wine { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--green); display: none; }
+    .courses.with-wine .course__wine { display: block; animation: rise .35s both; }
+    .set__total { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 26px; padding: 22px 26px; background: var(--cream); }
+    .set__total b { font-family: "Prata", serif; font-weight: 400; font-size: 1.9rem; }
+
+    /* Шеф */
+    .chef { display: grid; grid-template-columns: 1fr 1.1fr; gap: 70px; align-items: center; }
+    .chef__ph { position: relative; }
+    .chef__ph img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+    .chef__ph::after { content: ""; position: absolute; inset: 22px -22px -22px 22px; border: 1px solid var(--brass); z-index: -1; }
+    .chef blockquote { font-family: "Prata", serif; font-size: clamp(1.4rem, 2.6vw, 2rem); line-height: 1.3; margin: 18px 0 22px; }
+    .chef__facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 22px; }
+    .chef__facts b { font-family: "Prata", serif; font-weight: 400; font-size: 1.8rem; display: block; color: var(--green); }
+    .chef__facts span { font-size: 13px; color: var(--muted); }
+
+    /* Альбомы */
+    .albums { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; margin-top: 36px; }
+    .albums button { position: relative; height: 380px; border: 0; padding: 0; overflow: hidden; background: var(--cream); text-align: left; color: #fff; }
+    .albums img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1s; }
+    .albums button::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(14, 22, 17, .82), transparent 55%); }
+    .albums button:hover img, .albums button:focus-visible img { transform: scale(1.05); }
+    .albums button:focus-visible { outline: 2px solid var(--brass); outline-offset: 4px; }
+    .albums span { position: absolute; z-index: 1; left: 22px; bottom: 20px; right: 22px; }
+    .albums b { font-family: "Prata", serif; font-weight: 400; font-size: 1.6rem; display: block; }
+    .albums small { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+
+    /* Бронь */
+    .book { background: var(--green); color: var(--cream); }
+    .book__grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 60px; align-items: start; }
+    .book__grid > * { min-width: 0; }
+    .book__info p { color: rgba(242, 236, 224, .75); margin: 16px 0 28px; }
+    .book__info dl { display: grid; gap: 14px; border-top: 1px solid rgba(242, 236, 224, .2); padding-top: 22px; font-size: 15px; }
+    .book__info dt { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--brass); }
+    .card { background: var(--paper); color: var(--ink); padding: 34px; }
+    .step { margin-bottom: 24px; }
+    .step > b { display: block; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .dates { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+    .chip { flex-shrink: 0; border: 1px solid var(--line); background: #fff; padding: 10px 12px; min-width: 64px; text-align: center; font-size: 13px; transition: .2s; }
+    .chip b { display: block; font-family: "Prata", serif; font-weight: 400; font-size: 1.2rem; }
+    .chip:hover:not(:disabled) { border-color: var(--brass); }
+    .chip[aria-pressed="true"] { background: var(--green); color: var(--cream); border-color: var(--green); }
+    .chip:disabled { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
+    .times { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 8px; }
+    .times .chip { min-width: 0; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .guests { display: inline-flex; align-items: center; border: 1px solid var(--line); background: #fff; }
+    .guests button { width: 44px; height: 44px; border: 0; background: none; font-size: 20px; }
+    .guests output { min-width: 70px; text-align: center; font-weight: 600; }
+    input, select { width: 100%; padding: 13px 14px; border: 1px solid var(--line); background: #fff; color: var(--ink); font: 16px "IBM Plex Sans", sans-serif; border-radius: 0; }
+    input:focus, select:focus { outline: 2px solid var(--brass); outline-offset: -1px; }
+    .card .pairing { margin-bottom: 22px; }
+    .summary { background: var(--cream); padding: 14px 16px; font-size: 14px; margin-bottom: 16px; }
+    .summary b { font-weight: 600; }
+    .done { text-align: center; padding: 20px 0; }
+    .done h3 { font-size: 1.8rem; margin: 10px 0; }
+
+    /* Сертификат */
+    .gift { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+    .gift__card { aspect-ratio: 1.6; background: linear-gradient(135deg, var(--green), var(--green-2)); color: var(--cream); padding: 30px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(24, 38, 31, .8); }
+    .gift__card::before { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(179, 139, 82, .6); pointer-events: none; }
+    .gift__card .logo { text-align: left; font-size: 1.3rem; }
+    .gift__card b { font-family: "Prata", serif; font-weight: 400; font-size: 2.6rem; }
+    .gift form { display: grid; gap: 12px; margin-top: 22px; }
+
+    footer { background: #111a15; color: rgba(242, 236, 224, .7); padding: 40px 0; font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+    @media (max-width: 960px) {
+      .head { grid-template-columns: 1fr auto; }
+      .head nav { display: none; }
+      .logo { text-align: left; }
+      .hero, .chef, .book__grid, .gift { grid-template-columns: 1fr; }
+      .hero__text { padding: 50px 20px; }
+      .hero__photo { min-height: 300px; order: -1; }
+      .hero__photo figcaption { display: none; }
+      .hero__text { padding-top: 36px; }
+      .seasons { grid-template-columns: 1fr 1fr; }
+      .season:nth-child(3) { border-left: 0; }
+      .season:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .albums { grid-template-columns: 1fr; }
+      .albums button { height: 240px; }
+      .chef { gap: 50px; }
+      .chef__ph { margin-right: 22px; }
+    }
+    @media (max-width: 560px) {
+      section { padding: 70px 0; }
+      .head .btn { padding: 10px 14px; font-size: 13px; }
+      .logo { font-size: 1.25rem; letter-spacing: .2em; }
+      .card { padding: 22px 18px; }
+      .row { grid-template-columns: 1fr; }
+      .chef__facts { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+      .chef__facts b { font-size: 1.4rem; }
+      .hero__photo figcaption { left: 12px; right: 12px; bottom: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <nav><a href="#set">Сет</a><a href="#chef">Шеф</a><a href="#photos">Зал</a><a href="#gift">Сертификат</a></nav>
+      <a href="#" class="logo">ТЕРРУАР<small>сезонная кухня</small></a>
+      <a href="#book" class="btn">Забронировать</a>
+    </div>
+  </header>
+
+  <section class="hero" style="padding:0">
+    <div class="hero__text">
+      <span class="season-badge"><i></i><span id="seasonNow">Сейчас: осенний сет</span></span>
+      <h1>Кухня <em>одного</em> сезона</h1>
+      <p>Меню меняется четыре раза в год вместе с тем, что растёт, ловится и созревает рядом. Шесть подач, которые не повторятся до следующего года.</p>
+      <div class="hero__btns"><a href="#book" class="btn">Забронировать стол</a><a href="#set" class="btn btn--line">Смотреть сет</a></div>
+      <div class="hero__price">
+        <div><b>6 900 ₽</b><span>сет из шести подач</span></div>
+        <div><b>+3 500 ₽</b><span>винное сопровождение</span></div>
+        <div><b>Вт–Вс</b><span>с 18:00 до полуночи</span></div>
+      </div>
+    </div>
+    <figure class="hero__photo">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000" srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" sizes="(max-width: 900px) 100vw, 58vw" alt="Подача блюда в зале ресторана" fetchpriority="high">
+      <figcaption><b>Только 28 мест</b>Поэтому каждую подачу шеф проверяет лично.</figcaption>
+    </figure>
+  </section>
+
+  <section id="set">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Дегустационный сет</span>
+      <h2 data-reveal>Четыре сезона — четыре меню</h2>
+      <div class="seasons" role="tablist" aria-label="Сезонное меню" id="seasons"></div>
+      <div class="set__head">
+        <p class="set__intro" id="seasonIntro"></p>
+        <label class="pairing"><input type="checkbox" id="wine"><span class="pairing__sw"></span><span><b>Винное сопровождение</b><small>бокал к каждой подаче · +3 500 ₽</small></span></label>
+      </div>
+      <div class="courses" id="courses"></div>
+      <div class="set__total"><span class="muted" id="setLabel"></span><b id="setPrice">6 900 ₽</b><a href="#book" class="btn">Забронировать с этим сетом</a></div>
+    </div>
+  </section>
+
+  <section id="chef" style="background:var(--cream)">
+    <div class="container chef">
+      <div class="chef__ph" data-reveal="left"><img loading="lazy" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=75" alt="Шеф ресторана"></div>
+      <div data-reveal="right">
+        <span class="eyebrow">Шеф</span>
+        <h2>Арсений Белов</h2>
+        <blockquote>«Я не придумываю блюда. Я жду, пока продукт сам подскажет, каким ему быть».</blockquote>
+        <p class="muted">Работал в ресторанах Копенгагена и Сан-Себастьяна, вернулся, чтобы готовить из того, что растёт в ста километрах от кухни. Рыбу привозят с Ладоги, овощи с двух фермерских хозяйств, хлеб печём сами.</p>
+        <div class="chef__facts">
+          <div><b>100 км</b><span>радиус поставщиков</span></div>
+          <div><b>4</b><span>меню в год</span></div>
+          <div><b>28</b><span>мест в зале</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="photos">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Атмосфера</span>
+      <h2 data-reveal>Зал, кухня и погреб</h2>
+      <div class="albums">
+        <button data-album="hall"><img loading="lazy" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70" alt=""><span><b>Зал</b><small id="cnt-hall"></small></span></button>
+        <button data-album="kitchen"><img loading="lazy" src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Кухня</b><small id="cnt-kitchen"></small></span></button>
+        <button data-album="wine"><img loading="lazy" src="https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Погреб</b><small id="cnt-wine"></small></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="book" id="book">
+    <div class="container book__grid">
+      <div class="book__info">
+        <span class="eyebrow">Бронь стола</span>
+        <h2>Ждём вас</h2>
+        <p>Выберите день и время. Подтверждение придёт сразу, а за день до визита мы напомним о брони.</p>
+        <dl>
+          <div><dt>Адрес</dt><dd>Набережная, 7, вход со двора</dd></div>
+          <div><dt>Часы</dt><dd>Вт–Вс с 18:00 до 00:00, понедельник — выходной</dd></div>
+          <div><dt>Телефон</dt><dd><a href="tel:+79000000000">+7 (900) 000-00-00</a></dd></div>
+        </dl>
+      </div>
+      <div class="card" id="bookCard">
+        <form id="bookForm" novalidate>
+          <div class="step"><b>Дата</b><div class="dates" id="dates" role="group" aria-label="Дата"></div></div>
+          <div class="step"><b>Время</b><div class="times" id="times" role="group" aria-label="Время"></div></div>
+          <div class="step row">
+            <div><b style="display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Гостей</b>
+              <div class="guests"><button type="button" id="gMinus" aria-label="Меньше гостей">−</button><output id="guests">2</output><button type="button" id="gPlus" aria-label="Больше гостей">+</button></div></div>
+            <div><b style="display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Повод</b>
+              <select id="occasion" aria-label="Повод"><option value="">Без повода</option><option>День рождения</option><option>Свидание</option><option>Годовщина</option><option>Деловой ужин</option></select></div>
+          </div>
+          <label class="pairing"><input type="checkbox" id="bookWine"><span class="pairing__sw"></span><span><b>С винным сопровождением</b><small>подготовим бокалы к вашему приходу</small></span></label>
+          <div class="summary" id="summary"></div>
+          <div class="step row">
+            <input id="name" required placeholder="Имя" aria-label="Имя" autocomplete="name">
+            <input id="phone" required type="tel" placeholder="Телефон" aria-label="Телефон" autocomplete="tel">
+          </div>
+          <button class="btn" style="width:100%" type="submit">Забронировать</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="gift">
+    <div class="container gift">
+      <div class="gift__card" data-reveal="left"><span class="logo">ТЕРРУАР</span><div><small style="letter-spacing:.2em;text-transform:uppercase;font-size:12px">Подарочный сертификат</small><b id="giftAmount">6 900 ₽</b></div></div>
+      <div data-reveal="right">
+        <span class="eyebrow">Подарок</span>
+        <h2>Ужин в подарок</h2>
+        <p class="muted">Сертификат на сет или любую сумму. Пришлём красивый электронный вариант или привезём бумажный в конверте.</p>
+        <form id="giftForm">
+          <select id="giftSelect" aria-label="Номинал"><option value="6900">Сет на одного · 6 900 ₽</option><option value="10400">Сет с вином · 10 400 ₽</option><option value="13800">Сет на двоих · 13 800 ₽</option><option value="20800">На двоих с вином · 20 800 ₽</option></select>
+          <div class="row"><input required placeholder="Ваше имя" aria-label="Ваше имя"><input required type="tel" placeholder="Телефон" aria-label="Телефон"></div>
+          <button class="btn">Заказать сертификат</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container foot"><span>© Ресторан «Терруар» · Набережная, 7</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
+  </footer>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/motion.js" defer></script>
+  <script>
+    window.PF_ALBUMS = {
+      hall: { title: "Зал", photos: [["1517248135467-4c7edcad34c4", "Вечерний зал"], ["1590846406792-0adc7f938f1d", "Стол у камина"], ["1550966871-3ed3cdb5ed0c", "Окна на набережную"], ["1555396273-367ea4eb4db5", "Зал днём"], ["1414235077428-338989a2e8c0", "Сервировка"], ["1592861956120-e524fc739696", "Ужин гостей"]] },
+      kitchen: { title: "Кухня", photos: [["1581349485608-9469926a8e5e", "Финальная сборка подачи"], ["1577219491135-ce391730fb2c", "Шеф за работой"], ["1600565193348-f74bd3c7ccdf", "Огонь и гриль"], ["1551218808-94e220e084d2", "Заготовки к вечеру"], ["1556910103-1c02745aae4d", "Команда кухни"]] },
+      wine: { title: "Погреб", photos: [["1474722883778-792e7990302f", "Винная карта"], ["1510812431401-41d2bd2722f3", "Дегустация"], ["1506377247377-2a5b3b417ebb", "Виноградники партнёров"]] },
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=72`;
+    const SET = 6900, WINE = 3500;
+
+    // Сезонные меню: [название, состав, вино]
+    const SEASONS = {
+      spring: { name: "Весна", months: "март — май", intro: "Первая зелень, черемша и молодые овощи. Лёгкие подачи, много кислотности и свежести.", courses: [
+        ["1625944525533-473f1a3d54e7", "Тартар из форели", "черемша, огурец, пахта", "Рислинг, Мозель"],
+        ["1540189549336-e6e99c3679fe", "Молодые овощи", "редис, горошек, соус из щавеля", "Совиньон блан, Луара"],
+        ["1467003909585-2f8a72700288", "Судак", "спаржа, беарнез на сливочном масле", "Шардоне, Бургундия"],
+        ["1482049016688-2d3e1b311543", "Перепелиное яйцо", "сморчки, бульон из грибов", "Пино нуар, Эльзас"],
+        ["1615937657715-bc7b4b7962c1", "Ягнёнок", "молодой чеснок, пюре из корнеплодов", "Риоха Креанса"],
+        ["1488477181946-6428a0291777", "Ревень", "клубника, йогурт, мята", "Москато д'Асти"]] },
+      summer: { name: "Лето", months: "июнь — август", intro: "Томаты с грядки, ягоды и рыба с открытого огня. Всё яркое, сочное и простое.", courses: [
+        ["1546069901-ba9599a7e63c", "Томаты трёх сортов", "страчателла, базилик", "Розе, Прованс"],
+        ["1473093295043-cdd812d0e601", "Холодная паста", "кабачок, лимон, пармезан", "Верментино, Сардиния"],
+        ["1467003909585-2f8a72700288", "Лосось на гриле", "кукуруза, сальса из персика", "Альбариньо, Галисия"],
+        ["1559847844-5315695dadae", "Летний суп", "гаспачо из жёлтых томатов", "Грюнер Вельтлинер"],
+        ["1600891964092-4316c288032e", "Стейк из говядины", "печёный перец, соус чимичурри", "Мальбек, Мендоса"],
+        ["1563805042-7684c019e1cb", "Ягодный десерт", "малина, ванильное мороженое", "Брахетто"]] },
+      autumn: { name: "Осень", months: "сентябрь — ноябрь", intro: "Грибы, тыква, дичь и первые морозы на яблоках. Глубокие вкусы и долгие соусы.", courses: [
+        ["1625944525533-473f1a3d54e7", "Тартар из оленины", "можжевельник, маринованные грибы", "Пино нуар, Бургундия"],
+        ["1559847844-5315695dadae", "Тыквенный суп", "обжаренные семечки, масло тыквы", "Шенен блан, Вувре"],
+        ["1476224203421-9ac39bcb3327", "Ладожская ряпушка", "печёная свёкла, хрен", "Шардоне, Юра"],
+        ["1432139555190-58524dae6a55", "Белые грибы", "картофель, бульон из костей", "Неббиоло, Ланге"],
+        ["1615937657715-bc7b4b7962c1", "Утка", "брусника, печёное яблоко", "Сира, Северная Рона"],
+        ["1488477181946-6428a0291777", "Антоновка", "карамель, крем из сливок", "Токай Сладкий"]] },
+      winter: { name: "Зима", months: "декабрь — февраль", intro: "Ферментация, копчение и томление. Тёплые подачи для длинных вечеров.", courses: [
+        ["1504674900247-0877df9cc836", "Копчёная форель", "квашеная капуста, сметана", "Игристое брют"],
+        ["1559847844-5315695dadae", "Бульон", "томлёная говядина, корень сельдерея", "Херес Фино"],
+        ["1467003909585-2f8a72700288", "Треска", "топинамбур, соус из сливочного масла", "Шардоне, Шабли"],
+        ["1432139555190-58524dae6a55", "Печёный картофель", "икра щуки, лук-шалот", "Совиньон блан"],
+        ["1544025162-d76694265947", "Говяжьи щёки", "томлёные 12 часов, пюре из пастернака", "Каберне, Бордо"],
+        ["1563805042-7684c019e1cb", "Шоколад", "облепиха, солёная карамель", "Портвейн Руби"]] },
+    };
+    const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+    const m = new Date().getMonth();
+    const current = m <= 1 || m === 11 ? "winter" : m <= 4 ? "spring" : m <= 7 ? "summer" : "autumn";
+    let season = current;
+    const ADJ = { spring: "весенний", summer: "летний", autumn: "осенний", winter: "зимний" };
+    $("seasonNow").textContent = `Сейчас: ${ADJ[current]} сет`;
+
+    $("seasons").innerHTML = Object.entries(SEASONS).map(([k, s]) =>
+      `<button class="season" role="tab" data-s="${k}" aria-selected="${k === season}"><b>${s.name}${k === current ? '<span class="season__now">сейчас</span>' : ""}</b><small>${s.months}</small></button>`).join("");
+    function renderSet() {
+      const s = SEASONS[season];
+      $("seasonIntro").textContent = s.intro;
+      $("courses").innerHTML = s.courses.map(([img, name, desc, wine], i) => `
+        <article class="course" style="animation-delay:${i * 60}ms">
+          <div class="course__ph"><img loading="lazy" src="${ph(img)}" alt="${name}"><span class="course__no">${ROMAN[i]}</span></div>
+          <div class="course__b"><h3>${name}</h3><p>${desc}</p><p class="course__wine">🍷 ${wine}</p></div>
+        </article>`).join("");
+      $("courses").classList.toggle("with-wine", $("wine").checked);
+      $("courses").scrollLeft = 0;
+      const total = SET + ($("wine").checked ? WINE : 0);
+      $("setLabel").textContent = `${s.name}: шесть подач${$("wine").checked ? " и шесть бокалов" : ""}`;
+      $("setPrice").textContent = rub(total);
+      document.querySelectorAll(".season").forEach((b) => b.setAttribute("aria-selected", b.dataset.s === season));
+      renderSummary();
+    }
+    $("seasons").addEventListener("click", (e) => { const b = e.target.closest(".season"); if (b) { season = b.dataset.s; renderSet(); } });
+    $("wine").addEventListener("change", () => { $("bookWine").checked = $("wine").checked; renderSet(); });
+
+    // ---------- Бронь ----------
+    const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+    const days = [...Array(14)].map((_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; });
+    const TIMES = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
+    const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    // Занятость: стабильная для каждого дня (как будто часть столов уже забронирована)
+    const full = (d, t) => (d.getDate() * 7 + parseInt(t) * 3 + (t.endsWith("30") ? 5 : 0)) % 6 === 0;
+    const isPast = (i, t) => {
+      if (i !== 0) return false;
+      const [h, mm] = t.split(":").map(Number);
+      const now = new Date();
+      return h * 60 + mm <= now.getHours() * 60 + now.getMinutes() + 30;
+    };
+    // По умолчанию первый рабочий день, где ещё есть свободное время
+    const book = { day: days.findIndex((d, i) => d.getDay() !== 1 && TIMES.some((t) => !isPast(i, t) && !full(d, t))), time: null, guests: 2 };
+
+    $("dates").innerHTML = days.map((d, i) => `<button type="button" class="chip" data-d="${i}" ${d.getDay() === 1 ? 'disabled title="Понедельник — выходной"' : ""} aria-pressed="${i === book.day}">${i === 0 ? "сегодня" : WD[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
+    function renderTimes() {
+      const d = days[book.day];
+      $("times").innerHTML = TIMES.map((t) => {
+        const off = isPast(book.day, t) || full(d, t);
+        if (off && book.time === t) book.time = null;
+        return `<button type="button" class="chip" data-t="${t}" ${off ? "disabled" : ""} aria-pressed="${book.time === t}">${t}</button>`;
+      }).join("");
+      renderSummary();
+    }
+    function renderSummary() {
+      const d = days[book.day];
+      const wine = $("bookWine").checked;
+      $("summary").innerHTML = `${d.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}${book.time ? `, <b>${book.time}</b>` : ", выберите время"} · гостей: <b>${book.guests}</b><br>Сет «${SEASONS[season].name}»${wine ? " с вином" : ""}: <b>${rub((SET + (wine ? WINE : 0)) * book.guests)}</b> на всех`;
+    }
+    $("dates").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-d]"); if (!b || b.disabled) return;
+      book.day = +b.dataset.d;
+      document.querySelectorAll("#dates .chip").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      renderTimes();
+    });
+    $("times").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-t]"); if (!b || b.disabled) return;
+      book.time = b.dataset.t;
+      document.querySelectorAll("#times .chip").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      renderSummary();
+    });
+    $("gMinus").onclick = () => { book.guests = Math.max(1, book.guests - 1); $("guests").textContent = book.guests; renderSummary(); };
+    $("gPlus").onclick = () => { book.guests = Math.min(8, book.guests + 1); $("guests").textContent = book.guests; renderSummary(); };
+    $("bookWine").addEventListener("change", renderSummary);
+
+    $("bookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      if (!book.time) { $("summary").innerHTML = '<b style="color:#b3261e">Выберите время</b>'; setTimeout(renderSummary, 1600); return; }
+      if (!$("name").value.trim() || !$("phone").value.trim()) { (!$("name").value.trim() ? $("name") : $("phone")).focus(); return; }
+      const d = days[book.day];
+      const occasion = $("occasion").value;
+      try {
+        await PortfolioAPI.submit(f, () => PortfolioAPI.createBooking("restaurant", {
+          resource: `Стол на ${book.guests}`,
+          service: `Сет «${SEASONS[season].name}»${$("bookWine").checked ? " + вино" : ""}${occasion ? ` · ${occasion}` : ""}`,
+          starts_at: `${iso(d)}T${book.time}:00`, name: $("name").value.trim(), phone: $("phone").value.trim(),
+        }));
+      } catch { return; }
+      $("bookCard").innerHTML = `<div class="done"><div style="font-size:2.6rem">🍂</div><h3>Стол ваш</h3>
+        <p class="muted">${d.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${book.time} · гостей: ${book.guests}.<br>Напомним о брони за день до визита.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
+    });
+
+    // ---------- Сертификат ----------
+    $("giftSelect").addEventListener("change", () => { $("giftAmount").textContent = rub(+$("giftSelect").value); });
+    $("giftForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const [name, phone] = e.target.querySelectorAll("input");
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("restaurant", { kind: "certificate", name: name.value, phone: phone.value, data: { amount: +$("giftSelect").value } }));
+      } catch { return; }
+      e.target.innerHTML = `<p style="font-size:1.1rem"><b>Заявка принята.</b> Свяжемся, чтобы уточнить имя получателя и способ доставки.</p>${PortfolioAPI.adminLink("leads")}`;
+    });
+
+    renderSet();
+    renderTimes();
+    addEventListener("DOMContentLoaded", () => {
+      for (const k of ["hall", "kitchen", "wine"]) $(`cnt-${k}`).textContent = `${PFGallery.count(k)} фото`;
+    });
+  </script>
+</body>
+</html>

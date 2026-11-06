@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark only">
+  <title>Соль и Солод — гастробар</title>
+  <meta name="description" content="Гастробар: кухня до двух ночи, 12 кранов крафта, квизы, джаз и футбол. Бронь стола онлайн.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍺</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&amp;fit=crop&amp;w=900&amp;q=65" fetchpriority="high">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=swap"></noscript>
+  <style>
+    :root { color-scheme: dark only; }
+    :root { --coal: #17171a; --coal-2: #202024; --board: #263029; --mustard: #e8ab2a; --brick: #c8532f; --cream: #f3ead8; --muted: #a9a294; --line: #33333a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Fira Sans", system-ui, sans-serif; background: var(--coal); color: var(--cream); line-height: 1.6; overflow-x: clip; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; color: inherit; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    h1, .logo { font-family: "Fira Sans Extra Condensed", sans-serif; font-weight: 900; line-height: .95; }
+    h2, h3 { font-family: "Fira Sans Condensed", sans-serif; font-weight: 800; line-height: 1.05; text-transform: uppercase; }
+    h2 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
+    h2 em { font-style: normal; color: var(--mustard); }
+    .muted { color: var(--muted); }
+    .chalk { font-family: "Amatic SC", cursive; font-weight: 700; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 26px; background: var(--mustard); color: #1a1408; border: 0; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: 15px; border-radius: 4px; transition: transform .2s, background .2s; }
+    .btn:hover { background: #f5bd41; transform: translateY(-2px); }
+    .btn--line { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 2px var(--cream); }
+    .btn--line:hover { background: var(--cream); color: var(--coal); }
+    .demo-bar { background: var(--mustard); color: #1a1408; text-align: center; font-size: 13px; padding: 8px 12px; font-weight: 500; }
+    .demo-bar a { text-decoration: underline; }
+
+    header { position: sticky; top: 0; z-index: 30; background: rgba(23, 23, 26, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .head { display: flex; align-items: center; gap: 28px; height: 70px; }
+    .logo { font-size: 1.6rem; letter-spacing: .03em; }
+    .logo span { color: var(--mustard); }
+    .head nav { display: flex; gap: 24px; margin-left: auto; font-family: "Fira Sans Condensed", sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; font-size: 15px; color: var(--muted); }
+    .head nav a:hover { color: var(--cream); }
+    .head .btn { padding: 11px 20px; }
+
+    /* Первый экран: кирпич, статус «прямо сейчас» и мозаика фото */
+    .hero { padding: 60px 0 80px; background:
+      linear-gradient(180deg, transparent 60%, var(--coal)),
+      repeating-linear-gradient(0deg, transparent 0 34px, rgba(255,255,255,.025) 34px 36px),
+      repeating-linear-gradient(90deg, transparent 0 70px, rgba(255,255,255,.02) 70px 72px); }
+    .hero__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+    .now { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 4px; background: var(--coal-2); border: 1px solid var(--line); font-size: 14px; }
+    .now i { width: 9px; height: 9px; border-radius: 50%; background: #3fb950; box-shadow: 0 0 0 0 rgba(63, 185, 80, .7); animation: ping 2s infinite; }
+    .now.closed i { background: var(--brick); animation: none; }
+    .now b { color: var(--mustard); }
+    @keyframes ping { 70% { box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); } }
+    .hero h1 { font-size: clamp(3rem, 6.6vw, 5.8rem); margin: 22px 0; text-transform: uppercase; letter-spacing: -.01em; }
+    .hero h1 span { color: var(--mustard); }
+    .hero p { color: var(--muted); font-size: 1.1rem; max-width: 470px; }
+    .hero__btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+    .hero__facts { display: flex; gap: 30px; margin-top: 40px; flex-wrap: wrap; }
+    .hero__facts b { font-family: "Fira Sans Extra Condensed", sans-serif; font-weight: 900; font-size: 2.2rem; line-height: 1; color: var(--mustard); display: block; }
+    .hero__facts span { font-size: 13px; color: var(--muted); }
+    .bento { display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 220px 220px; gap: 12px; }
+    .bento figure { position: relative; overflow: hidden; border-radius: 6px; background: var(--coal-2); }
+    .bento figure:first-child { grid-row: span 2; }
+    .bento img { width: 100%; height: 100%; object-fit: cover; }
+    .tape { position: absolute; left: 12px; bottom: 12px; background: rgba(243, 234, 216, .92); color: var(--coal); font-family: "Amatic SC", cursive; font-weight: 700; font-size: 1.5rem; padding: 0 12px; rotate: -3deg; line-height: 1.5; }
+
+    section { padding: 90px 0; }
+    .sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+
+    /* Меловая доска дня */
+    .board-wrap { border: 14px solid #4a3523; border-radius: 6px; box-shadow: inset 0 0 0 2px #2a1d12, 0 30px 60px -30px #000; background: var(--board) radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.07), transparent 60%); padding: 30px 34px 34px; }
+    .days { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; }
+    .days button { border: 0; background: none; font-family: "Amatic SC", cursive; font-weight: 700; font-size: 1.6rem; color: rgba(243, 234, 216, .5); padding: 0 10px; border-bottom: 3px solid transparent; }
+    .days button[aria-pressed="true"] { color: var(--cream); border-color: var(--mustard); }
+    .board { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 50px; }
+    .dish { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; border-bottom: 2px dashed rgba(243, 234, 216, .18); padding: 8px 0; font-family: "Amatic SC", cursive; font-weight: 700; animation: chalk .5s both; }
+    @keyframes chalk { from { opacity: 0; filter: blur(3px); } }
+    .dish b { font-size: 2rem; line-height: 1.1; }
+    .dish small { display: block; font-family: "Fira Sans", sans-serif; font-weight: 400; font-size: 14px; color: rgba(243, 234, 216, .65); }
+    .dish span { font-size: 2rem; color: var(--mustard); white-space: nowrap; }
+    .board__note { font-family: "Amatic SC", cursive; font-weight: 700; font-size: 1.7rem; color: var(--mustard); margin-top: 18px; rotate: -1deg; }
+
+    /* Краны */
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { padding: 8px 16px; border-radius: 4px; border: 1px solid var(--line); background: var(--coal-2); color: var(--muted); font-weight: 500; font-size: 14px; }
+    .chip[aria-pressed="true"] { background: var(--cream); color: var(--coal); border-color: var(--cream); }
+    .taps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .tap { background: var(--coal-2); border: 1px solid var(--line); border-radius: 6px; padding: 18px; position: relative; overflow: hidden; animation: chalk .4s both; }
+    .tap__no { position: absolute; right: 14px; top: 10px; font-family: "Fira Sans Extra Condensed", sans-serif; font-size: 2rem; font-weight: 900; color: rgba(255,255,255,.06); }
+    .tap__glass { width: 34px; height: 44px; border-radius: 2px 2px 6px 6px; margin-bottom: 14px; background: linear-gradient(0deg, var(--c) 78%, #fff8 78%); box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); }
+    .tap h3 { font-size: 1.3rem; text-transform: none; }
+    .tap small { color: var(--muted); }
+    .meter { display: grid; grid-template-columns: 40px 1fr 34px; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .meter i { height: 5px; border-radius: 9px; background: var(--line); overflow: hidden; }
+    .meter i::after { content: ""; display: block; height: 100%; width: var(--w); background: var(--mustard); }
+    .tap__price { margin-top: 14px; display: flex; justify-content: space-between; font-weight: 700; }
+    .tap__price span { color: var(--mustard); }
+    .hh { text-decoration: line-through; color: var(--muted); font-weight: 400; margin-right: 6px; }
+
+    /* Кухня и подбор пары */
+    .food { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .food article { background: var(--coal-2); border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+    .food img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+    .food div { padding: 14px 16px 16px; display: flex; justify-content: space-between; gap: 10px; }
+    .food b { display: block; }
+    .food small { color: var(--muted); }
+    .food span { color: var(--mustard); font-weight: 700; white-space: nowrap; }
+    .pair { margin-top: 40px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; align-items: center; background: var(--cream); color: var(--coal); border-radius: 8px; padding: 32px; }
+    .pair h3 { font-size: 2rem; }
+    .pair .chip { background: #fff; border-color: #ddd2bd; color: var(--coal); }
+    .pair .chip[aria-pressed="true"] { background: var(--coal); color: var(--cream); }
+    .pair__res { display: grid; grid-template-columns: 110px 1fr; gap: 18px; align-items: center; min-height: 110px; }
+    .pair__res .tap__glass { width: 70px; height: 92px; margin: 0 auto; }
+    .pair__res b { font-family: "Fira Sans Condensed", sans-serif; font-size: 1.6rem; text-transform: uppercase; display: block; line-height: 1.1; }
+    .pair__res p { color: #5b5447; }
+
+    /* Афиша */
+    .events { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .event { background: var(--coal-2); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+    .event__ph { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+    .event__ph img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(.4); transition: filter .4s, transform .8s; }
+    .event:hover .event__ph img { filter: none; transform: scale(1.05); }
+    .event__date { position: absolute; left: 12px; top: 12px; background: var(--mustard); color: #1a1408; text-align: center; padding: 6px 10px; border-radius: 4px; line-height: 1; font-weight: 700; }
+    .event__date b { display: block; font-family: "Fira Sans Extra Condensed", sans-serif; font-size: 1.7rem; font-weight: 900; }
+    .event__b { padding: 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .event__b h3 { font-size: 1.3rem; }
+    .event__b p { color: var(--muted); font-size: 14px; flex: 1; }
+    .seats { font-size: 13px; color: var(--mustard); }
+    .event .btn { width: 100%; padding: 11px; margin-top: 8px; font-size: 13px; }
+    .event .btn:disabled { background: var(--line); color: var(--muted); cursor: default; transform: none; }
+
+    /* Альбомы и бронь */
+    .albums { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 30px; }
+    .albums button { position: relative; height: 260px; border: 0; padding: 0; border-radius: 6px; overflow: hidden; text-align: left; color: var(--cream); background: var(--coal-2); }
+    .albums img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s; }
+    .albums button::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.75), transparent 60%); }
+    .albums button:hover img { transform: scale(1.05); }
+    .albums span { position: absolute; z-index: 1; left: 20px; bottom: 16px; }
+    .albums b { font-family: "Fira Sans Condensed", sans-serif; font-size: 1.8rem; text-transform: uppercase; display: block; line-height: 1; }
+    .book { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+    .zones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .zone { border: 1px solid var(--line); background: var(--coal-2); border-radius: 6px; padding: 14px; text-align: left; }
+    .zone b { display: block; }
+    .zone small { color: var(--muted); font-size: 13px; }
+    .zone[aria-pressed="true"] { border-color: var(--mustard); box-shadow: inset 0 0 0 1px var(--mustard); }
+    .zone:disabled { opacity: .4; cursor: not-allowed; }
+    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    input, select { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--coal-2); color: var(--cream); font: 16px "Fira Sans", sans-serif; }
+    input:focus, select:focus { outline: none; border-color: var(--mustard); }
+    .ok { background: var(--coal-2); border: 1px solid var(--mustard); border-radius: 8px; padding: 26px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--mustard); color: #1a1408; font-weight: 700; padding: 12px 20px; border-radius: 6px; z-index: 50; transition: transform .3s; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    footer { border-top: 1px solid var(--line); padding: 34px 0; color: var(--muted); font-size: 14px; }
+    .foot { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+
+    @media (max-width: 1000px) { .taps, .events { grid-template-columns: 1fr 1fr; } .head nav { display: none; } .head .btn { margin-left: auto; } }
+    @media (max-width: 860px) {
+      .hero__grid, .board, .pair, .book, .albums { grid-template-columns: 1fr; }
+      .food { grid-template-columns: 1fr 1fr; }
+      .board-wrap { padding: 22px 18px; border-width: 10px; }
+      .bento { grid-template-rows: 150px 150px; order: -1; }
+      .hero { padding-top: 24px; }
+    }
+    @media (max-width: 520px) {
+      .taps, .events, .food { grid-template-columns: 1fr; }
+      .zones, .row { grid-template-columns: 1fr; }
+      .pair { padding: 22px 18px; }
+      .pair__res { grid-template-columns: 70px 1fr; }
+      .pair__res .tap__glass { width: 46px; height: 60px; }
+      section { padding: 70px 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <a href="#" class="logo">СОЛЬ <span>&amp;</span> СОЛОД</a>
+      <nav><a href="#board">Доска дня</a><a href="#taps">Краны</a><a href="#events">Афиша</a><a href="#photos">Фото</a></nav>
+      <a href="#book" class="btn">Стол</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero__grid">
+      <div>
+        <span class="now" id="now"><i></i><span id="nowText">Открыто до 02:00</span></span>
+        <h1>Еда, крафт и <span>разговоры</span> до двух ночи</h1>
+        <p>Двенадцать кранов местных пивоварен, кухня с открытым огнём и большие столы, за которыми знакомятся. По вторникам квиз, по четвергам джаз.</p>
+        <div class="hero__btns"><a href="#book" class="btn">Забронировать стол</a><a href="#board" class="btn btn--line">Что сегодня на доске</a></div>
+        <div class="hero__facts">
+          <div><b>12</b><span>кранов крафта</span></div>
+          <div><b>−30%</b><span>Пн–Чт с 17 до 19</span></div>
+          <div><b>02:00</b><span>кухня до закрытия</span></div>
+        </div>
+      </div>
+      <div class="bento">
+        <figure><img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&amp;fit=crop&amp;w=900&amp;q=65" alt="Зал гастробара вечером" fetchpriority="high"><span class="tape">наш зал</span></figure>
+        <figure><img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=65" alt="Бургер с картофелем фри"><span class="tape">бургер дня</span></figure>
+        <figure><img src="https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=600&q=65" alt="Пиво из крана"><span class="tape">свежее из крана</span></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="board" style="padding-top:20px">
+    <div class="container">
+      <div class="sec-head"><h2 data-reveal>Сегодня <em>на доске</em></h2><p class="muted" style="max-width:420px">Шеф пишет мелом то, что купил утром на рынке. Меняется каждый день, пока не кончится.</p></div>
+      <div class="board-wrap">
+        <div class="days" id="days" role="group" aria-label="День недели"></div>
+        <div class="board" id="boardList"></div>
+        <p class="board__note" id="boardNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="taps">
+    <div class="container">
+      <div class="sec-head"><h2 data-reveal>На <em>кранах</em></h2><div class="chips" id="styles" role="group" aria-label="Стиль пива"></div></div>
+      <div class="taps" id="tapList"></div>
+    </div>
+  </section>
+
+  <section id="food" style="padding-top:0">
+    <div class="container">
+      <div class="sec-head"><h2 data-reveal>Кухня <em>до 02:00</em></h2></div>
+      <div class="food" id="foodList"></div>
+      <div class="pair">
+        <div><h3>Подберём пару</h3><p style="color:#5b5447;margin:6px 0 16px">Выберите блюдо, а бармен подскажет, что к нему налить.</p><div class="chips" id="pairChips" role="group" aria-label="Блюдо"></div></div>
+        <div class="pair__res" id="pairRes" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="events" style="background:var(--coal-2)">
+    <div class="container">
+      <div class="sec-head"><h2 data-reveal>Афиша <em>недели</em></h2><p class="muted">Вход свободный, но места за столами лучше занять заранее.</p></div>
+      <div class="events" id="eventList"></div>
+    </div>
+  </section>
+
+  <section id="photos">
+    <div class="container">
+      <h2 data-reveal>Фото</h2>
+      <div class="albums">
+        <button data-album="hall"><img loading="lazy" src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Зал и бар</b><small id="cnt-hall"></small></span></button>
+        <button data-album="food"><img loading="lazy" src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Еда</b><small id="cnt-food"></small></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="book" style="background:var(--coal-2)">
+    <div class="container book">
+      <div>
+        <h2>Займите <em>стол</em></h2>
+        <p class="muted" style="margin:14px 0 24px">Бронь держим 15 минут. На квиз и концерты места разбирают за пару дней.</p>
+        <p><b>ул. Литейная, 18</b><br><span class="muted">Пн–Чт 12:00–00:00, Пт–Вс 12:00–02:00</span><br><a href="tel:+79000000000">+7 (900) 000-00-00</a></p>
+      </div>
+      <div id="bookBox">
+        <form id="bookForm">
+          <div class="zones" id="zones" role="group" aria-label="Зона"></div>
+          <div class="row">
+            <input type="date" id="bDate" required aria-label="Дата">
+            <select id="bTime" aria-label="Время"></select>
+            <select id="bGuests" aria-label="Гостей"><option value="2">2 гостя</option><option value="3">3 гостя</option><option value="4" selected>4 гостя</option><option value="6">6 гостей</option><option value="8">8 гостей</option><option value="10">10+ гостей</option></select>
+          </div>
+          <div class="row2"><input id="bName" required placeholder="Имя" aria-label="Имя" autocomplete="name"><input id="bPhone" required type="tel" placeholder="Телефон" aria-label="Телефон" autocomplete="tel"></div>
+          <button class="btn" style="width:100%">Забронировать</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="container foot"><span>© Гастробар «Соль и Солод» · 18+</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div></footer>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/motion.js" defer></script>
+  <script>
+    window.PF_ALBUMS = {
+      hall: { title: "Зал и бар", photos: [["1514933651103-005eec06c04b", "Вечерний зал"], ["1543007630-9710e4a00a20", "Барная стойка"], ["1559329007-40df8a9345d8", "Большие столы"], ["1555992336-03a23c7b20ee", "Кабинки у окна"], ["1529417305485-480f579e7578", "Бармен за работой"], ["1528605248644-14dd04022da1", "Пятница вечером"], ["1608270586620-248524c67de9", "Кружка светлого"]] },
+      food: { title: "Еда", photos: [["1504754524776-8f4f37790ca0", "Стол на компанию"], ["1600891964599-f61ba0e24092", "Закуски к пиву"], ["1571091718767-18b5b1457add", "Классический бургер"], ["1551782450-a2132b4ba21d", "Бургер с фри"], ["1541529086526-db283c563270", "Сырная доска"], ["1513104890138-7c749659a591", "Пицца из печи"], ["1532634922-8fe0b757fb13", "Пиво и закуски"]] },
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=65`;
+    let tt;
+    const toast = (m) => { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2600); };
+
+    // ---------- Статус «прямо сейчас» ----------
+    // Открыто: Пн–Чт до 00:00, Пт–Вс до 02:00. Счастливые часы: Пн–Чт 17:00–19:00
+    const now = new Date();
+    const day = now.getDay(), mins = now.getHours() * 60 + now.getMinutes();
+    const weekend = day === 0 || day === 5 || day === 6;
+    const lateNight = mins < 120 && [6, 0, 1].includes(day); // после полуночи в ночь с пятницы и субботы
+    const open = lateNight || mins >= 720;
+    const happy = day >= 1 && day <= 4 && mins >= 1020 && mins < 1140;
+    $("now").classList.toggle("closed", !open);
+    $("nowText").innerHTML = !open ? "Закрыто · откроемся в 12:00"
+      : happy ? `Сейчас <b>счастливые часы</b>: −30% на крафт до 19:00`
+      : `Открыто до ${weekend || lateNight ? "02:00" : "00:00"} · кухня работает`;
+
+    // ---------- Доска дня ----------
+    const DAYS = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+    const BOARD = {
+      1: [["Суп из печёных томатов", "с гренкой на закваске", 390], ["Тартар из говядины", "желток, каперсы, тост", 620], ["Свиная рулька", "квашеная капуста, горчица", 890], ["Пиво дня: IPA «Литейный»", "0,5 л", 350]],
+      2: [["Квиз-сет", "крылья, луковые кольца, фри на 4 человек", 1490], ["Бургер с беконом", "чеддер, маринованный лук", 590], ["Салат с курицей", "печёная тыква, руккола", 450], ["Пиво дня: пилснер", "0,5 л", 320]],
+      3: [["Мидии в сидре", "чиабатта, чесночное масло", 780], ["Фиш-энд-чипс", "треска в пивном кляре", 690], ["Паста с говядиной", "томлёный рагу, пармезан", 560], ["Пиво дня: стаут", "0,4 л", 380]],
+      4: [["Джазовый ужин на двоих", "доска мяса и сыров, два бокала", 2190], ["Пицца с грушей", "горгонзола, мёд", 640], ["Утиная ножка", "чечевица, брусника", 820], ["Пиво дня: сауэр с вишней", "0,4 л", 420]],
+      5: [["Свиные рёбра BBQ", "капустный салат, кукуруза", 980], ["Начос для компании", "гуакамоле, сальса, сыр", 690], ["Бургер «Солод»", "две котлеты, пивной соус", 720], ["Пиво дня: нью-ингланд IPA", "0,5 л", 420]],
+      6: [["Стейк мачете", "картофель с розмарином", 1290], ["Крылья в трёх соусах", "12 штук", 790], ["Сырная доска", "три сыра, мёд, орехи", 890], ["Пиво дня: бельгийский трипель", "0,33 л", 450]],
+      0: [["Бранч до 16:00", "яйца бенедикт, панкейки, кофе", 690], ["Шакшука", "лаваш, фета", 480], ["Бургер дня", "спроси у бармена", 620], ["Пиво дня: вайцен", "0,5 л", 360]],
+    };
+    let curDay = day;
+    $("days").innerHTML = [1, 2, 3, 4, 5, 6, 0].map((d) => `<button data-d="${d}" aria-pressed="${d === curDay}">${DAYS[d]}${d === day ? " · сегодня" : ""}</button>`).join("");
+    function renderBoard() {
+      $("boardList").innerHTML = BOARD[curDay].map(([n, d, p], i) => `<div class="dish" style="animation-delay:${i * 90}ms"><div><b>${n}</b><small>${d}</small></div><span>${p} ₽</span></div>`).join("");
+      $("boardNote").textContent = curDay === 2 ? "↑ вечером квиз, сет для команды со скидкой" : curDay === 4 ? "↑ в 20:00 живой джаз" : curDay === 0 ? "↑ бранч до 16:00, дальше обычное меню" : "↑ пока не закончится!";
+      document.querySelectorAll("#days button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.d === curDay));
+    }
+    $("days").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { curDay = +b.dataset.d; renderBoard(); } });
+
+    // ---------- Краны ----------
+    const TAPS = [
+      ["Литейный IPA", "light", "IPA · пивоварня «Невская»", 6.5, 60, 350, "#e3a33a"],
+      ["Пилснер №1", "light", "Пилснер · «Остров»", 4.8, 30, 320, "#f1c75b"],
+      ["Вайцен", "light", "Пшеничное · «Бавария на Неве»", 5.2, 12, 360, "#f0c46a"],
+      ["Сауэр с вишней", "sour", "Кислый эль · «Ягода»", 4.5, 8, 420, "#b5324a"],
+      ["Гозе с огурцом", "sour", "Гозе · «Соль»", 4.2, 6, 400, "#d9c76a"],
+      ["Имперский стаут", "dark", "Стаут · «Ночь»", 9.5, 70, 480, "#2a1a12"],
+      ["Портер", "dark", "Портер · «Невская»", 5.6, 35, 380, "#3b2416"],
+      ["Безалкогольный IPA", "zero", "0,5% · «Остров»", 0.5, 40, 290, "#e2b04a"],
+    ];
+    const STYLES = { all: "Все", light: "Светлое", dark: "Тёмное", sour: "Кислое", zero: "Безалкогольное" };
+    let style = "all";
+    $("styles").innerHTML = Object.entries(STYLES).map(([k, v]) => `<button class="chip" data-s="${k}" aria-pressed="${k === style}">${v}</button>`).join("");
+    function renderTaps() {
+      $("tapList").innerHTML = TAPS.map((t, i) => [t, i]).filter(([t]) => style === "all" || t[1] === style).map(([[n, , d, abv, ibu, price, c], i]) => {
+        const p = happy && abv > 1 ? Math.round(price * 0.7 / 10) * 10 : price;
+        return `<article class="tap"><span class="tap__no">${String(i + 1).padStart(2, "0")}</span><div class="tap__glass" style="--c:${c}"></div><h3>${n}</h3><small>${d}</small>
+          <div class="meter"><span>ABV</span><i style="--w:${Math.min(100, abv * 10)}%"></i><span>${abv}%</span></div>
+          <div class="meter"><span>IBU</span><i style="--w:${ibu}%"></i><span>${ibu}</span></div>
+          <div class="tap__price"><small>0,5 л</small><span>${p !== price ? `<span class="hh">${price}</span>` : ""}${p} ₽</span></div></article>`;
+      }).join("");
+    }
+    $("styles").addEventListener("click", (e) => {
+      const b = e.target.closest(".chip"); if (!b) return;
+      style = b.dataset.s;
+      document.querySelectorAll("#styles .chip").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      renderTaps();
+    });
+
+    // ---------- Кухня и подбор пары ----------
+    const FOOD = [
+      ["1571091718767-18b5b1457add", "Бургер «Солод»", "две котлеты, пивной соус", 720, 0],
+      ["1606755962773-d324e0a13086", "Пулд-порк", "свинина 12 часов, капуста", 640, 5],
+      ["1513104890138-7c749659a591", "Пицца из печи", "томаты, моцарелла, базилик", 590, 1],
+      ["1541529086526-db283c563270", "Сырная доска", "три сыра, мёд, орехи", 890, 3],
+      ["1608039829572-78524f79c4c7", "Яйца бенедикт", "бранч до 16:00", 520, 2],
+      ["1565299507177-b0ac66763828", "Чизбургер", "чеддер, огурчики, бриошь", 590, 7],
+    ];
+    const WHY = [
+      "Горечь хмеля режет жирность котлеты, цитрус освежает после каждого укуса.",
+      "Лёгкий пилснер не спорит с томатами и не перебивает базилик.",
+      "Пшеничное с нотами банана мягко дружит с желтком и голландским соусом.",
+      "Вишнёвая кислинка работает как ягодный соус к сырам.",
+      "", "Плотный стаут с нотами шоколада держит дымную свинину.", "",
+      "Тот же хмелевой профиль, что у IPA, но без алкоголя: можно за рулём.",
+    ];
+    $("foodList").innerHTML = FOOD.map(([img, n, d, p]) => `<article><img loading="lazy" src="${ph(img)}" alt="${n}"><div><span style="color:var(--cream);font-weight:400"><b>${n}</b><small>${d}</small></span><span>${rub(p)}</span></div></article>`).join("");
+    $("pairChips").innerHTML = FOOD.map(([, n], i) => `<button class="chip" data-f="${i}" aria-pressed="${i === 0}">${n}</button>`).join("");
+    function renderPair(i) {
+      const t = TAPS[FOOD[i][4]];
+      $("pairRes").innerHTML = `<div class="tap__glass" style="--c:${t[6]}"></div><div><small style="color:#7a7263">к блюду «${FOOD[i][1]}»</small><b>${t[0]}</b><p>${WHY[FOOD[i][4]] || ""}</p></div>`;
+      document.querySelectorAll("#pairChips .chip").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.f === i));
+    }
+    $("pairChips").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) renderPair(+b.dataset.f); });
+
+    // ---------- Афиша: ближайшие события по дням недели ----------
+    const EVENTS = { 2: ["Квиз «Солод»", "Команды до 6 человек, призы от бара. Начало в 20:00.", "1528605248644-14dd04022da1", 12], 4: ["Живой джаз", "Квартет Михаила Ветрова. Начало в 20:00.", "1415201364774-f6f0bb35f28f", 30], 5: ["Стендап-вечер", "Открытый микрофон. Начало в 21:00.", "1493225457124-a3eb161ffa5f", 40], 6: ["Футбол на большом экране", "Трансляция главного матча тура.", "1501386761578-eac5c94b800a", 60] };
+    const upcoming = [...Array(8)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; }).filter((d) => EVENTS[d.getDay()]).slice(0, 4);
+    const taken = (() => { try { return JSON.parse(localStorage.getItem("sol-events")) || []; } catch { return []; } })();
+    function renderEvents() {
+      $("eventList").innerHTML = upcoming.map((d) => {
+        const [title, text, img, seats] = EVENTS[d.getDay()];
+        const key = d.toISOString().slice(0, 10);
+        const left = Math.max(0, seats - ((d.getDate() * 7) % 9) - (taken.includes(key) ? 1 : 0));
+        const mine = taken.includes(key);
+        return `<article class="event"><div class="event__ph"><img loading="lazy" src="${ph(img, 500)}" alt=""><div class="event__date"><b>${d.getDate()}</b>${d.toLocaleDateString("ru-RU", { month: "short" }).replace(".", "")}</div></div>
+          <div class="event__b"><h3>${title}</h3><p>${text}</p><span class="seats">${mine ? "Вы в списке ✓" : `Свободно мест: ${left}`}</span>
+          <button class="btn" data-ev="${key}" data-title="${title}" ${mine || !left ? "disabled" : ""}>${mine ? "Записаны" : "Записаться"}</button></div></article>`;
+      }).join("");
+    }
+    $("eventList").addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-ev]"); if (!b || b.disabled) return;
+      let contact;
+      try { contact = await PortfolioAPI.askContact(`${b.dataset.title}, ${new Date(b.dataset.ev + "T12:00").toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}`); } catch { return; }
+      b.disabled = true;
+      try {
+        await PortfolioAPI.createLead("gastrobar", { kind: "event", ...contact, data: { event: b.dataset.title, date: b.dataset.ev } });
+        taken.push(b.dataset.ev);
+        try { localStorage.setItem("sol-events", JSON.stringify(taken)); } catch {}
+        toast("Вы в списке! Ждём вас");
+      } catch (err) { toast(err.message); b.disabled = false; }
+      renderEvents();
+    });
+
+    // ---------- Бронь ----------
+    const ZONES = [["Барная стойка", "у кранов, 8 мест"], ["Зал", "большие столы"], ["Терраса", "откроется в мае", true]];
+    let zone = 1;
+    $("zones").innerHTML = ZONES.map(([n, d, off], i) => `<button type="button" class="zone" data-z="${i}" aria-pressed="${i === zone}" ${off ? "disabled" : ""}><b>${n}</b><small>${d}</small></button>`).join("");
+    $("zones").addEventListener("click", (e) => {
+      const b = e.target.closest(".zone"); if (!b || b.disabled) return;
+      zone = +b.dataset.z;
+      document.querySelectorAll(".zone").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    });
+    const today = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    $("bDate").min = isoDay(today);
+    function fillTimes() {
+      const d = new Date($("bDate").value + "T12:00");
+      const last = [0, 5, 6].includes(d.getDay()) ? 24 : 23;
+      const isToday = $("bDate").value === isoDay(new Date());
+      const opts = [];
+      for (let h = 12; h <= last - 1; h++) for (const m of [0, 30]) {
+        if (isToday && h * 60 + m <= new Date().getHours() * 60 + new Date().getMinutes() + 30) continue;
+        opts.push(`${pad(h)}:${pad(m)}`);
+      }
+      $("bTime").innerHTML = opts.length ? opts.map((t) => `<option${t === "19:00" ? " selected" : ""}>${t}</option>`).join("") : '<option value="">Сегодня уже поздно</option>';
+    }
+    // Если сегодня свободного времени уже нет, предлагаем завтра
+    $("bDate").value = isoDay(today);
+    fillTimes();
+    if (!$("bTime").value) { const t = new Date(); t.setDate(t.getDate() + 1); $("bDate").value = isoDay(t); fillTimes(); }
+    $("bDate").addEventListener("change", fillTimes);
+    $("bookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!$("bTime").value) { $("bDate").focus(); return; }
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createBooking("gastrobar", {
+          resource: ZONES[zone][0], service: `${$("bGuests").selectedOptions[0].text}`,
+          starts_at: `${$("bDate").value}T${$("bTime").value}:00`, name: $("bName").value, phone: $("bPhone").value,
+        }));
+      } catch { return; }
+      $("bookBox").innerHTML = `<div class="ok"><h3 style="font-size:1.8rem">Стол ваш 🍺</h3><p class="muted" style="margin-top:8px">${new Date($("bDate").value + "T12:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${$("bTime").value} · ${ZONES[zone][0].toLowerCase()}. Держим бронь 15 минут.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
+    });
+
+    renderBoard();
+    renderTaps();
+    renderPair(0);
+    renderEvents();
+    addEventListener("DOMContentLoaded", () => { for (const k of ["hall", "food"]) $(`cnt-${k}`).textContent = `${PFGallery.count(k)} фото`; });
+  </script>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark only">
+  <title>Полночь — коктейльный бар</title>
+  <meta name="description" content="Коктейльный бар без вывески: авторские коктейли, винил и джаз, бронь столика онлайн. 18+.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" fetchpriority="high">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap"></noscript>
+  <style>
+    :root { color-scheme: dark only; }
+    :root { --night: #0d0b0a; --night-2: #161210; --velvet: #3b1218; --amber: #d8a85a; --neon: #ff6f91; --cream: #efe4d2; --muted: #a29482; --line: #2c2420; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Jost", system-ui, sans-serif; background: var(--night); color: var(--cream); line-height: 1.65; overflow-x: clip; }
+    body.gate-on { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; color: inherit; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { font-family: "Old Standard TT", Georgia, serif; font-weight: 400; line-height: 1.1; }
+    h2 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+    h2 i { color: var(--amber); }
+    .eyebrow { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; color: var(--amber); display: block; margin-bottom: 12px; }
+    .muted { color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 28px; background: var(--amber); color: #1a120a; border: 0; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; transition: background .25s, box-shadow .25s; }
+    .btn:hover { background: #e8bb6c; box-shadow: 0 0 30px -6px rgba(216, 168, 90, .7); }
+    .btn--line { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 1px rgba(239, 228, 210, .5); }
+    .btn--line:hover { background: rgba(239, 228, 210, .08); box-shadow: inset 0 0 0 1px var(--cream); }
+    .demo-bar { background: var(--velvet); color: var(--cream); text-align: center; font-size: 13px; padding: 8px 12px; }
+    .demo-bar a { text-decoration: underline; }
+
+    /* Проверка возраста */
+    .gate { position: fixed; inset: 0; z-index: 100; background: radial-gradient(ellipse at center, #1d1512, #070606 70%); display: grid; place-items: center; padding: 20px; text-align: center; }
+    .gate[hidden] { display: none; }
+    .gate__box { max-width: 420px; }
+    .gate .neon { font-size: clamp(3rem, 12vw, 5rem); }
+    .gate p { color: var(--muted); margin: 14px 0 26px; }
+    .gate__btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    header { position: absolute; top: auto; left: 0; right: 0; z-index: 20; }
+    .head { display: flex; align-items: center; justify-content: space-between; height: 80px; }
+    .head nav { display: flex; gap: 28px; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+    .head nav a:hover { color: var(--cream); }
+    .head__logo { font-family: "Marck Script", cursive; font-size: 1.9rem; color: var(--neon); text-shadow: 0 0 12px rgba(255, 111, 145, .6); }
+
+    /* Неоновая вывеска и дверь */
+    .hero { position: relative; min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 120px 0 80px; overflow: hidden; }
+    .hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .28; filter: saturate(.7); }
+    .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 20%, var(--night) 75%); }
+    .hero .container { position: relative; z-index: 1; }
+    .neon { font-family: "Marck Script", cursive; font-size: clamp(4.4rem, 15vw, 10rem); line-height: 1; color: #ffe1ea;
+      text-shadow: 0 0 6px #fff, 0 0 18px var(--neon), 0 0 40px var(--neon), 0 0 80px rgba(255, 111, 145, .7); animation: flicker 6s infinite; }
+    @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: .45; text-shadow: none; } }
+    .hero__sub { font-family: "Old Standard TT", serif; font-style: italic; font-size: clamp(1.2rem, 2.6vw, 1.6rem); color: var(--amber); margin-top: 6px; }
+    .hero p { max-width: 520px; margin: 26px auto 34px; color: var(--muted); font-size: 1.05rem; }
+    .door { display: inline-grid; gap: 14px; justify-items: center; }
+    .knock { width: 92px; height: 92px; border-radius: 50%; border: 1px solid rgba(216, 168, 90, .6); background: radial-gradient(circle, rgba(216, 168, 90, .2), transparent 70%); color: var(--amber); font-size: 30px; transition: transform .1s; }
+    .knock:hover { box-shadow: 0 0 30px -4px rgba(216, 168, 90, .6); }
+    .knock.hit { animation: hit .18s; }
+    @keyframes hit { 50% { transform: scale(.9); } }
+    .knock small { display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+    .door__hint { font-size: 13px; color: var(--muted); letter-spacing: .1em; min-height: 1.6em; }
+    .secret { display: none; margin-top: 10px; padding: 22px 30px; border: 1px solid var(--amber); background: rgba(13, 11, 10, .8); animation: open .6s both; }
+    .secret.on { display: block; }
+    @keyframes open { from { opacity: 0; transform: scaleY(.6); } }
+    .secret b { font-family: "Old Standard TT", serif; font-style: italic; font-size: 1.8rem; color: var(--amber); display: block; margin: 4px 0 14px; }
+
+    section { padding: 100px 0; }
+    .center { text-align: center; max-width: 620px; margin: 0 auto 40px; }
+
+    /* Коктейли */
+    .tastes { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 34px; }
+    .taste { padding: 8px 18px; border: 1px solid var(--line); background: none; color: var(--muted); letter-spacing: .08em; font-size: 14px; border-radius: 999px; transition: .2s; }
+    .taste[aria-pressed="true"] { border-color: var(--amber); color: var(--night); background: var(--amber); }
+    .drinks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .drink { position: relative; background: var(--night-2); border: 1px solid var(--line); overflow: hidden; animation: fadein .45s both; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(12px); } }
+    .drink__ph { aspect-ratio: 3 / 4; overflow: hidden; position: relative; }
+    .drink__ph img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s, filter .5s; filter: saturate(.85); }
+    .drink:hover .drink__ph img { transform: scale(1.06); filter: saturate(1.1); }
+    .drink__recipe { position: absolute; inset: 0; background: rgba(13, 11, 10, .88); padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 8px; opacity: 0; transition: opacity .35s; font-size: 14px; }
+    .drink:hover .drink__recipe, .drink:focus-within .drink__recipe { opacity: 1; }
+    .drink__recipe b { color: var(--amber); letter-spacing: .14em; text-transform: uppercase; font-size: 11px; font-weight: 500; }
+    .drink__b { padding: 16px 18px 18px; }
+    .drink__b h3 { font-size: 1.35rem; }
+    .drink__b small { color: var(--muted); }
+    .drink__foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .strength { display: flex; gap: 3px; }
+    .strength i { width: 16px; height: 4px; background: var(--line); }
+    .strength i.on { background: var(--neon); box-shadow: 0 0 6px var(--neon); }
+    .drink__foot span { color: var(--amber); font-weight: 600; }
+    .drink__more { position: absolute; top: 12px; right: 12px; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(239, 228, 210, .4); background: rgba(13, 11, 10, .6); font-size: 13px; }
+
+    /* Подбор коктейля */
+    .quiz { margin-top: 70px; display: grid; grid-template-columns: 1fr 1.1fr; border: 1px solid var(--line); background: linear-gradient(135deg, var(--velvet), #1d0a0d); }
+    .quiz__l { padding: 40px; border-right: 1px solid rgba(239, 228, 210, .1); }
+    .quiz__l h3 { font-size: 2rem; margin-bottom: 8px; }
+    .quiz__r { padding: 40px; display: grid; align-content: center; min-height: 340px; }
+    .q__step { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); }
+    .q__title { font-family: "Old Standard TT", serif; font-size: 1.7rem; margin: 6px 0 18px; }
+    .q__answers { display: grid; gap: 10px; }
+    .q__answers button { text-align: left; padding: 14px 18px; border: 1px solid rgba(239, 228, 210, .2); background: rgba(13, 11, 10, .35); transition: .2s; }
+    .q__answers button:hover { border-color: var(--amber); background: rgba(216, 168, 90, .1); }
+    .q__res { display: grid; grid-template-columns: 130px 1fr; gap: 22px; align-items: center; animation: fadein .5s both; }
+    .q__res img { width: 130px; aspect-ratio: 3 / 4; object-fit: cover; }
+    .q__res b { font-family: "Old Standard TT", serif; font-size: 2rem; font-weight: 400; display: block; color: var(--amber); }
+    .q__again { margin-top: 14px; background: none; border: 0; color: var(--muted); text-decoration: underline; padding: 0; }
+
+    /* Вечера и правила */
+    .nights { display: grid; gap: 0; border-top: 1px solid var(--line); }
+    .night { display: grid; grid-template-columns: 110px 1fr auto; gap: 24px; align-items: center; padding: 24px 0; border-bottom: 1px solid var(--line); }
+    .night__day { font-family: "Old Standard TT", serif; font-size: 1.6rem; color: var(--amber); line-height: 1; }
+    .night__day small { display: block; font-family: "Jost", sans-serif; font-size: 12px; color: var(--muted); letter-spacing: .1em; margin-top: 6px; }
+    .night h3 { font-size: 1.5rem; }
+    .night p { color: var(--muted); font-size: 15px; }
+    .night .btn { padding: 11px 20px; font-size: 12px; }
+    .night .btn:disabled { background: var(--line); color: var(--muted); cursor: default; box-shadow: none; }
+    .rules { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--line); margin-top: 40px; }
+    .rules div { padding: 26px 22px; border-left: 1px solid var(--line); }
+    .rules div:first-child { border-left: 0; }
+    .rules b { font-family: "Old Standard TT", serif; font-size: 2rem; color: var(--amber); display: block; line-height: 1; margin-bottom: 10px; font-weight: 400; }
+    .rules p { color: var(--muted); font-size: 14px; }
+
+    /* Фото и бронь */
+    .albums { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .albums button { position: relative; height: 300px; border: 0; padding: 0; overflow: hidden; text-align: left; background: var(--night-2); }
+    .albums img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.8); transition: transform .9s, filter .5s; }
+    .albums button:hover img { transform: scale(1.05); filter: saturate(1.1); }
+    .albums button::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(13, 11, 10, .9), transparent 60%); }
+    .albums span { position: absolute; z-index: 1; left: 24px; bottom: 20px; }
+    .albums b { font-family: "Old Standard TT", serif; font-weight: 400; font-size: 2rem; display: block; line-height: 1.1; }
+    .albums small { color: var(--amber); letter-spacing: .14em; text-transform: uppercase; font-size: 12px; }
+    .book { display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; align-items: start; }
+    .seats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .seat { padding: 16px 14px; border: 1px solid var(--line); background: var(--night-2); text-align: left; }
+    .seat b { display: block; font-family: "Old Standard TT", serif; font-size: 1.2rem; font-weight: 400; }
+    .seat small { color: var(--muted); font-size: 13px; }
+    .seat[aria-pressed="true"] { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); }
+    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    input, select { width: 100%; padding: 13px 14px; border: 1px solid var(--line); background: var(--night-2); color: var(--cream); font: 16px "Jost", sans-serif; border-radius: 0; }
+    input:focus, select:focus { outline: none; border-color: var(--amber); }
+    .ok { border: 1px solid var(--amber); padding: 30px; text-align: center; }
+    .ok .neon { font-size: 3.4rem; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); background: var(--amber); color: #1a120a; padding: 12px 22px; font-weight: 600; z-index: 60; transition: transform .3s; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    footer { border-top: 1px solid var(--line); padding: 36px 0; font-size: 13px; color: var(--muted); }
+    .foot { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+
+    @media (max-width: 1000px) { .drinks { grid-template-columns: repeat(3, 1fr); } .rules { grid-template-columns: 1fr 1fr; } .rules div:nth-child(3) { border-left: 0; } .rules div:nth-child(n+3) { border-top: 1px solid var(--line); } }
+    @media (max-width: 860px) {
+      .head nav { display: none; }
+      .drinks { grid-template-columns: 1fr 1fr; }
+      .quiz, .book, .albums { grid-template-columns: 1fr; }
+      .quiz__l { border-right: 0; border-bottom: 1px solid rgba(239, 228, 210, .1); padding: 28px 22px; }
+      .quiz__r { padding: 28px 22px; min-height: 0; }
+      .night { grid-template-columns: 80px 1fr; }
+      .night .btn { grid-column: 2; justify-self: start; }
+      .albums button { height: 220px; }
+    }
+    @media (max-width: 520px) {
+      section { padding: 70px 0; }
+      .seats, .row, .rules { grid-template-columns: 1fr; }
+      .rules div { border-left: 0; border-top: 1px solid var(--line); }
+      .rules div:first-child { border-top: 0; }
+      .q__res { grid-template-columns: 90px 1fr; }
+      .q__res img { width: 90px; }
+      .drink__b { padding: 12px; }
+      .drink__b h3 { font-size: 1.1rem; }
+    }
+    @media (hover: none) { .drink__recipe { display: none; } .drink.show .drink__recipe { display: flex; opacity: 1; } }
+    @media (hover: hover) { .drink__more { display: none; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="gate__box">
+      <div class="neon" aria-hidden="true">Полночь</div>
+      <h2 id="gateTitle" style="font-size:1.6rem;margin-top:18px">Вам уже есть 18?</h2>
+      <p>Сайт бара: здесь коктейли и алкоголь. Подтвердите возраст, чтобы войти.</p>
+      <div class="gate__btns"><button class="btn" id="gateYes">Да, мне есть 18</button><a class="btn btn--line" href="../../">Нет, вернуться</a></div>
+    </div>
+  </div>
+
+  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
+  <header>
+    <div class="container head">
+      <a href="#" class="head__logo">Полночь</a>
+      <nav><a href="#drinks">Коктейли</a><a href="#nights">Вечера</a><a href="#photos">Фото</a><a href="#book">Столик</a></nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <img class="hero__bg" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" alt="" fetchpriority="high">
+    <div class="container">
+      <h1 class="neon">Полночь</h1>
+      <div class="hero__sub">коктейльный бар без вывески</div>
+      <p>Вход через арку на Гороховой, 9: дверь без таблички, справа кнопка звонка. Внутри двадцать мест, винил и бармены, которые помнят, что вы пили в прошлый раз.</p>
+      <div class="door">
+        <button class="knock" id="knock" aria-label="Постучать в дверь">✊<small>тук</small></button>
+        <div class="door__hint" id="knockHint">Постучите три раза</div>
+        <div class="secret" id="secret" aria-live="polite">
+          <small class="eyebrow" style="margin:0">Пароль на сегодня</small>
+          <b id="password">«Лунный свет»</b>
+          <a href="#book" class="btn">Забронировать столик</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="drinks">
+    <div class="container">
+      <div class="center"><span class="eyebrow">Карта</span><h2>Коктейли <i>по вкусу</i></h2><p class="muted" style="margin-top:12px">Наведите на коктейль, чтобы увидеть рецепт. На телефоне нажмите на «i».</p></div>
+      <div class="tastes" id="tastes" role="group" aria-label="Вкус"></div>
+      <div class="drinks" id="drinkList"></div>
+
+      <div class="quiz">
+        <div class="quiz__l"><span class="eyebrow">Не знаете, что взять?</span><h3>Бармен подберёт за три вопроса</h3><p class="muted">Так же, как это делают за стойкой: вкус, крепость и настроение вечера.</p></div>
+        <div class="quiz__r" id="quiz" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="nights" style="background:var(--night-2)">
+    <div class="container">
+      <span class="eyebrow">Неделя</span><h2 style="margin-bottom:30px">Каждый вечер <i>свой</i></h2>
+      <div class="nights" id="nightList"></div>
+      <div class="rules">
+        <div><b>I</b><p>Не фотографируем гостей. Только коктейли и интерьер.</p></div>
+        <div><b>II</b><p>Говорим вполголоса. Это бар для разговоров, а не для крика.</p></div>
+        <div><b>III</b><p>Дресс-код smart casual. Спортивные костюмы оставьте спортзалу.</p></div>
+        <div><b>IV</b><p>Только 18+. Документ могут попросить на входе.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="photos">
+    <div class="container">
+      <div class="albums">
+        <button data-album="bar"><img loading="lazy" src="https://images.unsplash.com/photo-1597290282695-edc43d0e7129?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Бар</b><small id="cnt-bar"></small></span></button>
+        <button data-album="drinks"><img loading="lazy" src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Коктейли</b><small id="cnt-drinks"></small></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="book" style="background:linear-gradient(180deg,var(--night),var(--velvet))">
+    <div class="container book">
+      <div>
+        <span class="eyebrow">Столик</span>
+        <h2>Займём для вас <i>место</i></h2>
+        <p class="muted" style="margin:16px 0 22px">Мест всего двадцать, поэтому в пятницу и субботу лучше бронировать. Держим столик 20 минут.</p>
+        <p>Гороховая, 9, арка во двор<br><span class="muted">Ср–Вс с 19:00 до 03:00</span><br><a href="tel:+79000000000">+7 (900) 000-00-00</a></p>
+      </div>
+      <div id="bookBox">
+        <form id="bookForm">
+          <div class="seats" id="seats" role="group" aria-label="Место"></div>
+          <div class="row">
+            <select id="bDay" aria-label="День"></select>
+            <select id="bTime" aria-label="Время"></select>
+            <select id="bGuests" aria-label="Гостей"><option>1 гость</option><option selected>2 гостя</option><option>3 гостя</option><option>4 гостя</option><option>6 гостей</option></select>
+          </div>
+          <div class="row2"><input id="bName" required placeholder="Имя" aria-label="Имя" autocomplete="name"><input id="bPhone" required type="tel" placeholder="Телефон" aria-label="Телефон" autocomplete="tel"></div>
+          <button class="btn" style="width:100%">Забронировать</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="container foot"><span>© Бар «Полночь» · только для гостей старше 18 лет</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div></footer>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/motion.js" defer></script>
+  <script>
+    window.PF_ALBUMS = {
+      bar: { title: "Бар", photos: [["1597290282695-edc43d0e7129", "Задняя стена бара"], ["1572116469696-31de0f17cc34", "Стойка на восемь мест"], ["1574096079513-d8259312b785", "Зал с камином"], ["1516997121675-4c2d1684aa3e", "Диваны у окна"], ["1566417713940-fe7c737a9ef2", "Бармен за работой"]] },
+      drinks: { title: "Коктейли", photos: [["1470337458703-46ad1756a187", "Олд фэшн"], ["1514362545857-3bc16c4c7d1b", "Дымный пенициллин"], ["1536935338788-846bb9981813", "Ежевичный бренди"], ["1609951651556-5334e2706168", "Грейпфрут и розмарин"], ["1560512823-829485b8bf24", "Шприц"], ["1544145945-f90425340c7e", "Маргарита"], ["1595981267035-7b04ca84a82d", "Клубничная фиалка"], ["1551024709-8f23befc6f87", "Сет из трёх коктейлей"]] },
+    };
+  </script>
+  <script src="../shared/gallery.js" defer></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let tt;
+    const toast = (m) => { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2600); };
+    const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${Math.round(w * 4 / 3)}&q=65`;
+
+    // ---------- Возраст: спрашиваем один раз; роботу для скриншотов не показываем ----------
+    let adult = false;
+    try { adult = localStorage.getItem("midnight-18") === "1"; } catch {}
+    if (!adult && !navigator.webdriver) { $("gate").hidden = false; document.body.classList.add("gate-on"); $("gateYes").focus(); }
+    $("gateYes").onclick = () => {
+      try { localStorage.setItem("midnight-18", "1"); } catch {}
+      $("gate").hidden = true;
+      document.body.classList.remove("gate-on");
+    };
+
+    // ---------- Дверь: три стука открывают пароль дня ----------
+    const PASSWORDS = ["Тихий джаз", "Медная луна", "Старый винил", "Лунный свет", "Бархатный сезон", "Ночной экспресс", "Полный штиль"];
+    let knocks = 0;
+    $("knock").onclick = () => {
+      knocks++;
+      $("knock").classList.remove("hit"); void $("knock").offsetWidth; $("knock").classList.add("hit");
+      if (knocks < 3) { $("knockHint").textContent = `${"тук ".repeat(knocks).trim()}…`; return; }
+      $("knockHint").textContent = "Дверь приоткрылась";
+      $("password").textContent = `«${PASSWORDS[new Date().getDay()]}»`;
+      $("secret").classList.add("on");
+      $("knock").disabled = true;
+    };
+
+    // ---------- Коктейли ----------
+    const TASTES = { all: "Все", sour: "Кислые", sweet: "Сладкие", bitter: "Горькие", fresh: "Освежающие", strong: "Крепкие" };
+    // [фото, название, описание, вкусы, крепость 1–3, цена, состав]
+    const DRINKS = [
+      ["1470337458703-46ad1756a187", "Олд фэшн «Полночь»", "бурбон, кленовый сироп, биттер", ["strong", "bitter"], 3, 790, "Бурбон, кленовый сироп, ангостура, апельсиновая цедра. Мешаем на большом куске льда."],
+      ["1514362545857-3bc16c4c7d1b", "Дымный пенициллин", "скотч, мёд, имбирь, лимон", ["sour", "strong"], 3, 820, "Купажированный скотч, медово-имбирный сироп, лимон, айлейский виски сверху."],
+      ["1536935338788-846bb9981813", "Ежевичный бренди", "бренди, ежевика, тимьян", ["sweet"], 2, 760, "Бренди, ежевичный шраб, тимьян, капля бальзамика, сухой апельсин."],
+      ["1609951651556-5334e2706168", "Палома с розмарином", "текила, грейпфрут, розмарин", ["sour", "fresh"], 2, 690, "Текила бланко, грейпфрутовый фреш, лайм, розмариновый сироп, содовая."],
+      ["1560512823-829485b8bf24", "Шприц «Гороховая»", "аперитив, игристое, апельсин", ["fresh", "bitter"], 1, 620, "Красный аперитив, просекко, содовая, долька апельсина."],
+      ["1544145945-f90425340c7e", "Маргарита с перцем", "текила, лайм, халапеньо", ["sour"], 2, 680, "Текила, лайм, апельсиновый ликёр, халапеньо, соль с копчёной паприкой."],
+      ["1595981267035-7b04ca84a82d", "Клубничная фиалка", "джин, клубника, фиалка", ["sweet", "fresh"], 2, 710, "Джин, клубничный кордиал, фиалковый ликёр, лимон, белок."],
+      ["1513558161293-cdaf765ed2fd", "Без градуса: «Мохито-тоник»", "мята, лайм, тоник", ["fresh"], 0, 450, "Мята, лайм, тростниковый сироп, тоник. Без алкоголя."],
+    ];
+    let taste = "all";
+    $("tastes").innerHTML = Object.entries(TASTES).map(([k, v]) => `<button class="taste" data-t="${k}" aria-pressed="${k === taste}">${v}</button>`).join("");
+    function renderDrinks() {
+      $("drinkList").innerHTML = DRINKS.filter((d) => taste === "all" || d[3].includes(taste)).map(([img, n, d, , s, p, recipe], i) => `
+        <article class="drink" style="animation-delay:${i * 60}ms">
+          <button class="drink__more" aria-label="Рецепт: ${n}">i</button>
+          <div class="drink__ph"><img loading="lazy" src="${ph(img)}" alt="${n}"><div class="drink__recipe"><b>Рецепт</b>${recipe}</div></div>
+          <div class="drink__b"><h3>${n}</h3><small>${d}</small>
+            <div class="drink__foot"><span class="strength" title="Крепость">${[1, 2, 3].map((k) => `<i class="${k <= s ? "on" : ""}"></i>`).join("")}</span><span>${p} ₽</span></div></div>
+        </article>`).join("");
+    }
+    $("tastes").addEventListener("click", (e) => {
+      const b = e.target.closest(".taste"); if (!b) return;
+      taste = b.dataset.t;
+      document.querySelectorAll(".taste").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      renderDrinks();
+    });
+    // На сенсорных экранах рецепт открывается кнопкой «i»
+    $("drinkList").addEventListener("click", (e) => { const b = e.target.closest(".drink__more"); if (b) b.closest(".drink").classList.toggle("show"); });
+
+    // ---------- Подбор коктейля ----------
+    const QUESTIONS = [
+      ["Какой вкус ближе?", [["Кислое и яркое", "sour"], ["Сладкое и ягодное", "sweet"], ["Горьковатое", "bitter"]]],
+      ["Насколько крепко?", [["Полегче, вечер только начался", 1], ["Средне", 2], ["Крепко, как надо", 3]]],
+      ["Чего хочется?", [["Освежиться", "fresh"], ["Согреться", "strong"], ["Удивиться", "any"]]],
+    ];
+    let qStep = 0, qAns = [];
+    function renderQuiz() {
+      if (qStep < QUESTIONS.length) {
+        const [title, answers] = QUESTIONS[qStep];
+        $("quiz").innerHTML = `<div><span class="q__step">Вопрос ${qStep + 1} из ${QUESTIONS.length}</span><div class="q__title">${title}</div>
+          <div class="q__answers">${answers.map(([t], i) => `<button data-a="${i}">${t}</button>`).join("")}</div></div>`;
+        return;
+      }
+      // Очки: совпадение вкуса, близость крепости и настроения
+      const [t, s, mood] = qAns;
+      const score = (d) => (d[3].includes(t) ? 3 : 0) + (3 - Math.abs(d[4] - s)) + (mood === "any" ? 0 : d[3].includes(mood) ? 2 : 0);
+      const best = [...DRINKS].sort((a, b) => score(b) - score(a))[mood === "any" ? 1 : 0];
+      $("quiz").innerHTML = `<div class="q__res"><img src="${ph(best[0], 300)}" alt=""><div><span class="q__step">Ваш коктейль</span><b>${best[1]}</b><p class="muted">${best[6]}</p>
+        <button class="q__again" id="qAgain">Подобрать заново</button></div></div>`;
+      $("qAgain").onclick = () => { qStep = 0; qAns = []; renderQuiz(); };
+    }
+    $("quiz").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-a]"); if (!b) return;
+      qAns.push(QUESTIONS[qStep][1][+b.dataset.a][1]);
+      qStep++;
+      renderQuiz();
+    });
+
+    // ---------- Вечера недели и гест-лист ----------
+    const NIGHTS = { 3: ["Винил по средам", "Резидент приносит пластинки из своей коллекции. Соул и фанк 60-х."], 4: ["Джаз-трио", "Контрабас, рояль и труба. Два сета: 21:00 и 22:30."], 5: ["Пятница до трёх", "Диджей играет диско и хаус, бармены готовят сеты на компанию."], 6: ["Закрытая суббота", "Вход по гест-листу: запишитесь заранее, мест мало."], 0: ["Тихое воскресенье", "Только свечи и классические коктейли. Хорошо для свиданий."] };
+    const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+    const upcoming = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; }).filter((d) => NIGHTS[d.getDay()]);
+    const listed = (() => { try { return JSON.parse(localStorage.getItem("midnight-list")) || []; } catch { return []; } })();
+    const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    function renderNights() {
+      $("nightList").innerHTML = upcoming.map((d) => {
+        const [title, text] = NIGHTS[d.getDay()];
+        const key = isoDay(d);
+        const mine = listed.includes(key);
+        return `<div class="night"><div class="night__day">${d.getDate()} ${d.toLocaleDateString("ru-RU", { month: "short" }).replace(".", "")}<small>${WD[d.getDay()]} · с 21:00</small></div>
+          <div><h3>${title}</h3><p>${text}</p></div>
+          <button class="btn" data-night="${key}" data-title="${title}" ${mine ? "disabled" : ""}>${mine ? "Вы в списке ✓" : "В гест-лист"}</button></div>`;
+      }).join("");
+    }
+    $("nightList").addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-night]"); if (!b || b.disabled) return;
+      let contact;
+      try { contact = await PortfolioAPI.askContact(`Гест-лист: ${b.dataset.title}`); } catch { return; }
+      b.disabled = true;
+      try {
+        await PortfolioAPI.createLead("bar", { kind: "guestlist", ...contact, data: { night: b.dataset.title, date: b.dataset.night } });
+        listed.push(b.dataset.night);
+        try { localStorage.setItem("midnight-list", JSON.stringify(listed)); } catch {}
+        toast("Вы в списке. Пароль скажем на входе");
+      } catch (err) { toast(err.message); b.disabled = false; }
+      renderNights();
+    });
+
+    // ---------- Бронь ----------
+    const SEATS = [["У стойки", "смотреть на бармена"], ["Диван", "для двоих-троих"], ["Кабинет", "до 6 гостей, за шторой"]];
+    let seat = 0;
+    $("seats").innerHTML = SEATS.map(([n, d], i) => `<button type="button" class="seat" data-s="${i}" aria-pressed="${i === seat}"><b>${n}</b><small>${d}</small></button>`).join("");
+    $("seats").addEventListener("click", (e) => {
+      const b = e.target.closest(".seat"); if (!b) return;
+      seat = +b.dataset.s;
+      document.querySelectorAll(".seat").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    });
+    // Бар работает со среды по воскресенье, с 19:00 до 03:00; ночные часы относятся к тому же вечеру
+    const evenings = [...Array(14)].map((_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }).filter((d) => [3, 4, 5, 6, 0].includes(d.getDay()));
+    $("bDay").innerHTML = evenings.map((d, i) => `<option value="${i}">${d.toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" })}</option>`).join("");
+    const SLOTS = ["19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30", "01:00"];
+    function fillSlots() {
+      const d = evenings[$("bDay").value];
+      const isToday = isoDay(d) === isoDay(new Date());
+      const nowM = new Date().getHours() * 60 + new Date().getMinutes();
+      const opts = SLOTS.filter((t) => { const [h, m] = t.split(":").map(Number); const v = (h < 12 ? h + 24 : h) * 60 + m; return !isToday || v > nowM + 30; });
+      $("bTime").innerHTML = opts.length ? opts.map((t) => `<option${t === "21:00" ? " selected" : ""}>${t}</option>`).join("") : '<option value="">Сегодня уже не успеть</option>';
+    }
+    fillSlots();
+    if (!$("bTime").value && evenings.length > 1) { $("bDay").value = "1"; fillSlots(); }
+    $("bDay").addEventListener("change", fillSlots);
+    $("bookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!$("bTime").value) return;
+      const d = new Date(evenings[$("bDay").value]);
+      const [h, m] = $("bTime").value.split(":").map(Number);
+      if (h < 12) d.setDate(d.getDate() + 1); // после полуночи — уже следующая дата
+      try {
+        await PortfolioAPI.submit(e.target, () => PortfolioAPI.createBooking("bar", {
+          resource: SEATS[seat][0], service: $("bGuests").value, starts_at: `${isoDay(d)}T${$("bTime").value}:00`, name: $("bName").value, phone: $("bPhone").value,
+        }));
+      } catch { return; }
+      $("bookBox").innerHTML = `<div class="ok"><div class="neon">До встречи</div><p class="muted" style="margin-top:14px">${evenings[$("bDay").value].toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${$("bTime").value} · ${SEATS[seat][0].toLowerCase()}. Пароль скажем в SMS за час до визита.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
+    });
+
+    renderDrinks();
+    renderQuiz();
+    renderNights();
+    addEventListener("DOMContentLoaded", () => { for (const k of ["bar", "drinks"]) $(`cnt-${k}`).textContent = `${PFGallery.count(k)} фото`; });
+  </script>
+</body>
+</html>

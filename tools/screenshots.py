@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "http://localhost:8000"
 OUT = Path(__file__).resolve().parent.parent / "assets" / "previews"
 
-DEMOS = ["miniapp", "florist", "dental", "cafe", "barbershop", "fitness", "autoservice", "realty", "saas"]
+DEMOS = ["miniapp", "restaurant", "sushi", "gastrobar", "bar", "florist", "dental", "cafe", "barbershop", "fitness", "autoservice", "realty", "saas"]
 
 
 def settle(page):

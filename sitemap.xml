@@ -2,6 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://feyegetsu.github.io/portfolio/</loc><priority>1.0</priority></url>
   <url><loc>https://feyegetsu.github.io/portfolio/projects/miniapp/</loc></url>
+  <url><loc>https://feyegetsu.github.io/portfolio/projects/restaurant/</loc></url>
+  <url><loc>https://feyegetsu.github.io/portfolio/projects/sushi/</loc></url>
+  <url><loc>https://feyegetsu.github.io/portfolio/projects/gastrobar/</loc></url>
+  <url><loc>https://feyegetsu.github.io/portfolio/projects/bar/</loc></url>
   <url><loc>https://feyegetsu.github.io/portfolio/projects/florist/</loc></url>
   <url><loc>https://feyegetsu.github.io/portfolio/projects/dental/</loc></url>
   <url><loc>https://feyegetsu.github.io/portfolio/projects/cafe/</loc></url>

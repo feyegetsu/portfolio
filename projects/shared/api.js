@@ -19,7 +19,13 @@
     { slug: "realty", name: "Агентство «Квадрат»", leads: true },
     { slug: "saas", name: "Taskly", leads: true },
     { slug: "miniapp", name: "Сытый Лис", orders: true, catalog: true },
+    { slug: "restaurant", name: "Ресторан «Терруар»", leads: true, bookings: true },
+    { slug: "sushi", name: "Суши «Кайсэн»", orders: true, catalog: true },
+    { slug: "gastrobar", name: "Гастробар «Соль и Солод»", leads: true, bookings: true },
+    { slug: "bar", name: "Бар «Полночь»", leads: true, bookings: true },
   ];
+  // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте
+  const SUSHI_MENU = [["s1", "Сет «Кайсэн»", "Сеты", 2490], ["s2", "Сет «Филадельфия»", "Сеты", 1890], ["s3", "Сет для двоих", "Сеты", 1390], ["s4", "Филадельфия", "Роллы", 590], ["s5", "Калифорния", "Роллы", 490], ["s6", "Радуга", "Роллы", 650], ["s7", "Маки с огурцом", "Роллы", 190], ["s8", "Красный дракон", "Роллы", 690], ["s9", "Запечённый с лососем", "Запечённые", 560], ["s10", "Запечённый с крабом", "Запечённые", 520], ["s11", "Нигири с лососем", "Нигири и сашими", 220], ["s12", "Сашими-ассорти", "Нигири и сашими", 990], ["s13", "Нигири микс", "Нигири и сашими", 690], ["s14", "Рамен тонкоцу", "Горячее", 590], ["s15", "Острый рамен с курицей", "Горячее", 560], ["s16", "Гёдза со свининой", "Горячее", 390], ["s17", "Якитори", "Горячее", 450]];
   const SITE = Object.fromEntries(SITES.map((s) => [s.slug, s]));
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
 
@@ -167,11 +173,26 @@
         ["9", "Сет «Лис»", "Роллы", 1590], ["10", "Нигири микс", "Роллы", 690], ["11", "Боул с курицей", "Боулы", 459], ["12", "Поке с лососем", "Боулы", 549],
         ["13", "Паста с морепродуктами", "Горячее", 589], ["14", "Пенне арабьята", "Горячее", 399], ["15", "Стейк с фри", "Горячее", 890], ["16", "Лимонады", "Напитки", 219]];
       for (const [ref, name, category, price] of menu) db.catalog.push({ id: id(), site: "miniapp", ref, name, category, price, active: true });
+      addCatalogs(db);
       return db;
     }
 
+    // Каталоги сайтов, добавленных позже: дописываем в уже сохранённые демо-данные, не трогая остальное
+    function addCatalogs(db) {
+      if (db.catalog.some((c) => c.site === "sushi")) return false;
+      for (const [ref, name, category, price] of SUSHI_MENU) db.catalog.push({ id: db.seq++, site: "sushi", ref, name, category, price, active: true });
+      return true;
+    }
+
     function load() {
-      try { const raw = store.get(KEY); if (raw) return JSON.parse(raw); } catch {}
+      try {
+        const raw = store.get(KEY);
+        if (raw) {
+          const db = JSON.parse(raw);
+          if (addCatalogs(db)) save(db);
+          return db;
+        }
+      } catch {}
       const db = seedData();
       save(db);
       return db;

@@ -105,3 +105,19 @@ def test_delivery_needs_address(client):
     assert client.post("/api/v1/sites/florist/orders", json=body).status_code == 422
     body["address"] = "ул. Примерная, 1"
     assert client.post("/api/v1/sites/florist/orders", json=body).status_code == 201
+
+
+def test_restaurant_table_is_not_exclusive(client):
+    # В ресторане на одно время бронируют несколько столов, в отличие от мастера барбершопа
+    assert _book(client, site="restaurant", resource="Стол на 2").status_code == 201
+    assert _book(client, site="restaurant", resource="Стол на 2").status_code == 201
+
+
+def test_sushi_catalog_seeded_and_delivery_fee_kept(client):
+    catalog = client.get("/api/v1/sites/sushi/catalog").json()
+    assert len(catalog) == 17
+    items = [{"ref": "s4", "name": "Филадельфия", "qty": 1, "price": 1},  # цену берём из каталога
+             {"ref": "delivery", "name": "Доставка", "qty": 1, "price": 199}]  # строки вне каталога сохраняются как есть
+    body = {"items": items, "name": "Иван", "phone": PHONE, "mode": "delivery", "address": "ул. Примерная, 1"}
+    r = client.post("/api/v1/sites/sushi/orders", json=body)
+    assert client.get(f"/api/v1/sites/sushi/orders/{r.json()['id']}").json()["total"] == 590 + 199

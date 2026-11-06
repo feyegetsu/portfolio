@@ -8,7 +8,7 @@
 [![Assets](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml)
 ![Frontend](https://img.shields.io/badge/frontend-HTML%20·%20CSS%20·%20JS-7c5cff)
 ![Backend](https://img.shields.io/badge/backend-FastAPI%20·%20PostgreSQL-22d3ee)
-![Tests](https://img.shields.io/badge/tests-23%20passed-34d399)
+![Tests](https://img.shields.io/badge/tests-25%20passed-34d399)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ### [Открыть портфолио →](https://feyegetsu.github.io/portfolio/)
@@ -19,7 +19,7 @@
 
 ## Что внутри
 
-**11 рабочих демо-проектов**: 9 сайтов для разных ниш, Telegram-бот и общий бэкенд с админкой. Каждый можно потрогать: оформить заказ, записаться, посчитать ипотеку. На главной у каждого проекта есть кейс с задачей, решением, техническими деталями и интерактивным превью в рамке компьютера или телефона.
+**15 рабочих демо-проектов**: 13 сайтов для разных ниш, Telegram-бот и общий бэкенд с админкой. Каждый можно потрогать: оформить заказ, записаться, посчитать ипотеку. На главной у каждого проекта есть кейс с задачей, решением, техническими деталями и интерактивным превью в рамке компьютера или телефона.
 
 | | Проект | Ниша | Ключевая фишка |
 |---|---|---|---|
@@ -32,6 +32,10 @@
 | <img src="assets/previews/autoservice.jpg" width="160"> | [**МоторЛайн**](https://feyegetsu.github.io/portfolio/projects/autoservice/) | Авто | Калькулятор ремонта, отслеживание статуса машины |
 | <img src="assets/previews/fitness.jpg" width="160"> | [**PULSE**](https://feyegetsu.github.io/portfolio/projects/fitness/) | Спорт | Сайт-плакат: расписание с записью и свободными местами |
 | <img src="assets/previews/barbershop.jpg" width="160"> | [**BLADE**](https://feyegetsu.github.io/portfolio/projects/barbershop/) | Красота | Олдскульная вывеска и онлайн-запись в 3 шага |
+| <img src="assets/previews/restaurant.jpg" width="160"> | [**Терруар**](https://feyegetsu.github.io/portfolio/projects/restaurant/) | Ресторан | Сезонный дегустационный сет, винное сопровождение, бронь стола по слотам |
+| <img src="assets/previews/sushi.jpg" width="160"> | [**Кайсэн**](https://feyegetsu.github.io/portfolio/projects/sushi/) | Доставка суши | Зоны доставки, корзина, стоп-лист из админки, статус заказа |
+| <img src="assets/previews/gastrobar.jpg" width="160"> | [**Соль и Солод**](https://feyegetsu.github.io/portfolio/projects/gastrobar/) | Гастробар | Доска дня, краны, подбор пары к блюду, афиша с записью |
+| <img src="assets/previews/bar.jpg" width="160"> | [**Полночь**](https://feyegetsu.github.io/portfolio/projects/bar/) | Коктейльный бар | 18+, «постучите в дверь», квиз по коктейлям, гест-лист |
 | <img src="assets/previews/cafe.jpg" width="160"> | [**Зерно**](https://feyegetsu.github.io/portfolio/projects/cafe/) | Общепит | Вёрстка в стиле газеты: печатное меню, полароиды, бронь-билет |
 | 🤖 | [**Бот для заказов**](projects/cafe-bot/) | Telegram-бот | Python + aiogram 3: корзина, заказы в SQLite, уведомления админу, рассылки |
 
@@ -44,7 +48,7 @@
 - **API на FastAPI**: заявки, запись на время без двойных записей, заказы с ценами из каталога, статистика, выгрузка в CSV.
 - **Роли и доступ**: владелец, администратор, сотрудник; сотрудник видит только свои сайты.
 - **Защита форм**: валидация телефона, honeypot, лимит заявок с одного IP.
-- **23 автотеста** на pytest, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
+- **25 автотестов** на pytest, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
 - **Демо-режим.** На GitHub Pages сервер запустить нельзя, поэтому клиент [`api.js`](projects/shared/api.js) повторяет контракт и правила API прямо в браузере. С настоящим сервером он работает через параметр `?api=`.
 
 Подробнее, со схемой и списком эндпоинтов: [backend/README.md](backend/README.md).
@@ -95,6 +99,7 @@ index.html, styles.css, script.js   главная: кейсы, калькуля
 projects/
   miniapp/                          Telegram Mini App (Telegram WebApp API)
   florist/ dental/ realty/ saas/
+  restaurant/ sushi/ gastrobar/ bar/
   autoservice/ fitness/ barbershop/ cafe/
   shared/motion.js                  анимации через data-атрибуты: появление, параллакс, счётчики
   shared/api.js                     клиент API: настоящий сервер или демо-режим в браузере
