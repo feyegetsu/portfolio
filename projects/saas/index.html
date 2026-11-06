@@ -195,7 +195,7 @@
         <div class="tile t1" id="telegram" style="scroll-margin-top:90px">
           <h3>Напоминания в Telegram</h3>
           <p>Бот пишет, когда вам назначили задачу или подходит срок. Отметить задачу выполненной можно прямо из чата.</p>
-          <div class="tg"><div>🔔 Вам назначена задача «Макет главной»</div><div>⏰ Завтра дедлайн: «Тексты для лендинга»</div></div>
+          <div class="tg"><div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/></svg>Вам назначена задача «Макет главной»</div><div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Завтра дедлайн: «Тексты для лендинга»</div></div>
         </div>
         <div class="tile t2"><h3>Аналитика</h3><p>Кто перегружен, а что застряло.</p><div class="bars"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:80%"></i><i style="height:100%"></i><i style="height:70%"></i></div></div>
         <div class="tile t3"><h3>Доски и списки</h3><p>Канбан, список или календарь, как удобнее.</p></div>
@@ -325,7 +325,7 @@
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 950);
       }
-      toast("Задача выполнена 🎉");
+      toast("Задача выполнена");
     }
 
     const plans = [
@@ -362,7 +362,7 @@
         await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("saas", { kind: "signup", email: e.target.querySelector("input").value, data: { seats: +$("seats").value, yearly } }));
       } catch { return; }
       e.target.reset();
-      toast("Письмо для входа отправлено на почту ✉️");
+      toast("Письмо для входа отправлено на почту");
     });
     let tt;
     function toast(m) { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2400); }

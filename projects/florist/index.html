@@ -60,7 +60,7 @@
     .btn--line:hover { background: var(--ink); color: #fff; }
     .perks { display: flex; gap: 28px; flex-wrap: wrap; font-size: 14px; }
     .perks div { display: flex; gap: 10px; align-items: center; }
-    .perks span { width: 38px; height: 38px; border-radius: 12px; background: #fff; display: grid; place-items: center; box-shadow: 0 6px 18px -10px rgba(0,0,0,.25); }
+    .perks span { color: var(--rose-d); width: 38px; height: 38px; border-radius: 12px; background: #fff; display: grid; place-items: center; box-shadow: 0 6px 18px -10px rgba(0,0,0,.25); }
 
     .hero__art { position: relative; aspect-ratio: 1; }
     .blob { position: absolute; inset: 4%; border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%; background: linear-gradient(140deg, #f7c9d1, #f3dfe3 40%, #dde8d9); animation: morph 10s ease-in-out infinite; overflow: hidden; box-shadow: 0 40px 80px -40px rgba(201, 93, 112, .6); }
@@ -185,7 +185,7 @@
   <section class="hero">
     <div class="container hero__grid">
       <div>
-        <span class="pill">🚚 Доставка за 90 минут · бесплатно от 5 000 ₽</span>
+        <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg> Доставка за 90 минут · бесплатно от 5 000 ₽</span>
         <h1>Букеты, которые <em>говорят</em> за вас</h1>
         <p>Собираем из свежих цветов в день заказа. Перед отправкой пришлём фото букета, чтобы вы точно знали, что получит адресат.</p>
         <div class="hero__cta">
@@ -193,15 +193,15 @@
           <a href="#how" class="btn btn--line">Как мы работаем</a>
         </div>
         <div class="perks">
-          <div><span>📸</span>Фото перед<br>отправкой</div>
-          <div><span>🌿</span>Свежесть<br>до 7 дней</div>
-          <div><span>💌</span>Открытка<br>в подарок</div>
+          <div><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span>Фото перед<br>отправкой</div>
+          <div><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20c0-9 5-15 15-15 0 10-6 15-14 15M5 20c3-4 6-7 10-9"/></svg></span>Свежесть<br>до 7 дней</div>
+          <div><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>Открытка<br>в подарок</div>
         </div>
       </div>
       <div class="hero__art" aria-hidden="true">
         <div class="blob"><img fetchpriority="high" src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1000&q=75" alt=""></div>
-        <div class="float-card fc1">⭐ <div><b>4.9 из 5</b>2 300+ отзывов</div></div>
-        <div class="float-card fc2">⏱ <div><b>от 90 минут</b>по всему городу</div></div>
+        <div class="float-card fc1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#e0a106"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg> <div><b>4.9 из 5</b>2 300+ отзывов</div></div>
+        <div class="float-card fc2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--rose-d)"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <div><b>от 90 минут</b>по всему городу</div></div>
       </div>
     </div>
   </section>
@@ -370,7 +370,7 @@
       $("cartTotal").textContent = rub(sum + delivery);
       $("deliveryHint").textContent = delivery
         ? `Доставка ${rub(DELIVERY)}. Добавьте ещё на ${rub(FREE_DELIVERY - sum)}, и она станет бесплатной.`
-        : "Доставка бесплатно 🎉";
+        : "Доставка бесплатно";
     }
     $("cartBody").addEventListener("click", e => {
       const b = e.target.closest("[data-d]"); if (!b) return;
@@ -411,7 +411,7 @@
         return;
       }
       cart = {}; save(); openCart(false);
-      toast(`Заказ №${res.id} оформлен! Флорист пришлёт фото букета 📸`);
+      toast(`Заказ №${res.id} оформлен! Флорист пришлёт фото букета`);
     });
     $("subForm").addEventListener("submit", async e => {
       e.preventDefault();
@@ -419,7 +419,7 @@
         await PortfolioAPI.submit(e.target, () => PortfolioAPI.createLead("florist", { kind: "subscribe", email: e.target.querySelector("input").value }));
       } catch { return; }
       e.target.reset();
-      toast("Вы подписаны на рассылку 💌");
+      toast("Вы подписаны на рассылку");
     });
 
     let tt;

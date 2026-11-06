@@ -9,6 +9,8 @@
  *            а заявка с сайта появляется в админке, открытой в соседней вкладке, без перезагрузки.
  */
 (() => {
+  // Адрес этого файла: рядом лежит offers.js с ценами для кнопки «Хочу такой сайт»
+  const SCRIPT_SRC = document.currentScript && document.currentScript.src;
   // Те же правила, что в backend/app/sites.py: демо-режим ведёт себя как настоящий сервер
   const FITNESS_CLASSES = { "Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16 };
   const MINIAPP_PRICING = {
@@ -388,7 +390,7 @@
         const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name: b.name, phone, address: b.address || "", mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
         db.orders.push(order);
         save(db);
-        return { id: order.id, status: order.status, token: order.token };
+        return { id: order.id, status: order.status, token: order.token, total: order.total, items: order.items.map(({ name, qty }) => ({ name, qty })) };
       }),
       // Статус по секретному токену из ответа на заказ, а не по порядковому номеру
       orderStatus: (slug, token) => later(() => {
@@ -652,6 +654,149 @@
     const start = () => {
       mark(document);
       new MutationObserver((list) => list.forEach((m) => m.addedNodes.forEach((n) => n.nodeType === 1 && (n.tagName === "FORM" ? mark(n.parentNode || document) : mark(n))))).observe(document.body, { childList: true, subtree: true });
+    };
+    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", start) : start();
+  }
+
+  // ---------- Демо продают сами себя ----------
+  // 1) после заявки, брони или заказа всплывает то, что в ту же секунду увидел администратор в Telegram;
+  // 2) кнопка «Хочу такой сайт» ведёт в калькулятор главной с уже выбранными пунктами;
+  // 3) в подвале честная подпись, что компании и цифры вымышлены.
+  const demoPage = /\/projects\/([\w-]+)\//.exec(location.pathname);
+  if (demoPage && SITE[demoPage[1]]) {
+    const slug = demoPage[1];
+    const framed = window.top !== window || new URLSearchParams(location.search).has("embed");
+    const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const rubles = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;
+    const short = (t, n = 90) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
+    const css = document.createElement("style");
+    css.textContent = `
+      .pf-push { position: fixed; top: 16px; right: 16px; z-index: 2147483000; width: min(350px, calc(100% - 32px)); margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer;
+        font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; color: #e9ecf2; opacity: 0; transform: translateY(-18px); transition: opacity .35s, transform .45s cubic-bezier(.2, .8, .2, 1); }
+      .pf-push.show { opacity: 1; transform: none; }
+      .pf-push__cap { display: inline-block; margin: 0 0 8px; padding: 5px 12px; border-radius: 999px; background: #fff; color: #14161a; font-weight: 600; font-size: 12.5px; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .5); }
+      .pf-push__card { display: flex; gap: 12px; padding: 13px 14px; border-radius: 18px; background: rgba(30, 34, 44, .96); border: 1px solid rgba(255, 255, 255, .1); box-shadow: 0 24px 50px -18px rgba(0, 0, 0, .7); backdrop-filter: blur(12px); }
+      .pf-push__icon { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: #229ed9; display: grid; place-items: center; }
+      .pf-push__icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .pf-push__body { min-width: 0; flex: 1; }
+      .pf-push__top { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 2px; color: #9aa3b5; font-size: 11.5px; }
+      .pf-push__title { margin: 0; font-weight: 700; font-size: 14px; color: #fff; }
+      .pf-push__line { margin: 2px 0 0; overflow-wrap: anywhere; }
+      .pf-push__muted { margin: 2px 0 0; color: #9aa3b5; font-size: 12px; }
+      .pf-want { position: fixed; left: 16px; bottom: 16px; z-index: 44; display: flex; align-items: center; max-width: calc(100% - 100px); border-radius: 999px; overflow: hidden;
+        background: rgba(20, 22, 28, .92); color: #fff; border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 16px 34px -14px rgba(0, 0, 0, .6); backdrop-filter: blur(10px);
+        font: 600 14px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif; transform: translateY(0); transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .3s; }
+      .pf-want a { color: inherit; text-decoration: none; padding: 12px 16px; white-space: nowrap; }
+      .pf-want a:hover { background: rgba(255, 255, 255, .08); }
+      .pf-want__back { color: rgba(255, 255, 255, .7) !important; border-right: 1px solid rgba(255, 255, 255, .14); }
+      .pf-want__go { overflow: hidden; text-overflow: ellipsis; }
+      .pf-want__short { display: none; }
+      .pf-want.hide { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
+      .pf-fiction { margin: 14px auto 0; max-width: 1100px; padding: 0 20px; font: 12px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; opacity: .65; text-align: center; }
+      @media (max-width: 520px) { .pf-want { left: 12px; bottom: 12px; font-size: 13px; } .pf-want a { padding: 11px 13px; } .pf-want__back span, .pf-want__long { display: none; } .pf-want__short { display: inline; } }
+      @media (prefers-reduced-motion: reduce) { .pf-push, .pf-want { transition: none; } }`;
+    document.head.appendChild(css);
+
+    // Уведомление «что увидел администратор»
+    let pushTimer;
+    const showPush = ({ title, lines = [], muted = "" }) => {
+      document.querySelector(".pf-push")?.remove();
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "pf-push";
+      el.setAttribute("aria-label", "Закрыть уведомление");
+      el.innerHTML = `<span class="pf-push__cap">А вот что в эту секунду увидел администратор</span>
+        <span class="pf-push__card"><span class="pf-push__icon"><svg viewBox="0 0 24 24"><path d="M21 4 3 11l6 2 2 6 3-4 5 4 2-15z"/><path d="m9 13 8-6"/></svg></span>
+        <span class="pf-push__body"><span class="pf-push__top"><b>Telegram · ${esc(SITE[slug].name)}</b><span>сейчас</span></span>
+        <span class="pf-push__title" style="display:block">${esc(title)}</span>
+        ${lines.filter(Boolean).map((l) => `<span class="pf-push__line" style="display:block">${esc(short(l))}</span>`).join("")}
+        ${muted ? `<span class="pf-push__muted" style="display:block">${esc(muted)}</span>` : ""}</span></span>`;
+      el.setAttribute("role", "status");
+      document.body.appendChild(el);
+      void el.offsetWidth;
+      el.classList.add("show");
+      const close = () => { el.classList.remove("show"); setTimeout(() => el.remove(), 400); };
+      el.addEventListener("click", close);
+      clearTimeout(pushTimer);
+      pushTimer = setTimeout(close, 9000);
+    };
+    const who = (b) => [b.name, b.phone || b.email].filter(Boolean).join(" · ");
+    const when = (iso) => {
+      const [d, t] = String(iso || "").split("T");
+      if (!d || !t) return "";
+      const [, m, day] = d.split("-");
+      return `${day}.${m} в ${t.slice(0, 5)}`;
+    };
+    const LEAD_TITLE = {
+      table: "Новая бронь столика", consult: "Запись на консультацию", quiz: "Заявка с квиза", viewing: "Запрос на просмотр", repair: "Запись на ремонт",
+      signup: "Новая регистрация", trial: "Запись на пробную тренировку", subscribe: "Новая подписка", class: "Запись на занятие",
+      event: "Запись на событие", guestlist: "Гость в списке", certificate: "Заказ сертификата", party: "Запрос на банкет",
+    };
+    const details = (data) => Object.values(data || {}).filter((v) => typeof v === "string" || typeof v === "number").slice(0, 4).join(" · ");
+    const wrap = (method, render) => {
+      const orig = api[method];
+      if (!orig) return;
+      api[method] = async (site, body) => {
+        const res = await orig(site, body);
+        if (api.mode === "demo") { try { showPush(render(body || {}, res || {})); } catch {} }
+        return res;
+      };
+    };
+    wrap("createLead", (b) => ({ title: LEAD_TITLE[b.kind] || "Новая заявка", lines: [who(b), details(b.data) || b.message], muted: "Заявка уже в админке, статус «новая»" }));
+    wrap("createBooking", (b) => ({ title: "Новая запись", lines: [[b.service || b.resource, when(b.starts_at)].filter(Boolean).join(" · "), who(b)], muted: "Время занято в расписании" }));
+    wrap("createOrder", (b, r) => ({
+      title: `Новый заказ №${r.id ?? ""}`,
+      lines: [(r.items || b.items || []).map((i) => `${i.name || i.ref} ×${i.qty || 1}`).join(", "), [r.total != null ? rubles(r.total) : "", b.mode === "pickup" ? "самовывоз" : b.address].filter(Boolean).join(" · ")],
+      muted: who(b),
+    }));
+
+    const start = () => {
+      // Подпись о вымышленных данных — в каждом подвале
+      const foot = [...document.querySelectorAll("footer")].pop();
+      if (foot && !/вымышлен/i.test(foot.textContent)) {
+        const p = document.createElement("p");
+        p.className = "pf-fiction";
+        p.textContent = "Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.";
+        foot.appendChild(p);
+      }
+      if (framed || navigator.webdriver) return;
+      // Плашка «демо» сверху съедала первый экран: её заменяет компактная кнопка внизу слева
+      document.querySelectorAll(".demo-bar").forEach((el) => el.remove());
+      const s = document.createElement("script");
+      s.src = new URL("offers.js", SCRIPT_SRC || location.href).href;
+      s.onload = () => {
+        const O = window.PF_OFFERS;
+        const cfg = O && O.projects[slug];
+        if (!cfg) return;
+        const q = O.quote(cfg);
+        const what = cfg.type === "miniapp" ? "Хочу такое приложение" : cfg.type === "landing" ? "Хочу такой лендинг" : "Хочу такой сайт";
+        const whatShort = cfg.type === "miniapp" ? "Хочу такое же" : "Хочу такой же";
+        const bar = document.createElement("nav");
+        bar.className = "pf-want";
+        bar.setAttribute("aria-label", "Портфолио");
+        bar.innerHTML = `<a class="pf-want__back" href="../../#works">←<span> Портфолио</span></a><a class="pf-want__go" href="${O.calcLink(slug)}"><span class="pf-want__long">${what}</span><span class="pf-want__short">${whatShort}</span> — ${O.rub(q.full)} →</a>`;
+        document.body.appendChild(bar);
+        // Пока открыта корзина или окно, кнопка не мешает; нижние кнопки сайта тоже не перекрываем
+        const overlaps = (sel) => {
+          // Место кнопки без учёта сдвига при скрытии, иначе она мигала бы: спряталась — перекрытия нет — показалась
+          const b = { left: bar.offsetLeft, top: bar.offsetTop, right: bar.offsetLeft + bar.offsetWidth, bottom: bar.offsetTop + bar.offsetHeight };
+          return [...document.querySelectorAll(sel)].some((el) => {
+            const r = el.getBoundingClientRect();
+            return r.width && r.left < b.right && r.right > b.left && r.top < b.bottom + 12 && r.bottom > b.top - 12;
+          });
+        };
+        let syncTimer;
+        const sync = () => {
+          clearTimeout(syncTimer);
+          syncTimer = setTimeout(() => bar.classList.toggle("hide", document.body.style.overflow === "hidden"
+            || !!document.querySelector("dialog[open], .drawer.open, .drawer.on, .sheet.open, .sheet.on")
+            || overlaps(".main-btn:not(.off)")), 60);
+        };
+        new MutationObserver(sync).observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ["class", "open", "style"] });
+        addEventListener("scroll", sync, { passive: true });
+        sync();
+      };
+      document.head.appendChild(s);
     };
     document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", start) : start();
   }

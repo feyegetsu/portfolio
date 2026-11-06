@@ -72,7 +72,7 @@
 
     .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 50px; }
     .perk { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: flex; gap: 14px; align-items: center; }
-    .perk span { font-size: 1.6rem; }
+    .perk span { display: grid; color: var(--red); }
     .perk b { display: block; }
     .perk small { color: var(--muted); }
 
@@ -187,8 +187,8 @@
     <div class="container head">
       <a href="#" class="logo"><span class="hanko">海</span>Кайсэн</a>
       <nav><a href="#menu">Меню</a><a href="#how">Как мы готовим</a><a href="#delivery">Доставка</a></nav>
-      <div class="head__info"><b>+7 (900) 000-00-00</b>ежедневно 11:00–23:00</div>
-      <button class="cart-btn" id="cartBtn" aria-label="Корзина">🛒 <span id="cartSum">Корзина</span><i id="cartCount">0</i></button>
+      <div class="head__info"><b>+7 (812) 309-41-27</b>ежедневно 11:00–23:00</div>
+      <button class="cart-btn" id="cartBtn" aria-label="Корзина"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L22 7H6"/></svg> <span id="cartSum">Корзина</span><i id="cartCount">0</i></button>
     </div>
   </header>
 
@@ -218,9 +218,9 @@
       </div>
     </div>
     <div class="container perks">
-      <div class="perk"><span>🛵</span><div><b>Бесплатно от 1 500 ₽</b><small>иначе доставка 199 ₽</small></div></div>
-      <div class="perk"><span>🥢</span><div><b>Палочки и соусы</b><small>сколько нужно, бесплатно</small></div></div>
-      <div class="perk"><span>⏱️</span><div><b>Опоздали — ролл в подарок</b><small>если везём дольше часа</small></div></div>
+      <div class="perk"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6l-2.5-7H9M14.5 17 17 9h3M12.5 10V6H15"/></svg></span><div><b>Бесплатно от 1 500 ₽</b><small>иначе доставка 199 ₽</small></div></div>
+      <div class="perk"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21 19 3M10 21 21 6"/></svg></span><div><b>Палочки и соусы</b><small>сколько нужно, бесплатно</small></div></div>
+      <div class="perk"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Опоздали — ролл в подарок</b><small>если везём дольше часа</small></div></div>
     </div>
   </section>
 
@@ -243,7 +243,7 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Кайсэн · ул. Примерная, 5</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div></footer>
+  <footer><div class="container foot"><span>© Кайсэн · Большой пр. П. С., 31</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div></footer>
 
   <div class="overlay" id="overlay"></div>
   <aside class="drawer" id="drawer" aria-label="Корзина" aria-hidden="true">
@@ -391,7 +391,7 @@
         ${state.mode === "delivery" ? `<div class="free">${left ? `Ещё <b>${rub(left)}</b> до бесплатной доставки` : "🎉 Доставка бесплатная"}<i style="--w:${Math.min(100, (sub / FREE_FROM) * 100)}%"></i></div>` : ""}
         <form id="orderForm" style="display:grid;gap:10px">
           <div class="seg" role="group" aria-label="Способ получения"><button type="button" data-mode="delivery" aria-pressed="${state.mode === "delivery"}">Доставка</button><button type="button" data-mode="pickup" aria-pressed="${state.mode === "pickup"}">Самовывоз</button></div>
-          ${state.mode === "delivery" ? `<input name="address" required placeholder="Улица, дом, квартира" aria-label="Адрес" autocomplete="street-address">` : `<p class="muted" style="font-size:14px">ул. Примерная, 5 · будет готово через 25 минут</p>`}
+          ${state.mode === "delivery" ? `<input name="address" required placeholder="Улица, дом, квартира" aria-label="Адрес" autocomplete="street-address">` : `<p class="muted" style="font-size:14px">Большой пр. П. С., 31 · будет готово через 25 минут</p>`}
           <select name="time" aria-label="Время"><option>Как можно скорее</option><option>К 19:00</option><option>К 20:00</option><option>К 21:00</option></select>
           <input name="name" required placeholder="Имя" aria-label="Имя" autocomplete="name">
           <input name="phone" required type="tel" placeholder="Телефон" aria-label="Телефон" autocomplete="tel">

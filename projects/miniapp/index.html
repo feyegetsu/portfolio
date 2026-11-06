@@ -36,6 +36,10 @@
     .intro h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -.02em; margin: 16px 0; }
     .intro p { color: var(--hint); font-size: 1.05rem; line-height: 1.6; max-width: 480px; }
     .intro ul { list-style: none; margin: 26px 0; display: grid; gap: 12px; }
+    .why-biz { margin: 0 0 22px; max-width: 480px; }
+    .why-biz h2 { font-size: 1.05rem; margin: 0 0 8px; }
+    .intro .why-biz p { font-size: .95rem; }
+    .intro .why-biz p + p { margin-top: 8px; }
     .intro li { display: flex; gap: 12px; align-items: flex-start; line-height: 1.5; }
     .intro li b { width: 28px; height: 28px; flex-shrink: 0; border-radius: 9px; background: color-mix(in srgb, var(--btn) 15%, transparent); color: var(--btn); display: grid; place-items: center; font-size: 14px; }
     .back-link { display: inline-flex; gap: 8px; align-items: center; color: var(--link); text-decoration: none; font-size: 14px; }
@@ -179,7 +183,7 @@
       .intro { max-width: 100%; }
       .intro { text-align: center; }
       .intro ul { text-align: left; max-width: 420px; margin-inline: auto; }
-      .intro p { margin-inline: auto; }
+      .intro p, .why-biz { margin-inline: auto; }
     }
     @media (max-width: 460px) {
       .stage { padding: 0; gap: 0; }
@@ -211,6 +215,11 @@
         <li><b>3</b><span>Корзина, размеры пиццы, промокод <b style="display:inline;background:none;width:auto;height:auto;color:inherit">FOX10</b>, доставка или самовывоз.</span></li>
         <li><b>4</b><span>Заказ уходит в бота, клиент видит статус в реальном времени.</span></li>
       </ul>
+      <div class="why-biz">
+        <h2>Что это даёт бизнесу</h2>
+        <p>Клиент не выходит из мессенджера, не ставит приложение и не регистрируется: имя и телефон уже есть в Telegram. Заказ занимает три касания, поэтому до оформления доходит больше людей, чем после перехода на сайт.</p>
+        <p>Заказы идут к вам напрямую, без комиссии агрегатора. Меню, цены и стоп-лист меняются в админке, а постоянным клиентам можно написать в том же боте: про новинку или промокод.</p>
+      </div>
       <label class="theme-switch"><input type="checkbox" id="themeToggle"> Тёмная тема Telegram</label>
     </div>
 
@@ -455,7 +464,7 @@
             ${state.mode === "delivery"
               ? `<input class="field" name="address" required placeholder="Улица, дом, квартира" aria-label="Адрес">
                  <input class="field" name="comment" placeholder="Подъезд, этаж, код домофона" aria-label="Комментарий">`
-              : `<div style="padding:4px 2px;font-size:15px">📍 ул. Примерная, 15 · ежедневно 10:00–23:00</div>`}
+              : `<div style="padding:4px 2px;font-size:15px">📍 Садовая ул., 15 · ежедневно 10:00–23:00</div>`}
           </div>
           <div class="group__title">Контакты</div>
           <div class="group stack">
