@@ -28,14 +28,18 @@
     "image": "https://feyegetsu.github.io/portfolio/assets/og-image.jpg",
     "areaServed": "RU",
     "knowsLanguage": "ru",
-    "sameAs": ["https://github.com/feyegetsu"],
+    "email": "feyegetsu.dev@yandex.ru",
+    "sameAs": ["https://github.com/feyegetsu", "https://t.me/feyegetsu"],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Услуги",
       "itemListElement": [
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Лендинг" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 15000, "priceCurrency": "RUB" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Сайт заведения" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 30000, "priceCurrency": "RUB" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Telegram-бот" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 10000, "priceCurrency": "RUB" } }
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Магазин или каталог" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 45000, "priceCurrency": "RUB" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Telegram-бот" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 10000, "priceCurrency": "RUB" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Telegram-бот с записью и оплатой" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 20000, "priceCurrency": "RUB" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Telegram Mini App" }, "priceSpecification": { "@type": "PriceSpecification", "minPrice": 40000, "priceCurrency": "RUB" } }
       ]
     }
   }
@@ -246,6 +250,7 @@
         <p class="eyebrow">Стоимость</p>
         <h2>Рассчитайте проект за минуту</h2>
         <p class="section__lead">Ориентир по цене. Точную сумму назову после короткого разговора о задаче.</p>
+        <div class="pilot-banner"><b>−25% первым пяти клиентам</b><span>Пилотная цена в обмен на честный отзыв о работе. Предоплата всего 30%.</span></div>
         <div class="calc">
           <div class="calc__form">
             <fieldset>
@@ -256,6 +261,7 @@
               <legend>Дополнительно</legend>
               <div class="calc__opts" id="calcOpts"></div>
             </fieldset>
+            <label class="calc__opt calc__opt--pilot"><input type="checkbox" id="calcPilot" checked><span>Пилотная скидка за отзыв</span><em>−25%</em></label>
             <fieldset>
               <legend>Срок</legend>
               <div class="seg" id="calcSpeed">
@@ -266,11 +272,14 @@
           </div>
           <div class="calc__result">
             <span class="calc__label">Примерная стоимость</span>
+            <s class="calc__old" id="calcOld"></s>
             <div class="calc__sum" id="calcSum">—</div>
             <div class="calc__days" id="calcDays"></div>
             <ul class="calc__list" id="calcList"></ul>
+            <p class="calc__pay" id="calcPay"></p>
             <button class="btn btn--full" id="calcSend" type="button">Отправить расчёт в Telegram</button>
             <small class="calc__hint" id="calcHint">Скопирую расчёт и открою чат со мной</small>
+            <p class="calc__support">Поддержка после бесплатного месяца: <b>1 500–2 500 ₽/мес</b>. Хостинг, обновления и мелкие правки.</p>
           </div>
         </div>
       </div>
@@ -307,15 +316,19 @@
         </details>
         <details class="faq">
           <summary>Заявки с сайта будут приходить мне в Telegram?</summary>
-          <p>Да, это стандарт для всех моих проектов: заявки, брони и заказы сразу приходят вам или администратору в Telegram.</p>
+          <p>Да, и это бесплатно в любом проекте: заявки, брони и заказы сразу приходят вам или администратору в Telegram.</p>
         </details>
         <details class="faq">
           <summary>Как происходит оплата?</summary>
-          <p>Обычно 50% предоплаты и 50% после сдачи проекта. Для небольших задач возможна оплата по факту.</p>
+          <p>30% предоплаты, остальное после сдачи проекта. Первым пяти клиентам даю скидку 25% в обмен на честный отзыв о работе.</p>
         </details>
         <details class="faq">
           <summary>Что входит в бесплатную поддержку?</summary>
           <p>В течение месяца после запуска бесплатно исправляю ошибки и вношу мелкие правки.</p>
+        </details>
+        <details class="faq">
+          <summary>А что после бесплатного месяца?</summary>
+          <p>По желанию поддержка за 1 500–2 500 ₽ в месяц: слежу за сервером и хостингом, обновляю и делаю небольшие правки. Если поддержка не нужна, сайт и код остаются у вас.</p>
         </details>
       </div>
     </section>
@@ -329,7 +342,7 @@
           <a href="#" class="btn" data-contact="telegram" target="_blank" rel="noopener">Написать в Telegram</a>
           <a href="#" class="btn btn--ghost" data-contact="github" target="_blank" rel="noopener">GitHub</a>
         </div>
-        <p class="contact__mail">Почта: <span data-contact="email"></span></p>
+        <p class="contact__mail">Почта: <a data-contact="email" href="mailto:feyegetsu.dev@yandex.ru">feyegetsu.dev@yandex.ru</a></p>
       </div>
     </section>
 

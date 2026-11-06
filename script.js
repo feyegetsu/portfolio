@@ -1,7 +1,7 @@
 // ================= НАСТРОЙКИ: контакты меняются только здесь =================
 const CONFIG = {
-  telegram: "your_username",       // ник в Telegram без @
-  email: "your@email.com",
+  telegram: "feyegetsu",           // ник в Telegram без @
+  email: "feyegetsu.dev@yandex.ru",
   github: "feyegetsu",
   repo: "https://github.com/feyegetsu/portfolio",
 };
@@ -13,7 +13,10 @@ document.querySelectorAll("[data-contact]").forEach((el) => {
   const type = el.dataset.contact;
   if (type === "telegram") el.href = `https://t.me/${CONFIG.telegram}`;
   if (type === "github") el.href = `https://github.com/${CONFIG.github}`;
-  if (type === "email") el.textContent = CONFIG.email;
+  if (type === "email") {
+    el.textContent = CONFIG.email;
+    if (el.tagName === "A") el.href = `mailto:${CONFIG.email}`;
+  }
 });
 document.querySelectorAll("[data-repo-link]").forEach((el) => {
   el.href = `${CONFIG.repo}/tree/main/${el.dataset.repoLink}`;
@@ -545,23 +548,29 @@ const calcTypes = [
   { id: "landing", name: "Лендинг", desc: "1 страница", price: 15000, days: 5 },
   { id: "site", name: "Сайт заведения", desc: "до 5 страниц", price: 30000, days: 10 },
   { id: "shop", name: "Магазин / каталог", desc: "корзина, фильтры", price: 45000, days: 14 },
-  { id: "bot", name: "Telegram-бот", desc: "заказы, запись", price: 10000, days: 4 },
+  { id: "bot", name: "Telegram-бот", desc: "меню и заказы", price: 10000, days: 4 },
+  { id: "botpro", name: "Бот с записью", desc: "напоминания, оплата", price: 20000, days: 8 },
+  { id: "miniapp", name: "Telegram Mini App", desc: "приложение в Telegram", price: 40000, days: 14 },
 ];
+const BOT_TYPES = ["bot", "botpro", "miniapp"];
+// Пилотная скидка за отзыв и предоплата для первых клиентов
+const PILOT = { discount: 0.25, prepay: 0.3 };
 const calcOpts = [
   { id: "booking", name: "Онлайн-запись или бронь", price: 7000, days: 2 },
   { id: "calc", name: "Калькулятор или квиз", price: 6000, days: 2 },
-  { id: "tg", name: "Заявки в Telegram", price: 2000, days: 0 },
+  { id: "tg", name: "Заявки в Telegram", price: 0, days: 0 },
   { id: "bot", name: "Telegram-бот к сайту", price: 10000, days: 3 },
   { id: "admin", name: "Админка для цен и меню", price: 12000, days: 3 },
   { id: "texts", name: "Тексты и подбор фото", price: 5000, days: 1 },
 ];
-const calcState = { type: "site", opts: new Set(["tg"]), k: 1 };
+const calcState = { type: "site", opts: new Set(["tg"]), k: 1, pilot: true };
+const priceLabel = (o) => (o.price ? `+${o.price.toLocaleString("ru-RU")} ₽` : "бесплатно");
 
 $("calcTypes").innerHTML = calcTypes
   .map((t) => `<button type="button" class="calc__type${t.id === calcState.type ? " active" : ""}" data-id="${t.id}"><b>${t.name}</b><small>${t.desc} · от ${t.price.toLocaleString("ru-RU")} ₽</small></button>`)
   .join("");
 $("calcOpts").innerHTML = calcOpts
-  .map((o) => `<label class="calc__opt"><input type="checkbox" value="${o.id}"${calcState.opts.has(o.id) ? " checked" : ""}><span>${o.name}</span><em>+${o.price.toLocaleString("ru-RU")} ₽</em></label>`)
+  .map((o) => `<label class="calc__opt"><input type="checkbox" value="${o.id}"${calcState.opts.has(o.id) ? " checked" : ""}><span>${o.name}</span><em${o.price ? "" : ' class="free"'}>${priceLabel(o)}</em></label>`)
   .join("");
 
 $("calcTypes").addEventListener("click", (e) => {
@@ -573,6 +582,10 @@ $("calcTypes").addEventListener("click", (e) => {
 });
 $("calcOpts").addEventListener("change", (e) => {
   e.target.checked ? calcState.opts.add(e.target.value) : calcState.opts.delete(e.target.value);
+  renderCalc();
+});
+$("calcPilot").addEventListener("change", (e) => {
+  calcState.pilot = e.target.checked;
   renderCalc();
 });
 $("calcSpeed").addEventListener("click", (e) => {
@@ -587,16 +600,21 @@ let calcShown = 0;
 let calcText = "";
 function renderCalc() {
   const type = calcTypes.find((t) => t.id === calcState.type);
-  // Бот к боту не добавляем
-  const opts = calcOpts.filter((o) => calcState.opts.has(o.id) && !(type.id === "bot" && o.id === "bot"));
+  // К боту или Mini App ещё один бот не добавляем
+  const opts = calcOpts.filter((o) => calcState.opts.has(o.id) && !(BOT_TYPES.includes(type.id) && o.id === "bot"));
   const base = type.price + opts.reduce((s, o) => s + o.price, 0);
-  const sum = Math.round((base * calcState.k) / 1000) * 1000;
+  const full = Math.round((base * calcState.k) / 1000) * 1000;
+  const sum = calcState.pilot ? Math.round((full * (1 - PILOT.discount)) / 500) * 500 : full;
   const days = Math.max(3, Math.ceil((type.days + opts.reduce((s, o) => s + o.days, 0)) / (calcState.k > 1 ? 1.5 : 1)));
-  $("calcList").innerHTML = [`<li><span>${type.name}</span><span>${type.price.toLocaleString("ru-RU")} ₽</span></li>`,
-    ...opts.map((o) => `<li><span>${o.name}</span><span>+${o.price.toLocaleString("ru-RU")} ₽</span></li>`),
-    calcState.k > 1 ? `<li><span>Срочность</span><span>+30%</span></li>` : ""].join("");
+  const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+  $("calcList").innerHTML = [`<li><span>${type.name}</span><span>${rub(type.price)}</span></li>`,
+    ...opts.map((o) => `<li><span>${o.name}</span><span>${priceLabel(o)}</span></li>`),
+    calcState.k > 1 ? `<li><span>Срочность</span><span>+30%</span></li>` : "",
+    calcState.pilot ? `<li class="calc__pilot"><span>Пилотная скидка за отзыв</span><span>−25%</span></li>` : ""].join("");
+  $("calcOld").textContent = calcState.pilot ? `от ${rub(full)}` : "";
   $("calcDays").textContent = `Срок: ~${days} ${days % 10 === 1 && days !== 11 ? "день" : days % 10 >= 2 && days % 10 <= 4 && (days < 10 || days > 20) ? "дня" : "дней"}`;
-  calcText = `Здравствуйте! Посчитал проект на сайте:\n• ${type.name}\n${opts.map((o) => `• ${o.name}`).join("\n")}${calcState.k > 1 ? "\n• Срочно" : ""}\nИтого: от ${sum.toLocaleString("ru-RU")} ₽, ~${days} дн.`;
+  $("calcPay").innerHTML = `Предоплата ${PILOT.prepay * 100}%: <b>${rub(Math.round((sum * PILOT.prepay) / 100) * 100)}</b>, остальное после сдачи`;
+  calcText = `Здравствуйте! Посчитал проект на сайте:\n• ${type.name}\n${opts.map((o) => `• ${o.name}`).join("\n")}${calcState.k > 1 ? "\n• Срочно" : ""}${calcState.pilot ? "\n• Пилотная скидка −25% за отзыв" : ""}\nИтого: от ${rub(sum)}, ~${days} дн.`;
   animateNumber(sum);
 }
 function animateNumber(to) {
