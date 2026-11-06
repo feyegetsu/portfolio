@@ -107,6 +107,13 @@ addEventListener("scroll", updateRail, { passive: true });
 addEventListener("resize", updateRail);
 updateRail();
 
+// На широких экранах после первого экрана меню шапки уступает место полоске справа
+const wide = matchMedia("(min-width: 1280px)");
+const updateNavAway = () => document.body.classList.toggle("nav-away", wide.matches && scrollY > innerHeight * 0.55);
+addEventListener("scroll", updateNavAway, { passive: true });
+wide.addEventListener("change", updateNavAway);
+updateNavAway();
+
 // ---------- Работы и кейсы ----------
 // goal — задача бизнеса, done — что сделано, tech — как устроено внутри
 const projects = [

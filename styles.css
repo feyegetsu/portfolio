@@ -213,7 +213,23 @@ body.lock .to-top { display: none; }
   opacity: 1; translate: 0 -50%; color: var(--text); padding: 7px 12px; border-radius: 10px;
   background: rgba(12, 14, 20, .9); border: 1px solid rgba(124, 92, 255, .5); backdrop-filter: blur(8px);
 }
-@media (min-width: 1280px) { .rail { display: flex; } }
+@media (min-width: 1280px) {
+  .rail { display: flex; }
+  /* Пока открыт первый экран, навигация в шапке; дальше пункты по очереди уходят вверх, а полоска выезжает справа.
+     Место под пункты сохраняется, поэтому логотип и кнопка не прыгают */
+  .nav a { --d: 0ms; transition: color .2s, opacity .3s var(--d), translate .35s var(--ease) var(--d), visibility 0s; }
+  .nav a:nth-child(2) { --d: 40ms; }
+  .nav a:nth-child(3) { --d: 80ms; }
+  .nav a:nth-child(4) { --d: 120ms; }
+  .nav a:nth-child(5) { --d: 160ms; }
+  .nav a:nth-child(6) { --d: 200ms; }
+  body.nav-away .nav a { opacity: 0; translate: 0 -10px; visibility: hidden; transition: color .2s, opacity .3s var(--d), translate .35s var(--ease) var(--d), visibility 0s .55s; }
+  .rail { opacity: 0; translate: 24px -50%; pointer-events: none; visibility: hidden; transition: padding .3s var(--ease), opacity .4s, translate .5s var(--ease), visibility 0s .5s; }
+  body.nav-away .rail { opacity: 1; translate: 0 -50%; pointer-events: auto; visibility: visible; transition-delay: 0s, .15s, .15s, 0s; }
+}
+@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
+  .nav a, .rail { transition: none !important; }
+}
 body.lock .rail { display: none; }
 
 /* Sections */
