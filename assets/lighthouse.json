@@ -8,8 +8,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
-      "cls": "0.339",
+      "lcp": "2.0 s",
+      "cls": "0.338",
       "issues": [
         "Cumulative Layout Shift"
       ],
@@ -29,16 +29,14 @@
     },
     "cafe": {
       "scores": {
-        "performance": 97,
+        "performance": 100,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
-      "cls": "0.009",
+      "lcp": "1.8 s",
+      "cls": "0.011",
       "issues": [
-        "Largest Contentful Paint",
-        "Max Potential First Input Delay",
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -61,10 +59,9 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
+      "lcp": "1.2 s",
       "cls": "0.033",
       "issues": [
-        "Max Potential First Input Delay",
         "Uses ARIA roles on incompatible elements"
       ],
       "a11y": {
@@ -82,7 +79,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
+      "lcp": "1.2 s",
       "cls": "0",
       "issues": [],
       "a11y": {}
@@ -95,32 +92,36 @@
         "seo": 100
       },
       "lcp": "1.2 s",
-      "cls": "0.043",
+      "cls": "0.036",
       "issues": [],
       "a11y": {}
     },
     "home-desktop": {
       "scores": {
-        "performance": 97,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.9 s",
-      "cls": "0.094",
+      "lcp": "1.0 s",
+      "cls": "0.035",
       "issues": [],
       "a11y": {}
     },
     "home-mobile": {
       "scores": {
-        "performance": 97,
+        "performance": 93,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.3 s",
+      "lcp": "2.7 s",
       "cls": "0.059",
-      "issues": [],
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Max Potential First Input Delay"
+      ],
       "a11y": {}
     },
     "miniapp": {
@@ -158,7 +159,7 @@
         "seo": 100
       },
       "lcp": "1.2 s",
-      "cls": "0.017",
+      "cls": "0.013",
       "issues": [],
       "a11y": {}
     }
