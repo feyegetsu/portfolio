@@ -57,21 +57,63 @@ def check_site_access(user: User, site: str) -> None:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Нет доступа к этому сайту")
 
 
-class RateLimiter:
-    """Простое ограничение частоты по IP в памяти процесса. Для нескольких инстансов заменяется на Redis."""
+def client_ip(request: Request) -> str:
+    # За nginx реальный адрес приходит в X-Forwarded-For; uvicorn подставляет его в request.client,
+    # если адрес прокси указан в --forwarded-allow-ips (см. Dockerfile и FORWARDED_ALLOW_IPS)
+    return request.client.host if request.client else "unknown"
+
+
+class SlidingWindow:
+    """Счётчик событий по ключу за скользящее окно, в памяти процесса. Для нескольких инстансов — Redis."""
+
+    def __init__(self, limit: int, window_seconds: int) -> None:
+        self.limit, self.window = limit, window_seconds
+        self.hits: dict[str, deque[float]] = defaultdict(deque)
+        self._calls = 0
+
+    def _trim(self, key: str, now: float) -> deque[float]:
+        q = self.hits[key]
+        while q and now - q[0] > self.window:
+            q.popleft()
+        return q
+
+    def _sweep(self, now: float) -> None:
+        # Раз в тысячу обращений выбрасываем ключи без свежих событий, чтобы словарь не рос бесконечно
+        self._calls += 1
+        if self._calls % 1000:
+            return
+        for key in list(self.hits):
+            if not self._trim(key, now):
+                del self.hits[key]
+
+    def full(self, key: str) -> bool:
+        now = time.monotonic()
+        self._sweep(now)
+        full = len(self._trim(key, now)) >= self.limit
+        if not self.hits[key]:
+            del self.hits[key]
+        return full
+
+    def add(self, key: str) -> None:
+        self.hits[key].append(time.monotonic())
+
+    def reset(self, key: str) -> None:
+        self.hits.pop(key, None)
+
+
+class RateLimiter(SlidingWindow):
+    """Лимит публичных заявок, записей и заказов с одного IP."""
 
     def __init__(self) -> None:
-        self.hits: dict[str, deque[float]] = defaultdict(deque)
+        super().__init__(settings.rate_limit, settings.rate_window_seconds)
 
     def __call__(self, request: Request) -> None:
-        ip = request.client.host if request.client else "unknown"
-        now = time.monotonic()
-        window = self.hits[ip]
-        while window and now - window[0] > settings.rate_window_seconds:
-            window.popleft()
-        if len(window) >= settings.rate_limit:
+        ip = client_ip(request)
+        if self.full(ip):
             raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Слишком много заявок, попробуйте позже")
-        window.append(now)
+        self.add(ip)
 
 
 rate_limit = RateLimiter()
+# Неудачные входы считаем по паре «IP + e-mail»: перебор пароля упирается в 429
+login_limit = SlidingWindow(settings.login_attempts, settings.login_window_seconds)

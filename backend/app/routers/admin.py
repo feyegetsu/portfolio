@@ -29,8 +29,17 @@ from ..schemas import (
 )
 from ..security import hash_password
 from ..sites import SITES
+from .public import check_capacity, slot_lock_key
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+
+FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _cell(value) -> str:
+    """Защита от CSV-инъекции: текст, похожий на формулу, Excel покажет как текст, а не выполнит."""
+    text = str(value)
+    return "'" + text if text.startswith(FORMULA_START) else text
 
 Limit = Annotated[int, Query(ge=1, le=200)]
 Offset = Annotated[int, Query(ge=0)]
@@ -89,7 +98,8 @@ def export_leads(user: CurrentUser, db: DB, site: str | None = None):
     writer = csv.writer(buf, delimiter=";")
     writer.writerow(["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"])
     for r in rows:
-        writer.writerow([r.id, r.created_at.strftime("%d.%m.%Y %H:%M"), SITES[r.site].name, r.kind, r.name, r.phone, r.email, r.message, r.status])
+        writer.writerow([r.id, r.created_at.strftime("%d.%m.%Y %H:%M"), SITES[r.site].name,
+                         *map(_cell, [r.kind, r.name, r.phone, r.email, r.message]), r.status])
     return Response("﻿" + buf.getvalue(), media_type="text/csv; charset=utf-8",
                     headers={"Content-Disposition": 'attachment; filename="leads.csv"'})
 
@@ -108,10 +118,19 @@ def list_bookings(user: CurrentUser, db: DB, site: str | None = None, upcoming: 
 @router.patch("/bookings/{booking_id}", response_model=BookingOut)
 def update_booking(booking_id: int, body: BookingPatch, user: CurrentUser, db: DB):
     booking = _get_owned(db, Booking, booking_id, user)
+    site = SITES[booking.site]
+    if booking.status == "cancelled" and body.status != "cancelled":
+        # Возврат отменённой записи: слот мог уже занять другой клиент, проверяем заново
+        check_capacity(db, site, booking.resource, booking.starts_at, exclude_id=booking.id)
+        booking.slot_lock = slot_lock_key(site, booking.resource, booking.starts_at)
     booking.status = body.status
     if body.status == "cancelled":
         booking.slot_lock = None  # отмена освобождает слот
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "Это время уже занято другой записью") from None
     return booking
 
 
@@ -148,7 +167,11 @@ def add_catalog_item(site: str, body: CatalogIn, user: CurrentUser, db: DB):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "У сайта нет каталога")
     item = CatalogItem(site=site, **body.model_dump())
     db.add(item)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "Позиция с таким кодом уже есть в каталоге") from None
     return item
 
 

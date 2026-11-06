@@ -4,6 +4,7 @@ const CONFIG = {
   email: "feyegetsu.dev@yandex.ru",
   github: "feyegetsu",
   repo: "https://github.com/feyegetsu/portfolio",
+  pilotLeft: 5,                    // сколько мест по пилотной цене ещё осталось: меняйте вручную
 };
 
 const $ = (id) => document.getElementById(id);
@@ -55,7 +56,12 @@ $("ticker").innerHTML = tick + tick;
 
 // ---------- Кнопка «наверх» ----------
 const toTop = $("toTop");
+// Липкая кнопка «Написать в Telegram» на телефоне появляется после первого экрана
+const stickyCta = $("stickyCta");
+const contactSec = $("contact");
 const updateTop = () => {
+  const nearContact = contactSec.getBoundingClientRect().top < innerHeight;
+  stickyCta.classList.toggle("show", scrollY > innerHeight * 0.7 && !nearContact);
   const max = document.documentElement.scrollHeight - innerHeight;
   toTop.style.setProperty("--p", max > 0 ? Math.min(1, scrollY / max).toFixed(3) : 0);
   toTop.classList.toggle("show", scrollY > 240);
@@ -122,7 +128,7 @@ const projects = [
     tags: ["FastAPI", "PostgreSQL", "JWT", "pytest", "Docker"],
     goal: "Заявки с сайтов должны куда-то приходить, а владелец должен ими управлять без программиста и без доступа к коду.",
     done: ["API на FastAPI: заявки, запись на время, заказы, каталог, статистика, выгрузка в CSV", "Админка: дашборд, таблицы с поиском и фильтрами, статусы, стоп-лист и цены, команда", "Роли «владелец», «администратор», «сотрудник» и доступ только к своим сайтам", "Все 13 демо-сайтов отправляют формы в API; изменения в админке сразу видны на сайте"],
-    tech: ["Двойная запись на один слот невозможна даже при гонке: уникальный ключ в БД, а не проверка в коде", "Цены заказа берутся из каталога на сервере: подменить цену из браузера нельзя", "Валидация телефонов, honeypot от ботов и лимит заявок с одного IP", "25 автотестов на pytest в CI, Docker и docker-compose с PostgreSQL", "На GitHub Pages сервера нет, поэтому клиент работает в демо-режиме: тот же контракт и правила, данные в браузере"] },
+    tech: ["Двойная запись на один слот невозможна даже при гонке: уникальный ключ в БД, а не проверка в коде", "Цену заказа сервер считает сам: каталог, размеры, добавки, промокод и доставка; цена из браузера не используется", "Валидация телефонов, honeypot от ботов и лимит заявок с одного IP", "50 автотестов на pytest в CI, включая тесты по QA-ревью, Docker и docker-compose с PostgreSQL", "На GitHub Pages сервера нет, поэтому клиент работает в демо-режиме: тот же контракт и правила, данные в браузере"] },
   { slug: "miniapp", title: "Сытый Лис", niche: "Telegram Mini App", cat: "tg", phone: true,
     text: "Доставка еды внутри Telegram: меню, размеры пиццы, промокод, оформление и статус заказа.",
     tags: ["Mini App", "Telegram WebApp API", "Тема Telegram"],
@@ -667,15 +673,16 @@ function animateNumber(to) {
   };
   requestAnimationFrame(step);
 }
-$("calcSend").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(calcText);
-    toast("Расчёт скопирован. Вставьте его в чат");
-  } catch {
-    toast("Откройте чат и опишите проект");
-  }
-  window.open(`https://t.me/${CONFIG.telegram}`, "_blank", "noopener");
+// Чат открываем сразу по нажатию: Safari на iPhone блокирует окна, открытые после await.
+// Текст расчёта передаём в ссылке, а в буфер кладём на случай, если Telegram его не подставит.
+$("calcSend").addEventListener("click", () => {
+  window.open(`https://t.me/${CONFIG.telegram}?text=${encodeURIComponent(calcText)}`, "_blank", "noopener");
+  navigator.clipboard?.writeText(calcText).catch(() => {});
+  $("calcHint").innerHTML = "Если сообщение в чате пустое, нажмите в поле ввода и вставьте: <b>расчёт уже скопирован</b>.";
+  $("calcHint").classList.add("calc__hint--done");
 });
+if (CONFIG.pilotLeft > 0) $("pilotLeft").textContent = `Осталось ${CONFIG.pilotLeft} из 5`;
+else document.querySelector(".pilot-banner").hidden = true;
 renderCalc();
 
 // ---------- Уведомления ----------

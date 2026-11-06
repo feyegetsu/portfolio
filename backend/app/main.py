@@ -2,10 +2,11 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from .config import settings
+from .config import check_secrets, settings
 from .db import Base, SessionLocal, engine
 from .routers import admin, auth, public
 from .seed import seed
@@ -14,6 +15,7 @@ from .sites import SITES
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    check_secrets(settings)
     # Для портфолио таблицы создаются при старте; в продакшене это работа миграций (Alembic)
     Base.metadata.create_all(engine)
     with SessionLocal() as db:
@@ -33,6 +35,17 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+
+@app.middleware("http")
+async def limit_body_size(request: Request, call_next):
+    """Отклоняем слишком большие запросы до разбора JSON: формы и заказы весят единицы килобайт."""
+    length = request.headers.get("content-length")
+    if length and length.isdigit() and int(length) > settings.max_body_bytes:
+        return JSONResponse({"detail": "Слишком большой запрос"}, status_code=413)
+    return await call_next(request)
+
+
 app.include_router(public.router)
 app.include_router(auth.router)
 app.include_router(admin.router)

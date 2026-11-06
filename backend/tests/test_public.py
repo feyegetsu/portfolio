@@ -81,7 +81,7 @@ def test_order_uses_catalog_price_and_stop_list(client, owner):
     body = {"items": items, "name": "Иван", "phone": PHONE, "mode": "pickup"}
     r = client.post("/api/v1/sites/miniapp/orders", json=body)
     assert r.status_code == 201
-    status = client.get(f"/api/v1/sites/miniapp/orders/{r.json()['id']}").json()
+    status = client.get(f"/api/v1/sites/miniapp/orders/{r.json()['token']}").json()
     assert status["total"] == 549 * 2
 
     catalog = client.get("/api/v1/admin/catalog", params={"site": "miniapp"}, headers=owner).json()
@@ -93,15 +93,16 @@ def test_order_uses_catalog_price_and_stop_list(client, owner):
 def test_modified_item_checks_base_stop_list(client, owner):
     catalog = client.get("/api/v1/admin/catalog", params={"site": "miniapp"}, headers=owner).json()
     pepperoni = next(c for c in catalog if c["ref"] == "2")
-    body = {"items": [{"ref": "2:2:0", "name": "Пепперони (35 см)", "qty": 1, "price": 819}], "name": "Иван", "phone": PHONE, "mode": "pickup"}
+    body = {"items": [{"ref": "2:2:0", "name": "Пепперони (35 см)", "qty": 1, "price": 1}], "name": "Иван", "phone": PHONE, "mode": "pickup"}
     r = client.post("/api/v1/sites/miniapp/orders", json=body)
-    assert client.get(f"/api/v1/sites/miniapp/orders/{r.json()['id']}").json()["total"] == 819  # цена с модификатором сохраняется
+    # 649 ₽ пицца + 170 ₽ за 35 см + 90 ₽ двойной сыр: цену с модификаторами считает сервер, а не браузер
+    assert client.get(f"/api/v1/sites/miniapp/orders/{r.json()['token']}").json()["total"] == 649 + 170 + 90
     client.patch(f"/api/v1/admin/catalog/item/{pepperoni['id']}", json={"active": False}, headers=owner)
     assert client.post("/api/v1/sites/miniapp/orders", json=body).status_code == 409
 
 
 def test_delivery_needs_address(client):
-    body = {"items": [{"name": "Букет", "qty": 1, "price": 3000}], "name": "Иван", "phone": PHONE, "mode": "delivery"}
+    body = {"items": [{"ref": "2", "name": "Тюльпаны микс", "qty": 1}], "name": "Иван", "phone": PHONE, "mode": "delivery"}
     assert client.post("/api/v1/sites/florist/orders", json=body).status_code == 422
     body["address"] = "ул. Примерная, 1"
     assert client.post("/api/v1/sites/florist/orders", json=body).status_code == 201
@@ -109,15 +110,16 @@ def test_delivery_needs_address(client):
 
 def test_restaurant_table_is_not_exclusive(client):
     # В ресторане на одно время бронируют несколько столов, в отличие от мастера барбершопа
-    assert _book(client, site="restaurant", resource="Стол на 2").status_code == 201
-    assert _book(client, site="restaurant", resource="Стол на 2").status_code == 201
+    evening = TOMORROW.replace(hour=19)
+    assert _book(client, site="restaurant", resource="Стол на 2", when=evening).status_code == 201
+    assert _book(client, site="restaurant", resource="Стол на 2", when=evening).status_code == 201
 
 
-def test_sushi_catalog_seeded_and_delivery_fee_kept(client):
+def test_sushi_catalog_seeded_and_delivery_counted_by_server(client):
     catalog = client.get("/api/v1/sites/sushi/catalog").json()
     assert len(catalog) == 17
     items = [{"ref": "s4", "name": "Филадельфия", "qty": 1, "price": 1},  # цену берём из каталога
-             {"ref": "delivery", "name": "Доставка", "qty": 1, "price": 199}]  # строки вне каталога сохраняются как есть
+             {"ref": "delivery", "name": "Доставка", "qty": 1, "price": 0}]  # доставку из запроса игнорируем
     body = {"items": items, "name": "Иван", "phone": PHONE, "mode": "delivery", "address": "ул. Примерная, 1"}
     r = client.post("/api/v1/sites/sushi/orders", json=body)
-    assert client.get(f"/api/v1/sites/sushi/orders/{r.json()['id']}").json()["total"] == 590 + 199
+    assert client.get(f"/api/v1/sites/sushi/orders/{r.json()['token']}").json()["total"] == 590 + 199

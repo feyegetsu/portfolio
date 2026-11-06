@@ -165,6 +165,12 @@
       .perks, .how__grid { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
     }
+    @media (max-width: 380px) {
+      .head { gap: 10px; }
+      .logo { font-size: 1.15rem; }
+      .hanko { width: 34px; height: 34px; font-size: 19px; }
+      .cart-btn { padding: 9px 12px; font-size: 14px; }
+    }
     @media (max-width: 420px) {
       .item__b { padding: 10px 12px 12px; }
       .item__foot { flex-direction: column; align-items: stretch; }
@@ -402,9 +408,8 @@
     async function submitOrder(e) {
       e.preventDefault();
       const f = e.target;
-      const items = lines().map((l) => ({ ref: l.ref, name: l.name, qty: l.qty, price: l.price }));
-      const fee = deliveryFee();
-      if (fee) items.push({ ref: "delivery", name: "Доставка", qty: 1, price: fee });
+      // Цены и доставку сервер считает по каталогу сам: отправляем только позиции и количество
+      const items = lines().map((l) => ({ ref: l.ref, name: l.name, qty: l.qty }));
       const comment = [f.time.value, `палочки: ${state.sticks}`].join(" · ");
       let res;
       try {
@@ -412,7 +417,7 @@
           items, name: f.name.value, phone: f.phone.value, mode: state.mode, address: f.address ? f.address.value : "", comment,
         }));
       } catch { return; }
-      state.order = { id: res.id, status: res.status, mode: state.mode };
+      state.order = { id: res.id, token: res.token, status: res.status, mode: state.mode };
       state.cart = {};
       saveCart();
       renderMenu();
@@ -431,7 +436,7 @@
       clearInterval(poll); clearInterval(kitchen);
       poll = setInterval(async () => {
         try {
-          const s = await PortfolioAPI.orderStatus("sushi", state.order.id);
+          const s = await PortfolioAPI.orderStatus("sushi", state.order.token);
           if (s.status !== state.order.status) { state.order.status = s.status; renderTrack(); }
           if (s.status === "done" || s.status === "cancelled") { clearInterval(poll); clearInterval(kitchen); }
         } catch { /* нет сети — спросим позже */ }

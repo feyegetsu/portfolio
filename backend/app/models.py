@@ -1,6 +1,7 @@
+import secrets
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, Index, Integer, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base, utcnow
@@ -54,10 +55,16 @@ class Booking(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+def _order_token() -> str:
+    return secrets.token_urlsafe(16)
+
+
 class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    # Отслеживание заказа идёт по случайному токену: по порядковому id чужие заказы не перебрать
+    token: Mapped[str] = mapped_column(String(32), unique=True, index=True, default=_order_token)
     site: Mapped[str] = mapped_column(String(40), index=True)
     items: Mapped[list] = mapped_column(JSON, default=list)
     total: Mapped[int] = mapped_column(Integer)
@@ -74,6 +81,7 @@ class CatalogItem(Base):
     """Позиция каталога. ref — внешний id позиции на сайте, по нему сайт применяет цену и стоп-лист."""
 
     __tablename__ = "catalog"
+    __table_args__ = (UniqueConstraint("site", "ref", name="uq_catalog_site_ref"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     site: Mapped[str] = mapped_column(String(40), index=True)

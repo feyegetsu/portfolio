@@ -21,6 +21,7 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(password: str, stored: str) -> bool:
+    """Сравнение в постоянное время; для несуществующего пользователя проверяем DUMMY_HASH."""
     try:
         _, iterations, salt_b64, digest_b64 = stored.split("$")
         salt, expected = base64.b64decode(salt_b64), base64.b64decode(digest_b64)
@@ -28,6 +29,10 @@ def verify_password(password: str, stored: str) -> bool:
         return False
     digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, int(iterations))
     return hmac.compare_digest(digest, expected)
+
+
+# Хеш случайного пароля: на нём «проверяем» вход с несуществующим e-mail, чтобы время ответа не отличалось
+DUMMY_HASH = hash_password(secrets.token_urlsafe(16))
 
 
 def create_token(user_id: int) -> str:

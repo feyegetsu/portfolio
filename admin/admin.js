@@ -359,9 +359,10 @@
   $("content").addEventListener("change", async (e) => {
     const t = e.target;
     const d = t.dataset;
-    if (d.lead) { await run(() => api.admin.updateLead(d.lead, t.value), "Статус заявки обновлён"); t.className = `status s-${t.value}`; updateBadges(); }
-    if (d.booking) { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); bookings(); }
-    if (d.order) { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); orders(); }
+    // Если сервер отказал (например, слот уже занят), перерисовываем список: в нём останется настоящий статус
+    if (d.lead) { try { await run(() => api.admin.updateLead(d.lead, t.value), "Статус заявки обновлён"); t.className = `status s-${t.value}`; updateBadges(); } catch { render(); } }
+    if (d.booking) { try { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); } finally { bookings(); } }
+    if (d.order) { try { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); } finally { orders(); } }
     if (d.price) { await run(() => api.admin.updateCatalog(d.price, { price: Number(t.value) }), "Цена сохранена"); }
     if (d.active) { await run(() => api.admin.updateCatalog(d.active, { active: t.checked }), t.checked ? "Снова в продаже" : "Убрано в стоп-лист"); }
   });

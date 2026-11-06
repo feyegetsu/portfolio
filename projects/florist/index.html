@@ -326,13 +326,13 @@
         .sort((a, b) => sort === "asc" ? a.price - b.price : sort === "desc" ? b.price - a.price : b.pop - a.pop);
       $("grid").innerHTML = list.map((p, i) => `
         <article class="product" style="animation-delay:${i * 40}ms">
-          <div class="product__img" style="background:${p.bg}">${p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${p.name}"><button class="quick" data-id="${p.id}">В корзину</button></div>
+          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${p.name}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
           <div class="product__body">
             <h3>${p.name}</h3>
             <p>${p.desc}</p>
             <div class="product__foot">
               <span class="price">${rub(p.price)}${p.old ? `<s>${rub(p.old)}</s>` : ""}</span>
-              <button class="add" data-id="${p.id}" aria-label="В корзину: ${p.name}">+</button>
+              ${p.off ? "" : `<button class="add" data-id="${p.id}" aria-label="В корзину: ${p.name}">+</button>`}
             </div>
           </div>
         </article>`).join("");
@@ -395,19 +395,21 @@
     $("checkout").addEventListener("submit", async e => {
       e.preventDefault();
       const f = e.target.elements;
+      // Цены и доставку сервер считает по своему каталогу: отправляем только букеты и количество
       const items = Object.entries(cart).filter(([, q]) => q > 0).map(([id, qty]) => {
         const p = products.find(x => x.id == id);
-        return { ref: String(p.id), name: p.name, qty, price: p.price };
+        return { ref: String(p.id), name: p.name, qty };
       });
-      const sum = items.reduce((s, i) => s + i.price * i.qty, 0);
-      if (sum < FREE_DELIVERY) items.push({ ref: "delivery", name: "Доставка", qty: 1, price: DELIVERY });
       let res;
       try {
         res = await PortfolioAPI.submit(e.target, () => PortfolioAPI.createOrder("florist", {
           items, name: f["name"].value, phone: f["phone"].value, address: f["address"].value, mode: "delivery",
           comment: `Доставка ${new Date(f["date"].value).toLocaleDateString("ru-RU")}, ${f["slot"].value}`,
         }));
-      } catch { return; }
+      } catch (err) {
+        if (err.status === 409) syncCatalog();  // букет закончился — обновим витрину
+        return;
+      }
       cart = {}; save(); openCart(false);
       toast(`Заказ №${res.id} оформлен! Флорист пришлёт фото букета 📸`);
     });
@@ -426,7 +428,20 @@
       clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2400);
     }
 
+    // Цены и наличие из каталога: флорист меняет их в админке, витрина подхватывает
+    function syncCatalog() {
+      return PortfolioAPI.catalog("florist").then((list) => {
+        for (const c of list) {
+          const p = products.find((x) => String(x.id) === c.ref);
+          if (p) { p.price = c.price; p.off = !c.active; }
+        }
+        for (const id of Object.keys(cart)) if (products.find((x) => x.id == id)?.off) delete cart[id];
+        save();
+        renderGrid(); renderCart();
+      }).catch(() => {});
+    }
     renderGrid(); renderCart();
+    syncCatalog();
   </script>
 </body>
 </html>

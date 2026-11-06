@@ -61,7 +61,7 @@ def test_owner_cannot_delete_self(client, owner):
 def test_stats(client, owner):
     client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "phone": PHONE})
     client.post("/api/v1/sites/florist/orders", json={
-        "items": [{"name": "Букет", "qty": 2, "price": 1500}], "name": "Иван", "phone": PHONE, "mode": "pickup",
+        "items": [{"ref": "8", "name": "Кактус в кашпо", "qty": 2}], "name": "Иван", "phone": PHONE, "mode": "pickup",
     })
     s = client.get("/api/v1/admin/stats", headers=owner).json()
     assert (s["leads"], s["orders"], s["revenue"], s["new_leads"]) == (1, 1, 3000, 1)

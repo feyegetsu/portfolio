@@ -428,6 +428,7 @@
     const pad = (n) => String(n).padStart(2, "0");
     const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     $("bDate").min = isoDay(today);
+    $("bDate").max = isoDay(new Date(Date.now() + 59 * 86400000));  // сервер принимает бронь на 60 дней вперёд
     function fillTimes() {
       const d = new Date($("bDate").value + "T12:00");
       const last = [0, 5, 6].includes(d.getDay()) ? 24 : 23;

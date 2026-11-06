@@ -3,7 +3,7 @@ import os
 # Настройки читаются при импорте приложения, поэтому задаём их до него
 os.environ.update(
     DATABASE_URL="sqlite://",
-    SECRET_KEY="test-secret",
+    SECRET_KEY="test-secret-key-that-is-long-enough-1234567890",
     OWNER_EMAIL="owner@test.dev",
     OWNER_PASSWORD="owner-password",
     RATE_LIMIT="5",
@@ -13,7 +13,7 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.db import Base, SessionLocal, engine  # noqa: E402
-from app.deps import rate_limit  # noqa: E402
+from app.deps import login_limit, rate_limit  # noqa: E402
 from app.main import app  # noqa: E402
 from app.seed import seed  # noqa: E402
 
@@ -27,6 +27,7 @@ def client():
     with SessionLocal() as db:
         seed(db)
     rate_limit.hits.clear()
+    login_limit.hits.clear()
     with TestClient(app) as c:
         yield c
 

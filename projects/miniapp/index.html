@@ -271,7 +271,8 @@
     ];
     const SIZES = [["25 см", -120], ["30 см", 0], ["35 см", 170]];
     const EXTRAS = [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]];
-    const PROMOS = { FOX10: 0.1, LIS: 0.15 };
+    // Публичный промокод для предпросмотра скидки; принимает и проверяет его сервер
+    const PROMOS = { FOX10: 0.1 };
     const FREE_FROM = 1500, DELIVERY = 199;
 
     // Корзина: ключ строки = товар + размер + добавки
@@ -489,21 +490,20 @@
     async function placeOrder() {
       const t = totals();
       const f = $("checkoutForm").elements;
-      // ref «1» — позиция ровно как в каталоге (цену проверит сервер), «1:2:0» — с размером и добавками
+      // ref «1» — позиция каталога, «1:2:0» — с размером и добавками. Цену, промокод и доставку сервер считает сам
       const items = state.cart.map((l) => {
         const it = findItem(l.id);
         const plain = (l.size == null || l.size === 1) && !l.extras.length;
         const mods = [l.size != null && l.size !== 1 ? SIZES[l.size][0] : "", ...l.extras.map((e) => EXTRAS[e][0].toLowerCase())].filter(Boolean);
         return { ref: plain ? String(l.id) : `${l.id}:${l.size ?? ""}:${l.extras.join("-")}`, name: it.name + (mods.length ? ` (${mods.join(", ")})` : ""), qty: l.qty, price: linePrice(l) };
       });
-      if (t.delivery) items.push({ ref: "delivery", name: "Доставка", qty: 1, price: t.delivery });
-      const comment = [f.comment && f.comment.value, state.promo && `Промокод ${state.promo}`, f.time.value === "later" ? "Ко времени" : "", f.pay.value === "cash" ? "Оплата при получении" : "Оплата в Telegram"].filter(Boolean).join(" · ");
+      const comment = [f.comment && f.comment.value, f.time.value === "later" ? "Ко времени" : "", f.pay.value === "cash" ? "Оплата при получении" : "Оплата в Telegram"].filter(Boolean).join(" · ");
       $("mainBtn").textContent = "Отправляем…";
       if (inTG) tg.MainButton.showProgress();
       let res;
       try {
         res = await PortfolioAPI.createOrder("miniapp", {
-          items, name: f.name.value, phone: f.phone.value, address: f.address ? f.address.value : "", mode: state.mode, comment,
+          items, name: f.name.value, phone: f.phone.value, address: f.address ? f.address.value : "", mode: state.mode, comment, promo: state.promo || "",
         });
       } catch (err) {
         toast(err.message);
@@ -514,7 +514,7 @@
         if (inTG) tg.MainButton.hideProgress();
       }
       if (inTG && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-      order = { no: res.id, total: t.total, mode: state.mode, status: res.status };
+      order = { no: res.id, token: res.token, total: t.total, mode: state.mode, status: res.status };
       state.cart = []; state.promo = null;
       history = [];
       go("status", false);
@@ -526,7 +526,8 @@
       clearInterval(pollTimer); clearInterval(kitchenTimer);
       pollTimer = setInterval(async () => {
         try {
-          const s = await PortfolioAPI.orderStatus("miniapp", order.no);
+          const s = await PortfolioAPI.orderStatus("miniapp", order.token);
+          order.total = s.total;  // итог из базы: на экране та же сумма, что у ресторана в админке
           if (s.status !== order.status) {
             order.status = s.status;
             haptic("medium");

@@ -7,7 +7,7 @@
   <meta name="description" content="Делаю сайты для кафе, салонов, клиник, магазинов и Telegram-ботов для заказов и записи. Под ключ, от 5 дней, с поддержкой.">
   <meta name="theme-color" content="#0b0d12">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Сайты и Telegram-боты, которые приводят клиентов">
+  <meta property="og:title" content="Сайты и Telegram-боты, которые принимают заказы и записи">
   <meta property="og:description" content="Сайты для кафе, салонов, клиник и магазинов. Telegram-боты для заказов и записи. Под ключ, от 5 дней.">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:url" content="https://feyegetsu.github.io/portfolio/">
@@ -66,7 +66,7 @@
         <a href="#calc">Стоимость</a>
         <a href="#faq">Вопросы</a>
       </nav>
-      <a href="#contact" class="btn btn--small">Обсудить проект</a>
+      <a href="#contact" class="btn btn--small header__cta" data-contact="telegram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2 2 6 3-4 5 4 2-15z"/><path d="m9 13 8-6"/></svg><span>Обсудить проект</span></a>
       <button class="burger" id="burger" aria-label="Меню" aria-expanded="false" aria-controls="nav"><span></span><span></span></button>
     </div>
   </header>
@@ -79,12 +79,13 @@
       <div class="container hero__inner">
         <div class="hero__text">
           <p class="badge"><span class="dot"></span> Беру новые проекты</p>
-          <h1>Сайты и Telegram-боты, которые <span class="grad">приводят клиентов</span></h1>
+          <h1>Сайты и Telegram-боты, которые <span class="grad">принимают заказы и записи</span></h1>
           <p class="hero__lead">Делаю под ключ сайты для кафе, салонов, клиник, автосервисов и магазинов. Плюс Telegram-боты для заказов, записи и уведомлений. Вы получаете рабочий инструмент для продаж, а не просто «красивую картинку».</p>
           <div class="hero__actions">
             <a href="#works" class="btn">Смотреть работы</a>
             <a href="#calc" class="btn btn--ghost">Рассчитать стоимость</a>
           </div>
+          <a class="hero__direct" href="#contact" data-contact="telegram" target="_blank" rel="noopener">или сразу напишите мне в Telegram →</a>
           <ul class="hero__facts">
             <li><b data-count="15">15</b><span>рабочих демо-проектов</span></li>
             <li><b>от 5 дней</b><span>срок запуска</span></li>
@@ -254,7 +255,7 @@
         <p class="eyebrow">Стоимость</p>
         <h2>Рассчитайте проект за минуту</h2>
         <p class="section__lead">Ориентир по цене. Точную сумму назову после короткого разговора о задаче.</p>
-        <div class="pilot-banner"><b>−25% первым пяти клиентам</b><span>Пилотная цена в обмен на честный отзыв о работе. Предоплата всего 30%.</span></div>
+        <div class="pilot-banner"><b>−25% первым пяти клиентам</b><span>Пилотная цена в обмен на честный отзыв о работе. Предоплата всего 30%.</span><em id="pilotLeft"></em></div>
         <div class="calc">
           <div class="calc__form">
             <fieldset>
@@ -282,7 +283,7 @@
             <ul class="calc__list" id="calcList"></ul>
             <p class="calc__pay" id="calcPay"></p>
             <button class="btn btn--full" id="calcSend" type="button">Отправить расчёт в Telegram</button>
-            <small class="calc__hint" id="calcHint">Скопирую расчёт и открою чат со мной</small>
+            <small class="calc__hint" id="calcHint">Откроется чат со мной, расчёт уже будет в сообщении</small>
             <p class="calc__support">Поддержка после бесплатного месяца: <b>1 500–2 500 ₽/мес</b>. Хостинг, обновления и мелкие правки.</p>
           </div>
         </div>
@@ -344,7 +345,7 @@
         <p>Напишите пару слов о вашем бизнесе. Отвечу в течение пары часов и предложу решение.</p>
         <div class="contact__links">
           <a href="#" class="btn" data-contact="telegram" target="_blank" rel="noopener">Написать в Telegram</a>
-          <a href="#" class="btn btn--ghost" data-contact="github" target="_blank" rel="noopener">GitHub</a>
+          <a href="mailto:feyegetsu.dev@yandex.ru" class="btn btn--ghost">Написать на почту</a>
         </div>
         <p class="contact__mail">Почта: <a data-contact="email" href="mailto:feyegetsu.dev@yandex.ru">feyegetsu.dev@yandex.ru</a></p>
       </div>
@@ -355,7 +356,7 @@
   <footer class="footer">
     <div class="container footer__inner">
       <span>© <span id="year"></span> feyegetsu.dev</span>
-      <a href="#top">Наверх ↑</a>
+      <span class="footer__links"><a href="#" data-contact="github" target="_blank" rel="noopener">Код на GitHub</a><a href="#top">Наверх ↑</a></span>
     </div>
   </footer>
 
@@ -366,6 +367,7 @@
     </div>
   </dialog>
 
+  <a class="sticky-cta" id="stickyCta" href="#contact" data-contact="telegram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2 2 6 3-4 5 4 2-15z"/><path d="m9 13 8-6"/></svg>Написать в Telegram</a>
   <nav class="rail" id="rail" aria-label="Разделы страницы">
     <span class="rail__line" aria-hidden="true"><i></i></span>
     <a href="#top" data-sec="hero"><span>Обо мне</span><i></i></a>

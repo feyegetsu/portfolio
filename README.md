@@ -8,7 +8,7 @@
 [![Assets](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml)
 ![Frontend](https://img.shields.io/badge/frontend-HTML%20·%20CSS%20·%20JS-7c5cff)
 ![Backend](https://img.shields.io/badge/backend-FastAPI%20·%20PostgreSQL-22d3ee)
-![Tests](https://img.shields.io/badge/tests-25%20passed-34d399)
+![Tests](https://img.shields.io/badge/tests-50%20passed-34d399)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ### [Открыть портфолио →](https://feyegetsu.github.io/portfolio/)
@@ -48,7 +48,8 @@
 - **API на FastAPI**: заявки, запись на время без двойных записей, заказы с ценами из каталога, статистика, выгрузка в CSV.
 - **Роли и доступ**: владелец, администратор, сотрудник; сотрудник видит только свои сайты.
 - **Защита форм**: валидация телефона, honeypot, лимит заявок с одного IP.
-- **25 автотестов** на pytest, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
+- **50 автотестов** на pytest, включая регрессионные тесты по независимому QA-ревью, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
+- **Цены считает сервер**: размеры, добавки, промокод и доставка; подменить цену из браузера нельзя.
 - **Демо-режим.** На GitHub Pages сервер запустить нельзя, поэтому клиент [`api.js`](projects/shared/api.js) повторяет контракт и правила API прямо в браузере. С настоящим сервером он работает через параметр `?api=`.
 
 Подробнее, со схемой и списком эндпоинтов: [backend/README.md](backend/README.md).

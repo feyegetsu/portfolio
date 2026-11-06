@@ -9,23 +9,32 @@
  *            а заявка с сайта появляется в админке, открытой в соседней вкладке, без перезагрузки.
  */
 (() => {
+  // Те же правила, что в backend/app/sites.py: демо-режим ведёт себя как настоящий сервер
+  const FITNESS_CLASSES = { "Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16 };
+  const MINIAPP_PRICING = {
+    delivery: 199, freeFrom: 1500, sized: ["Пицца"], promos: { FOX10: 10 },
+    sizes: [["25 см", -120], ["30 см", 0], ["35 см", 170]],
+    extras: [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]],
+  };
   const SITES = [
     { slug: "cafe", name: "Кофейня «Зерно»", leads: true },
-    { slug: "florist", name: "Пион & Ко", leads: true, orders: true },
-    { slug: "barbershop", name: "Барбершоп BLADE", bookings: true, exclusive: true },
+    { slug: "florist", name: "Пион & Ко", leads: true, orders: true, catalog: true, pricing: { delivery: 390, freeFrom: 5000 } },
+    { slug: "barbershop", name: "Барбершоп BLADE", bookings: true, exclusive: true, step: 60, hours: [10, 21], horizon: 30, resources: { "Артём": null, "Денис": null, "Игорь": null } },
     { slug: "dental", name: "Стоматология «Белая линия»", leads: true },
-    { slug: "fitness", name: "Фитнес-клуб PULSE", leads: true, bookings: true },
+    { slug: "fitness", name: "Фитнес-клуб PULSE", leads: true, bookings: true, hours: [7, 22], horizon: 14, resources: FITNESS_CLASSES },
     { slug: "autoservice", name: "Автосервис «МоторЛайн»", leads: true },
     { slug: "realty", name: "Агентство «Квадрат»", leads: true },
     { slug: "saas", name: "Taskly", leads: true },
-    { slug: "miniapp", name: "Сытый Лис", orders: true, catalog: true },
-    { slug: "restaurant", name: "Ресторан «Терруар»", leads: true, bookings: true },
-    { slug: "sushi", name: "Суши «Кайсэн»", orders: true, catalog: true },
-    { slug: "gastrobar", name: "Гастробар «Соль и Солод»", leads: true, bookings: true },
-    { slug: "bar", name: "Бар «Полночь»", leads: true, bookings: true },
+    { slug: "miniapp", name: "Сытый Лис", orders: true, catalog: true, pricing: MINIAPP_PRICING },
+    { slug: "restaurant", name: "Ресторан «Терруар»", leads: true, bookings: true, hours: [18, 23], horizon: 30, capacity: 10 },
+    { slug: "sushi", name: "Суши «Кайсэн»", orders: true, catalog: true, pricing: { delivery: 199, freeFrom: 1500 } },
+    { slug: "gastrobar", name: "Гастробар «Соль и Солод»", leads: true, bookings: true, hours: [12, 24], capacity: 20 },
+    { slug: "bar", name: "Бар «Полночь»", leads: true, bookings: true, hours: [19, 2], horizon: 30, capacity: 8 },
   ];
   // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте
   const SUSHI_MENU = [["s1", "Сет «Кайсэн»", "Сеты", 2490], ["s2", "Сет «Филадельфия»", "Сеты", 1890], ["s3", "Сет для двоих", "Сеты", 1390], ["s4", "Филадельфия", "Роллы", 590], ["s5", "Калифорния", "Роллы", 490], ["s6", "Радуга", "Роллы", 650], ["s7", "Маки с огурцом", "Роллы", 190], ["s8", "Красный дракон", "Роллы", 690], ["s9", "Запечённый с лососем", "Запечённые", 560], ["s10", "Запечённый с крабом", "Запечённые", 520], ["s11", "Нигири с лососем", "Нигири и сашими", 220], ["s12", "Сашими-ассорти", "Нигири и сашими", 990], ["s13", "Нигири микс", "Нигири и сашими", 690], ["s14", "Рамен тонкоцу", "Горячее", 590], ["s15", "Острый рамен с курицей", "Горячее", 560], ["s16", "Гёдза со свининой", "Горячее", 390], ["s17", "Якитори", "Горячее", 450]];
+  const FLORIST_MENU = [["1", "Утренний сад", "Авторские", 4900], ["2", "Тюльпаны микс", "Монобукеты", 3200], ["3", "Классика", "Розы", 8900], ["4", "Солнечный день", "Авторские", 2700], ["5", "Яркое настроение", "Авторские", 3900], ["6", "Нежность", "Авторские", 5400], ["7", "Ромашки", "Монобукеты", 1900], ["8", "Кактус в кашпо", "Растения", 1500], ["9", "Розовые тюльпаны", "Монобукеты", 2600], ["10", "Лилии", "Монобукеты", 3300], ["11", "Суккулент", "Растения", 1200], ["12", "Пионовидные розы", "Розы", 5900]];
+  const LATER_CATALOGS = { sushi: SUSHI_MENU, florist: FLORIST_MENU };
   const SITE = Object.fromEntries(SITES.map((s) => [s.slug, s]));
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
 
@@ -41,6 +50,70 @@
     if (!/^\+?\d{10,15}$/.test(cleaned)) throw new ApiError("Некорректный номер телефона", 422);
     return cleaned;
   };
+  const normalizeEmail = (v) => {
+    const e = String(v || "").trim().toLowerCase();
+    if (e && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(e)) throw new ApiError("Некорректный e-mail", 422);
+    return e;
+  };
+
+  // Расчёт заказа как на сервере (backend/app/pricing.py): цена из каталога, размеры, добавки, промокод, доставка
+  function priceOrder(rules, catalog, items, mode, promo) {
+    const bad = (m) => new ApiError(m, 422);
+    const lines = items.filter((i) => !["delivery", "promo"].includes(String(i.ref))).map((i) => {
+      const parts = String(i.ref || "").split(":");
+      const base = catalog.find((c) => c.ref === parts[0]);
+      if (!base) throw bad(`Позиции «${i.name || i.ref}» нет в меню, обновите страницу`);
+      if (!base.active) throw new ApiError(`«${base.name}» закончилось`, 409);
+      const qty = Number(i.qty);
+      if (!Number.isInteger(qty) || qty < 1 || qty > 99) throw bad("Количество от 1 до 99");
+      let price = base.price;
+      const mods = [];
+      if (parts.length > 1) {
+        if (parts.length > 3 || !(rules.sized || []).includes(base.category)) throw bad(`У «${base.name}» нет размеров и добавок`);
+        const [, size, extras = ""] = parts;
+        if (size) {
+          if (!/^\d+$/.test(size) || +size >= rules.sizes.length) throw bad(`Некорректный размер для «${base.name}»`);
+          price += rules.sizes[+size][1];
+          if (rules.sizes[+size][1]) mods.push(rules.sizes[+size][0]);
+        }
+        if (extras) {
+          const chosen = extras.split("-");
+          if (new Set(chosen).size !== chosen.length || !chosen.every((e) => /^\d+$/.test(e) && +e < rules.extras.length)) throw bad(`Некорректные добавки для «${base.name}»`);
+          for (const e of chosen) { price += rules.extras[+e][1]; mods.push(rules.extras[+e][0].toLowerCase()); }
+        }
+      }
+      return { ref: String(i.ref), name: base.name + (mods.length ? ` (${mods.join(", ")})` : ""), qty, price };
+    });
+    if (!lines.length) throw bad("Корзина пуста");
+    const subtotal = lines.reduce((t, l) => t + l.price * l.qty, 0);
+    let discount = 0;
+    const code = String(promo || "").trim().toUpperCase();
+    if (code) {
+      const percent = (rules.promos || {})[code];
+      if (!percent) throw bad("Такого промокода нет");
+      discount = Math.round((subtotal * percent) / 100);
+      lines.push({ ref: "promo", name: `Промокод ${code} (−${percent}%)`, qty: 1, price: -discount });
+    }
+    if (mode === "delivery" && rules.delivery && subtotal - discount < rules.freeFrom) lines.push({ ref: "delivery", name: "Доставка", qty: 1, price: rules.delivery });
+    return lines;
+  }
+
+  // Правила записи как на сервере: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу
+  function checkSlot(s, resource, startsAt) {
+    const bad = (m) => new ApiError(m, 422);
+    const t = new Date(startsAt);
+    if (Number.isNaN(+t)) throw bad("Некорректное время");
+    if (t < new Date(Date.now() - 5 * 60000)) throw bad("Это время уже прошло");
+    if (t > new Date(Date.now() + (s.horizon || 60) * 86400000)) throw bad(`Запись открыта на ${s.horizon || 60} дней вперёд`);
+    if (t.getMinutes() % (s.step || 30)) throw bad("Выберите время из расписания");
+    const m = t.getHours() * 60 + t.getMinutes();
+    const [open, close] = (s.hours || [10, 22]).map((h) => h * 60);
+    if (!(open < close ? m >= open && m < close : m >= open || m < close)) throw bad("В это время мы закрыты");
+    if (s.resources && !(resource in s.resources)) throw bad("Такого мастера или занятия нет");
+  }
+  const newToken = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
+  // Текст, похожий на формулу, Excel покажет как текст, а не выполнит
+  const csvSafe = (v) => (/^[=+\-@\t\r]/.test(String(v ?? "")) ? "'" + v : String(v ?? ""));
 
   // ---------- Выбор режима ----------
   const store = {
@@ -48,10 +121,21 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch {} },
     del(k) { try { localStorage.removeItem(k); } catch {} },
   };
+  // Адрес API: в проекте клиента он зашит в window.PORTFOLIO_API, и параметр ссылки игнорируется.
+  // В портфолио ?api= работает, но чужой адрес подключается только после явного подтверждения:
+  // иначе ссылка вида …/admin/?api=https://evil.example увела бы логин и пароль на чужой сервер
   const qp = new URLSearchParams(location.search).get("api");
-  if (qp === "off") store.del("pf-api");
-  else if (qp) store.set("pf-api", qp.replace(/\/$/, ""));
-  const BASE = (qp !== "off" && (store.get("pf-api") || window.PORTFOLIO_API)) || "";
+  const isLocal = (u) => { try { return ["localhost", "127.0.0.1", "[::1]"].includes(new URL(u).hostname); } catch { return false; } };
+  const validUrl = (u) => { try { return ["http:", "https:"].includes(new URL(u).protocol); } catch { return false; } };
+  if (!window.PORTFOLIO_API) {
+    if (qp === "off") store.del("pf-api");
+    else if (qp && validUrl(qp)) {
+      const url = qp.replace(/\/$/, "");
+      const ok = isLocal(url) || confirm(`Подключить сайт к серверу ${new URL(url).host}?\n\nЗаявки и пароль от админки будут уходить на этот адрес. Нажимайте «ОК», только если это ваш сервер.`);
+      if (ok) store.set("pf-api", url);
+    }
+  }
+  const BASE = window.PORTFOLIO_API || (qp !== "off" && store.get("pf-api")) || "";
 
   // =====================================================================
   // remote: настоящий бэкенд
@@ -179,9 +263,13 @@
 
     // Каталоги сайтов, добавленных позже: дописываем в уже сохранённые демо-данные, не трогая остальное
     function addCatalogs(db) {
-      if (db.catalog.some((c) => c.site === "sushi")) return false;
-      for (const [ref, name, category, price] of SUSHI_MENU) db.catalog.push({ id: db.seq++, site: "sushi", ref, name, category, price, active: true });
-      return true;
+      let added = false;
+      for (const [slug, menu] of Object.entries(LATER_CATALOGS)) {
+        if (db.catalog.some((c) => c.site === slug)) continue;
+        for (const [ref, name, category, price] of menu) db.catalog.push({ id: db.seq++, site: slug, ref, name, category, price, active: true });
+        added = true;
+      }
+      return added;
     }
 
     function load() {
@@ -241,6 +329,15 @@
       return clone(item);
     }
 
+    // Слот занят: у мастера одна запись на время, у занятия и заведения — по числу мест
+    function checkTaken(db, s, resource, startsAt, excludeId) {
+      const same = db.bookings.filter((x) => x.site === s.slug && x.starts_at === startsAt && x.status !== "cancelled" && x.id !== excludeId
+        && (!s.resources || x.resource === resource));
+      if (s.exclusive && same.length) throw new ApiError("Это время уже заняли, выберите другое", 409);
+      const capacity = s.resources ? s.resources[resource] : s.capacity;
+      if (capacity && same.length >= capacity) throw new ApiError("На это время мест уже нет", 409);
+    }
+
     const LEAD_STATUSES = ["new", "in_progress", "done", "cancelled"];
     const BOOKING_STATUSES = ["confirmed", "done", "cancelled"];
     const ORDER_STATUSES = ["new", "cooking", "delivering", "done", "cancelled"];
@@ -252,9 +349,11 @@
       createLead: (slug, b) => later(() => {
         site(slug, "leads");
         const phone = b.phone ? normalizePhone(b.phone) : "";
-        if (!phone && !b.email) throw new ApiError("Укажите телефон или e-mail", 422);
+        const email = normalizeEmail(b.email);
+        if (!phone && !email) throw new ApiError("Укажите телефон или e-mail", 422);
+        if (JSON.stringify(b.data || {}).length > 4000) throw new ApiError("Слишком много данных в заявке", 422);
         const db = load();
-        const lead = { id: db.seq++, site: slug, kind: b.kind, name: b.name || "", phone, email: b.email || "", message: b.message || "", data: b.data || {}, status: "new", created_at: iso(now()) };
+        const lead = { id: db.seq++, site: slug, kind: b.kind, name: b.name || "", phone, email, message: b.message || "", data: b.data || {}, status: "new", created_at: iso(now()) };
         db.leads.push(lead);
         save(db);
         return { id: lead.id, status: lead.status };
@@ -270,11 +369,9 @@
         const phone = normalizePhone(b.phone);
         if (!b.name) throw new ApiError("Укажите имя", 422);
         const startsAt = String(b.starts_at).slice(0, 16) + ":00";
-        if (new Date(startsAt) < new Date(Date.now() - 5 * 60000)) throw new ApiError("Это время уже прошло", 422);
+        checkSlot(s, b.resource, startsAt);
         const db = load();
-        if (s.exclusive && db.bookings.some((x) => x.site === slug && x.resource === b.resource && x.starts_at === startsAt && x.status !== "cancelled")) {
-          throw new ApiError("Это время уже заняли, выберите другое", 409);
-        }
+        checkTaken(db, s, b.resource, startsAt);
         const booking = { id: db.seq++, site: slug, resource: b.resource, service: b.service || "", starts_at: startsAt, name: b.name, phone, status: "confirmed", created_at: iso(now()) };
         db.bookings.push(booking);
         save(db);
@@ -286,25 +383,18 @@
         if (!b.items || !b.items.length) throw new ApiError("Корзина пуста", 422);
         if ((b.mode || "delivery") === "delivery" && !String(b.address || "").trim()) throw new ApiError("Укажите адрес доставки", 422);
         const db = load();
-        const items = clone(b.items);
-        if (s.catalog) {
-          // ref «1» — позиция как в каталоге, «1:2:0» — с модификаторами (размер, добавки): наличие проверяем по базовой позиции
-          for (const item of items) {
-            const ref = String(item.ref || "");
-            const base = db.catalog.find((c) => c.site === slug && c.ref === ref.split(":")[0]);
-            if (base && !base.active) throw new ApiError(`«${base.name}» закончилось`, 409);
-            if (base && base.ref === ref) item.price = base.price;
-          }
-        }
-        const order = { id: db.seq++, site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name: b.name, phone, address: b.address || "", mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
+        // Цены, доставку и промокод считаем по каталогу, как сервер: цена из запроса не используется
+        const items = priceOrder(s.pricing, db.catalog.filter((c) => c.site === slug), b.items, b.mode || "delivery", b.promo);
+        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name: b.name, phone, address: b.address || "", mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
         db.orders.push(order);
         save(db);
-        return { id: order.id, status: order.status };
+        return { id: order.id, status: order.status, token: order.token };
       }),
-      orderStatus: (slug, id) => later(() => {
-        const o = load().orders.find((x) => x.id === Number(id) && x.site === slug);
+      // Статус по секретному токену из ответа на заказ, а не по порядковому номеру
+      orderStatus: (slug, token) => later(() => {
+        const o = load().orders.find((x) => x.token && x.token === String(token) && x.site === slug);
         if (!o) throw new ApiError("Заказ не найден", 404);
-        return { id: o.id, status: o.status, total: o.total };
+        return { id: o.id, status: o.status, total: o.total, items: clone(o.items) };
       }),
       catalog: (slug) => later(() => { site(slug, "catalog"); return clone(load().catalog.filter((c) => c.site === slug)); }),
 
@@ -333,7 +423,14 @@
           if (f.upcoming) list = list.filter((b) => b.status === "confirmed" && new Date(b.starts_at) > new Date(Date.now() - 12 * 3600e3));
           return page(list, f);
         }),
-        updateBooking: (id, status) => later(() => { checkStatus(status, BOOKING_STATUSES); return patch("bookings", id, { status }, requireUser()); }),
+        updateBooking: (id, status) => later(() => {
+          checkStatus(status, BOOKING_STATUSES);
+          const u = requireUser();
+          const b = load().bookings.find((x) => x.id === Number(id));
+          // Возврат отменённой записи: слот мог уже занять другой клиент
+          if (b && b.status === "cancelled" && status !== "cancelled") checkTaken(load(), SITE[b.site], b.resource, b.starts_at, b.id);
+          return patch("bookings", id, { status }, u);
+        }),
         orders: (f = {}) => later(() => {
           let list = scoped(load().orders, requireUser(), f.site);
           if (f.status) list = list.filter((o) => o.status === f.status);
@@ -346,6 +443,7 @@
           site(slug, "catalog");
           if (!allowed(u).includes(slug)) throw new ApiError("Нет доступа к этому сайту", 403);
           const db = load();
+          if (db.catalog.some((c) => c.site === slug && c.ref === b.ref)) throw new ApiError("Позиция с таким кодом уже есть в каталоге", 409);
           const item = { id: db.seq++, site: slug, ref: b.ref, name: b.name, category: b.category || "", price: Number(b.price), active: b.active !== false };
           db.catalog.push(item);
           save(db);
@@ -416,7 +514,7 @@
           const rows = scoped(load().leads, requireUser(), f.site).sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
           const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
           const lines = [["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"].join(";")];
-          for (const r of rows) lines.push([r.id, new Date(r.created_at).toLocaleString("ru-RU"), SITE[r.site].name, r.kind, r.name, r.phone, r.email, r.message, r.status].map(cell).join(";"));
+          for (const r of rows) lines.push([r.id, new Date(r.created_at).toLocaleString("ru-RU"), SITE[r.site].name, ...[r.kind, r.name, r.phone, r.email, r.message].map(csvSafe), r.status].map(cell).join(";"));
           return "﻿" + lines.join("\n");
         }),
       },
@@ -504,7 +602,7 @@
     dlg.innerHTML = `<form method="dialog">
       <button class="pf-ask__x" value="cancel" formnovalidate aria-label="Закрыть">✕</button>
       <p class="pf-ask__title">${title}</p>
-      <p class="pf-ask__sub">Оставьте контакты, и запись сохранится. В следующий раз заполнять не придётся.</p>
+      <p class="pf-ask__sub">Оставьте контакты, и запись сохранится. В следующий раз заполнять не придётся.${api.mode === "demo" ? " Это демо: запись попадёт в демо-админку." : ""}</p>
       <input name="name" required placeholder="Имя" autocomplete="name" aria-label="Имя">
       <input name="phone" type="tel" required placeholder="Телефон" autocomplete="tel" aria-label="Телефон">
       <button class="pf-ask__ok" value="ok">Записаться</button>
@@ -530,6 +628,33 @@
     dlg.addEventListener("close", () => finish(dlg.returnValue === "ok"));
     dlg.showModal();
   });
+
+  // ---------- Плашка «это демо» над формами ----------
+  // Посетитель портфолио мог бы принять форму демо-стоматологии за настоящую и оставить заявку «в никуда»
+  if (api.mode === "demo" && /\/projects\//.test(location.pathname) && !new URLSearchParams(location.search).has("embed")) {
+    const css = document.createElement("style");
+    css.textContent = `.pf-demo-note { display: block; margin: 0 0 12px; padding: 8px 12px; border-radius: 10px; font: 500 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: rgba(127, 127, 127, .12); color: inherit; opacity: .85; text-align: left; }
+      .pf-demo-note a { color: inherit; text-decoration: underline; font-weight: 700; }`;
+    document.head.appendChild(css);
+    const note = () => {
+      const p = document.createElement("p");
+      p.className = "pf-demo-note";
+      p.innerHTML = 'Это демо: заявка попадёт в <a href="../../admin/" target="_blank" rel="noopener">демо-админку</a>. Заказать такой сайт — <a href="https://t.me/feyegetsu" target="_blank" rel="noopener">в Telegram</a>.';
+      return p;
+    };
+    const mark = (root) => root.querySelectorAll && root.querySelectorAll("form").forEach((f) => {
+      // Поиск и фильтры — не заявки; формы в окнах (dialog) помечаем тоже
+      if (f.dataset.pfNote || f.matches("[role=search]") || f.querySelector('input[type="search"]') || f.closest(".pf-ask")) return;
+      f.dataset.pfNote = "1";
+      f.prepend(note());
+    });
+    const start = () => {
+      mark(document);
+      new MutationObserver((list) => list.forEach((m) => m.addedNodes.forEach((n) => n.nodeType === 1 && (n.tagName === "FORM" ? mark(n.parentNode || document) : mark(n))))).observe(document.body, { childList: true, subtree: true });
+    };
+    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", start) : start();
+  }
 
   window.PortfolioAPI = api;
 })();

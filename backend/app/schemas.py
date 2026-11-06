@@ -1,5 +1,6 @@
 """Схемы запросов и ответов. Всё, что приходит с публичных форм, валидируется здесь."""
 
+import json
 import re
 from datetime import datetime
 from typing import Annotated, Generic, Literal, TypeVar
@@ -7,6 +8,8 @@ from typing import Annotated, Generic, Literal, TypeVar
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 PHONE_RE = re.compile(r"^\+?\d{10,15}$")
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+DATA_MAX_CHARS = 4000  # доп. поля заявки: этого хватает любой форме с запасом
 T = TypeVar("T")
 
 Name = Annotated[str, Field(min_length=1, max_length=100)]
@@ -44,6 +47,21 @@ class LeadIn(Honeypot):
     def _phone(cls, v: str) -> str:
         return normalize_phone(v) if v else v
 
+    @field_validator("email")
+    @classmethod
+    def _email(cls, v: str) -> str:
+        v = v.strip()
+        if v and not EMAIL_RE.match(v):
+            raise ValueError("Некорректный e-mail")
+        return v.lower()
+
+    @field_validator("data")
+    @classmethod
+    def _data(cls, v: dict) -> dict:
+        if len(json.dumps(v, ensure_ascii=False)) > DATA_MAX_CHARS:
+            raise ValueError("Слишком много данных в заявке")
+        return v
+
 
 class BookingIn(Honeypot):
     resource: Annotated[str, Field(min_length=1, max_length=100)]
@@ -59,10 +77,11 @@ class BookingIn(Honeypot):
 
 
 class OrderItem(BaseModel):
-    ref: str = Field("", max_length=60)
-    name: Annotated[str, Field(min_length=1, max_length=200)]
+    ref: Annotated[str, Field(min_length=1, max_length=60)]
+    name: str = Field("", max_length=200)
     qty: Annotated[int, Field(ge=1, le=99)]
-    price: Annotated[int, Field(ge=0, le=1_000_000)]
+    # Цену браузер может прислать для наглядности, но сервер её не использует: считает по каталогу
+    price: int = Field(0, ge=0, le=1_000_000)
 
 
 class OrderIn(Honeypot):
@@ -72,6 +91,7 @@ class OrderIn(Honeypot):
     address: str = Field("", max_length=300)
     mode: Literal["delivery", "pickup"] = "delivery"
     comment: str = Field("", max_length=1000)
+    promo: str = Field("", max_length=30)
 
     @field_validator("phone")
     @classmethod
@@ -128,6 +148,7 @@ class OrderStatusOut(ORM):
     id: int
     status: str
     total: int
+    items: list[dict]
 
 
 class CatalogOut(ORM):
@@ -143,6 +164,8 @@ class CatalogOut(ORM):
 class Created(BaseModel):
     id: int
     status: str
+    # Секретный токен для отслеживания заказа: по порядковому номеру чужой заказ не посмотреть
+    token: str | None = None
 
 
 class Page(BaseModel, Generic[T]):
