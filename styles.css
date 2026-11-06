@@ -254,7 +254,7 @@ h2 + .grid, h2 + .steps, h2 + .stack { margin-top: 36px; }
   border-radius: var(--radius); overflow: hidden; transition: transform .3s var(--ease), border-color .3s, box-shadow .3s;
 }
 .work:hover { transform: translateY(-6px); border-color: rgba(124, 92, 255, .7); box-shadow: 0 30px 50px -30px rgba(124, 92, 255, .5); }
-.work__preview { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #0e1118; display: block; border-bottom: 1px solid var(--line); }
+.work__preview { position: relative; aspect-ratio: 16 / 10; overflow: hidden; clip-path: inset(0 round var(--radius) var(--radius) 0 0); background: #0e1118; display: block; border-bottom: 1px solid var(--line); }
 .work__preview iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 800px; border: 0; transform-origin: 0 0; pointer-events: none; background: #fff; }
 .work__open {
   position: absolute; inset: 0; display: grid; place-items: center; font-weight: 600; font-size: 15px;
@@ -301,11 +301,15 @@ body.lock { overflow: hidden; }
 .case__devices button:disabled { opacity: .35; cursor: not-allowed; }
 .frame { position: relative; overflow: hidden; background: #fff; transition: width .45s var(--ease), height .45s var(--ease), border-radius .45s var(--ease); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .8); }
 .frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+/* Экран внутри рамки. Уменьшенный через transform iframe Chrome рисует отдельным слоем,
+   и обычный overflow: hidden со скруглением его не обрезает, поэтому режем clip-path */
+.frame { --screen-r: 0px; }
+.frame__screen { position: absolute; inset: 0; overflow: hidden; border-radius: var(--screen-r); clip-path: inset(0 round var(--screen-r)); background: #fff; transition: border-radius .45s var(--ease); }
 .case__stage, .case__text { min-width: 0; }
 .frame--desktop iframe { position: absolute; top: 0; left: 0; }
-.frame--desktop { width: 100%; height: min(620px, 70vh); border-radius: 14px; border: 1px solid var(--line); border-top: 28px solid #1d2230; }
+.frame--desktop { width: 100%; height: min(620px, 70vh); border-radius: 14px; border: 1px solid var(--line); border-top: 28px solid #1d2230; --screen-r: 0 0 13px 13px; }
 .frame--desktop::before { content: "● ● ●"; position: absolute; top: -24px; left: 12px; font-size: 9px; letter-spacing: 3px; color: #4a5266; }
-.frame--phone { width: 375px; max-width: 100%; height: min(720px, 72vh); border-radius: 44px; border: 10px solid #0b0b0d; outline: 2px solid #2b2f3a; }
+.frame--phone { width: 375px; max-width: 100%; height: min(720px, 72vh); border-radius: 44px; border: 10px solid #0b0b0d; outline: 2px solid #2b2f3a; --screen-r: 34px; }
 .case__bot { height: 100%; background: #0e1621; padding: 24px 16px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
 .case__bot .mini-msg { white-space: pre-line; }
 .case__bot .btn { align-self: center; margin-top: 14px; }
@@ -356,7 +360,7 @@ body.lock { overflow: hidden; }
 @media (max-width: 760px) {
   /* На телефоне сайт показываем во всю ширину, без «рамки компьютера», и даём открыть его отдельно */
   .case__devices, .case__hint { display: none; }
-  .frame--phone, .frame--desktop { width: 100%; height: 64vh; border-radius: 22px; border: 1px solid var(--line); outline: 0; border-top-width: 1px; }
+  .frame--phone, .frame--desktop { width: 100%; height: 64vh; border-radius: 22px; border: 1px solid var(--line); outline: 0; border-top-width: 1px; --screen-r: 21px; }
   .frame--desktop::before { display: none; }
   .case__open { display: flex; width: 100%; }
   .case__site { display: none !important; }

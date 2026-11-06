@@ -260,11 +260,11 @@ function openCase(slug, push = true) {
         <button data-device="desktop" aria-pressed="${device === "desktop"}" ${p.bot ? "disabled" : ""}>Компьютер</button>
         <button data-device="phone" aria-pressed="${device === "phone"}">Телефон</button>
       </div>
-      <div class="frame frame--${device}" id="caseFrame">
+      <div class="frame frame--${device}" id="caseFrame"><div class="frame__screen">
         ${p.bot
           ? `<div class="case__bot"><div class="mini-msg">Привет! 👋 Я бот кофейни «Зерно»</div><div class="mini-msg mini-msg--me">📋 Меню</div><div class="mini-msg">☕ Кофе\n• Капучино — 220 ₽\n• Латте — 240 ₽</div><div class="mini-msg mini-msg--me">✅ Оформить</div><div class="mini-msg">🎉 Заказ №4821 принят!</div><a class="btn btn--small" href="#bot" data-close>Попробовать симуляцию ↓</a></div>`
           : `<iframe src="${caseUrl(p)}${p.phone ? "?embed" : ""}" title="Демо: ${p.title}" loading="lazy"></iframe>`}
-      </div>
+      </div></div>
       <p class="case__hint">${p.bot ? "Живая симуляция бота ниже на странице" : "Сайт живой: можно кликать прямо здесь"}</p>
       ${p.bot ? "" : `<a class="btn case__open" href="${caseUrl(p)}" target="_blank" rel="noopener">Открыть на весь экран ↗</a>`}
     </div>
@@ -306,6 +306,8 @@ function fitCaseFrame() {
   }
 }
 addEventListener("resize", () => caseEl.open && fitCaseFrame());
+// Рамка меняет размер с анимацией: пересчитываем масштаб, когда она закончилась
+caseEl.addEventListener("transitionend", (e) => { if (e.target.id === "caseFrame" && e.propertyName === "width") fitCaseFrame(); });
 
 // Уборка после закрытия делается сразу, не дожидаясь события close: в фоновых вкладках оно может прийти с опозданием
 function cleanupCase(restoreFocus = true) {
