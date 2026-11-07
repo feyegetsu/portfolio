@@ -27,8 +27,6 @@
     h1, h2, h3 { line-height: 1.08; letter-spacing: -.03em; font-weight: 700; }
     h2 { font-size: clamp(1.9rem, 4.5vw, 3rem); margin-bottom: 10px; }
     .muted { color: var(--muted); }
-    .demo-bar { background: var(--green); color: #fff; text-align: center; font-size: 13px; padding: 8px 12px; }
-    .demo-bar a { text-decoration: underline; }
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 26px; border-radius: 999px; background: var(--green); color: #fff; font-weight: 600; border: 0; transition: .2s; }
     .btn:hover { background: #164537; }
     .btn--light { background: #fff; color: var(--ink); }
@@ -152,7 +150,6 @@
   </style>
 </head>
 <body>
-  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span></span>Квадрат</a>
@@ -227,6 +224,7 @@
 
   <footer>
     <div class="container foot"><span>© Агентство недвижимости «Квадрат»</span><span>Демо-сайт для портфолио · не является публичной офертой · фото: Unsplash</span></div>
+      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>

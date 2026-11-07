@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Заготовка демо-сайта. Новое демо создаётся командой: python tools/demos.py new <slug> "<Название>" -->
+  <meta name="robots" content="noindex">
+  <title>{{TITLE}} — {{NICHE}}</title>
+  <meta name="description" content="{{TITLE}}: {{NICHE}} в Петербурге. Демо-проект из портфолио feyegetsu.dev.">
+  <meta name="theme-color" content="#fbf8f4">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../shared/kit.css">
+  <style>
+    /* Свой характер сайта: цвета и шрифты. Всё остальное приходит из kit.css */
+    :root { --accent: #2f6f4e; --bg: #f6f4ef; }
+    .head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; }
+    .logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; }
+    .hero { padding: 72px 0 88px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
+    .hero__img { aspect-ratio: 4 / 5; border-radius: 28px; background: linear-gradient(135deg, #cfe3d6, #f3e2c7); }
+    @media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding-top: 40px; } .hero__img { aspect-ratio: 16 / 10; } }
+  </style>
+</head>
+<body>
+  <header class="container head">
+    <a class="logo" href="#top">{{TITLE}}</a>
+    <a class="btn" href="#form">Оставить заявку</a>
+  </header>
+
+  <main id="top">
+    <section class="container hero">
+      <div data-reveal>
+        <p class="muted">{{NICHE}} · Петербург</p>
+        <h1>Главная мысль одним предложением</h1>
+        <p class="muted">Кому и чем помогаете. Почему стоит выбрать вас, а не соседей.</p>
+        <a class="btn" href="#form">Записаться</a>
+      </div>
+      <div class="hero__img" data-reveal="zoom" aria-hidden="true"></div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Что вы получаете</h2>
+        <div class="grid" data-stagger>
+          <article class="card"><h3>Преимущество</h3><p class="muted">Конкретный факт вместо прилагательных.</p></article>
+          <article class="card"><h3>Преимущество</h3><p class="muted">Конкретный факт вместо прилагательных.</p></article>
+          <article class="card"><h3>Преимущество</h3><p class="muted">Конкретный факт вместо прилагательных.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="form">
+      <div class="container">
+        <h2>Оставьте заявку</h2>
+        <p class="muted">Перезвоним в течение 15 минут в рабочее время.</p>
+        <form class="form" id="leadForm">
+          <input name="name" placeholder="Имя" autocomplete="name" required aria-label="Имя">
+          <input name="phone" type="tel" placeholder="Телефон" autocomplete="tel" required aria-label="Телефон">
+          <textarea name="message" rows="3" placeholder="Комментарий" aria-label="Комментарий"></textarea>
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn" type="submit">Отправить</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <span>© {{TITLE}} · Петербург</span>
+      <a href="../../">Портфолио feyegetsu.dev</a>
+    </div>
+    <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+  </footer>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/motion.js" defer></script>
+  <script src="../shared/kit.js" defer></script>
+  <script>
+    addEventListener("DOMContentLoaded", () => PF.lead(PF.$("leadForm"), { site: "{{SLUG}}", kind: "consult" }));
+  </script>
+</body>
+</html>

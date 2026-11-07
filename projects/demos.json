@@ -1,0 +1,18 @@
+{
+  "_about": "Реестр демо-сайтов. По нему работают tools/demos.py (проверка и создание демо) и tools/screenshots.py. Порядок — как на главной.",
+  "demos": [
+    { "slug": "restaurant", "title": "Ресторан «Терруар»", "niche": "Ресторан" },
+    { "slug": "sushi", "title": "Суши «Кайсэн»", "niche": "Доставка суши" },
+    { "slug": "dental", "title": "Стоматология «Белая линия»", "niche": "Медицина" },
+    { "slug": "autoservice", "title": "Автосервис «МоторЛайн»", "niche": "Авто" },
+    { "slug": "miniapp", "title": "Сытый Лис", "niche": "Telegram Mini App" },
+    { "slug": "bar", "title": "Бар «Полночь»", "niche": "Коктейльный бар" },
+    { "slug": "florist", "title": "Пион & Ко", "niche": "Интернет-магазин" },
+    { "slug": "cafe", "title": "Кофейня «Зерно»", "niche": "Общепит" },
+    { "slug": "gastrobar", "title": "Гастробар «Соль и Солод»", "niche": "Гастробар" },
+    { "slug": "barbershop", "title": "Барбершоп BLADE", "niche": "Красота" },
+    { "slug": "fitness", "title": "Фитнес-клуб PULSE", "niche": "Спорт" },
+    { "slug": "realty", "title": "Агентство «Квадрат»", "niche": "Недвижимость" },
+    { "slug": "saas", "title": "Taskly", "niche": "IT-стартап" }
+  ]
+}

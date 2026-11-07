@@ -1,0 +1,47 @@
+/* Общий набор для демо-сайтов: сброс, сетка, кнопки, формы, уведомление.
+ * Внешний вид сайта задаётся переменными, поэтому каждое демо остаётся непохожим на остальные:
+ * переопределите их в :root своей страницы. Подключается так: <link rel="stylesheet" href="../shared/kit.css"> */
+:root {
+  --bg: #fbf8f4; --text: #1c1a19; --muted: #6f6861; --line: #e8e1d9;
+  --accent: #c2410c; --accent-text: #fff; --card: #fff;
+  --radius: 16px; --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --font-head: var(--font);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; margin: 0 0 .5em; }
+p { margin: 0 0 1em; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+.section { padding: 88px 0; }
+.muted { color: var(--muted); }
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border: 0; border-radius: 999px;
+  background: var(--accent); color: var(--accent-text); font: 600 15px/1 var(--font); text-decoration: none; cursor: pointer;
+  transition: transform .2s var(--ease), filter .2s; }
+.btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.btn:disabled { opacity: .6; cursor: progress; transform: none; }
+.btn--line { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1.5px var(--line); }
+
+.form { display: grid; gap: 12px; max-width: 460px; }
+.form input, .form select, .form textarea { width: 100%; padding: 13px 14px; border: 1.5px solid var(--line); border-radius: 12px;
+  background: #fff; color: var(--text); font: 16px var(--font); }
+.form input:focus, .form select:focus, .form textarea:focus { outline: none; border-color: var(--accent); }
+.form .hp { position: absolute; left: -9999px; }
+.pf-error { color: #b42318; font-size: 14px; min-height: 1em; margin: 0; }
+
+.kit-toast { position: fixed; left: 50%; bottom: 24px; z-index: 90; transform: translate(-50%, 160%); padding: 12px 20px; border-radius: 999px;
+  background: var(--text); color: var(--bg); font-weight: 600; box-shadow: 0 16px 34px -14px rgba(0, 0, 0, .5); transition: transform .4s var(--ease); }
+.kit-toast.show { transform: translate(-50%, 0); }
+
+.foot { display: flex; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap; padding: 28px 0; font-size: 14px; color: var(--muted); }
+.pf-fiction { margin: 0; padding: 0 20px 20px; text-align: center; font-size: 12px; opacity: .65; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

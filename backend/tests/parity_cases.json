@@ -1,0 +1,546 @@
+{
+ "_about": "Общие примеры для серверной логики (pytest) и демо-клиента (node tools/parity.mjs). Ответы посчитаны серверным кодом; если логика меняется намеренно, обновите их.",
+ "orders": [
+  {
+   "title": "Суши: доставка платная ниже порога",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s4",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "s4",
+     "name": "Филадельфия",
+     "qty": 1,
+     "price": 590
+    },
+    {
+     "ref": "delivery",
+     "name": "Доставка",
+     "qty": 1,
+     "price": 199
+    }
+   ]
+  },
+  {
+   "title": "Суши: от 1 500 ₽ доставка бесплатная",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s1",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "s1",
+     "name": "Сет «Кайсэн»",
+     "qty": 1,
+     "price": 2490
+    }
+   ]
+  },
+  {
+   "title": "Суши: самовывоз без доставки",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s7",
+     "qty": 2
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "s7",
+     "name": "Маки с огурцом",
+     "qty": 2,
+     "price": 190
+    }
+   ]
+  },
+  {
+   "title": "Суши: цена из браузера игнорируется",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s4",
+     "qty": 2,
+     "price": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "s4",
+     "name": "Филадельфия",
+     "qty": 2,
+     "price": 590
+    }
+   ]
+  },
+  {
+   "title": "Mini App: размер и две добавки",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:2:0-1",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "1:2:0-1",
+     "name": "Маргарита (35 см, двойной сыр, халапеньо)",
+     "qty": 1,
+     "price": 859
+    },
+    {
+     "ref": "delivery",
+     "name": "Доставка",
+     "qty": 1,
+     "price": 199
+    }
+   ]
+  },
+  {
+   "title": "Mini App: маленький размер без добавок",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "2:0:",
+     "qty": 2
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "2:0:",
+     "name": "Пепперони (25 см)",
+     "qty": 2,
+     "price": 529
+    }
+   ]
+  },
+  {
+   "title": "Mini App: стандартный размер не пишется в название",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "2:1",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "2:1",
+     "name": "Пепперони",
+     "qty": 1,
+     "price": 649
+    }
+   ]
+  },
+  {
+   "title": "Mini App: промокод и доставка после скидки",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "9",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "FOX10",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "9",
+     "name": "Сет «Лис»",
+     "qty": 1,
+     "price": 1590
+    },
+    {
+     "ref": "promo",
+     "name": "Промокод FOX10 (−10%)",
+     "qty": 1,
+     "price": -159
+    },
+    {
+     "ref": "delivery",
+     "name": "Доставка",
+     "qty": 1,
+     "price": 199
+    }
+   ]
+  },
+  {
+   "title": "Mini App: промокод с пробелами и строчными",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "4",
+     "qty": 3
+    }
+   ],
+   "mode": "pickup",
+   "promo": "  fox10 ",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "4",
+     "name": "Четыре сезона",
+     "qty": 3,
+     "price": 699
+    },
+    {
+     "ref": "promo",
+     "name": "Промокод FOX10 (−10%)",
+     "qty": 1,
+     "price": -210
+    }
+   ]
+  },
+  {
+   "title": "Цветы: доставка 390 ₽ до 5 000 ₽",
+   "site": "florist",
+   "items": [
+    {
+     "ref": "1",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "1",
+     "name": "Утренний сад",
+     "qty": 1,
+     "price": 4900
+    },
+    {
+     "ref": "delivery",
+     "name": "Доставка",
+     "qty": 1,
+     "price": 390
+    }
+   ]
+  },
+  {
+   "title": "Цветы: дороже 5 000 ₽ без доставки",
+   "site": "florist",
+   "items": [
+    {
+     "ref": "3",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "3",
+     "name": "Классика",
+     "qty": 1,
+     "price": 8900
+    }
+   ]
+  },
+  {
+   "title": "Служебные строки от браузера отбрасываются",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s4",
+     "qty": 1
+    },
+    {
+     "ref": "delivery",
+     "qty": 1,
+     "price": 0
+    },
+    {
+     "ref": "promo",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "s4",
+     "name": "Филадельфия",
+     "qty": 1,
+     "price": 590
+    },
+    {
+     "ref": "delivery",
+     "name": "Доставка",
+     "qty": 1,
+     "price": 199
+    }
+   ]
+  },
+  {
+   "title": "Ошибка: неизвестный промокод",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "FREE100",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Такого промокода нет"
+   }
+  },
+  {
+   "title": "Ошибка: позиции нет в меню",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s999",
+     "name": "Тест",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Позиции «Тест» нет в меню, обновите страницу"
+   }
+  },
+  {
+   "title": "Ошибка: позиция в стоп-листе",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s5",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [
+    "s5"
+   ],
+   "error": {
+    "status": 409,
+    "message": "«Калифорния» закончилось"
+   }
+  },
+  {
+   "title": "Ошибка: размеры у позиции без размеров",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s4:1",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "У «Филадельфия» нет размеров и добавок"
+   }
+  },
+  {
+   "title": "Ошибка: размер вне таблицы",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:9",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректный размер для «Маргарита»"
+   }
+  },
+  {
+   "title": "Ошибка: одна добавка дважды",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:1:0-0",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректные добавки для «Маргарита»"
+   }
+  },
+  {
+   "title": "Ошибка: роллы не пицца, размеров нет",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "8:1",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "У «Филадельфия» нет размеров и добавок"
+   }
+  },
+  {
+   "title": "Ошибка: в корзине только служебные строки",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "delivery",
+     "qty": 1
+    }
+   ],
+   "mode": "delivery",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Корзина пуста"
+   }
+  }
+ ],
+ "slots": [
+  {
+   "title": "Барбер: по сетке в часы работы",
+   "site": "barbershop",
+   "resource": "Артём",
+   "day_offset": 1,
+   "time": "10:00",
+   "error": null
+  },
+  {
+   "title": "Барбер: не по сетке (шаг 60 минут)",
+   "site": "barbershop",
+   "resource": "Артём",
+   "day_offset": 1,
+   "time": "10:30",
+   "error": "Выберите время из расписания"
+  },
+  {
+   "title": "Барбер: после закрытия",
+   "site": "barbershop",
+   "resource": "Денис",
+   "day_offset": 1,
+   "time": "21:00",
+   "error": "В это время мы закрыты"
+  },
+  {
+   "title": "Барбер: нет такого мастера",
+   "site": "barbershop",
+   "resource": "Вася",
+   "day_offset": 1,
+   "time": "12:00",
+   "error": "Такого мастера или занятия нет"
+  },
+  {
+   "title": "Барбер: дальше горизонта",
+   "site": "barbershop",
+   "resource": "Игорь",
+   "day_offset": 40,
+   "time": "12:00",
+   "error": "Запись открыта на 30 дней вперёд"
+  },
+  {
+   "title": "Бар: после полуночи открыто",
+   "site": "bar",
+   "resource": "",
+   "day_offset": 1,
+   "time": "01:00",
+   "error": null
+  },
+  {
+   "title": "Бар: в 3 ночи закрыто",
+   "site": "bar",
+   "resource": "",
+   "day_offset": 1,
+   "time": "03:00",
+   "error": "В это время мы закрыты"
+  },
+  {
+   "title": "Ресторан: вчера",
+   "site": "restaurant",
+   "resource": "",
+   "day_offset": -1,
+   "time": "19:00",
+   "error": "Это время уже прошло"
+  },
+  {
+   "title": "Гастробар: 23:30 открыто",
+   "site": "gastrobar",
+   "resource": "",
+   "day_offset": 2,
+   "time": "23:30",
+   "error": null
+  },
+  {
+   "title": "Гастробар: полночь уже закрыто",
+   "site": "gastrobar",
+   "resource": "",
+   "day_offset": 2,
+   "time": "00:00",
+   "error": "В это время мы закрыты"
+  },
+  {
+   "title": "Фитнес: занятие есть в расписании",
+   "site": "fitness",
+   "resource": "Пилатес",
+   "day_offset": 3,
+   "time": "07:00",
+   "error": null
+  },
+  {
+   "title": "Фитнес: такого занятия нет",
+   "site": "fitness",
+   "resource": "Плавание",
+   "day_offset": 3,
+   "time": "08:00",
+   "error": "Такого мастера или занятия нет"
+  }
+ ]
+}

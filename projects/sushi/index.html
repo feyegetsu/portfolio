@@ -32,8 +32,6 @@
     .btn:hover { background: var(--red-d); transform: translateY(-2px); }
     .btn--ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
     .btn--ghost:hover { background: var(--ink); color: #fff; }
-    .demo-bar { background: var(--ink); color: var(--washi); text-align: center; font-size: 13px; padding: 8px 12px; }
-    .demo-bar a { text-decoration: underline; }
 
     header { position: sticky; top: 0; z-index: 40; background: rgba(245, 240, 230, .93); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
     .head { display: flex; align-items: center; gap: 26px; height: 70px; }
@@ -182,7 +180,6 @@
   </style>
 </head>
 <body>
-  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span class="hanko">海</span>Кайсэн</a>
@@ -243,7 +240,8 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Кайсэн · Большой пр. П. С., 31</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div></footer>
+  <footer><div class="container foot"><span>© Кайсэн · Большой пр. П. С., 31</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>    <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+  </footer>
 
   <div class="overlay" id="overlay"></div>
   <aside class="drawer" id="drawer" aria-label="Корзина" aria-hidden="true">

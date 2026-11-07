@@ -5,6 +5,7 @@
     python tools/screenshots.py http://localhost:8000
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -13,7 +14,8 @@ from playwright.sync_api import sync_playwright
 BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "http://localhost:8000"
 OUT = Path(__file__).resolve().parent.parent / "assets" / "previews"
 
-DEMOS = ["miniapp", "restaurant", "sushi", "gastrobar", "bar", "florist", "dental", "cafe", "barbershop", "fitness", "autoservice", "realty", "saas"]
+# Список демо — из общего реестра, его же проверяет tools/demos.py
+DEMOS = [d["slug"] for d in json.loads((OUT.parent.parent / "projects" / "demos.json").read_text(encoding="utf-8"))["demos"]]
 
 
 def settle(page):

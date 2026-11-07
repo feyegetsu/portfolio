@@ -1,5 +1,5 @@
 /*
- * Общие анимации для демо-сайтов. Подключение: <script src="../_shared/motion.js" defer></script>
+ * Общие анимации для демо-сайтов. Подключение: <script src="../shared/motion.js" defer></script>
  *
  *   data-reveal            появление при прокрутке (значения: up по умолчанию, left, right, zoom)
  *   data-stagger           дети элемента появляются по очереди

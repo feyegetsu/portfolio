@@ -34,8 +34,6 @@
     .btn:hover { background: #f5bd41; transform: translateY(-2px); }
     .btn--line { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 2px var(--cream); }
     .btn--line:hover { background: var(--cream); color: var(--coal); }
-    .demo-bar { background: var(--mustard); color: #1a1408; text-align: center; font-size: 13px; padding: 8px 12px; font-weight: 500; }
-    .demo-bar a { text-decoration: underline; }
 
     header { position: sticky; top: 0; z-index: 30; background: rgba(23, 23, 26, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
     .head { display: flex; align-items: center; gap: 28px; height: 70px; }
@@ -180,7 +178,6 @@
   </style>
 </head>
 <body>
-  <div class="demo-bar">Демо-проект из портфолио · <a href="../../">← вернуться в портфолио</a></div>
   <header>
     <div class="container head">
       <a href="#" class="logo">СОЛЬ <span>&amp;</span> СОЛОД</a>
@@ -278,7 +275,8 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Гастробар «Соль и Солод» · 18+</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div></footer>
+  <footer><div class="container foot"><span>© Гастробар «Соль и Солод» · 18+</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div>    <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+  </footer>
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../shared/api.js"></script>

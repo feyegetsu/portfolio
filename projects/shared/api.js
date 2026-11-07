@@ -11,35 +11,35 @@
 (() => {
   // Адрес этого файла: рядом лежит offers.js с ценами для кнопки «Хочу такой сайт»
   const SCRIPT_SRC = document.currentScript && document.currentScript.src;
-  // Те же правила, что в backend/app/sites.py: демо-режим ведёт себя как настоящий сервер
-  const FITNESS_CLASSES = { "Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16 };
-  const MINIAPP_PRICING = {
-    delivery: 199, freeFrom: 1500, sized: ["Пицца"], promos: { FOX10: 10 },
-    sizes: [["25 см", -120], ["30 см", 0], ["35 см", 170]],
-    extras: [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]],
-  };
+  // Правила сайтов и каталоги — копия backend/app/sites.py и seed.py. Демо-режим ведёт себя как настоящий сервер.
+  /* RULES:START — сгенерировано из backend/app/sites.py и seed.py командой `python -m app.rules_export`, руками не править */
   const SITES = [
-    { slug: "cafe", name: "Кофейня «Зерно»", leads: true },
-    { slug: "florist", name: "Пион & Ко", leads: true, orders: true, catalog: true, pricing: { delivery: 390, freeFrom: 5000 } },
-    { slug: "barbershop", name: "Барбершоп BLADE", bookings: true, exclusive: true, step: 60, hours: [10, 21], horizon: 30, resources: { "Артём": null, "Денис": null, "Игорь": null } },
-    { slug: "dental", name: "Стоматология «Белая линия»", leads: true },
-    { slug: "fitness", name: "Фитнес-клуб PULSE", leads: true, bookings: true, hours: [7, 22], horizon: 14, resources: FITNESS_CLASSES },
-    { slug: "autoservice", name: "Автосервис «МоторЛайн»", leads: true },
-    { slug: "realty", name: "Агентство «Квадрат»", leads: true },
-    { slug: "saas", name: "Taskly", leads: true },
-    { slug: "miniapp", name: "Сытый Лис", orders: true, catalog: true, pricing: MINIAPP_PRICING },
-    { slug: "restaurant", name: "Ресторан «Терруар»", leads: true, bookings: true, hours: [18, 23], horizon: 30, capacity: 10 },
-    { slug: "sushi", name: "Суши «Кайсэн»", orders: true, catalog: true, pricing: { delivery: 199, freeFrom: 1500 } },
-    { slug: "gastrobar", name: "Гастробар «Соль и Солод»", leads: true, bookings: true, hours: [12, 24], capacity: 20 },
-    { slug: "bar", name: "Бар «Полночь»", leads: true, bookings: true, hours: [19, 2], horizon: 30, capacity: 8 },
+    {"slug": "cafe", "name": "Кофейня «Зерно»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
+    {"slug": "florist", "name": "Пион & Ко", "leads": true, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 390, "freeFrom": 5000, "sized": [], "sizes": [], "extras": [], "promos": {}}},
+    {"slug": "barbershop", "name": "Барбершоп BLADE", "leads": false, "bookings": true, "exclusive": true, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 60, "hours": [10, 21], "horizon": 30, "resources": {"Артём": null, "Денис": null, "Игорь": null}, "capacity": null},
+    {"slug": "dental", "name": "Стоматология «Белая линия»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
+    {"slug": "fitness", "name": "Фитнес-клуб PULSE", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [7, 22], "horizon": 14, "resources": {"Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16}, "capacity": null},
+    {"slug": "autoservice", "name": "Автосервис «МоторЛайн»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
+    {"slug": "realty", "name": "Агентство «Квадрат»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
+    {"slug": "saas", "name": "Taskly", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
+    {"slug": "miniapp", "name": "Сытый Лис", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": ["Пицца"], "sizes": [["25 см", -120], ["30 см", 0], ["35 см", 170]], "extras": [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]], "promos": {"FOX10": 10}}},
+    {"slug": "restaurant", "name": "Ресторан «Терруар»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [18, 23], "horizon": 30, "resources": null, "capacity": 10},
+    {"slug": "sushi", "name": "Суши «Кайсэн»", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": [], "sizes": [], "extras": [], "promos": {}}},
+    {"slug": "gastrobar", "name": "Гастробар «Соль и Солод»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [12, 24], "horizon": 60, "resources": null, "capacity": 20},
+    {"slug": "bar", "name": "Бар «Полночь»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [19, 2], "horizon": 30, "resources": null, "capacity": 8},
   ];
   // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте
-  const SUSHI_MENU = [["s1", "Сет «Кайсэн»", "Сеты", 2490], ["s2", "Сет «Филадельфия»", "Сеты", 1890], ["s3", "Сет для двоих", "Сеты", 1390], ["s4", "Филадельфия", "Роллы", 590], ["s5", "Калифорния", "Роллы", 490], ["s6", "Радуга", "Роллы", 650], ["s7", "Маки с огурцом", "Роллы", 190], ["s8", "Красный дракон", "Роллы", 690], ["s9", "Запечённый с лососем", "Запечённые", 560], ["s10", "Запечённый с крабом", "Запечённые", 520], ["s11", "Нигири с лососем", "Нигири и сашими", 220], ["s12", "Сашими-ассорти", "Нигири и сашими", 990], ["s13", "Нигири микс", "Нигири и сашими", 690], ["s14", "Рамен тонкоцу", "Горячее", 590], ["s15", "Острый рамен с курицей", "Горячее", 560], ["s16", "Гёдза со свининой", "Горячее", 390], ["s17", "Якитори", "Горячее", 450]];
-  const FLORIST_MENU = [["1", "Утренний сад", "Авторские", 4900], ["2", "Тюльпаны микс", "Монобукеты", 3200], ["3", "Классика", "Розы", 8900], ["4", "Солнечный день", "Авторские", 2700], ["5", "Яркое настроение", "Авторские", 3900], ["6", "Нежность", "Авторские", 5400], ["7", "Ромашки", "Монобукеты", 1900], ["8", "Кактус в кашпо", "Растения", 1500], ["9", "Розовые тюльпаны", "Монобукеты", 2600], ["10", "Лилии", "Монобукеты", 3300], ["11", "Суккулент", "Растения", 1200], ["12", "Пионовидные розы", "Розы", 5900]];
-  const LATER_CATALOGS = { sushi: SUSHI_MENU, florist: FLORIST_MENU };
+  const CATALOGS = {
+    miniapp: [["1", "Маргарита", "Пицца", 549], ["2", "Пепперони", "Пицца", 649], ["3", "Овощная", "Пицца", 599], ["4", "Четыре сезона", "Пицца", 699], ["5", "Классик", "Бургеры", 429], ["6", "Пулд-порк", "Бургеры", 469], ["7", "Бургер + фри", "Бургеры", 549], ["8", "Филадельфия", "Роллы", 589], ["9", "Сет «Лис»", "Роллы", 1590], ["10", "Нигири микс", "Роллы", 690], ["11", "Боул с курицей", "Боулы", 459], ["12", "Поке с лососем", "Боулы", 549], ["13", "Паста с морепродуктами", "Горячее", 589], ["14", "Пенне арабьята", "Горячее", 399], ["15", "Стейк с фри", "Горячее", 890], ["16", "Лимонады", "Напитки", 219]],
+    sushi: [["s1", "Сет «Кайсэн»", "Сеты", 2490], ["s2", "Сет «Филадельфия»", "Сеты", 1890], ["s3", "Сет для двоих", "Сеты", 1390], ["s4", "Филадельфия", "Роллы", 590], ["s5", "Калифорния", "Роллы", 490], ["s6", "Радуга", "Роллы", 650], ["s7", "Маки с огурцом", "Роллы", 190], ["s8", "Красный дракон", "Роллы", 690], ["s9", "Запечённый с лососем", "Запечённые", 560], ["s10", "Запечённый с крабом", "Запечённые", 520], ["s11", "Нигири с лососем", "Нигири и сашими", 220], ["s12", "Сашими-ассорти", "Нигири и сашими", 990], ["s13", "Нигири микс", "Нигири и сашими", 690], ["s14", "Рамен тонкоцу", "Горячее", 590], ["s15", "Острый рамен с курицей", "Горячее", 560], ["s16", "Гёдза со свининой", "Горячее", 390], ["s17", "Якитори", "Горячее", 450]],
+    florist: [["1", "Утренний сад", "Авторские", 4900], ["2", "Тюльпаны микс", "Монобукеты", 3200], ["3", "Классика", "Розы", 8900], ["4", "Солнечный день", "Авторские", 2700], ["5", "Яркое настроение", "Авторские", 3900], ["6", "Нежность", "Авторские", 5400], ["7", "Ромашки", "Монобукеты", 1900], ["8", "Кактус в кашпо", "Растения", 1500], ["9", "Розовые тюльпаны", "Монобукеты", 2600], ["10", "Лилии", "Монобукеты", 3300], ["11", "Суккулент", "Растения", 1200], ["12", "Пионовидные розы", "Розы", 5900]],
+  };
+  /* RULES:END */
+  const LATER_CATALOGS = { sushi: CATALOGS.sushi, florist: CATALOGS.florist };
   const SITE = Object.fromEntries(SITES.map((s) => [s.slug, s]));
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
 
+  /* ENGINE:START — чистые функции расчёта: tools/parity.mjs гоняет их на тех же примерах, что и pytest */
   class ApiError extends Error {
     constructor(message, status) {
       super(message);
@@ -100,19 +100,32 @@
     return lines;
   }
 
-  // Правила записи как на сервере: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу
+  // «Настенное» время заведения, как site_now на сервере: посетитель может сидеть в другом часовом поясе
+  function siteNow(tz) {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz || "Europe/Moscow", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+    }).formatToParts(new Date());
+    const p = Object.fromEntries(parts.map((x) => [x.type, x.value]));
+    return new Date(+p.year, p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+  }
+
+  // Правила записи как на сервере: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу.
+  // Время записи — местное время заведения без пояса, как его присылает сайт
   function checkSlot(s, resource, startsAt) {
     const bad = (m) => new ApiError(m, 422);
-    const t = new Date(startsAt);
+    const t = new Date(String(startsAt).slice(0, 16));
     if (Number.isNaN(+t)) throw bad("Некорректное время");
-    if (t < new Date(Date.now() - 5 * 60000)) throw bad("Это время уже прошло");
-    if (t > new Date(Date.now() + (s.horizon || 60) * 86400000)) throw bad(`Запись открыта на ${s.horizon || 60} дней вперёд`);
-    if (t.getMinutes() % (s.step || 30)) throw bad("Выберите время из расписания");
+    const now = siteNow(s.tz);
+    if (t < new Date(+now - 5 * 60000)) throw bad("Это время уже прошло");
+    if (t > new Date(+now + s.horizon * 86400000)) throw bad(`Запись открыта на ${s.horizon} дней вперёд`);
+    if (t.getMinutes() % s.step) throw bad("Выберите время из расписания");
     const m = t.getHours() * 60 + t.getMinutes();
-    const [open, close] = (s.hours || [10, 22]).map((h) => h * 60);
+    const [open, close] = s.hours.map((h) => h * 60);
     if (!(open < close ? m >= open && m < close : m >= open || m < close)) throw bad("В это время мы закрыты");
     if (s.resources && !(resource in s.resources)) throw bad("Такого мастера или занятия нет");
   }
+  /* ENGINE:END */
   const newToken = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
   // Текст, похожий на формулу, Excel покажет как текст, а не выполнит
   const csvSafe = (v) => (/^[=+\-@\t\r]/.test(String(v ?? "")) ? "'" + v : String(v ?? ""));
@@ -254,10 +267,7 @@
         { id: id(), site: "miniapp", items: [{ ref: "9", name: "Сет «Лис»", qty: 1, price: 1590 }], total: 1590, name: "Ирина", phone: "+79267778899", address: "", mode: "pickup", comment: "", status: "done", created_at: ago(1, 19, 20) },
         { id: id(), site: "florist", items: [{ ref: "3", name: "Классика", qty: 1, price: 8900 }], total: 8900, name: "Артур", phone: "+79998887766", address: "ул. Цветочная, 22", mode: "delivery", comment: "", status: "done", created_at: ago(3, 15) },
       );
-      const menu = [["1", "Маргарита", "Пицца", 549], ["2", "Пепперони", "Пицца", 649], ["3", "Овощная", "Пицца", 599], ["4", "Четыре сезона", "Пицца", 699],
-        ["5", "Классик", "Бургеры", 429], ["6", "Пулд-порк", "Бургеры", 469], ["7", "Бургер + фри", "Бургеры", 549], ["8", "Филадельфия", "Роллы", 589],
-        ["9", "Сет «Лис»", "Роллы", 1590], ["10", "Нигири микс", "Роллы", 690], ["11", "Боул с курицей", "Боулы", 459], ["12", "Поке с лососем", "Боулы", 549],
-        ["13", "Паста с морепродуктами", "Горячее", 589], ["14", "Пенне арабьята", "Горячее", 399], ["15", "Стейк с фри", "Горячее", 890], ["16", "Лимонады", "Напитки", 219]];
+      const menu = CATALOGS.miniapp;
       for (const [ref, name, category, price] of menu) db.catalog.push({ id: id(), site: "miniapp", ref, name, category, price, active: true });
       addCatalogs(db);
       return db;
@@ -760,8 +770,6 @@
         foot.appendChild(p);
       }
       if (framed || navigator.webdriver) return;
-      // Плашка «демо» сверху съедала первый экран: её заменяет компактная кнопка внизу слева
-      document.querySelectorAll(".demo-bar").forEach((el) => el.remove());
       const s = document.createElement("script");
       s.src = new URL("offers.js", SCRIPT_SRC || location.href).href;
       s.onload = () => {
@@ -789,7 +797,7 @@
         const sync = () => {
           clearTimeout(syncTimer);
           syncTimer = setTimeout(() => bar.classList.toggle("hide", document.body.style.overflow === "hidden"
-            || !!document.querySelector("dialog[open], .drawer.open, .drawer.on, .sheet.open, .sheet.on, .toast.show, .toast.on")
+            || !!document.querySelector("dialog[open], .drawer.open, .drawer.on, .sheet.open, .sheet.on, .toast.show, .toast.on, .kit-toast.show")
             || overlaps(".main-btn:not(.off)")), 60);
         };
         new MutationObserver(sync).observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ["class", "open", "style"] });
