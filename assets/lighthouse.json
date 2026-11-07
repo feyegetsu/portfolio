@@ -1,43 +1,52 @@
 {
-  "date": "2026-11-06",
+  "date": "2026-11-07",
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 75,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "3.4 s",
-      "cls": "0.336",
-      "issues": [
-        "Largest Contentful Paint",
-        "Max Potential First Input Delay",
-        "Cumulative Layout Shift"
-      ],
-      "a11y": {}
-    },
-    "barbershop": {
-      "scores": {
-        "performance": 100,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "1.4 s",
-      "cls": "0",
-      "issues": [],
-      "a11y": {}
-    },
-    "cafe": {
-      "scores": {
-        "performance": 98,
+        "performance": 82,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
-      "cls": "0.009",
+      "lcp": "2.0 s",
+      "cls": "0.323",
+      "issues": [
+        "Cumulative Layout Shift",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ],
+      "a11y": {
+        "color-contrast": [
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+        ]
+      }
+    },
+    "barbershop": {
+      "scores": {
+        "performance": 99,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.1 s",
+      "cls": "0",
+      "issues": [
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ],
+      "a11y": {
+        "color-contrast": [
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+        ]
+      }
+    },
+    "cafe": {
+      "scores": {
+        "performance": 99,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.8 s",
+      "cls": "0.018",
       "issues": [
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -56,117 +65,140 @@
     },
     "dental": {
       "scores": {
-        "performance": 100,
-        "accessibility": 99,
+        "performance": 99,
+        "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
+      "lcp": "1.8 s",
       "cls": "0.033",
       "issues": [
-        "Uses ARIA roles on incompatible elements"
+        "Uses ARIA roles on incompatible elements",
+        "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
         "aria-allowed-role": [
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" data-info=\"rooms\" tabindex=\"0\" role=\"button\" aria-label=\"Кабинеты: подробнее\">",
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:120ms\" data-info=\"visit\" tabindex=\"0\" role=\"button\" aria-label=\"Приём: подро",
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:240ms\" data-info=\"tech\" tabindex=\"0\" role=\"button\" aria-label=\"Оборудование:"
+        ],
+        "color-contrast": [
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
         ]
       }
     },
     "fitness": {
       "scores": {
-        "performance": 100,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "1.4 s",
-      "cls": "0",
-      "issues": [],
-      "a11y": {}
-    },
-    "florist": {
-      "scores": {
-        "performance": 100,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "1.2 s",
-      "cls": "0.043",
-      "issues": [],
-      "a11y": {}
-    },
-    "home-desktop": {
-      "scores": {
         "performance": 99,
-        "accessibility": 100,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "0.8 s",
-      "cls": "0.06",
-      "issues": [],
-      "a11y": {}
-    },
-    "home-mobile": {
-      "scores": {
-        "performance": 96,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
-      "cls": "0.026",
+      "lcp": "2.0 s",
+      "cls": "0",
+      "issues": [
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ],
+      "a11y": {
+        "color-contrast": [
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+        ]
+      }
+    },
+    "florist": {
+      "scores": {
+        "performance": 97,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.1 s",
+      "cls": "0.043",
+      "issues": [
+        "Max Potential First Input Delay",
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ],
+      "a11y": {
+        "color-contrast": [
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+        ]
+      }
+    },
+    "home-desktop": {
+      "scores": {
+        "performance": 93,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "1.1 s",
+      "cls": "0.104",
       "issues": [
         "First Contentful Paint",
-        "Largest Contentful Paint",
+        "Cumulative Layout Shift"
+      ],
+      "a11y": {}
+    },
+    "home-mobile": {
+      "scores": {
+        "performance": 97,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.1 s",
+      "cls": "0",
+      "issues": [
         "Max Potential First Input Delay",
         "Links do not have a discernible name"
       ],
       "a11y": {
         "link-name": [
-          "body > header.header > div.container > a.btn <a href=\"https://t.me/feyegetsu\" class=\"btn btn--small header__cta\" data-contact=\"telegram\" target=\"_blank\" rel=\"no"
+          "body > header.header > div.container > a#headerCta <a href=\"https://t.me/feyegetsu\" class=\"btn btn--small header__cta\" id=\"headerCta\" data-contact=\"telegram\" ta"
         ]
       }
     },
     "miniapp": {
       "scores": {
-        "performance": 92,
+        "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.7 s",
+      "lcp": "2.3 s",
       "cls": "0",
       "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint"
+        "First Contentful Paint"
       ],
       "a11y": {}
     },
     "realty": {
       "scores": {
         "performance": 99,
-        "accessibility": 100,
+        "accessibility": 97,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
-      "cls": "0.051",
-      "issues": [],
-      "a11y": {}
+      "lcp": "1.8 s",
+      "cls": "0.05",
+      "issues": [
+        "Background and foreground colors do not have a sufficient contrast ratio."
+      ],
+      "a11y": {
+        "color-contrast": [
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+        ]
+      }
     },
     "saas": {
       "scores": {
-        "performance": 100,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.2 s",
-      "cls": "0.016",
+      "lcp": "1.6 s",
+      "cls": "0.031",
       "issues": [],
       "a11y": {}
     }
