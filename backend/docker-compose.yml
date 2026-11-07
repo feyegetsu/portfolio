@@ -14,15 +14,26 @@ services:
       interval: 3s
       retries: 10
 
+  # Общий счётчик лимитов: с ним можно запустить несколько копий API (docker compose up --scale api=2)
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 10
+
   api:
     build: .
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://portfolio:portfolio@db:5432/portfolio
+      REDIS_URL: redis://redis:6379/0
     ports:
       - "8080:8080"
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
 volumes:

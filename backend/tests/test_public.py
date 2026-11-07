@@ -6,7 +6,7 @@ TOMORROW = (datetime.now() + timedelta(days=1)).replace(hour=15, minute=0, secon
 
 
 def test_health(client):
-    assert client.get("/health").json() == {"status": "ok"}
+    assert client.get("/health").json()["status"] == "ok"
 
 
 def test_create_lead_normalizes_phone(client, owner):

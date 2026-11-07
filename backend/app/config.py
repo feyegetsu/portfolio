@@ -11,6 +11,14 @@ DEV_SECRET = "dev-secret-change-me"
 DEV_PASSWORD = "change-me-please"
 
 
+def database_url(url: str) -> str:
+    """Хостинги отдают адрес как postgres://… или postgresql://…, а SQLAlchemy нужен драйвер psycopg 3."""
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg://" + url[len(prefix):]
+    return url
+
+
 def _list(value: str) -> list[str]:
     return [v.strip() for v in value.split(",") if v.strip()]
 
@@ -18,7 +26,9 @@ def _list(value: str) -> list[str]:
 @dataclass(frozen=True)
 class Settings:
     env: str = os.getenv("ENV", "production")
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./portfolio.db")
+    database_url: str = field(default_factory=lambda: database_url(os.getenv("DATABASE_URL", "sqlite:///./portfolio.db")))
+    # Общий счётчик лимитов для нескольких копий API. Пусто — счётчик в памяти процесса
+    redis_url: str = os.getenv("REDIS_URL", "")
     secret_key: str = os.getenv("SECRET_KEY", DEV_SECRET)
     token_ttl_minutes: int = int(os.getenv("TOKEN_TTL_MINUTES", "720"))
     cors_origins: list[str] = field(

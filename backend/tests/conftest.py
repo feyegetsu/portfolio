@@ -26,8 +26,8 @@ def client():
     Base.metadata.create_all(engine)
     with SessionLocal() as db:
         seed(db)
-    rate_limit.hits.clear()
-    login_limit.hits.clear()
+    rate_limit.clear()
+    login_limit.clear()
     with TestClient(app) as c:
         yield c
 

@@ -5,9 +5,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
 from .config import check_secrets, settings
 from .db import Base, SessionLocal, engine
+from .deps import RedisStore, rate_limit
 from .routers import admin, auth, public
 from .seed import seed
 from .sites import SITES
@@ -53,7 +55,13 @@ app.include_router(admin.router)
 
 @app.get("/health", tags=["service"])
 def health():
-    return {"status": "ok"}
+    """Для хостинга: жива ли база и где считаются лимиты. Если база недоступна — 503, и хостинг перезапустит API."""
+    try:
+        with SessionLocal() as db:
+            db.execute(text("select 1"))
+    except Exception:  # noqa: BLE001 — любой сбой базы означает «не готов»
+        return JSONResponse({"status": "error", "db": "unavailable"}, status_code=503)
+    return {"status": "ok", "db": "ok", "limits": "redis" if isinstance(rate_limit.store, RedisStore) else "memory"}
 
 
 @app.get("/api/v1/sites", tags=["service"])
