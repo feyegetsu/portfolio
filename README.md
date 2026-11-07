@@ -60,6 +60,12 @@
 <img src="assets/previews/realty-mobile.jpg" width="30%" alt="Каталог недвижимости на телефоне">
 </div>
 
+### Демо продают сами себя
+
+- Внизу каждого демо кнопка «Хочу такой сайт — N ₽»: она открывает калькулятор на главной с уже выбранными пунктами, как в этом проекте.
+- После заявки, брони или заказа всплывает уведомление «что в эту секунду увидел администратор» в Telegram с только что введёнными данными.
+- В подвале каждого демо честная подпись: компании, адреса, отзывы и цифры вымышлены.
+
 ### Кейсы
 
 У каждого проекта есть кейс: задача бизнеса, что сделано, как устроено внутри, и живое превью, которое можно переключать между компьютером и телефоном. На кейс можно дать прямую ссылку, например [#case-miniapp](https://feyegetsu.github.io/portfolio/#case-miniapp).
@@ -96,7 +102,8 @@
 ## Как устроено
 
 ```
-index.html, styles.css, script.js   главная: кейсы, калькулятор стоимости, симуляция бота
+index.html, styles.css, script.js   главная: работы, кейсы, калькулятор стоимости, демо бота
+privacy.html                        политика обработки данных
 projects/
   miniapp/                          Telegram Mini App (Telegram WebApp API)
   florist/ dental/ realty/ saas/
@@ -104,6 +111,7 @@ projects/
   autoservice/ fitness/ barbershop/ cafe/
   shared/motion.js                  анимации через data-атрибуты: появление, параллакс, счётчики
   shared/api.js                     клиент API: настоящий сервер или демо-режим в браузере
+  shared/offers.js                  цены и сроки услуг: калькулятор, карточки работ, кнопки в демо
   cafe-bot/                         Telegram-бот на Python (aiogram 3, SQLite)
 admin/                              админ-панель: дашборд, заявки, записи, заказы, каталог, команда
 backend/                            API на FastAPI: модели, роуты, тесты, Dockerfile, docker-compose
@@ -125,7 +133,7 @@ cd portfolio
 python -m http.server 8000
 ```
 
-Откройте http://localhost:8000. Контакты на главной задаются в одном месте: объект `CONFIG` в начале [`script.js`](script.js).
+Откройте http://localhost:8000. Контакты, число оставшихся пилотных мест, имя, город, статус и фото для блока «Кто это делает» задаются в одном месте: объект `CONFIG` в начале [`script.js`](script.js). Пустые поля на сайте просто не показываются. Цены и сроки услуг — в [`projects/shared/offers.js`](projects/shared/offers.js), калькулятор и карточки берут их оттуда.
 
 Бэкенд запускается одной командой `docker compose up` из папки [`backend`](backend/README.md). Бот запускается отдельно, инструкция в [`projects/cafe-bot/README.md`](projects/cafe-bot/README.md).
 

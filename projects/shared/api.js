@@ -686,7 +686,7 @@
       .pf-want { position: fixed; left: 16px; bottom: 16px; z-index: 44; display: flex; align-items: center; max-width: calc(100% - 100px); border-radius: 999px; overflow: hidden;
         background: rgba(20, 22, 28, .92); color: #fff; border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 16px 34px -14px rgba(0, 0, 0, .6); backdrop-filter: blur(10px);
         font: 600 14px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif; transform: translateY(0); transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .3s; }
-      .pf-want a { color: inherit; text-decoration: none; padding: 12px 16px; white-space: nowrap; }
+      .pf-want a { color: inherit; text-decoration: none; padding: 12px 16px; white-space: nowrap; text-transform: none; letter-spacing: normal; font: inherit; }
       .pf-want a:hover { background: rgba(255, 255, 255, .08); }
       .pf-want__back { color: rgba(255, 255, 255, .7) !important; border-right: 1px solid rgba(255, 255, 255, .14); }
       .pf-want__go { overflow: hidden; text-overflow: ellipsis; }
@@ -789,7 +789,7 @@
         const sync = () => {
           clearTimeout(syncTimer);
           syncTimer = setTimeout(() => bar.classList.toggle("hide", document.body.style.overflow === "hidden"
-            || !!document.querySelector("dialog[open], .drawer.open, .drawer.on, .sheet.open, .sheet.on")
+            || !!document.querySelector("dialog[open], .drawer.open, .drawer.on, .sheet.open, .sheet.on, .toast.show, .toast.on")
             || overlaps(".main-btn:not(.off)")), 60);
         };
         new MutationObserver(sync).observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ["class", "open", "style"] });
