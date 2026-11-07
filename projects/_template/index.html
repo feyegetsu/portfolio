@@ -13,9 +13,9 @@
   <style>
     /* Свой характер сайта: цвета и шрифты. Всё остальное приходит из kit.css */
     :root { --accent: #2f6f4e; --bg: #f6f4ef; }
-    .head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; }
+    .head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 18px; }
     .logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; }
-    .hero { padding: 72px 0 88px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+    .hero { padding-block: 72px 88px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
     .hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
     .hero__img { aspect-ratio: 4 / 5; border-radius: 28px; background: linear-gradient(135deg, #cfe3d6, #f3e2c7); }
     @media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding-top: 40px; } .hero__img { aspect-ratio: 16 / 10; } }

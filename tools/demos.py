@@ -129,7 +129,8 @@ def new(slug: str, title: str, niche: str, kind: str, opts: list[str]) -> int:
 
     data = json.loads(REGISTRY.read_text(encoding="utf-8"))
     data["demos"].append({"slug": slug, "title": title, "niche": niche})
-    REGISTRY.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    rows = ",\n".join(f'    {{ "slug": {q(d["slug"])}, "title": {q(d["title"])}, "niche": {q(d["niche"])} }}' for d in data["demos"])
+    REGISTRY.write_text(f'{{\n  "_about": {q(data["_about"])},\n  "demos": [\n{rows}\n  ]\n}}\n', encoding="utf-8", newline="\n")
 
     opts_js = ", ".join(q(o) for o in opts)
     insert_before("projects/shared/offers.js", '    "cafe-bot": {', f"    {js_key(slug)}: {{ type: {q(kind)}, opts: [{opts_js}] }},\n")
@@ -150,7 +151,8 @@ def new(slug: str, title: str, niche: str, kind: str, opts: list[str]) -> int:
     insert_before("backend/app/sites.py", "    ]\n}", f"        Site({q(slug)}, {q(title)}, leads=True),\n")
 
     # Копия правил в демо-клиенте обновляется из sites.py
-    r = subprocess.run([sys.executable, "-m", "app.rules_export"], cwd=ROOT / "backend", capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-X", "utf8", "-m", "app.rules_export"], cwd=ROOT / "backend",
+                       capture_output=True, text=True, encoding="utf-8", errors="replace")
     regen = "обновлена" if r.returncode == 0 else "НЕ обновлена: запустите cd backend && python -m app.rules_export"
 
     print(f"""Готово: projects/{slug}/index.html
