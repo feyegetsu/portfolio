@@ -3,51 +3,53 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 82,
+        "performance": 81,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
-      "cls": "0.323",
+      "lcp": "2.1 s",
+      "cls": "0.356",
       "issues": [
         "Cumulative Layout Shift",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
         "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
     "barbershop": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 95,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
+      "lcp": "1.5 s",
       "cls": "0",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
         "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
     "cafe": {
       "scores": {
-        "performance": 99,
+        "performance": 86,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
-      "cls": "0.018",
+      "lcp": "4.2 s",
+      "cls": "0.016",
       "issues": [
+        "Largest Contentful Paint",
+        "Time to Interactive",
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -65,7 +67,7 @@
     },
     "dental": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
@@ -83,7 +85,7 @@
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:240ms\" data-info=\"tech\" tabindex=\"0\" role=\"button\" aria-label=\"Оборудование:"
         ],
         "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
@@ -101,54 +103,54 @@
       ],
       "a11y": {
         "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
     "florist": {
       "scores": {
-        "performance": 97,
-        "accessibility": 96,
+        "performance": 99,
+        "accessibility": 95,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
-      "cls": "0.043",
+      "lcp": "1.7 s",
+      "cls": "0.037",
       "issues": [
-        "Max Potential First Input Delay",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
         "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
     "home-desktop": {
       "scores": {
-        "performance": 93,
+        "performance": 97,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.1 s",
+      "lcp": "0.5 s",
       "cls": "0.104",
       "issues": [
-        "First Contentful Paint",
         "Cumulative Layout Shift"
       ],
       "a11y": {}
     },
     "home-mobile": {
       "scores": {
-        "performance": 97,
+        "performance": 90,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
-      "cls": "0",
+      "lcp": "3.0 s",
+      "cls": "0.023",
       "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint",
         "Max Potential First Input Delay",
         "Links do not have a discernible name"
       ],
@@ -160,17 +162,23 @@
     },
     "miniapp": {
       "scores": {
-        "performance": 96,
-        "accessibility": 100,
+        "performance": 94,
+        "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.3 s",
+      "lcp": "2.5 s",
       "cls": "0",
       "issues": [
-        "First Contentful Paint"
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Background and foreground colors do not have a sufficient contrast ratio."
       ],
-      "a11y": {}
+      "a11y": {
+        "color-contrast": [
+          "body > div.stage > div.intro > footer.intro__foot <footer class=\"intro__foot\">"
+        ]
+      }
     },
     "realty": {
       "scores": {
@@ -179,14 +187,14 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
-      "cls": "0.05",
+      "lcp": "2.0 s",
+      "cls": "0.058",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
         "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\">"
+          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
@@ -197,8 +205,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.6 s",
-      "cls": "0.031",
+      "lcp": "1.5 s",
+      "cls": "0.044",
       "issues": [],
       "a11y": {}
     }
