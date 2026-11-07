@@ -46,6 +46,31 @@ jobs:
       - name: Docker image builds
         run: docker build -t portfolio-api .
 
+  parity:
+    name: Демо считает как сервер (Node)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+      # Те же примеры, что в backend/tests/test_parity.py, прогоняются по коду из projects/shared/api.js
+      - name: Parity
+        run: node tools/parity.mjs
+
+  demos:
+    name: Демо-сайты прописаны везде
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Check
+        run: python tools/demos.py check
+      - name: Lint tools
+        run: pip install ruff==0.6.9 && ruff check --select E,F,W,B,UP --ignore E501 tools
+
   links:
     name: Битые ссылки
     runs-on: ubuntu-latest

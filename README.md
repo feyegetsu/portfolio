@@ -6,9 +6,10 @@
 
 [![CI](https://github.com/feyegetsu/portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/ci.yml)
 [![Assets](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/screenshots.yml)
+[![Deploy](https://github.com/feyegetsu/portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/deploy.yml)
 ![Frontend](https://img.shields.io/badge/frontend-HTML%20·%20CSS%20·%20JS-7c5cff)
 ![Backend](https://img.shields.io/badge/backend-FastAPI%20·%20PostgreSQL-22d3ee)
-![Tests](https://img.shields.io/badge/tests-50%20passed-34d399)
+![Tests](https://img.shields.io/badge/tests-93%20passed-34d399)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ### [Открыть портфолио →](https://feyegetsu.github.io/portfolio/)
@@ -48,7 +49,7 @@
 - **API на FastAPI**: заявки, запись на время без двойных записей, заказы с ценами из каталога, статистика, выгрузка в CSV.
 - **Роли и доступ**: владелец, администратор, сотрудник; сотрудник видит только свои сайты.
 - **Защита форм**: валидация телефона, honeypot, лимит заявок с одного IP.
-- **50 автотестов** на pytest, включая регрессионные тесты по независимому QA-ревью, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
+- **93 автотеста** на pytest, включая регрессионные тесты по независимому QA-ревью, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
 - **Цены считает сервер**: размеры, добавки, промокод и доставка; подменить цену из браузера нельзя.
 - **Демо-режим.** На GitHub Pages сервер запустить нельзя, поэтому клиент [`api.js`](projects/shared/api.js) повторяет контракт и правила API прямо в браузере. С настоящим сервером он работает через параметр `?api=`.
 
@@ -95,6 +96,9 @@
 <!-- LIGHTHOUSE:END -->
 
 - **CI на каждый пуш.** Бот проходит линтер `ruff` и проверку импорта, все HTML-страницы проверяются на битые ссылки.
+- **Демо считает как сервер.** Правила сайтов и каталоги живут в одном месте, `backend/app/sites.py` и `seed.py`; демо-клиент получает их сгенерированную копию, и тест падает, если она устарела. Одни и те же 32 примера (цены, размеры, промокоды, доставка, слоты записи) прогоняются по серверному коду в pytest и по коду демо в Node.
+- **Демо прописаны везде.** `tools/demos.py check` проверяет, что каждое демо есть на главной, в ценах, в sitemap, README и на сервере, и что на страницах нет заглушек.
+- **Сборка перед публикацией.** Сайт публикуется не из репозитория как есть, а после `tools/build.py`: содержимое, которое рисует JavaScript, записывается прямо в HTML для поисковиков, CSS и JS минифицируются, к файлам добавляется версия для сброса кэша.
 - **Скриншоты обновляются сами.** Playwright снимает каждый проект и OG-картинку и коммитит их в `assets/`.
 - **Доступность.** Семантическая разметка, фокус с клавиатуры, модальные окна на `<dialog>`, учёт `prefers-reduced-motion`.
 - **SEO.** Мета-теги, Open Graph, JSON-LD `ProfessionalService`, `sitemap.xml`, `robots.txt`, canonical.
@@ -115,15 +119,37 @@ projects/
   cafe-bot/                         Telegram-бот на Python (aiogram 3, SQLite)
 admin/                              админ-панель: дашборд, заявки, записи, заказы, каталог, команда
 backend/                            API на FastAPI: модели, роуты, тесты, Dockerfile, docker-compose
+  shared/kit.css, kit.js            общий набор для новых демо: сетка, кнопки, формы, уведомления
+  demos.json                        реестр демо-сайтов
+  _template/                        заготовка нового демо
 tools/
+  build.py                          сборка: пререндер для поиска, минификация, версии файлов
+  demos.py                          проверка демо и создание нового из заготовки
+  parity.mjs                        демо-клиент считает так же, как сервер (Node)
   screenshots.py                    скриншоты и OG-картинка (Playwright)
   lh_summary.py                     сводка отчётов Lighthouse
+render.yaml                         деплой API, PostgreSQL и Redis на Render одной кнопкой
 .github/workflows/
-  ci.yml                            тесты API, линтеры, проверка ссылок, сборка Docker
+  ci.yml                            тесты API, паритет с демо, проверка демо, ссылки, сборка Docker
+  deploy.yml                        сборка сайта и публикация на GitHub Pages
   screenshots.yml                   скриншоты и Lighthouse с автокоммитом
 ```
 
-**Почему фронтенд без фреймворков.** Для сайтов малого бизнеса важнее всего скорость загрузки с мобильного и простота поддержки. Чистые HTML, CSS и JS открываются с любого хостинга и не требуют сборки, а каждый демо-проект — один файл, который легко взять за основу под реального клиента. Сложная логика живёт на сервере.
+**Почему фронтенд без фреймворков.** Для сайтов малого бизнеса важнее всего скорость загрузки с мобильного и простота поддержки. Чистые HTML, CSS и JS открываются с любого хостинга, а каждый демо-проект — один файл, который легко взять за основу под реального клиента. Сборка нужна только для публикации и ничего не меняет в исходниках: страницы по-прежнему открываются локально как есть. Сложная логика живёт на сервере.
+
+**Новое демо** создаётся одной командой, она копирует заготовку и прописывает проект во всех нужных местах:
+
+```bash
+python tools/demos.py new coffee "Кофейня «Пенка»" --niche "Кофейня" --type site --opts booking,tg
+python tools/demos.py check
+```
+
+**Сборка локально** (нужны Playwright и Node):
+
+```bash
+pip install playwright && python -m playwright install chromium
+python tools/build.py          # результат в _site/
+```
 
 ## Запуск локально
 

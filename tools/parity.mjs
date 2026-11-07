@@ -45,5 +45,5 @@ for (const c of cases.slots) {
   check(c.title, r.error ? r.error.message : null, c.error);
 }
 
-console.log(failed ? `\nРасхождений: ${failed}` : `\nВсе ${cases.orders.length + cases.slots.length} примеров совпадают с сервером`);
+console.log(failed ? `\nРасхождений: ${failed}` : `\nСовпадают с сервером все примеры: ${cases.orders.length + cases.slots.length}`);
 process.exit(failed ? 1 : 0);
