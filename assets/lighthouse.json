@@ -3,14 +3,15 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 82,
+        "performance": 75,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
-      "cls": "0.33",
+      "lcp": "3.4 s",
+      "cls": "0.333",
       "issues": [
+        "Largest Contentful Paint",
         "Cumulative Layout Shift",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -22,12 +23,12 @@
     },
     "barbershop": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 95,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
+      "lcp": "1.5 s",
       "cls": "0",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -40,14 +41,16 @@
     },
     "cafe": {
       "scores": {
-        "performance": 99,
+        "performance": 86,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.9 s",
-      "cls": "0.012",
+      "lcp": "4.2 s",
+      "cls": "0.019",
       "issues": [
+        "Largest Contentful Paint",
+        "Time to Interactive",
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -65,13 +68,13 @@
     },
     "dental": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
-      "cls": "0.034",
+      "lcp": "1.8 s",
+      "cls": "0.033",
       "issues": [
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -89,12 +92,12 @@
     },
     "fitness": {
       "scores": {
-        "performance": 99,
+        "performance": 100,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.0 s",
+      "lcp": "1.5 s",
       "cls": "0",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -107,15 +110,14 @@
     },
     "florist": {
       "scores": {
-        "performance": 97,
+        "performance": 98,
         "accessibility": 95,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "2.2 s",
-      "cls": "0.036",
+      "cls": "0.018",
       "issues": [
-        "Max Potential First Input Delay",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
       "a11y": {
@@ -126,13 +128,13 @@
     },
     "home-desktop": {
       "scores": {
-        "performance": 95,
+        "performance": 93,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.5 s",
-      "cls": "0.132",
+      "lcp": "1.0 s",
+      "cls": "0.13",
       "issues": [
         "Cumulative Layout Shift"
       ],
@@ -140,15 +142,14 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 90,
+        "performance": 97,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.6 s",
-      "cls": "0.023",
+      "lcp": "2.1 s",
+      "cls": "0",
       "issues": [
-        "Total Blocking Time",
         "Max Potential First Input Delay",
         "Links do not have a discernible name"
       ],
@@ -160,12 +161,12 @@
     },
     "miniapp": {
       "scores": {
-        "performance": 94,
+        "performance": 95,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
+      "lcp": "2.4 s",
       "cls": "0",
       "issues": [
         "First Contentful Paint",
@@ -202,7 +203,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.6 s",
+      "lcp": "1.7 s",
       "cls": "0.065",
       "issues": [],
       "a11y": {}
