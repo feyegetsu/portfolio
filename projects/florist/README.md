@@ -17,4 +17,4 @@
 - Закрытие корзины по Esc и клику на фон
 - Учёт prefers-reduced-motion
 
-Один HTML-файл без зависимостей. Анимации из общего [`motion.js`](../shared/motion.js).
+Один HTML-файл без сборки. Анимации из общего [`motion.js`](../shared/motion.js), данные через [`api.js`](../shared/api.js).

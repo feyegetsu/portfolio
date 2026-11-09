@@ -662,7 +662,7 @@ h2 + .included, h2 + .steps { margin-top: 40px; }
 }
 
 /* ================= Чёрно-белая тема =================
- * Цвет на главной остался только в превью работ, и то при наведении: это сайты клиентов, у каждого свой.
+ * Цвет на главной остался только в превью работ: это сайты клиентов, у каждого свой.
  * Иерархия держится на яркости: главное белое, второстепенное серое, фон почти чёрный. */
 .btn { background: #fff; color: #0a0a0a; }
 .btn:hover { box-shadow: 0 14px 34px -16px rgba(255, 255, 255, .55); }
@@ -678,10 +678,6 @@ h2 + .included, h2 + .steps { margin-top: 40px; }
 .logo span { color: #8f8f8f; }
 .dot { background: #fff; animation-name: ping-bw; }
 @keyframes ping-bw { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .55); } 70%, 100% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); } }
-
-/* Превью работ и админки — в оттенках серого, цвет появляется при наведении */
-.work__shot, .work__preview iframe, .backend__shot img { filter: grayscale(1) contrast(1.05); transition: transform 1.2s var(--ease), filter .5s; }
-.work:hover .work__shot, .work:focus-within .work__shot, .backend__shot:hover img { filter: none; }
 
 /* Уведомление Telegram и макет телефона без цвета */
 .push__icon { background: #fff; }

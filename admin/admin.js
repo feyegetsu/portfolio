@@ -344,7 +344,7 @@
         <small class="muted">Не выбран ни один сайт — доступ ко всем.</small>
         <div><button class="btn btn--primary">Добавить</button></div>
       </form>
-      <div class="notice">Сотрудник видит только свои сайты. Сотрудник меняет статусы, администратор ещё и каталог, владелец управляет командой.</div>`;
+      <div class="notice">Сотрудник видит только свои сайты и меняет статусы, администратор ещё и каталог, владелец управляет командой.</div>`;
     $("userSites").onclick = (e) => { const b = e.target.closest("[data-us]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); };
     $("addUser").onsubmit = async (e) => {
       e.preventDefault();
