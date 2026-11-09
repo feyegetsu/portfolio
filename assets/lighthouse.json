@@ -3,15 +3,14 @@
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 75,
+        "performance": 82,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.4 s",
-      "cls": "0.333",
+      "lcp": "2.1 s",
+      "cls": "0.356",
       "issues": [
-        "Largest Contentful Paint",
         "Cumulative Layout Shift",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -28,7 +27,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.5 s",
+      "lcp": "1.4 s",
       "cls": "0",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -41,16 +40,15 @@
     },
     "cafe": {
       "scores": {
-        "performance": 86,
+        "performance": 97,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "4.2 s",
-      "cls": "0.019",
+      "lcp": "2.5 s",
+      "cls": "0.011",
       "issues": [
         "Largest Contentful Paint",
-        "Time to Interactive",
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -73,7 +71,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.8 s",
+      "lcp": "1.4 s",
       "cls": "0.033",
       "issues": [
         "Uses ARIA roles on incompatible elements",
@@ -97,7 +95,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.5 s",
+      "lcp": "1.4 s",
       "cls": "0",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -128,13 +126,13 @@
     },
     "home-desktop": {
       "scores": {
-        "performance": 93,
+        "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.0 s",
-      "cls": "0.13",
+      "lcp": "0.5 s",
+      "cls": "0.129",
       "issues": [
         "Cumulative Layout Shift"
       ],
@@ -142,31 +140,32 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 97,
+        "performance": 96,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.1 s",
-      "cls": "0",
+      "lcp": "2.0 s",
+      "cls": "0.001",
       "issues": [
         "Max Potential First Input Delay",
+        "Time to Interactive",
         "Links do not have a discernible name"
       ],
       "a11y": {
         "link-name": [
-          "body > header.header > div.container > a#headerCta <a href=\"https://t.me/feyegetsu\" class=\"btn btn--small header__cta\" id=\"headerCta\" data-contact=\"telegram\" ta"
+          "header.header > div.container > div.header__actions > a#headerCta <a href=\"https://t.me/feyegetsu\" class=\"btn btn--small header__cta\" id=\"headerCta\" data-contac"
         ]
       }
     },
     "miniapp": {
       "scores": {
-        "performance": 95,
+        "performance": 94,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.4 s",
+      "lcp": "2.5 s",
       "cls": "0",
       "issues": [
         "First Contentful Paint",
@@ -180,13 +179,13 @@
     },
     "realty": {
       "scores": {
-        "performance": 98,
+        "performance": 99,
         "accessibility": 97,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "2.0 s",
-      "cls": "0.058",
+      "cls": "0.057",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -203,7 +202,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.7 s",
+      "lcp": "1.4 s",
       "cls": "0.065",
       "issues": [],
       "a11y": {}
