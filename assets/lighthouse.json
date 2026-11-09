@@ -1,15 +1,15 @@
 {
-  "date": "2026-11-07",
+  "date": "2026-11-09",
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 81,
+        "performance": 82,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "2.1 s",
-      "cls": "0.356",
+      "cls": "0.333",
       "issues": [
         "Cumulative Layout Shift",
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -27,7 +27,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.5 s",
+      "lcp": "1.7 s",
       "cls": "0",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -40,16 +40,14 @@
     },
     "cafe": {
       "scores": {
-        "performance": 86,
+        "performance": 99,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "4.2 s",
-      "cls": "0.016",
+      "lcp": "2.0 s",
+      "cls": "0.015",
       "issues": [
-        "Largest Contentful Paint",
-        "Time to Interactive",
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -67,13 +65,13 @@
     },
     "dental": {
       "scores": {
-        "performance": 100,
+        "performance": 99,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "1.8 s",
-      "cls": "0.033",
+      "cls": "0.034",
       "issues": [
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
@@ -114,8 +112,8 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.7 s",
-      "cls": "0.037",
+      "lcp": "1.5 s",
+      "cls": "0.044",
       "issues": [
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -127,30 +125,29 @@
     },
     "home-desktop": {
       "scores": {
-        "performance": 97,
+        "performance": 93,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "0.5 s",
+      "lcp": "1.2 s",
       "cls": "0.104",
       "issues": [
+        "First Contentful Paint",
         "Cumulative Layout Shift"
       ],
       "a11y": {}
     },
     "home-mobile": {
       "scores": {
-        "performance": 90,
+        "performance": 96,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "3.0 s",
-      "cls": "0.023",
+      "lcp": "2.2 s",
+      "cls": "0",
       "issues": [
-        "First Contentful Paint",
-        "Largest Contentful Paint",
         "Max Potential First Input Delay",
         "Links do not have a discernible name"
       ],
@@ -162,12 +159,12 @@
     },
     "miniapp": {
       "scores": {
-        "performance": 94,
+        "performance": 91,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
+      "lcp": "2.8 s",
       "cls": "0",
       "issues": [
         "First Contentful Paint",
@@ -205,7 +202,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.5 s",
+      "lcp": "1.7 s",
       "cls": "0.044",
       "issues": [],
       "a11y": {}
