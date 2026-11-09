@@ -4,7 +4,7 @@
   "lang": "ru",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b0d12",
-  "theme_color": "#0b0d12",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
   "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }
