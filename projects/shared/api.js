@@ -59,15 +59,26 @@
   };
 
   // Расчёт заказа как на сервере (backend/app/pricing.py): цена из каталога, размеры, добавки, промокод, доставка
+  const MAX_QTY = 99, MAX_UNITS = 200;
   function priceOrder(rules, catalog, items, mode, promo) {
     const bad = (m) => new ApiError(m, 422);
-    const lines = items.filter((i) => !["delivery", "promo"].includes(String(i.ref))).map((i) => {
+    // Одинаковые позиции из разных строк склеиваем, как _merge на сервере: порядок — по первому появлению
+    const merged = new Map();
+    for (const i of items) {
+      const ref = String(i.ref);
+      if (["delivery", "promo"].includes(ref)) continue;
+      const qty = Number(i.qty);
+      if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) throw bad("Количество от 1 до 99");
+      if (merged.has(ref)) merged.get(ref).qty += qty;
+      else merged.set(ref, { ...i, ref, qty });
+    }
+    const lines = [...merged.values()].map((i) => {
       const parts = String(i.ref || "").split(":");
       const base = catalog.find((c) => c.ref === parts[0]);
       if (!base) throw bad(`Позиции «${i.name || i.ref}» нет в меню, обновите страницу`);
       if (!base.active) throw new ApiError(`«${base.name}» закончилось`, 409);
-      const qty = Number(i.qty);
-      if (!Number.isInteger(qty) || qty < 1 || qty > 99) throw bad("Количество от 1 до 99");
+      const qty = i.qty;
+      if (qty > MAX_QTY) throw bad(`«${base.name}»: не больше ${MAX_QTY} шт. в одном заказе`);
       let price = base.price;
       const mods = [];
       if (parts.length > 1) {
@@ -87,6 +98,7 @@
       return { ref: String(i.ref), name: base.name + (mods.length ? ` (${mods.join(", ")})` : ""), qty, price };
     });
     if (!lines.length) throw bad("Корзина пуста");
+    if (lines.reduce((t, l) => t + l.qty, 0) > MAX_UNITS) throw bad(`Не больше ${MAX_UNITS} штук в одном заказе`);
     const subtotal = lines.reduce((t, l) => t + l.price * l.qty, 0);
     let discount = 0;
     const code = String(promo || "").trim().toUpperCase();

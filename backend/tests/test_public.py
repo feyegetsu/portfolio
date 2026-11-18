@@ -124,3 +124,9 @@ def test_sushi_catalog_seeded_and_delivery_counted_by_server(client):
     body = {"items": items, "name": "Иван", "phone": PHONE, "mode": "delivery", "address": "ул. Примерная, 1"}
     r = client.post("/api/v1/sites/sushi/orders", json=body)
     assert client.get(f"/api/v1/sites/sushi/orders/{r.json()['token']}").json()["total"] == 590 + 199
+
+
+def test_duplicate_lines_cannot_bypass_quantity_limit(client):
+    # BUG-014: 50 одинаковых строк по 99 штук проходили как заказ на 4 950 сетов
+    body = {"items": [{"ref": "s2", "qty": 99}] * 50, "name": "Иван", "phone": PHONE, "mode": "pickup"}
+    assert client.post("/api/v1/sites/sushi/orders", json=body).status_code == 422

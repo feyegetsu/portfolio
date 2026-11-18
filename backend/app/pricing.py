@@ -11,6 +11,8 @@ from .schemas import OrderItem
 from .sites import Pricing
 
 SERVICE_REFS = {"delivery", "promo"}  # строки, которые раньше присылал браузер: теперь их считает сервер
+MAX_QTY = 99     # штук одной позиции в заказе (после склейки одинаковых строк)
+MAX_UNITS = 200  # штук всего в заказе
 
 
 def _bad(msg: str) -> HTTPException:
@@ -29,6 +31,8 @@ def _line(item: OrderItem, catalog: dict[str, CatalogItem], rules: Pricing) -> d
         raise _bad(f"Позиции «{item.name}» нет в меню, обновите страницу")
     if not base.active:
         raise HTTPException(status.HTTP_409_CONFLICT, f"«{base.name}» закончилось")
+    if item.qty > MAX_QTY:
+        raise _bad(f"«{base.name}»: не больше {MAX_QTY} шт. в одном заказе")
     price, mods = base.price, []
     if len(parts) > 1:
         if len(parts) > 3 or base.category not in rules.sized_categories:
@@ -53,10 +57,22 @@ def _line(item: OrderItem, catalog: dict[str, CatalogItem], rules: Pricing) -> d
     return {"ref": item.ref, "name": name, "qty": item.qty, "price": price}
 
 
+def _merge(items: list[OrderItem]) -> list[OrderItem]:
+    """Одинаковые позиции из разных строк — одна строка: иначе 50 строк по 99 штук обходили бы лимит количества."""
+    merged: dict[str, OrderItem] = {}
+    for i in items:
+        if i.ref in SERVICE_REFS:
+            continue
+        merged[i.ref] = merged[i.ref].model_copy(update={"qty": merged[i.ref].qty + i.qty}) if i.ref in merged else i
+    return list(merged.values())
+
+
 def price_order(items: list[OrderItem], catalog: dict[str, CatalogItem], rules: Pricing, mode: str, promo: str) -> list[dict]:
-    lines = [_line(i, catalog, rules) for i in items if i.ref not in SERVICE_REFS]
+    lines = [_line(i, catalog, rules) for i in _merge(items)]
     if not lines:
         raise _bad("Корзина пуста")
+    if sum(line["qty"] for line in lines) > MAX_UNITS:
+        raise _bad(f"Не больше {MAX_UNITS} штук в одном заказе")
     subtotal = sum(line["price"] * line["qty"] for line in lines)
     discount = 0
     code = promo.strip().upper()
