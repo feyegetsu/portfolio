@@ -53,3 +53,20 @@ def test_bar_age_gate_is_modal(page, site, errors):
         assert page.evaluate(INSIDE, "#gate"), "до ответа на вопрос о возрасте фокус ушёл на сайт"
     page.locator("#gateYes").click()
     expect(page.locator("#gate")).to_be_hidden()
+
+
+def test_kanban_keyboard(page, site, errors):
+    # A11Y-003: карточку Taskly можно перенести в «Готово» без мыши
+    page.goto(f"{site}/projects/saas/")
+    task = page.locator(".col[data-col='todo'] .task").first
+    title = task.get_attribute("data-title")
+    task.focus()
+    page.keyboard.press("ArrowRight")
+    page.keyboard.press("ArrowRight")
+    moved = page.locator(f".col[data-col='done'] .task[data-title='{title}']")
+    expect(moved).to_have_count(1)
+    expect(moved).to_be_focused()
+    expect(page.locator("#boardLive")).to_contain_text("Готово")
+    expect(page.locator(".confetti").first).to_be_attached()
+    page.keyboard.press("ArrowUp")
+    assert page.locator(".col[data-col='done'] .task").first.get_attribute("data-title") == title

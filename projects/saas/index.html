@@ -65,6 +65,8 @@
     .task { background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(13, 15, 26, .06); cursor: grab; user-select: none; transition: transform .15s, box-shadow .15s; font-size: 14px; }
     .task:hover { box-shadow: 0 6px 16px -8px rgba(13, 15, 26, .3); }
     .task.dragging { opacity: .4; }
+    .task:focus-visible { outline: 3px solid var(--indigo); outline-offset: 2px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .task .lbl { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
     .task .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--muted); }
     .ava { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 700; }
@@ -177,7 +179,9 @@
 
       <div class="app" data-reveal="zoom" style="--d:200ms">
         <div class="app__bar"><i></i><i></i><i></i><span>Taskly · Запуск сайта</span><em class="app__hint">Перетащите карточку ↔</em></div>
+        <p class="sr-only" id="boardHelp">Карточки можно двигать с клавиатуры: стрелки влево и вправо — в соседнюю колонку, вверх и вниз — порядок в колонке.</p>
         <div class="board" id="board"></div>
+        <div class="sr-only" id="boardLive" role="status" aria-live="polite"></div>
       </div>
     </div>
   </section>
@@ -269,8 +273,8 @@
       ["done", "Готово", [["Логотип", "Дизайн", "К", "✓"]]],
     ];
     $("board").innerHTML = cols.map(([id, title, tasks]) => `
-      <div class="col" data-col="${id}"><div class="col__title">${title}<b>${tasks.length}</b></div>
-        ${tasks.map(([t, l, p, d]) => `<div class="task" draggable="true"><span class="lbl" style="background:${labels[l][0]};color:${labels[l][1]}">${l}</span><div>${t}</div>
+      <div class="col" data-col="${id}" role="group" aria-label="${title}"><div class="col__title">${title}<b>${tasks.length}</b></div>
+        ${tasks.map(([t, l, p, d]) => `<div class="task" draggable="true" tabindex="0" aria-describedby="boardHelp" data-title="${t}"><span class="lbl" style="background:${labels[l][0]};color:${labels[l][1]}">${l}</span><div>${t}</div>
           <div class="meta"><span>📅 ${d}</span><span class="ava" style="background:${people[p]}">${p}</span></div></div>`).join("")}
       </div>`).join("");
 
@@ -313,6 +317,35 @@
       document.querySelectorAll(".col").forEach(c => c.classList.remove("over"));
       dropInto(col, p.clientX, p.clientY);
       dragged = null;
+    });
+
+    // Клавиатура (WCAG 2.1.1, 2.5.7): у перетаскивания есть альтернатива — стрелки на карточке в фокусе
+    const COLS = [...document.querySelectorAll(".col")];
+    const colTitle = (col) => col.querySelector(".col__title").firstChild.textContent.trim();
+    $("board").addEventListener("keydown", (e) => {
+      const task = e.target.closest(".task");
+      if (!task || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+      e.preventDefault();
+      const col = task.closest(".col");
+      let message = "";
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        const target = COLS[COLS.indexOf(col) + (e.key === "ArrowRight" ? 1 : -1)];
+        if (!target) return;
+        target.appendChild(task);
+        message = `«${task.dataset.title}» — в колонке «${colTitle(target)}»`;
+        if (target.dataset.col === "done") {
+          const r = task.getBoundingClientRect();
+          celebrate(r.left + r.width / 2, r.top + r.height / 2);
+        }
+      } else {
+        const sibling = e.key === "ArrowUp" ? task.previousElementSibling : task.nextElementSibling;
+        if (!sibling || !sibling.classList.contains("task")) return;
+        e.key === "ArrowUp" ? col.insertBefore(task, sibling) : col.insertBefore(sibling, task);
+        message = `«${task.dataset.title}»: ${[...col.querySelectorAll(".task")].indexOf(task) + 1}-я в колонке «${colTitle(col)}»`;
+      }
+      updateCounts();
+      task.focus();
+      $("boardLive").textContent = message;
     });
 
     function celebrate(x, y) {
