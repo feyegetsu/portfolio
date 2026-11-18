@@ -330,11 +330,20 @@
   // ---------- Команда ----------
   async function team() {
     const users = await api.admin.users();
+    const roleSelect = (u) => `<select class="status" data-user-role="${u.id}" aria-label="Роль: ${esc(u.name)}">${Object.entries(ROLE_NAME)
+      .map(([k, v]) => `<option value="${k}"${k === u.role ? " selected" : ""}>${v}</option>`).join("")}</select>`;
+    const siteChips = (u) => `<div class="chips" data-user-sites="${u.id}" role="group" aria-label="Сайты: ${esc(u.name)}">${api.SITES.map((s) =>
+      `<button type="button" class="chip" data-us="${s.slug}" aria-pressed="${u.sites !== null && u.sites.includes(s.slug)}">${esc(s.name)}</button>`).join("")}</div>
+      <small class="muted">Не выбран ни один — все сайты.</small> <button class="btn btn--sm" data-save-sites="${u.id}">Сохранить доступ</button>`;
     $("content").innerHTML = `
       <div class="table-wrap"><table class="cards"><thead><tr><th>Сотрудник</th><th>Роль</th><th>Доступ</th><th></th></tr></thead>
-      <tbody>${users.map((u) => `<tr><td class="wide"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td><td data-label="Роль">${ROLE_NAME[u.role]}</td>
-        <td data-label="Доступ">${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</td>
-        <td class="actions">${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<button class="btn btn--sm btn--danger" data-remove="${u.id}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
+      <tbody>${users.map((u) => `<tr><td class="wide"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td>
+        <td data-label="Роль">${roleSelect(u)}</td>
+        <td data-label="Доступ"><details><summary>${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</summary>${siteChips(u)}</details></td>
+        <td class="actions">${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<details class="reset"><summary class="btn btn--sm">Пароль</summary>
+          <input type="password" minlength="8" placeholder="Новый пароль" aria-label="Новый пароль: ${esc(u.name)}" data-pass-input="${u.id}">
+          <button class="btn btn--sm" data-set-pass="${u.id}">Сохранить</button></details>
+          <button class="btn btn--sm btn--danger" data-remove="${u.id}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
       <form class="panel" id="addUser" style="display:grid;gap:12px">
         <h2>Добавить сотрудника</h2>
         <div class="add-form add-form--user">
@@ -347,7 +356,9 @@
         <div><button class="btn btn--primary">Добавить</button></div>
       </form>
       <div class="notice">Сотрудник видит только свои сайты и меняет статусы, администратор ещё и каталог, владелец управляет командой.</div>`;
-    $("userSites").onclick = (e) => { const b = e.target.closest("[data-us]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); };
+    $("content").querySelectorAll("[data-user-sites], #userSites").forEach((g) => g.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-us]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true");
+    }));
     $("addUser").onsubmit = async (e) => {
       e.preventDefault();
       const f = e.target;
@@ -381,8 +392,8 @@
     const d = t.dataset;
     // Если сервер отказал (например, слот уже занят), перерисовываем список: в нём останется настоящий статус
     if (d.lead) { try { await run(() => api.admin.updateLead(d.lead, t.value), "Статус заявки обновлён"); t.className = `status s-${t.value}`; updateBadges(); } catch { render(); } }
-    if (d.booking) { try { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); } finally { bookings(); } }
-    if (d.order) { try { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); } finally { orders(); } }
+    if (d.booking) { try { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); } catch { /* ошибку показал run */ } finally { bookings(); } }
+    if (d.order) { try { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); } catch { /* ошибку показал run */ } finally { orders(); } }
     if (d.price) {
       // Пустое поле или не целое число ≥ 1 не отправляем: Number("") === 0, и позиция стала бы бесплатной
       const price = Number(t.value);
@@ -397,6 +408,7 @@
       } catch { t.value = t.defaultValue; }
     }
     if (d.active) { await run(() => api.admin.updateCatalog(d.active, { active: t.checked }), t.checked ? "Снова в продаже" : "Убрано в стоп-лист"); }
+    if (d.userRole) { try { await run(() => api.admin.updateUser(d.userRole, { role: t.value }), "Роль изменена"); } catch { /* ошибку показал run */ } finally { team(); } }
   });
   $("content").addEventListener("click", async (e) => {
     const t = e.target.closest("button");
@@ -406,6 +418,16 @@
     if (d.del) {
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Точно?"; setTimeout(() => { t.dataset.confirm = ""; t.textContent = "Удалить"; }, 2500); return; }
       await run(() => api.admin.deleteCatalog(d.del), "Позиция удалена"); catalog();
+    }
+    if (d.saveSites) {
+      const sites = [...$("content").querySelectorAll(`[data-user-sites="${d.saveSites}"] [aria-pressed="true"]`)].map((b) => b.dataset.us);
+      try { await run(() => api.admin.updateUser(d.saveSites, { sites: sites.length ? sites : null }), "Доступ сохранён"); } catch { /* ошибку показал run */ } finally { team(); }
+    }
+    if (d.setPass) {
+      const input = $("content").querySelector(`[data-pass-input="${d.setPass}"]`);
+      if (input.value.length < 8) { toast("Пароль — от 8 символов", true); input.focus(); return; }
+      await run(() => api.admin.updateUser(d.setPass, { password: input.value }), "Пароль изменён, прежние входы сотрудника закрыты");
+      team();
     }
     if (d.remove) {
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Точно?"; setTimeout(() => { t.dataset.confirm = ""; t.textContent = "Удалить"; }, 2500); return; }

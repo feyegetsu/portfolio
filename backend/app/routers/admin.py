@@ -28,6 +28,7 @@ from ..schemas import (
     Stats,
     UserIn,
     UserOut,
+    UserPatch,
 )
 from ..security import hash_password
 from ..sites import DEFAULT_TZ, SITES
@@ -247,11 +248,20 @@ def list_users(db: DB):
     return db.scalars(select(User).order_by(User.id)).all()
 
 
+def _check_sites(sites: list[str] | None) -> None:
+    if sites is not None and any(s not in SITES for s in sites):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Неизвестный сайт")
+
+
+def _owners_left(db, without: User) -> int:
+    """Сколько владельцев останется, если этот пользователь перестанет быть владельцем."""
+    return db.scalar(select(func.count()).select_from(User).where(User.role == "owner", User.id != without.id))
+
+
 @router.post("/users", response_model=UserOut, status_code=201, dependencies=[Depends(require("owner"))])
 def add_user(body: UserIn, db: DB):
-    if body.sites is not None and any(s not in SITES for s in body.sites):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Неизвестный сайт")
-    user = User(email=body.email.lower().strip(), name=body.name, role=body.role, sites=body.sites,
+    _check_sites(body.sites)
+    user = User(email=body.email, name=body.name, role=body.role, sites=body.sites,
                 password_hash=hash_password(body.password))
     db.add(user)
     try:
@@ -262,6 +272,32 @@ def add_user(body: UserIn, db: DB):
     return user
 
 
+@router.patch("/users/{user_id}", response_model=UserOut, dependencies=[Depends(require("owner"))])
+def update_user(user_id: int, body: UserPatch, db: DB):
+    """Имя, роль, сайты и пароль сотрудника. Смена роли, сайтов или пароля гасит его выданные токены."""
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Не найдено")
+    changes = body.model_dump(exclude_unset=True)
+    if ("role" in changes and changes["role"] is None) or ("name" in changes and changes["name"] is None):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Роль и имя не могут быть пустыми")
+    _check_sites(changes.get("sites"))
+    if user.role == "owner" and changes.get("role", "owner") != "owner" and not _owners_left(db, user):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Это последний владелец: назначьте другого, прежде чем менять роль")
+    revoke = False
+    for key in ("name", "role", "sites"):
+        if key in changes and changes[key] != getattr(user, key):
+            setattr(user, key, changes[key])
+            revoke = revoke or key != "name"
+    if changes.get("password"):
+        user.password_hash = hash_password(changes["password"])
+        revoke = True
+    if revoke:
+        user.token_version += 1
+    db.commit()
+    return user
+
+
 @router.delete("/users/{user_id}", status_code=204)
 def remove_user(user_id: int, owner: Annotated[User, Depends(require("owner"))], db: DB):
     if user_id == owner.id:
@@ -269,5 +305,7 @@ def remove_user(user_id: int, owner: Annotated[User, Depends(require("owner"))],
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Не найдено")
+    if user.role == "owner" and not _owners_left(db, user):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Нельзя удалить последнего владельца")
     db.delete(user)
     db.commit()

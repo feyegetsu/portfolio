@@ -271,6 +271,7 @@
         stats: (f) => req("GET", `/api/v1/admin/stats${qs(f)}`),
         users: () => req("GET", "/api/v1/admin/users"),
         addUser: (b) => req("POST", "/api/v1/admin/users", b),
+        updateUser: (id, b) => req("PATCH", `/api/v1/admin/users/${id}`, b),
         removeUser: (id) => req("DELETE", `/api/v1/admin/users/${id}`),
         exportLeads: async (f) => (await req("GET", `/api/v1/admin/leads.csv${qs(f)}`, null, { raw: true })).text(),
       },
@@ -425,6 +426,15 @@
       if (s.exclusive && same.length) throw new ApiError("Это время уже заняли, выберите другое", 409);
       const capacity = s.resources ? s.resources[resource] : s.capacity;
       if (capacity && same.length >= capacity) throw new ApiError("На это время мест уже нет", 409);
+    }
+
+    // Роль из списка и существующие сайты, как UserIn/UserPatch на сервере; пустой список сайтов запрещён
+    function checkUserFields(b) {
+      if ("role" in b && !ROLE_LEVEL[b.role]) throw new ApiError("Неизвестная роль", 422);
+      if ("sites" in b && b.sites !== null) {
+        if (!Array.isArray(b.sites) || !b.sites.length) throw new ApiError("Выберите хотя бы один сайт", 422);
+        if (b.sites.some((s) => !SITE[s])) throw new ApiError("Неизвестный сайт", 422);
+      }
     }
 
     const LEAD_STATUSES = ["new", "in_progress", "done", "cancelled"];
@@ -595,12 +605,34 @@
         users: () => later(() => { requireUser("owner"); return load().users.map(publicUser); }),
         addUser: (b) => later(() => {
           requireUser("owner");
-          if (!b.email || !b.name || !b.password || b.password.length < 8) throw new ApiError("Заполните e-mail, имя и пароль от 8 символов", 422);
+          const email = String(b.email || "").trim().toLowerCase();
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) throw new ApiError("Некорректный e-mail", 422);
+          const name = String(b.name || "").trim();
+          if (!name || !b.password || b.password.length < 8) throw new ApiError("Заполните имя и пароль от 8 символов", 422);
+          const role = b.role || "staff";
+          checkUserFields({ role, sites: b.sites ?? null });
           const db = load();
-          const email = b.email.trim().toLowerCase();
           if (db.users.some((u) => u.email === email)) throw new ApiError("Пользователь с таким e-mail уже есть", 409);
-          const u = { id: db.seq++, email, name: b.name, password: b.password, role: b.role || "staff", sites: b.sites ?? null };
+          const u = { id: db.seq++, email, name, password: b.password, role, sites: b.sites ?? null };
           db.users.push(u);
+          save(db);
+          return publicUser(u);
+        }),
+        updateUser: (id, b) => later(() => {
+          requireUser("owner");
+          const db = load();
+          const u = db.users.find((x) => x.id === Number(id));
+          if (!u) throw new ApiError("Не найдено", 404);
+          checkUserFields(b);
+          if ("name" in b && !String(b.name || "").trim()) throw new ApiError("Имя не может быть пустым", 422);
+          if ("password" in b && String(b.password || "").length < 8) throw new ApiError("Пароль — от 8 символов", 422);
+          if (u.role === "owner" && "role" in b && b.role !== "owner" && !db.users.some((x) => x.role === "owner" && x.id !== u.id)) {
+            throw new ApiError("Это последний владелец: назначьте другого, прежде чем менять роль", 422);
+          }
+          if ("name" in b) u.name = String(b.name).trim();
+          if ("role" in b) u.role = b.role;
+          if ("sites" in b) u.sites = b.sites;
+          if ("password" in b) u.password = b.password;
           save(db);
           return publicUser(u);
         }),
@@ -608,7 +640,10 @@
           const me = requireUser("owner");
           if (Number(id) === me.id) throw new ApiError("Нельзя удалить самого себя", 422);
           const db = load();
-          db.users = db.users.filter((u) => u.id !== Number(id));
+          const u = db.users.find((x) => x.id === Number(id));
+          if (!u) throw new ApiError("Не найдено", 404);
+          if (u.role === "owner" && !db.users.some((x) => x.role === "owner" && x.id !== u.id)) throw new ApiError("Нельзя удалить последнего владельца", 422);
+          db.users = db.users.filter((x) => x !== u);
           save(db);
           return null;
         }),

@@ -200,12 +200,34 @@ class UserOut(ORM):
     sites: list[str] | None
 
 
+Password = Annotated[str, Field(min_length=8, max_length=200)]
+# None — доступ ко всем сайтам; пустой список запрещён: такой сотрудник не видел бы ничего
+Sites = Annotated[list[str] | None, Field(min_length=1)]
+
+
 class UserIn(BaseModel):
     email: Annotated[str, Field(min_length=3, max_length=200)]
     name: Name
-    password: Annotated[str, Field(min_length=8, max_length=200)]
+    password: Password
     role: Role = "staff"
-    sites: list[str] | None = None
+    sites: Sites = None
+
+    @field_validator("email")
+    @classmethod
+    def _email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not EMAIL_RE.match(v):
+            raise ValueError("Некорректный e-mail")
+        return v
+
+
+class UserPatch(BaseModel):
+    """Правка сотрудника владельцем. Поле sites передаётся явно: null — все сайты, список — только эти."""
+
+    name: Name | None = None
+    role: Role | None = None
+    sites: Sites = None
+    password: Password | None = None
 
 
 class LeadPatch(BaseModel):

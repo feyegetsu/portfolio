@@ -150,3 +150,44 @@ def test_stats_days_in_site_timezone(client, owner):
     by_day = {d["date"]: d["count"] for d in client.get("/api/v1/admin/stats", headers=owner).json()["by_day"]}
     assert by_day[msk_today.isoformat()] == 1
     assert max(by_day) == msk_today.isoformat()
+
+
+def _user(client, owner, **kw):
+    body = {"email": "u@test.dev", "name": "U", "password": "password123", **kw}
+    return client.post("/api/v1/admin/users", json=body, headers=owner)
+
+
+def test_user_validation(client, owner):
+    # BE-002: e-mail с опечаткой и пустой список сайтов делали учётку бесполезной
+    assert _user(client, owner, email="abc").status_code == 422
+    assert _user(client, owner, sites=[]).status_code == 422
+    assert _user(client, owner, sites=["nope"]).status_code == 422
+    assert _user(client, owner, sites=["cafe"]).status_code == 201
+
+
+def test_update_user_role(client, owner):
+    staff = _user(client, owner, sites=["cafe"]).json()
+    token = login(client, "u@test.dev", "password123")
+    r = client.patch(f"/api/v1/admin/users/{staff['id']}", headers=owner, json={"role": "admin", "sites": ["cafe", "dental"]})
+    assert r.status_code == 200
+    assert (r.json()["role"], r.json()["sites"]) == ("admin", ["cafe", "dental"])
+    assert client.get("/api/v1/auth/me", headers=token).status_code == 401  # права поменялись — старый токен гаснет
+    r = client.patch(f"/api/v1/admin/users/{staff['id']}", headers=owner, json={"password": "another-pass-1"})
+    assert r.status_code == 200
+    login(client, "u@test.dev", "another-pass-1")
+    assert client.patch("/api/v1/admin/users/999", headers=owner, json={"name": "X"}).status_code == 404
+    assert client.patch(f"/api/v1/admin/users/{staff['id']}", headers=owner, json={"sites": []}).status_code == 422
+
+
+def test_last_owner_is_protected(client, owner):
+    me = client.get("/api/v1/auth/me", headers=owner).json()
+    r = client.patch(f"/api/v1/admin/users/{me['id']}", headers=owner, json={"role": "admin"})
+    assert r.status_code == 422, "Единственный владелец снял с себя роль — командой больше некому управлять"
+    second = _user(client, owner, email="o2@test.dev", role="owner").json()
+    assert client.delete(f"/api/v1/admin/users/{second['id']}", headers=owner).status_code == 204
+    assert client.delete("/api/v1/admin/users/999", headers=owner).status_code == 404
+    third = _user(client, owner, email="o3@test.dev", role="owner").json()
+    # Владельцев двое: понизить себя можно, второй остаётся
+    assert client.patch(f"/api/v1/admin/users/{me['id']}", headers=owner, json={"role": "admin"}).status_code == 200
+    o3 = login(client, "o3@test.dev", "password123")
+    assert client.patch(f"/api/v1/admin/users/{third['id']}", headers=o3, json={"role": "staff", "sites": ["cafe"]}).status_code == 422
