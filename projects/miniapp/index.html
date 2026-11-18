@@ -11,6 +11,7 @@
        В обычном браузере страница не ходит на telegram.org и не ждёт его до первой отрисовки -->
   <script>if (/tgWebAppData/.test(location.hash)) document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>');</script>
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     /* Цвета берутся из темы Telegram (переменные --tg-theme-* выставляет SDK), в браузере работают запасные значения */
@@ -597,6 +598,7 @@
       sheetItem = findItem(id); sheetSize = 1; sheetExtras = [];
       renderSheet();
       $("sheet").classList.add("on"); $("sheetBg").classList.add("on");
+      sheetDialog.open();
       setMain(`Добавить · ${rub(sheetPrice())}`, () => { addToCart(sheetItem.id, sheetItem.sizes ? sheetSize : null, sheetExtras); closeSheet(); toast(`${sheetItem.name} в корзине`); });
     }
     const sheetPrice = () => sheetItem.price + (sheetItem.sizes ? SIZES[sheetSize][1] : 0) + sheetExtras.reduce((s, e) => s + EXTRAS[e][1], 0);
@@ -612,8 +614,12 @@
       if (inTG) tg.MainButton.setText(`Добавить · ${rub(sheetPrice())}`);
       else $("mainBtn").textContent = `Добавить · ${rub(sheetPrice())}`;
     }
+    // Шторка — диалог; кнопка «Добавить» внизу (mainBtn) остаётся доступной, Esc закрывает
+    const sheetDialog = PF.sheet($("sheet"), { label: "Карточка блюда", keep: [$("sheetBg"), $("mainBtn")] });
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetDialog.isOpen) closeSheet(); });
     function closeSheet() {
       $("sheet").classList.remove("on"); $("sheetBg").classList.remove("on");
+      sheetDialog.close();
       render();
     }
     $("sheetBg").addEventListener("click", closeSheet);

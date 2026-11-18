@@ -246,7 +246,7 @@
   </footer>
 
   <div class="overlay" id="overlay"></div>
-  <aside class="drawer" id="drawer" aria-label="Корзина" aria-hidden="true">
+  <aside class="drawer" id="drawer" aria-label="Корзина">
     <div class="drawer__head"><h3 id="drawerTitle">Корзина</h3><button id="drawerClose" aria-label="Закрыть">✕</button></div>
     <div class="drawer__body" id="drawerBody"></div>
     <div class="drawer__foot" id="drawerFoot"></div>
@@ -254,6 +254,7 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -383,8 +384,10 @@
     }).catch(() => {});
 
     // ---------- Шторка корзины ----------
-    const openDrawer = () => { $("drawer").classList.add("on"); $("overlay").classList.add("on"); $("drawer").setAttribute("aria-hidden", "false"); document.body.classList.add("lock"); renderCart(); };
-    const closeDrawer = () => { $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); $("drawer").setAttribute("aria-hidden", "true"); document.body.classList.remove("lock"); };
+    // Корзина — диалог: фокус внутрь, фон недоступен с клавиатуры, Esc закрывает, фокус возвращается на кнопку
+    const drawer = PF.sheet($("drawer"), { label: "Корзина", keep: [$("overlay")] });
+    const openDrawer = () => { $("drawer").classList.add("on"); $("overlay").classList.add("on"); document.body.classList.add("lock"); renderCart(); drawer.open(); };
+    const closeDrawer = () => { $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); document.body.classList.remove("lock"); drawer.close(); };
     $("cartBtn").onclick = openDrawer;
     $("drawerClose").onclick = closeDrawer;
     $("overlay").onclick = closeDrawer;

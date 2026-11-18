@@ -280,6 +280,7 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
   <script>
     window.PF_ALBUMS = {
@@ -297,11 +298,14 @@
     // ---------- Возраст: спрашиваем один раз; роботу для скриншотов не показываем ----------
     let adult = false;
     try { adult = localStorage.getItem("midnight-18") === "1"; } catch {}
-    if (!adult && !navigator.webdriver) { $("gate").hidden = false; document.body.classList.add("gate-on"); $("gateYes").focus(); }
+    // Вопрос о возрасте — модальный диалог: пока нет ответа, сайт за ним недоступен и с клавиатуры
+    const gate = PF.sheet($("gate"));
+    if (!adult && (!navigator.webdriver || new URLSearchParams(location.search).has("gate"))) { $("gate").hidden = false; document.body.classList.add("gate-on"); gate.open(); }
     $("gateYes").onclick = () => {
       try { localStorage.setItem("midnight-18", "1"); } catch {}
       $("gate").hidden = true;
       document.body.classList.remove("gate-on");
+      gate.close();
     };
 
     // ---------- Дверь: три стука открывают пароль дня ----------

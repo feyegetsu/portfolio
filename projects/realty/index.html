@@ -229,6 +229,7 @@
       <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Карточка квартиры">
@@ -337,6 +338,7 @@
     $("grid").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList.contains("obj")) openModal(+e.target.dataset.id); });
 
     let modalObj = null;
+    const modal = PF.sheet($("modal"), { label: "Карточка квартиры" });
     function openModal(id) {
       const o = modalObj = objects.find(x => x.id === id);
       $("mImg").innerHTML = `<div class="m-main">${building(o, 1100)}</div><div class="m-thumbs">${o.photos.map((_, i) => `<button data-i="${i}" class="${i ? "" : "on"}">${building(o, 200, i)}</button>`).join("")}</div>`;
@@ -351,8 +353,9 @@
       $("mSpecs").innerHTML = `<div>Площадь<b>${o.area} м²</b></div><div>Этаж<b>${o.floor} из ${o.floors}</b></div>
         <div>Тип<b>${o.type === "new" ? "Новостройка" : "Вторичка"}</b></div><div>Ипотека от<b>${fmt(Math.round(pay))} ₽/мес</b></div>`;
       $("modal").classList.add("open"); document.body.classList.add("lock");
+      modal.open();
     }
-    const closeModal = () => { $("modal").classList.remove("open"); document.body.classList.remove("lock"); };
+    const closeModal = () => { $("modal").classList.remove("open"); document.body.classList.remove("lock"); modal.close(); };
     $("mClose").onclick = closeModal;
     $("modal").addEventListener("click", e => e.target === $("modal") && closeModal());
     document.addEventListener("keydown", e => e.key === "Escape" && closeModal());

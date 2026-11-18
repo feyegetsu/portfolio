@@ -258,6 +258,7 @@
       <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <div class="overlay" id="overlay"></div>
@@ -384,10 +385,13 @@
       save();
     });
 
+    // Корзина — диалог: закрытая недоступна с клавиатуры, открытая держит фокус, Esc возвращает его на кнопку
+    const drawer = PF.sheet($("drawer"), { label: "Корзина", keep: [$("overlay")] });
     const openCart = v => {
       $("drawer").classList.toggle("open", v);
       $("overlay").classList.toggle("open", v);
       document.body.classList.toggle("lock", v);
+      v ? drawer.open() : drawer.close();
     };
     $("cartBtn").onclick = () => openCart(true);
     $("closeCart").onclick = $("overlay").onclick = () => openCart(false);
