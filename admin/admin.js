@@ -4,6 +4,8 @@
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const rub = (n) => `${Number(n || 0).toLocaleString("ru-RU")} ₽`;
+  // Ответам API не доверяем типы: числа приводим к числу, строки экранируем (esc) — даже от своего сервера
+  const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
   const SITE_NAME = Object.fromEntries(api.SITES.map((s) => [s.slug, s.name]));
   const ROLE_NAME = { owner: "Владелец", admin: "Администратор", staff: "Сотрудник" };
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
@@ -167,29 +169,29 @@
   const siteFilter = () => (state.site ? { site: state.site } : {});
   const siteTag = (s) => `<span class="site-tag">${esc(SITE_NAME[s] || s)}</span>`;
   const statusSelect = (kind, id, value, map) =>
-    `<select class="status s-${value}" data-${kind}="${id}" aria-label="Статус">${Object.entries(map).map(([k, v]) => `<option value="${k}"${k === value ? " selected" : ""}>${v}</option>`).join("")}</select>`;
+    `<select class="status s-${esc(value)}" data-${kind}="${num(id)}" aria-label="Статус">${Object.entries(map).map(([k, v]) => `<option value="${k}"${k === value ? " selected" : ""}>${v}</option>`).join("")}</select>`;
 
   // ---------- Обзор ----------
   async function overview() {
     const [s, latest] = await Promise.all([api.admin.stats(siteFilter()), api.admin.leads({ ...siteFilter(), limit: 6 })]);
-    const max = Math.max(1, ...s.by_day.map((d) => d.count));
-    const siteTotal = Math.max(1, ...Object.values(s.by_site));
+    const max = Math.max(1, ...s.by_day.map((d) => num(d.count)));
+    const siteTotal = Math.max(1, ...Object.values(s.by_site).map(num));
     $("content").innerHTML = `
       <div class="kpis">
-        <div class="kpi"><span>Заявки</span><b>${s.leads}</b><small>${s.new_leads} новых</small></div>
-        <div class="kpi"><span>Записи</span><b>${s.bookings}</b><small>на услуги и занятия</small></div>
-        <div class="kpi"><span>Заказы</span><b>${s.orders}</b><small>доставка и самовывоз</small></div>
+        <div class="kpi"><span>Заявки</span><b>${num(s.leads)}</b><small>${num(s.new_leads)} новых</small></div>
+        <div class="kpi"><span>Записи</span><b>${num(s.bookings)}</b><small>на услуги и занятия</small></div>
+        <div class="kpi"><span>Заказы</span><b>${num(s.orders)}</b><small>доставка и самовывоз</small></div>
         <div class="kpi"><span>Выручка по заказам</span><b>${rub(s.revenue)}</b><small>без отменённых</small></div>
       </div>
       <div class="grid2">
         <div class="panel"><h2>Обращения за 14 дней</h2>
           <div class="chart" role="img" aria-label="Обращения по дням">${s.by_day.map((d) => {
-            const day = new Date(d.date + "T12:00:00");
-            return `<div class="chart__bar" title="${day.toLocaleDateString("ru-RU")}: ${d.count}"><em>${d.count || ""}</em><i style="height:${(d.count / max) * 100}%"></i><small>${day.getDate()}</small></div>`;
+            const day = new Date(String(d.date).slice(0, 10) + "T12:00:00"), n = num(d.count);
+            return `<div class="chart__bar" title="${esc(day.toLocaleDateString("ru-RU"))}: ${n}"><em>${n || ""}</em><i style="height:${(n / max) * 100}%"></i><small>${num(day.getDate())}</small></div>`;
           }).join("")}</div>
         </div>
         <div class="panel"><h2>По сайтам</h2><div class="bars">${Object.entries(s.by_site).sort((a, b) => b[1] - a[1]).map(([slug, n]) =>
-          `<div><span>${esc(SITE_NAME[slug])}<b>${n}</b></span><i style="--w:${(n / siteTotal) * 100}%"></i></div>`).join("") || '<p class="muted">Пока пусто</p>'}</div></div>
+          `<div><span>${esc(SITE_NAME[slug])}<b>${num(n)}</b></span><i style="--w:${(num(n) / siteTotal) * 100}%"></i></div>`).join("") || '<p class="muted">Пока пусто</p>'}</div></div>
       </div>
       <div class="panel"><h2>Последние заявки <button class="btn btn--sm" data-goto="leads">Все заявки →</button></h2>${leadTable(latest.items, true)}</div>
       ${api.mode === "demo" ? `<div class="notice">💡 Откройте любой демо-сайт в соседней вкладке и оставьте заявку или оформите заказ. Здесь она появится сама, без перезагрузки.</div>` : ""}`;
@@ -223,13 +225,13 @@
     if (!items.length) return '<div class="empty">Заявок пока нет</div>';
     return `<div class="table-wrap"><table class="cards">
       <thead><tr><th>Дата</th><th>Сайт</th><th>Тип</th><th>Клиент</th>${compact ? "" : "<th>Детали</th>"}<th class="center">Статус</th></tr></thead>
-      <tbody>${items.map((l) => `<tr data-id="lead-${l.id}">
-        <td class="mono" data-label="Дата">${fmtDate(l.created_at)}</td>
+      <tbody>${items.map((l) => `<tr data-id="lead-${num(l.id)}">
+        <td class="mono" data-label="Дата">${esc(fmtDate(l.created_at))}</td>
         <td data-label="Сайт">${siteTag(l.site)}</td>
         <td data-label="Тип">${esc(KIND[l.kind] || l.kind)}</td>
         <td data-label="Клиент">${esc(l.name || "—")}<small>${l.phone ? `<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>` : esc(l.email)}</small></td>
         ${compact ? "" : `<td data-label="Детали" class="wide">${leadDetails(l)}</td>`}
-        <td class="center" data-label="Статус">${statusSelect("lead", l.id, l.status, LEAD_STATUS)}</td>
+        <td class="center" data-label="Статус">${statusSelect("lead", num(l.id), l.status, LEAD_STATUS)}</td>
       </tr>`).join("")}</tbody></table></div>`;
   }
 
@@ -277,9 +279,9 @@
     const groups = {};
     for (const b of items) (groups[b.starts_at.slice(0, 10)] ||= []).push(b);
     $("content").innerHTML = items.length ? Object.entries(groups).map(([day, list]) => `
-      <div class="day-group"><h3>${new Date(day + "T12:00:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}</h3>
-        ${list.map((b) => `<div class="slot ${b.status === "cancelled" ? "cancelled" : ""}" data-id="booking-${b.id}">
-          <time>${b.starts_at.slice(11, 16)}</time>
+      <div class="day-group"><h3>${esc(new Date(day + "T12:00:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }))}</h3>
+        ${list.map((b) => `<div class="slot ${b.status === "cancelled" ? "cancelled" : ""}" data-id="booking-${num(b.id)}">
+          <time>${esc(String(b.starts_at).slice(11, 16))}</time>
           <div><b>${esc(b.name)}</b> · <span class="mono">${esc(b.phone)}</span><br><small class="muted">${siteTag(b.site)} ${esc(b.resource)}${b.service ? " · " + esc(b.service) : ""}</small></div>
           <div>${statusSelect("booking", b.id, b.status, BOOKING_STATUS)}</div>
         </div>`).join("")}
@@ -291,13 +293,13 @@
   async function orders() {
     const data = await api.admin.orders({ ...siteFilter(), limit: 60 });
     $("content").innerHTML = data.items.length ? `<div class="orders">${data.items.map((o) => `
-      <article class="order" data-id="order-${o.id}">
-        <div class="order__head"><div><b>Заказ №${o.id}</b><br><small class="muted">${fmtDate(o.created_at)} · ${siteTag(o.site)}</small></div>
+      <article class="order" data-id="order-${num(o.id)}">
+        <div class="order__head"><div><b>Заказ №${num(o.id)}</b><br><small class="muted">${esc(fmtDate(o.created_at))} · ${siteTag(o.site)}</small></div>
           ${statusSelect("order", o.id, o.status, ORDER_STATUS)}</div>
         <div>${esc(o.name)} · <span class="mono">${esc(o.phone)}</span><br><small class="muted">${o.mode === "pickup" ? "Самовывоз" : "🛵 " + esc(o.address)}${o.comment ? " · " + esc(o.comment) : ""}</small></div>
-        <ul>${o.items.map((i) => `<li><span>${esc(i.name)} × ${i.qty}</span><span class="mono">${rub(i.price * i.qty)}</span></li>`).join("")}</ul>
+        <ul>${o.items.map((i) => `<li><span>${esc(i.name)} × ${num(i.qty)}</span><span class="mono">${rub(num(i.price) * num(i.qty))}</span></li>`).join("")}</ul>
         <div class="order__total"><span>Итого</span><span class="mono">${rub(o.total)}</span></div>
-        ${o.status === "cancelled" ? "" : `<div class="steps">${ORDER_FLOW.map((s) => `<button data-order-step="${o.id}" data-status="${s}" class="${ORDER_FLOW.indexOf(s) <= ORDER_FLOW.indexOf(o.status) ? "on" : ""}">${ORDER_STATUS[s]}</button>`).join("")}</div>`}
+        ${o.status === "cancelled" ? "" : `<div class="steps">${ORDER_FLOW.map((s) => `<button data-order-step="${num(o.id)}" data-status="${s}" class="${ORDER_FLOW.indexOf(s) <= ORDER_FLOW.indexOf(o.status) ? "on" : ""}">${ORDER_STATUS[s]}</button>`).join("")}</div>`}
       </article>`).join("")}</div>` : '<div class="empty">Заказов нет. Оформите заказ в Mini App или магазине цветов.</div>';
   }
 
@@ -315,9 +317,9 @@
       <div class="table-wrap"><table class="cards"><thead><tr><th>Позиция</th><th>Категория</th><th>Цена, ₽</th><th class="center">В продаже</th><th></th></tr></thead>
       <tbody>${items.map((c) => `<tr>
         <td class="wide"><b>${esc(c.name)}</b><small>${siteTag(c.site)}</small></td><td data-label="Категория">${esc(c.category)}</td>
-        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="1" step="1" value="${Number(c.price)}" data-price="${c.id}" aria-label="Цена: ${esc(c.name)}"></td>
-        <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${c.id}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
-        <td class="actions"><button class="btn btn--sm btn--danger" data-del="${c.id}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
+        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="1" step="1" value="${num(c.price)}" data-price="${num(c.id)}" aria-label="Цена: ${esc(c.name)}"></td>
+        <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${num(c.id)}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
+        <td class="actions"><button class="btn btn--sm btn--danger" data-del="${num(c.id)}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
       </tr>`).join("")}</tbody></table></div>`;
     $("addItem").onsubmit = async (e) => {
       e.preventDefault();
@@ -330,20 +332,20 @@
   // ---------- Команда ----------
   async function team() {
     const users = await api.admin.users();
-    const roleSelect = (u) => `<select class="status" data-user-role="${u.id}" aria-label="Роль: ${esc(u.name)}">${Object.entries(ROLE_NAME)
+    const roleSelect = (u) => `<select class="status" data-user-role="${num(u.id)}" aria-label="Роль: ${esc(u.name)}">${Object.entries(ROLE_NAME)
       .map(([k, v]) => `<option value="${k}"${k === u.role ? " selected" : ""}>${v}</option>`).join("")}</select>`;
-    const siteChips = (u) => `<div class="chips" data-user-sites="${u.id}" role="group" aria-label="Сайты: ${esc(u.name)}">${api.SITES.map((s) =>
+    const siteChips = (u) => `<div class="chips" data-user-sites="${num(u.id)}" role="group" aria-label="Сайты: ${esc(u.name)}">${api.SITES.map((s) =>
       `<button type="button" class="chip" data-us="${s.slug}" aria-pressed="${u.sites !== null && u.sites.includes(s.slug)}">${esc(s.name)}</button>`).join("")}</div>
-      <small class="muted">Не выбран ни один — все сайты.</small> <button class="btn btn--sm" data-save-sites="${u.id}">Сохранить доступ</button>`;
+      <small class="muted">Не выбран ни один — все сайты.</small> <button class="btn btn--sm" data-save-sites="${num(u.id)}">Сохранить доступ</button>`;
     $("content").innerHTML = `
       <div class="table-wrap"><table class="cards"><thead><tr><th>Сотрудник</th><th>Роль</th><th>Доступ</th><th></th></tr></thead>
       <tbody>${users.map((u) => `<tr><td class="wide"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td>
         <td data-label="Роль">${roleSelect(u)}</td>
         <td data-label="Доступ"><details><summary>${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</summary>${siteChips(u)}</details></td>
         <td class="actions">${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<details class="reset"><summary class="btn btn--sm">Пароль</summary>
-          <input type="password" minlength="8" placeholder="Новый пароль" aria-label="Новый пароль: ${esc(u.name)}" data-pass-input="${u.id}">
-          <button class="btn btn--sm" data-set-pass="${u.id}">Сохранить</button></details>
-          <button class="btn btn--sm btn--danger" data-remove="${u.id}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
+          <input type="password" minlength="8" placeholder="Новый пароль" aria-label="Новый пароль: ${esc(u.name)}" data-pass-input="${num(u.id)}">
+          <button class="btn btn--sm" data-set-pass="${num(u.id)}">Сохранить</button></details>
+          <button class="btn btn--sm btn--danger" data-remove="${num(u.id)}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
       <form class="panel" id="addUser" style="display:grid;gap:12px">
         <h2>Добавить сотрудника</h2>
         <div class="add-form add-form--user">

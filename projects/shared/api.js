@@ -3,7 +3,7 @@
  *
  * Два режима с одинаковым интерфейсом:
  *  - remote: запросы к бэкенду из /backend (FastAPI). Включается параметром ?api=https://адрес-api
- *            (запоминается в браузере, ?api=off возвращает демо) или переменной window.PORTFOLIO_API;
+ *            (только в этой вкладке, ?api=off возвращает демо) или переменной window.PORTFOLIO_API;
  *  - demo:   тот же контракт и те же правила (валидация, занятые слоты, цены из каталога, роли),
  *            но данные хранятся в localStorage. Так всё работает на GitHub Pages без сервера,
  *            а заявка с сайта появляется в админке, открытой в соседней вкладке, без перезагрузки.
@@ -233,20 +233,38 @@
     del(k) { try { localStorage.removeItem(k); } catch {} },
   };
   // Адрес API: в проекте клиента он зашит в window.PORTFOLIO_API, и параметр ссылки игнорируется.
-  // В портфолио ?api= работает, но чужой адрес подключается только после явного подтверждения:
-  // иначе ссылка вида …/admin/?api=https://evil.example увела бы логин и пароль на чужой сервер
+  // В портфолио ?api= работает, но с ограничениями: иначе ссылка вида …/admin/?api=https://evil.example
+  // увела бы логин, пароль и заявки посетителя на чужой сервер.
+  //  - только https (http — лишь для своего компьютера), иначе пароль ушёл бы открытым текстом;
+  //  - чужой адрес — только после подтверждения с полным URL; без вопроса — только KNOWN_APIS;
+  //  - адрес живёт в sessionStorage этой вкладки, а не навсегда в браузере;
+  //  - пока сайт подключён к серверу, сверху висит плашка с его адресом и кнопкой «Отключить».
+  // Свой задеплоенный API впишите сюда, чтобы он подключался без вопроса (адрес из Render, render.yaml)
+  const KNOWN_APIS = [];
+  const session = {
+    get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
+    del(k) { try { sessionStorage.removeItem(k); } catch {} },
+  };
+  store.del("pf-api");  // адрес, запомненный навсегда прежней версией, больше не действует
   const qp = new URLSearchParams(location.search).get("api");
   const isLocal = (u) => { try { return ["localhost", "127.0.0.1", "[::1]"].includes(new URL(u).hostname); } catch { return false; } };
-  const validUrl = (u) => { try { return ["http:", "https:"].includes(new URL(u).protocol); } catch { return false; } };
+  const allowedUrl = (u) => {
+    try {
+      const url = new URL(u);
+      return url.protocol === "https:" || (url.protocol === "http:" && isLocal(u));
+    } catch { return false; }
+  };
   if (!window.PORTFOLIO_API) {
-    if (qp === "off") store.del("pf-api");
-    else if (qp && validUrl(qp)) {
-      const url = qp.replace(/\/$/, "");
-      const ok = isLocal(url) || confirm(`Подключить сайт к серверу ${new URL(url).host}?\n\nЗаявки и пароль от админки будут уходить на этот адрес. Нажимайте «ОК», только если это ваш сервер.`);
-      if (ok) store.set("pf-api", url);
+    if (qp === "off") session.del("pf-api");
+    else if (qp && allowedUrl(qp)) {
+      const url = new URL(qp).origin;
+      const ok = isLocal(url) || KNOWN_APIS.includes(url)
+        || confirm(`Подключить сайт к серверу\n${url}\n\nЗаявки и пароль от админки будут уходить на этот адрес. Нажимайте «ОК», только если это ваш сервер.`);
+      if (ok) session.set("pf-api", url);
     }
   }
-  const BASE = window.PORTFOLIO_API || (qp !== "off" && store.get("pf-api")) || "";
+  const BASE = window.PORTFOLIO_API || (qp !== "off" && session.get("pf-api")) || "";
 
   // =====================================================================
   // remote: настоящий бэкенд
@@ -265,6 +283,10 @@
         throw new ApiError("Сервер недоступен. Проверьте соединение.", 0);
       }
       if (raw && res.ok) return res;
+      // Отвечать должен API, а не что угодно по этому адресу: принимаем только JSON
+      if (res.status !== 204 && !/^application\/json\b/i.test(res.headers.get("content-type") || "")) {
+        throw new ApiError(`Сервер ответил не как API (${res.status})`, res.status || 0);
+      }
       const data = res.status === 204 ? null : await res.json().catch(() => null);
       if (!res.ok) {
         const detail = data && data.detail;
@@ -851,6 +873,31 @@
     dlg.addEventListener("close", () => finish(dlg.returnValue === "ok"));
     dlg.showModal();
   });
+
+  // ---------- Плашка «подключено к серверу» ----------
+  // Посетитель должен видеть, что формы и вход уходят не в демо, а на конкретный сервер, и уметь отключиться
+  if (api.mode === "remote" && !window.PORTFOLIO_API) {
+    const showBar = () => {
+      const off = new URL(location.href);
+      off.searchParams.set("api", "off");
+      const bar = document.createElement("div");
+      bar.className = "pf-remote";
+      bar.setAttribute("role", "status");
+      bar.style.cssText = "position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483001;display:flex;gap:10px;align-items:center;"
+        + "max-width:calc(100% - 16px);padding:7px 8px 7px 14px;border-radius:999px;background:#7a1f12;color:#fff;"
+        + "font:600 13px/1.3 system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 10px 24px -12px rgba(0,0,0,.6)";
+      const text = document.createElement("span");
+      text.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
+      text.textContent = `Подключено к серверу ${new URL(BASE).host}`;
+      const link = document.createElement("a");
+      link.href = off.href;
+      link.textContent = "Отключить";
+      link.style.cssText = "flex-shrink:0;padding:4px 10px;border-radius:999px;background:#fff;color:#7a1f12;text-decoration:none";
+      bar.append(text, link);
+      document.body.appendChild(bar);
+    };
+    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", showBar) : showBar();
+  }
 
   // ---------- Плашка «это демо» над формами ----------
   // Посетитель портфолио мог бы принять форму демо-стоматологии за настоящую и оставить заявку «в никуда»

@@ -326,7 +326,7 @@
   <script src="../shared/gallery.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const rub = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;
     const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=72`;
     const SET = 6900, WINE = 3500;
 

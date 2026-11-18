@@ -297,7 +297,7 @@
     ];
     const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
     const FREE_DELIVERY = 5000, DELIVERY = 390;
-    const rub = n => n.toLocaleString("ru-RU") + " ₽";
+    const rub = n => Number(n).toLocaleString("ru-RU") + " ₽";  // Number: ответ API не вставляем в HTML как есть
 
     // Корзина хранится в localStorage, но страница работает и без него
     const store = {
@@ -431,7 +431,7 @@
       return PortfolioAPI.catalog("florist").then((list) => {
         for (const c of list) {
           const p = products.find((x) => String(x.id) === c.ref);
-          if (p) { p.price = c.price; p.off = !c.active; }
+          if (p && Number.isInteger(c.price)) { p.price = c.price; p.off = !c.active; }
         }
         for (const id of Object.keys(cart)) if (products.find((x) => x.id == id)?.off) delete cart[id];
         save();

@@ -255,7 +255,7 @@
   <script src="../shared/motion.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const rub = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;  // Number: ответ API не вставляем в HTML как есть
     const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${Math.round(w * .75)}&q=70`;
     const FREE_FROM = 1500, DELIVERY = 199;
 
@@ -353,7 +353,7 @@
 
     // Цены и стоп-лист из каталога: администратор меняет их в админке
     PortfolioAPI.catalog("sushi").then((items) => {
-      for (const c of items) if (byRef[c.ref]) { byRef[c.ref].price = c.price; byRef[c.ref].off = !c.active; }
+      for (const c of items) if (byRef[c.ref] && Number.isInteger(c.price)) { byRef[c.ref].price = c.price; byRef[c.ref].off = !c.active; }
       for (const ref of Object.keys(state.cart)) if (byRef[ref] && byRef[ref].off) delete state.cart[ref];
       renderMenu();
       renderCart();

@@ -290,7 +290,7 @@
   <script src="../shared/gallery.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const rub = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;
     const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=65`;
     let tt;
     const toast = (m) => { $("toast").textContent = m; $("toast").classList.add("show"); clearTimeout(tt); tt = setTimeout(() => $("toast").classList.remove("show"), 2600); };

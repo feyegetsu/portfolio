@@ -257,7 +257,7 @@
 
     const $ = (id) => document.getElementById(id);
     const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
-    const rub = (n) => n.toLocaleString("ru-RU") + " ₽";
+    const rub = (n) => Number(n).toLocaleString("ru-RU") + " ₽";  // Number: ответ API не вставляем в HTML как есть
     const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const haptic = (type = "light") => { if (inTG && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(type); };
 
@@ -704,7 +704,7 @@
         const list = await PortfolioAPI.catalog("miniapp");
         for (const c of list) {
           const it = MENU.find((m) => String(m.id) === c.ref);
-          if (it) { it.price = c.price; it.off = !c.active; }
+          if (it && Number.isInteger(c.price)) { it.price = c.price; it.off = !c.active; }
         }
         // Если позиция закончилась, убираем её из корзины
         const before = state.cart.length;
