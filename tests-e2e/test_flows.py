@@ -103,3 +103,16 @@ def test_item_added_in_admin_appears_on_storefront(page, site, errors):
     page.goto(f"{site}/projects/florist/")
     expect(page.locator("#grid")).to_contain_text("Букет Е2Е")
     expect(page.locator("#filters")).to_contain_text("Сезонные")
+
+
+def test_first_visit_theme_follows_system(browser, site):
+    # FE-002: при пустом localStorage тема берётся из настроек системы, выбор пользователя важнее
+    ctx = browser.new_context(color_scheme="dark")
+    page = ctx.new_page()
+    for path in ("", "admin/", "privacy.html"):
+        page.goto(f"{site}/{path}")
+        assert page.evaluate("() => document.documentElement.dataset.theme") == "dark", path
+    page.evaluate("() => localStorage.setItem('theme', 'light')")
+    page.reload()
+    assert page.evaluate("() => document.documentElement.dataset.theme") == "light"
+    ctx.close()

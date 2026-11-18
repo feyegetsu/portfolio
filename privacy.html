@@ -6,7 +6,7 @@
   <title>Политика обработки данных | feyegetsu.dev</title>
   <meta name="description" content="Какие данные собирает сайт feyegetsu.dev и как они используются.">
   <meta name="theme-color" content="#064E3B">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")==="dark"?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
+  <script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="dark"||t==="light"?t:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
   <link rel="canonical" href="https://feyegetsu.github.io/portfolio/privacy.html">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">

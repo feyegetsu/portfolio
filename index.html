@@ -6,7 +6,7 @@
   <title>Сайт, который сам принимает заказы, от 5 дней | feyegetsu.dev</title>
   <meta name="description" content="Сайты и Telegram-боты для кафе, салонов, клиник и магазинов. Заявки приходят вам в Telegram, цены и меню меняете сами. Цена фиксируется в договоре, запуск от 5 дней.">
   <meta name="theme-color" content="#064E3B">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")==="dark"?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
+  <script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="dark"||t==="light"?t:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
   <meta property="og:type" content="website">
   <meta property="og:title" content="Сайт, который сам принимает заказы, — запуск от 5 дней">
   <meta property="og:description" content="Клиент оставляет заявку — она приходит вам в Telegram. Цены, меню и фото меняете сами, без программиста.">
