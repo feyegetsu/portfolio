@@ -472,18 +472,33 @@
   });
 
   // ---------- Живые обновления ----------
+  // Раздел перерисовывается, только если данные изменились, и не тогда, когда в нём фокус: иначе опрос
+  // раз в 15 секунд закрывал бы открытый список статусов, сбрасывал прокрутку и съедал ввод в поиске
   async function snapshot() {
     const s = await api.admin.stats({});
-    return s.leads + s.bookings + s.orders;
+    return { total: num(s.leads) + num(s.bookings) + num(s.orders), sig: JSON.stringify(s) };
+  }
+  const LIVE_VIEWS = ["overview", "leads", "bookings", "orders"];
+  let pending = false;
+  const busy = () => $("content").contains(document.activeElement) && document.activeElement !== $("content");
+  function refresh() {
+    pending = false;
+    if (LIVE_VIEWS.includes(state.view)) render();
   }
   api.onChange(async () => {
     if (!state.user) return;
-    try {
-      const total = await snapshot();
-      if (state.known !== null && total > state.known) toast("🔔 Новое обращение с сайта");
-      state.known = total;
-    } catch { /* сеть */ }
-    if (["overview", "leads", "bookings", "orders"].includes(state.view)) render();
+    let snap;
+    try { snap = await snapshot(); } catch { return; /* сеть */ }
+    const changed = !state.known || snap.sig !== state.known.sig;
+    if (state.known && snap.total > state.known.total) toast("🔔 Новое обращение с сайта");
+    state.known = snap;
+    if (!changed) return;
+    if (busy()) { pending = true; return; }
+    refresh();
+  });
+  // Отложенное обновление — как только фокус ушёл из раздела
+  $("content").addEventListener("focusout", (e) => {
+    if (pending && !$("content").contains(e.relatedTarget)) setTimeout(() => { if (pending && !busy()) refresh(); }, 0);
   });
 
   // ---------- Старт ----------
