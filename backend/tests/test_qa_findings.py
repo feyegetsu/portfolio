@@ -71,15 +71,16 @@ def test_booking_far_future_rejected(client):
 
 # ---------- BUG-05: групповое занятие без лимита мест ----------
 
-def test_group_class_has_capacity_limit(client):
-    slot = {"resource": "Йога", "starts_at": tomorrow(19), "name": "А", "phone": PHONE}
-    codes = [client.post("/api/v1/sites/fitness/bookings", json=slot).status_code for _ in range(5)]
-    # rate limit в тестах = 5, поэтому проверяем через базу: мест в зале не бесконечно
-    from app.db import SessionLocal
-    from app.models import Booking
-    with SessionLocal() as db:
-        n = db.query(Booking).filter_by(site="fitness", resource="Йога").count()
-    assert n < 5 or 409 in codes, "Сервер не знает вместимость зала, можно записать сколько угодно"
+def test_group_class_has_capacity_limit(client, monkeypatch):
+    # TEST-001: ресурс должен существовать, иначе все запросы получают 422 и тест проходит вхолостую
+    from app.deps import rate_limit
+    from app.sites import FITNESS_CLASSES
+    monkeypatch.setattr(rate_limit, "limit", 100)
+    capacity = FITNESS_CLASSES["Тайский бокс"]
+    slot = {"resource": "Тайский бокс", "starts_at": tomorrow(19), "name": "А", "phone": PHONE}
+    codes = [client.post("/api/v1/sites/fitness/bookings", json=slot).status_code for _ in range(capacity + 1)]
+    assert codes[:capacity] == [201] * capacity
+    assert codes[capacity] == 409, "Сервер не знает вместимость зала, можно записать сколько угодно"
 
 
 # ---------- BUG-06: CSV-инъекция в выгрузке заявок ----------
