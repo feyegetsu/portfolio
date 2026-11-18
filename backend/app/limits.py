@@ -1,5 +1,6 @@
 """Лимиты частоты: заявки и чтения с одного IP, попытки входа. Счётчики в памяти процесса или в Redis."""
 
+import functools
 import logging
 import time
 import uuid
@@ -130,24 +131,27 @@ class RedisStore:
             log.warning("Redis недоступен: %s", e)
 
     def clear(self, name: str) -> None:
-        for k in self.r.scan_iter(f"{self.PREFIX}{name}:*"):
-            self.r.delete(k)
+        try:
+            for k in self.r.scan_iter(f"{self.PREFIX}{name}:*"):
+                self.r.delete(k)
+        except RedisError as e:
+            log.warning("Redis недоступен, лимит %s не очищен: %s", name, e)
 
 
 Store = MemoryStore | RedisStore
-_redis_store: RedisStore | None = None
+
+
+@functools.cache
+def _redis_store(url: str) -> RedisStore:
+    """Одно подключение к Redis на все лимиты процесса."""
+    import redis
+
+    return RedisStore(redis.Redis.from_url(url, socket_timeout=0.5, socket_connect_timeout=0.5))
 
 
 def make_store() -> Store:
-    """Redis, если задан REDIS_URL, иначе память процесса. Одно подключение на все лимиты."""
-    global _redis_store
-    if not settings.redis_url:
-        return MemoryStore()
-    if _redis_store is None:
-        import redis
-
-        _redis_store = RedisStore(redis.Redis.from_url(settings.redis_url, socket_timeout=0.5, socket_connect_timeout=0.5))
-    return _redis_store
+    """Redis, если задан REDIS_URL, иначе память процесса."""
+    return _redis_store(settings.redis_url) if settings.redis_url else MemoryStore()
 
 
 class RateLimiter(SlidingWindow):

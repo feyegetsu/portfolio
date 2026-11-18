@@ -4,6 +4,7 @@
 Для локальной разработки можно запустить с ENV=development, тогда подойдут значения по умолчанию.
 """
 
+import functools
 import os
 from dataclasses import dataclass, field
 
@@ -28,40 +29,40 @@ def _list(value: str) -> list[str]:
 
 @dataclass(frozen=True)
 class Settings:
-    env: str = os.getenv("ENV", "production")
+    env: str = field(default_factory=lambda: os.getenv("ENV", "production"))
     database_url: str = field(default_factory=lambda: database_url(os.getenv("DATABASE_URL") or "sqlite:///./portfolio.db"))
     # Общий счётчик лимитов для нескольких копий API. Пусто — счётчик в памяти процесса
-    redis_url: str = os.getenv("REDIS_URL", "")
-    secret_key: str = os.getenv("SECRET_KEY", DEV_SECRET)
-    token_ttl_minutes: int = int(os.getenv("TOKEN_TTL_MINUTES", "120"))
+    redis_url: str = field(default_factory=lambda: os.getenv("REDIS_URL", ""))
+    secret_key: str = field(default_factory=lambda: os.getenv("SECRET_KEY", DEV_SECRET))
+    token_ttl_minutes: int = field(default_factory=lambda: int(os.getenv("TOKEN_TTL_MINUTES", "120")))
     # Пусто — домен портфолио, а в разработке ещё и локальный сервер (см. __post_init__)
     cors_origins: list[str] = field(default_factory=lambda: _list(os.getenv("CORS_ORIGINS", "")))
     # Сколько публичных заявок разрешено с одного IP за окно
-    rate_limit: int = int(os.getenv("RATE_LIMIT", "20"))
-    rate_window_seconds: int = int(os.getenv("RATE_WINDOW_SECONDS", "600"))
+    rate_limit: int = field(default_factory=lambda: int(os.getenv("RATE_LIMIT", "20")))
+    rate_window_seconds: int = field(default_factory=lambda: int(os.getenv("RATE_WINDOW_SECONDS", "600")))
     # Публичные GET (каталог, свободные слоты, статус заказа) с одного IP за минуту
-    read_limit: int = int(os.getenv("READ_LIMIT", "300"))
+    read_limit: int = field(default_factory=lambda: int(os.getenv("READ_LIMIT", "300")))
     # Попытки входа: после стольких ошибок e-mail с этого IP блокируется на окно
-    login_attempts: int = int(os.getenv("LOGIN_ATTEMPTS", "5"))
-    login_window_seconds: int = int(os.getenv("LOGIN_WINDOW_SECONDS", "900"))
+    login_attempts: int = field(default_factory=lambda: int(os.getenv("LOGIN_ATTEMPTS", "5")))
+    login_window_seconds: int = field(default_factory=lambda: int(os.getenv("LOGIN_WINDOW_SECONDS", "900")))
     # Неудачные входы на один аккаунт со всех IP: распределённый перебор упирается в этот лимит
-    login_account_attempts: int = int(os.getenv("LOGIN_ACCOUNT_ATTEMPTS", "20"))
-    login_account_window_seconds: int = int(os.getenv("LOGIN_ACCOUNT_WINDOW_SECONDS", "3600"))
+    login_account_attempts: int = field(default_factory=lambda: int(os.getenv("LOGIN_ACCOUNT_ATTEMPTS", "20")))
+    login_account_window_seconds: int = field(default_factory=lambda: int(os.getenv("LOGIN_ACCOUNT_WINDOW_SECONDS", "3600")))
     # Неудачные входы с одного IP на любые e-mail: перебор адресов
-    login_ip_attempts: int = int(os.getenv("LOGIN_IP_ATTEMPTS", "50"))
-    login_ip_window_seconds: int = int(os.getenv("LOGIN_IP_WINDOW_SECONDS", "900"))
+    login_ip_attempts: int = field(default_factory=lambda: int(os.getenv("LOGIN_IP_ATTEMPTS", "50")))
+    login_ip_window_seconds: int = field(default_factory=lambda: int(os.getenv("LOGIN_IP_WINDOW_SECONDS", "900")))
     # Максимальный размер тела запроса: формы и заказы укладываются с огромным запасом
-    max_body_bytes: int = int(os.getenv("MAX_BODY_BYTES", "65536"))
+    max_body_bytes: int = field(default_factory=lambda: int(os.getenv("MAX_BODY_BYTES", "65536")))
     # Сколько доверенных прокси стоит перед API (балансировщик хостинга, nginx). Реальный IP посетителя —
     # элемент X-Forwarded-For с этим номером справа: всё левее мог дописать сам клиент. 0 — заголовку не верим
-    trusted_proxy_hops: int = int(os.getenv("TRUSTED_PROXY_HOPS", "0"))
+    trusted_proxy_hops: int = field(default_factory=lambda: int(os.getenv("TRUSTED_PROXY_HOPS", "0")))
     # Первый владелец создаётся при старте, если пользователей ещё нет
-    owner_email: str = os.getenv("OWNER_EMAIL", "owner@example.com")
-    owner_password: str = os.getenv("OWNER_PASSWORD", DEV_PASSWORD)
+    owner_email: str = field(default_factory=lambda: os.getenv("OWNER_EMAIL", "owner@example.com"))
+    owner_password: str = field(default_factory=lambda: os.getenv("OWNER_PASSWORD", DEV_PASSWORD))
     # Итерации PBKDF2-SHA256 (рекомендация OWASP — от 600 000). Меньше можно только в разработке и тестах (ENV=test)
-    password_iterations: int = int(os.getenv("PASSWORD_ITERATIONS", str(MIN_PASSWORD_ITERATIONS)))
+    password_iterations: int = field(default_factory=lambda: int(os.getenv("PASSWORD_ITERATIONS", str(MIN_PASSWORD_ITERATIONS))))
     # SQLite в продакшене — почти всегда забытый DATABASE_URL: файл в контейнере пропадёт при следующем деплое
-    allow_sqlite: bool = os.getenv("ALLOW_SQLITE", "") == "1"
+    allow_sqlite: bool = field(default_factory=lambda: os.getenv("ALLOW_SQLITE", "") == "1")
 
     def __post_init__(self) -> None:
         if not self.cors_origins:
@@ -89,4 +90,10 @@ def check_secrets(s: "Settings") -> None:
                            + "\nДля локальной разработки запустите с ENV=development.")
 
 
-settings = Settings()
+@functools.cache
+def get_settings() -> Settings:
+    """Настройки читаются из окружения один раз, при первом обращении. В тестах — replace(settings, ...)."""
+    return Settings()
+
+
+settings = get_settings()

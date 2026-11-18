@@ -90,3 +90,17 @@ def test_read_limit(client):
 def test_read_params_are_bounded(client):
     assert client.get("/api/v1/sites/barbershop/slots", params={"resource": "x" * 101, "date": "2026-01-01"}).status_code == 422
     assert client.get(f"/api/v1/sites/sushi/orders/{'x' * 33}").status_code == 422
+
+
+def test_redis_clear_when_down(server, caplog):
+    # BE-004: очистка лимита при недоступном Redis не роняет процесс, как и остальные операции
+    server.connected = False
+    SlidingWindow("public", 1, 60, RedisStore(fakeredis.FakeRedis(server=server))).clear()
+    assert "не очищен" in caplog.text
+
+
+def test_settings_read_at_instantiation(monkeypatch):
+    from app.config import Settings, get_settings
+    monkeypatch.setenv("RATE_LIMIT", "77")
+    assert Settings().rate_limit == 77  # окружение читается при создании, а не при импорте модуля
+    assert get_settings() is get_settings()
