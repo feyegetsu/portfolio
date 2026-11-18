@@ -79,3 +79,13 @@ def test_small_chunked_body_accepted(client):
     r = client.post("/api/v1/sites/cafe/leads", content=(body[i:i + 8] for i in range(0, len(body), 8)),
                     headers={"Content-Type": "application/json"})
     assert r.status_code == 201
+
+
+@pytest.mark.parametrize("env, code", [("production", 404), ("development", 200)])
+def test_docs_hidden_in_production(env, code):
+    # SEC-008: карта админских эндпоинтов открыта только в разработке
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+    c = TestClient(create_app(replace(settings, env=env)))
+    assert [c.get(p).status_code for p in ("/docs", "/redoc", "/openapi.json")] == [code] * 3

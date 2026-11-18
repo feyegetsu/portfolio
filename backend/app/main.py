@@ -1,20 +1,23 @@
-"""Точка входа: uvicorn app.main:app"""
+"""Точка входа: uvicorn app.main:app (схему базы перед этим обновляет python -m app.migrate)"""
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from .config import check_secrets, settings
+from .config import Settings, check_secrets, settings
 from .db import SessionLocal, engine
 from .deps import RedisStore, rate_limit
 from .migrate import is_up_to_date
 from .routers import admin, auth, public
 from .seed import seed
 from .sites import SITES
+
+
+TOO_LARGE = "Слишком большой запрос"
 
 
 @asynccontextmanager
@@ -26,20 +29,6 @@ async def lifespan(_: FastAPI):
     with SessionLocal() as db:
         seed(db)
     yield
-
-
-app = FastAPI(
-    title="Portfolio API",
-    version="1.0.0",
-    description="Общий бэкенд для демо-сайтов портфолио: заявки, записи, заказы, каталог и админка.",
-    lifespan=lifespan,
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_methods=["GET", "POST", "PATCH", "DELETE"],
-    allow_headers=["Authorization", "Content-Type"],
-)
 
 
 class BodyLimit:
@@ -72,16 +61,10 @@ class BodyLimit:
         await self.app(scope, limited, send)
 
 
-TOO_LARGE = "Слишком большой запрос"
-app.add_middleware(BodyLimit, limit=settings.max_body_bytes)
+service = APIRouter(tags=["service"])
 
 
-app.include_router(public.router)
-app.include_router(auth.router)
-app.include_router(admin.router)
-
-
-@app.get("/health", tags=["service"])
+@service.get("/health")
 def health():
     """Для хостинга: жива ли база и где считаются лимиты. Если база недоступна — 503, и хостинг перезапустит API."""
     try:
@@ -92,7 +75,34 @@ def health():
     return {"status": "ok", "db": "ok", "limits": "redis" if isinstance(rate_limit.store, RedisStore) else "memory"}
 
 
-@app.get("/api/v1/sites", tags=["service"])
+@service.get("/api/v1/sites")
 def sites():
     return [{"slug": s.slug, "name": s.name, "leads": s.leads, "bookings": s.bookings, "orders": s.orders, "catalog": s.catalog}
             for s in SITES.values()]
+
+
+def create_app(s: Settings = settings) -> FastAPI:
+    # Документация открыта только в разработке: в продакшене карта админских эндпоинтов не нужна посторонним
+    docs = s.env == "development"
+    app = FastAPI(
+        title="Portfolio API",
+        version="1.0.0",
+        description="Общий бэкенд для демо-сайтов портфолио: заявки, записи, заказы, каталог и админка.",
+        lifespan=lifespan,
+        docs_url="/docs" if docs else None,
+        redoc_url="/redoc" if docs else None,
+        openapi_url="/openapi.json" if docs else None,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=s.cors_origins,
+        allow_methods=["GET", "POST", "PATCH", "DELETE"],
+        allow_headers=["Authorization", "Content-Type"],
+    )
+    app.add_middleware(BodyLimit, limit=s.max_body_bytes)
+    for router in (public.router, auth.router, admin.router, service):
+        app.include_router(router)
+    return app
+
+
+app = create_app()

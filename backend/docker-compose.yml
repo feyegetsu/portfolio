@@ -1,5 +1,5 @@
 # Локальный запуск: docker compose up --build
-# API: http://localhost:8080/docs, админка: откройте портфолио с ?api=http://localhost:8080
+# API: http://localhost:8080 (документация /docs — только с ENV=development в .env), админка: портфолио с ?api=http://localhost:8080
 services:
   db:
     image: postgres:16-alpine
