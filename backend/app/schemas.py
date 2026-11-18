@@ -5,14 +5,16 @@ import re
 from datetime import datetime
 from typing import Annotated, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 PHONE_RE = re.compile(r"^\+?\d{10,15}$")
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
 DATA_MAX_CHARS = 4000  # доп. поля заявки: этого хватает любой форме с запасом
 T = TypeVar("T")
 
-Name = Annotated[str, Field(min_length=1, max_length=100)]
+# Пробелы по краям обрезаются до проверки длины: имя из одних пробелов — пустое имя
+Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+Text = Annotated[str, StringConstraints(strip_whitespace=True)]
 LeadStatus = Literal["new", "in_progress", "done", "cancelled"]
 BookingStatus = Literal["confirmed", "done", "cancelled"]
 OrderStatus = Literal["new", "cooking", "delivering", "done", "cancelled"]
@@ -35,8 +37,8 @@ class Honeypot(BaseModel):
 # ---------- Публичные формы ----------
 
 class LeadIn(Honeypot):
-    kind: Annotated[str, Field(min_length=1, max_length=40)]
-    name: str = Field("", max_length=100)
+    kind: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
+    name: Text = Field("", max_length=100)
     phone: str = ""
     email: str = Field("", max_length=200)
     message: str = Field("", max_length=2000)
@@ -64,8 +66,8 @@ class LeadIn(Honeypot):
 
 
 class BookingIn(Honeypot):
-    resource: Annotated[str, Field(min_length=1, max_length=100)]
-    service: str = Field("", max_length=100)
+    resource: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+    service: Text = Field("", max_length=100)
     starts_at: datetime
     name: Name
     phone: str
@@ -88,7 +90,7 @@ class OrderIn(Honeypot):
     items: Annotated[list[OrderItem], Field(min_length=1, max_length=50)]
     name: Name
     phone: str
-    address: str = Field("", max_length=300)
+    address: Text = Field("", max_length=300)
     mode: Literal["delivery", "pickup"] = "delivery"
     comment: str = Field("", max_length=1000)
     promo: str = Field("", max_length=30)

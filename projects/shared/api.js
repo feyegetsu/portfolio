@@ -430,7 +430,7 @@
         if (!phone && !email) throw new ApiError("Укажите телефон или e-mail", 422);
         if (JSON.stringify(b.data || {}).length > 4000) throw new ApiError("Слишком много данных в заявке", 422);
         const db = load();
-        const lead = { id: db.seq++, site: slug, kind: b.kind, name: b.name || "", phone, email, message: b.message || "", data: b.data || {}, status: "new", created_at: iso(now()) };
+        const lead = { id: db.seq++, site: slug, kind: String(b.kind || "").trim(), name: String(b.name || "").trim(), phone, email, message: b.message || "", data: b.data || {}, status: "new", created_at: iso(now()) };
         db.leads.push(lead);
         save(db);
         return { id: lead.id, status: lead.status };
@@ -444,12 +444,15 @@
       createBooking: (slug, b) => later(() => {
         const s = site(slug, "bookings");
         const phone = normalizePhone(b.phone);
-        if (!b.name) throw new ApiError("Укажите имя", 422);
+        // Пробелы по краям обрезаются до проверки, как StringConstraints на сервере
+        const name = String(b.name || "").trim(), resource = String(b.resource || "").trim();
+        if (!name) throw new ApiError("Укажите имя", 422);
+        if (!resource) throw new ApiError("Выберите мастера или занятие", 422);
         const startsAt = String(b.starts_at).slice(0, 16) + ":00";
-        checkSlot(s, b.resource, startsAt);
+        checkSlot(s, resource, startsAt);
         const db = load();
-        checkTaken(db, s, b.resource, startsAt);
-        const booking = { id: db.seq++, site: slug, resource: b.resource, service: b.service || "", starts_at: startsAt, name: b.name, phone, status: "confirmed", created_at: iso(now()) };
+        checkTaken(db, s, resource, startsAt);
+        const booking = { id: db.seq++, site: slug, resource, service: String(b.service || "").trim(), starts_at: startsAt, name, phone, status: "confirmed", created_at: iso(now()) };
         db.bookings.push(booking);
         save(db);
         return { id: booking.id, status: booking.status };
@@ -457,12 +460,14 @@
       createOrder: (slug, b) => later(() => {
         const s = site(slug, "orders");
         const phone = normalizePhone(b.phone);
+        const name = String(b.name || "").trim();
+        if (!name) throw new ApiError("Укажите имя", 422);
         if (!b.items || !b.items.length) throw new ApiError("Корзина пуста", 422);
         if ((b.mode || "delivery") === "delivery" && !String(b.address || "").trim()) throw new ApiError("Укажите адрес доставки", 422);
         const db = load();
         // Цены, доставку и промокод считаем по каталогу, как сервер: цена из запроса не используется
         const items = priceOrder(s.pricing, db.catalog.filter((c) => c.site === slug), b.items, b.mode || "delivery", b.promo);
-        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name: b.name, phone, address: b.address || "", mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
+        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name, phone, address: String(b.address || "").trim(), mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
         db.orders.push(order);
         save(db);
         return { id: order.id, status: order.status, token: order.token, total: order.total, items: order.items.map(({ name, qty }) => ({ name, qty })) };

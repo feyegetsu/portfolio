@@ -130,3 +130,15 @@ def test_duplicate_lines_cannot_bypass_quantity_limit(client):
     # BUG-014: 50 одинаковых строк по 99 штук проходили как заказ на 4 950 сетов
     body = {"items": [{"ref": "s2", "qty": 99}] * 50, "name": "Иван", "phone": PHONE, "mode": "pickup"}
     assert client.post("/api/v1/sites/sushi/orders", json=body).status_code == 422
+
+
+def test_blank_name_rejected(client):
+    # BUG-015: min_length считался до обрезки пробелов, и в админку попадали записи без имени
+    booking = {"resource": "Артём", "starts_at": TOMORROW.isoformat(), "name": "   ", "phone": PHONE}
+    assert client.post("/api/v1/sites/barbershop/bookings", json=booking).status_code == 422
+    assert client.post("/api/v1/sites/barbershop/bookings", json={**booking, "name": "Иван", "resource": "  "}).status_code == 422
+    order = {"items": [{"ref": "s1", "qty": 1}], "name": " \t ", "phone": PHONE, "mode": "pickup"}
+    assert client.post("/api/v1/sites/sushi/orders", json=order).status_code == 422
+    assert client.post("/api/v1/sites/cafe/leads", json={"kind": "   ", "phone": PHONE}).status_code == 422
+    ok = client.post("/api/v1/sites/barbershop/bookings", json={**booking, "name": "  Иван  "})
+    assert ok.status_code == 201
