@@ -65,3 +65,15 @@ def test_unknown_root_files_are_not_published(tmp_path, monkeypatch):
 def test_whitelisted_root_files_exist():
     missing = [n for n in (*build.ROOT_FILES, *build.ROOT_DIRS) if not (build.ROOT / n).exists()]
     assert not missing, f"В белом списке сборки есть несуществующие пути: {missing}"
+
+
+def test_dynamic_offers_js_is_versioned(tmp_path):
+    # FE-001: api.js подключает offers.js сам, и без версии браузер держал старые цены в кэше
+    out = tmp_path / "_site"
+    build.copy_site(out)
+    build.version_dynamic_assets(out)
+    build.version_assets(out)
+    api_js = (out / "projects" / "shared" / "api.js").read_text(encoding="utf-8")
+    assert '"offers.js?v=' in api_js
+    html = (out / "projects" / "cafe" / "index.html").read_text(encoding="utf-8")
+    assert "shared/api.js?v=" in html

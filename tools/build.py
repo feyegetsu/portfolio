@@ -248,6 +248,28 @@ def minify(out: Path) -> dict:
 LOCAL_ASSET = re.compile(r'\b(href|src)="((?![a-z]+:|//|#)[^"?#]+\.(?:css|js))"')
 
 
+# Файлы, которые скрипты подключают сами: в HTML их нет, поэтому версию вписываем в строку внутри скрипта
+DYNAMIC_ASSETS = {"projects/shared/api.js": ["offers.js"]}
+
+
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()[:10]
+
+
+def version_dynamic_assets(out: Path) -> int:
+    """«offers.js» в api.js → «offers.js?v=<хеш>». До version_assets: хеш api.js должен учесть эту правку."""
+    count = 0
+    for script, names in DYNAMIC_ASSETS.items():
+        path = out / script
+        text = path.read_text(encoding="utf-8")
+        for name in names:
+            target = path.parent / name
+            text, n = re.subn(r"""(["'])(""" + re.escape(name) + r""")\1""", lambda m, t=target: f"{m.group(1)}{m.group(2)}?v={file_hash(t)}{m.group(1)}", text)
+            count += n
+        path.write_text(text, encoding="utf-8")
+    return count
+
+
 def version_assets(out: Path) -> int:
     count = 0
 
@@ -257,7 +279,7 @@ def version_assets(out: Path) -> int:
         if not target.is_file():
             return m.group(0)
         count += 1
-        return f'{m.group(1)}="{m.group(2)}?v={hashlib.sha256(target.read_bytes()).hexdigest()[:10]}"'
+        return f'{m.group(1)}="{m.group(2)}?v={file_hash(target)}"'
 
     for f in out.rglob("*.html"):
         html = f.read_text(encoding="utf-8")
@@ -339,6 +361,7 @@ def main() -> int:
         stats = minify(out)
         if stats:
             print(f"Минификация: {stats['before'] / 1024:.0f} КБ → {stats['after'] / 1024:.0f} КБ")
+    version_dynamic_assets(out)
     print(f"Версии файлов проставлены: {version_assets(out)}")
     print(f"CSP добавлена в страниц: {add_csp(out)}")
     return 0
