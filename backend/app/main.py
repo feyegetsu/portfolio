@@ -8,8 +8,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from .config import check_secrets, settings
-from .db import Base, SessionLocal, engine
+from .db import SessionLocal, engine
 from .deps import RedisStore, rate_limit
+from .migrate import is_up_to_date
 from .routers import admin, auth, public
 from .seed import seed
 from .sites import SITES
@@ -18,8 +19,9 @@ from .sites import SITES
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     check_secrets(settings)
-    # Для портфолио таблицы создаются при старте; в продакшене это работа миграций (Alembic)
-    Base.metadata.create_all(engine)
+    # Схему создают и обновляют миграции (python -m app.migrate), API только проверяет, что она актуальна
+    if not is_up_to_date(engine):
+        raise RuntimeError("Схема базы устарела или не создана: выполните python -m app.migrate")
     with SessionLocal() as db:
         seed(db)
     yield

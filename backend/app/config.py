@@ -1,6 +1,6 @@
 """Настройки из переменных окружения.
 
-В продакшене SECRET_KEY и OWNER_PASSWORD обязательны: без них API не стартует (см. check_secrets).
+В продакшене SECRET_KEY, OWNER_PASSWORD и DATABASE_URL обязательны: без них API не стартует (см. check_secrets).
 Для локальной разработки можно запустить с ENV=development, тогда подойдут значения по умолчанию.
 """
 
@@ -26,7 +26,7 @@ def _list(value: str) -> list[str]:
 @dataclass(frozen=True)
 class Settings:
     env: str = os.getenv("ENV", "production")
-    database_url: str = field(default_factory=lambda: database_url(os.getenv("DATABASE_URL", "sqlite:///./portfolio.db")))
+    database_url: str = field(default_factory=lambda: database_url(os.getenv("DATABASE_URL") or "sqlite:///./portfolio.db"))
     # Общий счётчик лимитов для нескольких копий API. Пусто — счётчик в памяти процесса
     redis_url: str = os.getenv("REDIS_URL", "")
     secret_key: str = os.getenv("SECRET_KEY", DEV_SECRET)
@@ -48,6 +48,8 @@ class Settings:
     # Первый владелец создаётся при старте, если пользователей ещё нет
     owner_email: str = os.getenv("OWNER_EMAIL", "owner@example.com")
     owner_password: str = os.getenv("OWNER_PASSWORD", DEV_PASSWORD)
+    # SQLite в продакшене — почти всегда забытый DATABASE_URL: файл в контейнере пропадёт при следующем деплое
+    allow_sqlite: bool = os.getenv("ALLOW_SQLITE", "") == "1"
 
 
 def check_secrets(s: "Settings") -> None:
@@ -59,6 +61,9 @@ def check_secrets(s: "Settings") -> None:
         problems.append("SECRET_KEY: задайте случайную строку длиной от 32 символов (python -c \"import secrets; print(secrets.token_urlsafe(48))\")")
     if s.owner_password == DEV_PASSWORD or len(s.owner_password) < 10 or "замените" in s.owner_password:
         problems.append("OWNER_PASSWORD: задайте свой пароль владельца длиной от 10 символов")
+    if s.database_url.startswith("sqlite") and not s.allow_sqlite:
+        problems.append("DATABASE_URL: не задан адрес PostgreSQL, а файл SQLite в контейнере пропадёт при следующем деплое. "
+                        "Задайте DATABASE_URL или, если SQLite нужен осознанно, ALLOW_SQLITE=1")
     if problems:
         raise RuntimeError("API не запущен, небезопасные настройки:\n- " + "\n- ".join(problems)
                            + "\nДля локальной разработки запустите с ENV=development.")

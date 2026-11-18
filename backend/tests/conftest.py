@@ -7,6 +7,7 @@ os.environ.update(
     OWNER_EMAIL="owner@test.dev",
     OWNER_PASSWORD="owner-password",
     RATE_LIMIT="5",
+    ALLOW_SQLITE="1",
 )
 
 import pytest  # noqa: E402
@@ -15,9 +16,14 @@ from fastapi.testclient import TestClient  # noqa: E402
 from app.db import Base, SessionLocal, engine  # noqa: E402
 from app.deps import login_limit, rate_limit  # noqa: E402
 from app.main import app  # noqa: E402
+from app.migrate import stamp_head  # noqa: E402
 from app.seed import seed  # noqa: E402
 
 PHONE = "+7 (900) 123-45-67"
+
+# Для скорости схему в тестах создаёт create_all; что миграции дают ту же схему, проверяет test_migrations.py
+Base.metadata.create_all(engine)
+stamp_head(engine)
 
 
 @pytest.fixture
