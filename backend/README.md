@@ -52,7 +52,7 @@ flowchart LR
 | POST | `/api/v1/auth/login` | все | вход, выдаёт JWT |
 | POST | `/api/v1/auth/logout` | staff+ | выход: все выданные пользователю токены перестают действовать |
 | POST | `/api/v1/auth/password` | staff+ | смена своего пароля, старые токены гаснут, в ответе новый токен |
-| GET | `/api/v1/admin/leads`, `/bookings`, `/orders` | staff+ | списки с фильтрами |
+| GET | `/api/v1/admin/leads`, `/bookings`, `/orders` | staff+ | списки с фильтрами и пагинацией (`limit`, `offset`, `total`); у записей `date_from`/`date_to` — расписание на эти дни по времени визита |
 | PATCH | `/api/v1/admin/leads/{id}` и т. п. | staff+ | смена статуса |
 | GET | `/api/v1/admin/leads.csv` | staff+ | выгрузка для Excel |
 | GET | `/api/v1/admin/stats` | staff+ | цифры для дашборда |

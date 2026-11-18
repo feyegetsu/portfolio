@@ -31,7 +31,7 @@
   const fmtDate = (s) => new Date(/Z|[+-]\d\d:\d\d$/.test(s) ? s : `${s}Z`)
     .toLocaleString("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
-  const state = { user: null, view: "overview", site: "", leadStatus: "", q: "", offset: 0, known: null };
+  const state = { user: null, view: "overview", site: "", leadStatus: "", q: "", offset: 0, known: null, week: 0 };
 
   // ---------- Уведомления ----------
   let tt;
@@ -281,26 +281,50 @@
   }
 
   // ---------- Записи ----------
+  // Неделя по московскому времени (все заведения в Москве): понедельник — воскресенье, со сдвигом state.week
+  const weekRange = () => {
+    const today = new Date(`${api.siteToday("restaurant")}T12:00:00`);
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7) + state.week * 7);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    return { from: ymd(monday), to: ymd(sunday), label: `${monday.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })} — ${sunday.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}` };
+  };
   async function bookings() {
-    const data = await api.admin.bookings({ ...siteFilter(), limit: 100 });
-    const items = [...data.items].sort((a, b) => (a.starts_at > b.starts_at ? 1 : -1));
+    const week = weekRange();
+    const data = await api.admin.bookings({ ...siteFilter(), date_from: week.from, date_to: week.to, limit: 200 });
+    const items = data.items;
     const groups = {};
-    for (const b of items) (groups[b.starts_at.slice(0, 10)] ||= []).push(b);
-    $("content").innerHTML = items.length ? Object.entries(groups).map(([day, list]) => `
+    for (const b of items) (groups[String(b.starts_at).slice(0, 10)] ||= []).push(b);
+    const nav = `<div class="toolbar"><div class="chips" role="group" aria-label="Неделя">
+        <button class="chip" data-week="-1" aria-label="Предыдущая неделя">←</button>
+        <button class="chip" data-week="0" aria-pressed="${state.week === 0}">Эта неделя</button>
+        <button class="chip" data-week="1" aria-label="Следующая неделя">→</button></div>
+        <span class="muted">${esc(week.label)} · записей: ${num(data.total)}${data.total > items.length ? `, показаны первые ${items.length}` : ""}</span></div>`;
+    $("content").innerHTML = nav + (items.length ? Object.entries(groups).map(([day, list]) => `
       <div class="day-group"><h3>${esc(new Date(day + "T12:00:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }))}</h3>
         ${list.map((b) => `<div class="slot ${b.status === "cancelled" ? "cancelled" : ""}" data-id="booking-${num(b.id)}">
           <time>${esc(String(b.starts_at).slice(11, 16))}</time>
           <div><b>${esc(b.name)}</b> · <span class="mono">${esc(b.phone)}</span><br><small class="muted">${siteTag(b.site)} ${esc(b.resource)}${b.service ? " · " + esc(b.service) : ""}</small></div>
           <div>${statusSelect("booking", b.id, b.status, BOOKING_STATUS)}</div>
         </div>`).join("")}
-      </div>`).join("") : '<div class="empty">Записей нет. Запишитесь в демо барбершопа или фитнес-клуба — запись появится здесь.</div>';
+      </div>`).join("") : '<div class="empty">На этой неделе записей нет. Запишитесь в демо барбершопа или фитнес-клуба — запись появится здесь.</div>');
+    $("content").querySelectorAll("[data-week]").forEach((b) => b.onclick = () => {
+      state.week = +b.dataset.week === 0 ? 0 : state.week + +b.dataset.week;
+      bookings();
+    });
   }
 
   // ---------- Заказы ----------
   const ORDER_FLOW = ["new", "cooking", "delivering", "done"];
   async function orders() {
-    const data = await api.admin.orders({ ...siteFilter(), limit: 60 });
-    $("content").innerHTML = data.items.length ? `<div class="orders">${data.items.map((o) => `
+    const limit = 20;
+    const data = await api.admin.orders({ ...siteFilter(), limit, offset: state.offset });
+    const pager = `<div class="pager"><span>Показано ${data.items.length ? state.offset + 1 : 0}–${state.offset + data.items.length} из ${num(data.total)}</span>
+        <span><button class="btn btn--sm" id="prev" ${state.offset ? "" : "disabled"} aria-label="Предыдущие">←</button>
+        <button class="btn btn--sm" id="next" ${state.offset + limit < data.total ? "" : "disabled"} aria-label="Следующие">→</button></span></div>`;
+    $("content").innerHTML = (data.items.length ? `<div class="orders">${data.items.map((o) => `
       <article class="order" data-id="order-${num(o.id)}">
         <div class="order__head"><div><b>Заказ №${num(o.id)}</b><br><small class="muted">${esc(fmtDate(o.created_at))} · ${siteTag(o.site)}</small></div>
           ${statusSelect("order", o.id, o.status, ORDER_STATUS)}</div>
@@ -308,7 +332,9 @@
         <ul>${o.items.map((i) => `<li><span>${esc(i.name)} × ${num(i.qty)}</span><span class="mono">${rub(num(i.price) * num(i.qty))}</span></li>`).join("")}</ul>
         <div class="order__total"><span>Итого</span><span class="mono">${rub(o.total)}</span></div>
         ${o.status === "cancelled" ? "" : `<div class="steps">${ORDER_FLOW.map((s) => `<button data-order-step="${num(o.id)}" data-status="${s}" class="${ORDER_FLOW.indexOf(s) <= ORDER_FLOW.indexOf(o.status) ? "on" : ""}">${ORDER_STATUS[s]}</button>`).join("")}</div>`}
-      </article>`).join("")}</div>` : '<div class="empty">Заказов нет. Оформите заказ в Mini App или магазине цветов.</div>';
+      </article>`).join("")}</div>` : '<div class="empty">Заказов нет. Оформите заказ в Mini App или магазине цветов.</div>') + pager;
+    $("prev").onclick = () => { state.offset = Math.max(0, state.offset - limit); orders(); };
+    $("next").onclick = () => { state.offset += limit; orders(); };
   }
 
   // ---------- Каталог ----------

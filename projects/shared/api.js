@@ -628,9 +628,16 @@
           return page(list, f);
         }),
         updateLead: (id, status) => later(() => { checkStatus(status, LEAD_STATUSES); return patch("leads", id, { status }, requireUser()); }),
+        // С date_from/date_to — расписание на эти дни по времени визита, как на сервере
         bookings: (f = {}) => later(() => {
           let list = scoped(load().bookings, requireUser(), f.site);
           if (f.upcoming) list = list.filter((b) => b.status === "confirmed" && new Date(b.starts_at) > new Date(Date.now() - 12 * 3600e3));
+          if (f.date_from || f.date_to) {
+            list = list.filter((b) => (!f.date_from || b.starts_at.slice(0, 10) >= f.date_from) && (!f.date_to || b.starts_at.slice(0, 10) <= f.date_to))
+              .sort((a, b) => (a.starts_at < b.starts_at ? -1 : a.starts_at > b.starts_at ? 1 : a.id - b.id));
+            const offset = Number(f.offset || 0), limit = Number(f.limit || 50);
+            return { items: clone(list.slice(offset, offset + limit)), total: list.length };
+          }
           return page(list, f);
         }),
         updateBooking: (id, status) => later(() => {

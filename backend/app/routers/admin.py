@@ -2,7 +2,7 @@
 
 import csv
 import io
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -121,12 +121,21 @@ def export_leads(user: CurrentUser, db: DB, site: str | None = None):
 
 @router.get("/bookings", response_model=Page[BookingOut])
 def list_bookings(user: CurrentUser, db: DB, site: str | None = None, upcoming: bool = False,
-                  limit: Limit = 50, offset: Offset = 0):
+                  date_from: date | None = None, date_to: date | None = None, limit: Limit = 50, offset: Offset = 0):
+    """С date_from/date_to — расписание на эти дни по времени визита; без них — последние созданные записи."""
     query = _scope(Booking, user, site)
     if upcoming:
         # starts_at — «настенное» время заведения, поэтому и «сейчас» берём в его поясе, а не UTC
         local_now = to_local(utcnow(), DEFAULT_TZ)
         query = query.where(Booking.starts_at >= local_now - timedelta(hours=12), Booking.status == "confirmed")
+    if date_from or date_to:
+        if date_from:
+            query = query.where(Booking.starts_at >= datetime.combine(date_from, time.min))
+        if date_to:
+            query = query.where(Booking.starts_at < datetime.combine(date_to + timedelta(days=1), time.min))
+        total = db.scalar(select(func.count()).select_from(query.subquery()))
+        items = db.scalars(query.order_by(Booking.starts_at, Booking.id).limit(limit).offset(offset)).all()
+        return {"items": items, "total": total}
     return _page(db, query, Booking, limit, offset)
 
 

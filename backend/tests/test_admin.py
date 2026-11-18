@@ -191,3 +191,33 @@ def test_last_owner_is_protected(client, owner):
     assert client.patch(f"/api/v1/admin/users/{me['id']}", headers=owner, json={"role": "admin"}).status_code == 200
     o3 = login(client, "o3@test.dev", "password123")
     assert client.patch(f"/api/v1/admin/users/{third['id']}", headers=o3, json={"role": "staff", "sites": ["cafe"]}).status_code == 422
+
+
+def test_bookings_date_range(client, owner):
+    # BUG-008: админка брала 100 последних созданных записей, и ранние визиты пропадали из расписания
+    from datetime import datetime, timedelta
+
+    from app.db import SessionLocal
+    from app.models import Booking
+    start = datetime(2027, 3, 1, 12, 0)
+    with SessionLocal() as db:
+        for i in range(150):  # по 5 записей на 30 дней, созданы в обратном порядке
+            when = start + timedelta(days=i // 5, hours=i % 5)
+            db.add(Booking(site="restaurant", resource="Стол на 2", starts_at=when, name=f"Гость {i}", phone="+79001234567",
+                           created_at=datetime(2026, 1, 1) + timedelta(minutes=150 - i)))
+        db.commit()
+    r = client.get("/api/v1/admin/bookings", params={"date_from": "2027-03-08", "date_to": "2027-03-14", "limit": 200}, headers=owner)
+    data = r.json()
+    assert data["total"] == 35
+    times = [b["starts_at"] for b in data["items"]]
+    assert times == sorted(times) and times[0].startswith("2027-03-08") and times[-1].startswith("2027-03-14")
+    assert client.get("/api/v1/admin/bookings", params={"date_from": "2027-03-14", "date_to": "2027-03-08"}, headers=owner).json()["total"] == 0
+
+
+def test_orders_paginated(client, owner, monkeypatch):
+    from app.limits import rate_limit
+    monkeypatch.setattr(rate_limit, "limit", 100)
+    for _ in range(7):
+        client.post("/api/v1/sites/sushi/orders", json={"items": [{"ref": "s7", "qty": 1}], "name": "И", "phone": PHONE, "mode": "pickup"})
+    page = client.get("/api/v1/admin/orders", params={"limit": 5, "offset": 5}, headers=owner).json()
+    assert page["total"] == 7 and len(page["items"]) == 2
