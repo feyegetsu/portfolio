@@ -116,3 +116,15 @@ def test_first_visit_theme_follows_system(browser, site):
     page.reload()
     assert page.evaluate("() => document.documentElement.dataset.theme") == "light"
     ctx.close()
+
+
+def test_miniapp_outside_telegram_does_not_load_sdk(page, site, errors):
+    # PERF-002: в обычном браузере Mini App не ходит на telegram.org и не ждёт его
+    urls = []
+    page.on("request", lambda r: urls.append(r.url))
+    page.route("https://telegram.org/**", lambda r: r.fulfill(status=200, content_type="text/javascript", body=""))
+    page.goto(f"{site}/projects/miniapp/")
+    expect(page.locator("[data-plus]").first).to_be_visible()
+    assert not [u for u in urls if "telegram.org" in u]
+    page.goto(f"{site}/projects/miniapp/?tg=1#tgWebAppData=query_id%3D1")  # новая загрузка, а не смена hash
+    assert [u for u in urls if "telegram.org" in u]  # внутри Telegram SDK подключается
