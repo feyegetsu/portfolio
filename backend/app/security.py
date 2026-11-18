@@ -11,13 +11,19 @@ import jwt
 from .config import settings
 from .db import utcnow
 
-_ITERATIONS = 390_000
-
-
-def hash_password(password: str) -> str:
+def hash_password(password: str, iterations: int | None = None) -> str:
+    iterations = iterations or settings.password_iterations
     salt = secrets.token_bytes(16)
-    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, _ITERATIONS)
-    return f"pbkdf2${_ITERATIONS}${base64.b64encode(salt).decode()}${base64.b64encode(digest).decode()}"
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, iterations)
+    return f"pbkdf2${iterations}${base64.b64encode(salt).decode()}${base64.b64encode(digest).decode()}"
+
+
+def needs_rehash(stored: str) -> bool:
+    """Хеш посчитан с меньшим числом итераций, чем сейчас положено: пересчитаем при удачном входе."""
+    try:
+        return int(stored.split("$")[1]) < settings.password_iterations
+    except (IndexError, ValueError):
+        return True
 
 
 def verify_password(password: str, stored: str) -> bool:

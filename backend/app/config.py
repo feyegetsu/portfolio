@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 DEV_SECRET = "dev-secret-change-me"
 DEV_PASSWORD = "change-me-please"
+MIN_PASSWORD_ITERATIONS = 600_000
 PORTFOLIO_ORIGIN = "https://feyegetsu.github.io"
 DEV_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000"]
 
@@ -55,6 +56,8 @@ class Settings:
     # Первый владелец создаётся при старте, если пользователей ещё нет
     owner_email: str = os.getenv("OWNER_EMAIL", "owner@example.com")
     owner_password: str = os.getenv("OWNER_PASSWORD", DEV_PASSWORD)
+    # Итерации PBKDF2-SHA256 (рекомендация OWASP — от 600 000). Меньше можно только в разработке и тестах (ENV=test)
+    password_iterations: int = int(os.getenv("PASSWORD_ITERATIONS", str(MIN_PASSWORD_ITERATIONS)))
     # SQLite в продакшене — почти всегда забытый DATABASE_URL: файл в контейнере пропадёт при следующем деплое
     allow_sqlite: bool = os.getenv("ALLOW_SQLITE", "") == "1"
 
@@ -74,6 +77,8 @@ def check_secrets(s: "Settings") -> None:
         problems.append("SECRET_KEY: задайте случайную строку длиной от 32 символов (python -c \"import secrets; print(secrets.token_urlsafe(48))\")")
     if s.owner_password == DEV_PASSWORD or len(s.owner_password) < 10 or "замените" in s.owner_password:
         problems.append("OWNER_PASSWORD: задайте свой пароль владельца длиной от 10 символов")
+    if s.password_iterations < MIN_PASSWORD_ITERATIONS and s.env != "test":
+        problems.append(f"PASSWORD_ITERATIONS: в продакшене не меньше {MIN_PASSWORD_ITERATIONS}")
     if s.database_url.startswith("sqlite") and not s.allow_sqlite:
         problems.append("DATABASE_URL: не задан адрес PostgreSQL, а файл SQLite в контейнере пропадёт при следующем деплое. "
                         "Задайте DATABASE_URL или, если SQLite нужен осознанно, ALLOW_SQLITE=1")

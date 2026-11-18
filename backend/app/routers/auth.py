@@ -4,7 +4,7 @@ from sqlalchemy import select
 from ..deps import DB, CurrentUser, check_login_allowed, login_failed, login_keys, login_limit
 from ..models import User
 from ..schemas import LoginIn, PasswordIn, TokenOut, UserOut
-from ..security import DUMMY_HASH, create_token, hash_password, verify_password
+from ..security import DUMMY_HASH, create_token, hash_password, needs_rehash, verify_password
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
@@ -22,6 +22,10 @@ def login(body: LoginIn, db: DB, request: Request):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Неверный e-mail или пароль")
     # Сбрасываем только пару «IP + e-mail»: счётчик аккаунта копится, иначе удачный вход обнулял бы перебор
     login_limit.reset(keys[0])
+    if needs_rehash(user.password_hash):
+        # Пароль известен только сейчас: пересчитываем хеш с актуальным числом итераций
+        user.password_hash = hash_password(body.password)
+        db.commit()
     return TokenOut(access_token=create_token(user.id, user.token_version))
 
 

@@ -8,6 +8,9 @@ os.environ.update(
     OWNER_PASSWORD="owner-password",
     RATE_LIMIT="5",
     ALLOW_SQLITE="1",
+    ENV="test",
+    # Быстрые хеши паролей: 600 000 итераций замедлили бы каждый вход в тестах в десятки раз
+    PASSWORD_ITERATIONS="1000",
 )
 
 import pytest  # noqa: E402

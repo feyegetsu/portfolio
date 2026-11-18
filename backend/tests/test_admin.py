@@ -75,3 +75,33 @@ def test_csv_export(client, owner):
     assert r.status_code == 200
     assert r.text.startswith("﻿id;Дата;Сайт")
     assert "Анна" in r.text
+
+
+def test_password_rehash_on_login(client):
+    # SEC-010: хеш со старым числом итераций пересчитывается при удачном входе
+    from app.config import settings
+    from app.db import SessionLocal
+    from app.models import User
+    from app.security import hash_password
+
+    old = max(1, settings.password_iterations // 2)
+    with SessionLocal() as db:
+        owner = db.query(User).filter_by(email="owner@test.dev").one()
+        owner.password_hash = hash_password("owner-password", iterations=old)
+        db.commit()
+    login(client)
+    with SessionLocal() as db:
+        stored = db.query(User).filter_by(email="owner@test.dev").one().password_hash
+    assert int(stored.split("$")[1]) == settings.password_iterations
+    login(client)  # новый хеш проверяется
+
+
+def test_production_requires_owasp_iterations():
+    from dataclasses import replace
+
+    import pytest
+
+    from app.config import check_secrets, settings
+    with pytest.raises(RuntimeError, match="PASSWORD_ITERATIONS"):
+        check_secrets(replace(settings, env="production", password_iterations=390_000))
+    check_secrets(replace(settings, env="production", password_iterations=600_000))

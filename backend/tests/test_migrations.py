@@ -50,7 +50,8 @@ def test_empty_database_is_not_up_to_date(engine):
 
 
 def test_sqlite_refused_in_production():
-    prod = replace(settings, env="production", database_url="sqlite:///./portfolio.db", allow_sqlite=False)
+    prod = replace(settings, env="production", database_url="sqlite:///./portfolio.db", allow_sqlite=False,
+                   password_iterations=600_000)
     with pytest.raises(RuntimeError, match="DATABASE_URL"):
         check_secrets(prod)
     check_secrets(replace(prod, allow_sqlite=True))
