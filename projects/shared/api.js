@@ -153,6 +153,12 @@
     if (s.resources && !(resource in s.resources)) throw bad("Такого мастера или занятия нет");
   }
   /* ENGINE:END */
+  // Цена позиции каталога, как CatalogIn на сервере: целое от 1 до 10 000 000 (0 — почти всегда стёртое поле)
+  const checkPrice = (v) => {
+    const n = Number(v);
+    if (v === "" || v === null || !Number.isInteger(n) || n < 1 || n > 10000000) throw new ApiError("Цена — целое число от 1 ₽", 422);
+    return n;
+  };
   const newToken = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
   // Текст, похожий на формулу, Excel покажет как текст, а не выполнит
   const csvSafe = (v) => (/^[=+\-@\t\r]/.test(String(v ?? "")) ? "'" + v : String(v ?? ""));
@@ -513,7 +519,7 @@
           if (!allowed(u).includes(slug)) throw new ApiError("Нет доступа к этому сайту", 403);
           const db = load();
           if (db.catalog.some((c) => c.site === slug && c.ref === b.ref)) throw new ApiError("Позиция с таким кодом уже есть в каталоге", 409);
-          const item = { id: db.seq++, site: slug, ref: b.ref, name: b.name, category: b.category || "", price: Number(b.price), active: b.active !== false };
+          const item = { id: db.seq++, site: slug, ref: b.ref, name: b.name, category: b.category || "", price: checkPrice(b.price), active: b.active !== false };
           db.catalog.push(item);
           save(db);
           return clone(item);
@@ -521,10 +527,7 @@
         updateCatalog: (id, b) => later(() => {
           const changes = {};
           if (b.name !== undefined) changes.name = b.name;
-          if (b.price !== undefined) {
-            if (!(Number(b.price) >= 0)) throw new ApiError("Цена должна быть числом", 422);
-            changes.price = Number(b.price);
-          }
+          if (b.price !== undefined) changes.price = checkPrice(b.price);
           if (b.active !== undefined) changes.active = !!b.active;
           return patch("catalog", id, changes, requireUser("admin"));
         }),

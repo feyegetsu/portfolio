@@ -105,3 +105,11 @@ def test_production_requires_owasp_iterations():
     with pytest.raises(RuntimeError, match="PASSWORD_ITERATIONS"):
         check_secrets(replace(settings, env="production", password_iterations=390_000))
     check_secrets(replace(settings, env="production", password_iterations=600_000))
+
+
+def test_catalog_price_must_be_positive(client, owner):
+    # BUG-007: пустое поле цены в админке превращалось в 0, и позиция продавалась бесплатно
+    item = client.get("/api/v1/admin/catalog", params={"site": "sushi"}, headers=owner).json()[0]
+    assert client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json={"price": 0}, headers=owner).status_code == 422
+    assert client.post("/api/v1/admin/catalog/sushi", json={"ref": "free", "name": "Даром", "price": 0}, headers=owner).status_code == 422
+    assert client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json={"price": 1}, headers=owner).status_code == 200

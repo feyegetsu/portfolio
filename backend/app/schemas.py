@@ -222,13 +222,13 @@ class CatalogIn(BaseModel):
     ref: Annotated[str, Field(min_length=1, max_length=60)]
     name: Annotated[str, Field(min_length=1, max_length=200)]
     category: str = Field("", max_length=60)
-    price: Annotated[int, Field(ge=0, le=10_000_000)]
+    price: Annotated[int, Field(ge=1, le=10_000_000)]  # бесплатных позиций нет: 0 — почти всегда стёртое поле
     active: bool = True
 
 
 class CatalogPatch(BaseModel):
     name: str | None = Field(None, min_length=1, max_length=200)
-    price: int | None = Field(None, ge=0, le=10_000_000)
+    price: int | None = Field(None, ge=1, le=10_000_000)
     active: bool | None = None
 
 

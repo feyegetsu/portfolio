@@ -55,7 +55,7 @@ flowchart LR
 | PATCH | `/api/v1/admin/leads/{id}` и т. п. | staff+ | смена статуса |
 | GET | `/api/v1/admin/leads.csv` | staff+ | выгрузка для Excel |
 | GET | `/api/v1/admin/stats` | staff+ | цифры для дашборда |
-| POST/PATCH/DELETE | `/api/v1/admin/catalog/...` | admin+ | управление каталогом |
+| POST/PATCH/DELETE | `/api/v1/admin/catalog/...` | admin+ | управление каталогом; цена — целое от 1 ₽ (0 отклоняется: бесплатных позиций нет) |
 | GET/POST/DELETE | `/api/v1/admin/users` | owner | команда |
 
 ## Запуск

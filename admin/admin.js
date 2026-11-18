@@ -310,12 +310,12 @@
     $("content").innerHTML = `
       <div class="notice">Изменения сразу видны на сайте: смените цену или выключите блюдо и откройте <a href="../projects/miniapp/" target="_blank" rel="noopener" style="text-decoration:underline">Mini App</a>.</div>
       <form class="add-form panel" id="addItem"><input name="name" placeholder="Название" required aria-label="Название">
-        <input name="category" placeholder="Категория" aria-label="Категория"><input name="price" type="number" min="0" placeholder="Цена" required aria-label="Цена">
+        <input name="category" placeholder="Категория" aria-label="Категория"><input name="price" type="number" min="1" step="1" placeholder="Цена" required aria-label="Цена">
         <button class="btn btn--primary">Добавить</button></form>
       <div class="table-wrap"><table class="cards"><thead><tr><th>Позиция</th><th>Категория</th><th>Цена, ₽</th><th class="center">В продаже</th><th></th></tr></thead>
       <tbody>${items.map((c) => `<tr>
         <td class="wide"><b>${esc(c.name)}</b><small>${siteTag(c.site)}</small></td><td data-label="Категория">${esc(c.category)}</td>
-        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="0" value="${c.price}" data-price="${c.id}" aria-label="Цена: ${esc(c.name)}"></td>
+        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="1" step="1" value="${Number(c.price)}" data-price="${c.id}" aria-label="Цена: ${esc(c.name)}"></td>
         <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${c.id}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
         <td class="actions"><button class="btn btn--sm btn--danger" data-del="${c.id}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
       </tr>`).join("")}</tbody></table></div>`;
@@ -383,7 +383,19 @@
     if (d.lead) { try { await run(() => api.admin.updateLead(d.lead, t.value), "Статус заявки обновлён"); t.className = `status s-${t.value}`; updateBadges(); } catch { render(); } }
     if (d.booking) { try { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); } finally { bookings(); } }
     if (d.order) { try { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); } finally { orders(); } }
-    if (d.price) { await run(() => api.admin.updateCatalog(d.price, { price: Number(t.value) }), "Цена сохранена"); }
+    if (d.price) {
+      // Пустое поле или не целое число ≥ 1 не отправляем: Number("") === 0, и позиция стала бы бесплатной
+      const price = Number(t.value);
+      if (t.value.trim() === "" || !Number.isInteger(price) || price < 1) {
+        toast("Цена — целое число от 1 ₽", true);
+        t.value = t.defaultValue;
+        return;
+      }
+      try {
+        await run(() => api.admin.updateCatalog(d.price, { price }), "Цена сохранена");
+        t.defaultValue = String(price);
+      } catch { t.value = t.defaultValue; }
+    }
     if (d.active) { await run(() => api.admin.updateCatalog(d.active, { active: t.checked }), t.checked ? "Снова в продаже" : "Убрано в стоп-лист"); }
   });
   $("content").addEventListener("click", async (e) => {
