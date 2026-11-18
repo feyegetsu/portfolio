@@ -28,9 +28,11 @@ services:
         sync: false
       - key: CORS_ORIGINS
         value: https://feyegetsu.github.io
-      # Запросы приходят через балансировщик Render, реальный IP посетителя — в X-Forwarded-For
-      - key: FORWARDED_ALLOW_IPS
-        value: "*"
+      # Запросы приходят через балансировщик Render: он дописывает реальный IP посетителя последним
+      # элементом X-Forwarded-For. Всё левее мог задать сам клиент, поэтому верим только одному звену справа.
+      # Проверьте на своём деплое (backend/README.md, «Деплой») и поправьте число, если прокси больше
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"
 
   - type: keyvalue
     name: portfolio-limits

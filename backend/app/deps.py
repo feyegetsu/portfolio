@@ -11,7 +11,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.exceptions import RedisError
 from sqlalchemy.orm import Session
 
-from .config import settings
+from .config import Settings, settings
 from .db import get_db
 from .models import User
 from .security import decode_token
@@ -61,9 +61,18 @@ def check_site_access(user: User, site: str) -> None:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Нет доступа к этому сайту")
 
 
-def client_ip(request: Request) -> str:
-    # За nginx реальный адрес приходит в X-Forwarded-For; uvicorn подставляет его в request.client,
-    # если адрес прокси указан в --forwarded-allow-ips (см. Dockerfile и FORWARDED_ALLOW_IPS)
+def client_ip(request: Request, s: "Settings | None" = None) -> str:
+    """IP посетителя для лимитов.
+
+    Первому элементу X-Forwarded-For верить нельзя: его задаёт клиент. Каждый доверенный прокси дописывает
+    адрес того, кто к нему пришёл, в конец цепочки, поэтому реальный адрес — TRUSTED_PROXY_HOPS-й справа.
+    Если цепочка короче, заголовок подделан или прокси настроен иначе: берём адрес соединения.
+    """
+    hops = (s or settings).trusted_proxy_hops
+    if hops > 0:
+        chain = [h.strip() for h in request.headers.get("x-forwarded-for", "").split(",") if h.strip()]
+        if len(chain) >= hops:
+            return chain[-hops]
     return request.client.host if request.client else "unknown"
 
 

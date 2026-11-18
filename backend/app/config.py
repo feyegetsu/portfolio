@@ -42,6 +42,9 @@ class Settings:
     login_window_seconds: int = int(os.getenv("LOGIN_WINDOW_SECONDS", "900"))
     # Максимальный размер тела запроса: формы и заказы укладываются с огромным запасом
     max_body_bytes: int = int(os.getenv("MAX_BODY_BYTES", "65536"))
+    # Сколько доверенных прокси стоит перед API (балансировщик хостинга, nginx). Реальный IP посетителя —
+    # элемент X-Forwarded-For с этим номером справа: всё левее мог дописать сам клиент. 0 — заголовку не верим
+    trusted_proxy_hops: int = int(os.getenv("TRUSTED_PROXY_HOPS", "0"))
     # Первый владелец создаётся при старте, если пользователей ещё нет
     owner_email: str = os.getenv("OWNER_EMAIL", "owner@example.com")
     owner_password: str = os.getenv("OWNER_PASSWORD", DEV_PASSWORD)
