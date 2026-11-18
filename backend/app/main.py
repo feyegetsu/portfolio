@@ -2,7 +2,7 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
@@ -10,7 +10,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config import Settings, check_secrets, settings
 from .db import SessionLocal, engine
-from .deps import RedisStore, rate_limit
+from .deps import RedisStore, rate_limit, read_limit
 from .migrate import is_up_to_date
 from .routers import admin, auth, public
 from .seed import seed
@@ -75,7 +75,7 @@ def health():
     return {"status": "ok", "db": "ok", "limits": "redis" if isinstance(rate_limit.store, RedisStore) else "memory"}
 
 
-@service.get("/api/v1/sites")
+@service.get("/api/v1/sites", dependencies=[Depends(read_limit)])
 def sites():
     return [{"slug": s.slug, "name": s.name, "leads": s.leads, "bookings": s.bookings, "orders": s.orders, "catalog": s.catalog}
             for s in SITES.values()]

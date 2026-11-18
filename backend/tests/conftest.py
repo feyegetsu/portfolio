@@ -17,7 +17,7 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.db import Base, SessionLocal, engine  # noqa: E402
-from app.deps import LOGIN_LIMITS, rate_limit  # noqa: E402
+from app.deps import LOGIN_LIMITS, rate_limit, read_limit  # noqa: E402
 from app.main import app  # noqa: E402
 from app.migrate import stamp_head  # noqa: E402
 from app.seed import seed  # noqa: E402
@@ -36,6 +36,7 @@ def client():
     with SessionLocal() as db:
         seed(db)
     rate_limit.clear()
+    read_limit.clear()
     for limiter in LOGIN_LIMITS:
         limiter.clear()
     with TestClient(app) as c:

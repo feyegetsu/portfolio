@@ -39,6 +39,8 @@ class Settings:
     # Сколько публичных заявок разрешено с одного IP за окно
     rate_limit: int = int(os.getenv("RATE_LIMIT", "20"))
     rate_window_seconds: int = int(os.getenv("RATE_WINDOW_SECONDS", "600"))
+    # Публичные GET (каталог, свободные слоты, статус заказа) с одного IP за минуту
+    read_limit: int = int(os.getenv("READ_LIMIT", "300"))
     # Попытки входа: после стольких ошибок e-mail с этого IP блокируется на окно
     login_attempts: int = int(os.getenv("LOGIN_ATTEMPTS", "5"))
     login_window_seconds: int = int(os.getenv("LOGIN_WINDOW_SECONDS", "900"))

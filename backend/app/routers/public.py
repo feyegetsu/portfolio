@@ -4,12 +4,12 @@ from datetime import date, datetime, time, timedelta
 from typing import Annotated
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..deps import DB, get_site, rate_limit
+from ..deps import DB, get_site, rate_limit, read_limit
 from ..models import Booking, CatalogItem, Lead, Order
 from ..pricing import price_order
 from ..schemas import BookingIn, CatalogOut, Created, LeadIn, OrderIn, OrderStatusOut
@@ -87,8 +87,8 @@ def create_lead(site: SiteDep, body: LeadIn, db: DB):
     return Created(id=lead.id, status=lead.status)
 
 
-@router.get("/slots", response_model=list[str])
-def busy_slots(site: SiteDep, db: DB, resource: str, day: Annotated[date, Query(alias="date")]):
+@router.get("/slots", response_model=list[str], dependencies=[Depends(read_limit)])
+def busy_slots(site: SiteDep, db: DB, resource: Annotated[str, Query(max_length=100)], day: Annotated[date, Query(alias="date")]):
     """Занятые слоты на день, чтобы форма записи сразу их заблокировала."""
     _feature(site, "bookings")
     start = datetime.combine(day, time.min)
@@ -147,8 +147,8 @@ def create_order(site: SiteDep, body: OrderIn, db: DB):
     return Created(id=order.id, status=order.status, token=order.token)
 
 
-@router.get("/orders/{token}", response_model=OrderStatusOut)
-def order_status(site: SiteDep, token: str, db: DB):
+@router.get("/orders/{token}", response_model=OrderStatusOut, dependencies=[Depends(read_limit)])
+def order_status(site: SiteDep, token: Annotated[str, Path(max_length=32)], db: DB):
     """Статус заказа для экрана отслеживания. Доступ по токену из ответа на заказ, а не по номеру."""
     order = db.scalar(select(Order).where(Order.token == token, Order.site == site.slug))
     if not order:
@@ -156,7 +156,7 @@ def order_status(site: SiteDep, token: str, db: DB):
     return order
 
 
-@router.get("/catalog", response_model=list[CatalogOut])
+@router.get("/catalog", response_model=list[CatalogOut], dependencies=[Depends(read_limit)])
 def public_catalog(site: SiteDep, db: DB):
     _feature(site, "catalog")
     return db.scalars(select(CatalogItem).where(CatalogItem.site == site.slug).order_by(CatalogItem.id)).all()

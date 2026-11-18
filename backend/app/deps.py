@@ -226,6 +226,22 @@ class RateLimiter(SlidingWindow):
 
 
 rate_limit = RateLimiter()
+
+
+class ReadLimiter(SlidingWindow):
+    """Лимит публичных чтений с одного IP: дешёвая нагрузка на базу. Без Redis не применяется."""
+
+    def __init__(self) -> None:
+        super().__init__("read", settings.read_limit, 60)
+
+    def __call__(self, request: Request) -> None:
+        ip = client_ip(request)
+        if self.full(ip):
+            raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Слишком много запросов, подождите минуту")
+        self.add(ip)
+
+
+read_limit = ReadLimiter()
 # Неудачные входы: по паре «IP + e-mail» (обычная опечатка), по аккаунту со всех IP (распределённый перебор)
 # и по IP на любые e-mail (перебор адресов). Без счётчика вход закрывается — fail_open=False
 login_limit = SlidingWindow("login", settings.login_attempts, settings.login_window_seconds, fail_open=False)

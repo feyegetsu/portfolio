@@ -75,3 +75,18 @@ def test_health_reports_db_and_limits(client):
     r = client.get("/health")
     assert r.status_code == 200
     assert r.json() == {"status": "ok", "db": "ok", "limits": "memory"}
+
+
+def test_read_limit(client):
+    # SEC-011: публичные GET тоже ограничены по IP, но опрос статуса заказа раз в 2 секунды проходит с запасом
+    from app.deps import read_limit
+    assert read_limit.limit >= 60
+    codes = [client.get("/api/v1/sites/sushi/catalog").status_code for _ in range(read_limit.limit + 1)]
+    assert codes[:-1] == [200] * read_limit.limit
+    assert codes[-1] == 429
+    assert client.get("/api/v1/sites").status_code == 429
+
+
+def test_read_params_are_bounded(client):
+    assert client.get("/api/v1/sites/barbershop/slots", params={"resource": "x" * 101, "date": "2026-01-01"}).status_code == 422
+    assert client.get(f"/api/v1/sites/sushi/orders/{'x' * 33}").status_code == 422
