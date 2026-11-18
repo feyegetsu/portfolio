@@ -9,11 +9,14 @@
    задвоил содержимое или страница начала падать с ошибкой.
 3. Минификация CSS и JS — внешних файлов и блоков внутри страниц — через esbuild (нужен Node, в CI он есть).
 4. Версия ?v=<хеш> в ссылках на CSS и JS: после обновления браузер не возьмёт старый файл из кэша.
+5. Content-Security-Policy в каждой странице: встроенные скрипты разрешены по SHA-256 своего текста,
+   внешние — только с этого сайта (и telegram.org для Mini App). На Pages заголовки не настроить, поэтому <meta>.
 
 Нужен Playwright: pip install playwright && python -m playwright install chromium
 """
 
 import argparse
+import base64
 import functools
 import hashlib
 import json
@@ -262,6 +265,54 @@ def version_assets(out: Path) -> int:
     return count
 
 
+# ---------- 5. Content-Security-Policy ----------
+
+SCRIPT_BLOCK = re.compile(r"<script\b([^>]*)>(.*?)</script>", re.S)
+KNOWN_APIS = re.compile(r"const KNOWN_APIS = \[(.*?)\];", re.S)
+
+
+def known_apis() -> list[str]:
+    """Адреса API, которым портфолио доверяет (KNOWN_APIS в api.js): им разрешены запросы из браузера."""
+    m = KNOWN_APIS.search((ROOT / "projects" / "shared" / "api.js").read_text(encoding="utf-8"))
+    return re.findall(r"[\"']([^\"']+)[\"']", m.group(1)) if m else []
+
+
+def csp_for(html: str, apis: list[str]) -> str:
+    hashes = sorted({
+        "'sha256-" + base64.b64encode(hashlib.sha256(body.encode()).digest()).decode() + "'"
+        for attrs, body in SCRIPT_BLOCK.findall(html)
+        if "src=" not in attrs and ("type=" not in attrs or "text/javascript" in attrs or "module" in attrs)
+    })
+    scripts = ["'self'", *hashes, *(["https://telegram.org"] if "telegram.org" in html else [])]
+    return "; ".join([
+        "default-src 'self'",
+        "script-src " + " ".join(scripts),
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data: https://images.unsplash.com",
+        "connect-src " + " ".join(["'self'", *apis, "http://localhost:*", "http://127.0.0.1:*"]),
+        "frame-src 'self'",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'self'",
+    ])
+
+
+def add_csp(out: Path) -> int:
+    """CSP в <head> сразу после charset: политика действует на всё, что ниже. Считается по готовому HTML."""
+    apis, count = known_apis(), 0
+    for f in out.rglob("*.html"):
+        html = f.read_text(encoding="utf-8")
+        if 'http-equiv="Content-Security-Policy"' in html:
+            continue
+        meta = f'<meta http-equiv="Content-Security-Policy" content="{csp_for(html, apis)}">'
+        html, n = re.subn(r"(<meta charset=[^>]*>)", lambda m, meta=meta: m.group(1) + meta, html, count=1, flags=re.I)
+        if n:
+            f.write_text(html, encoding="utf-8")
+            count += 1
+    return count
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("out", nargs="?", default="_site")
@@ -289,6 +340,7 @@ def main() -> int:
         if stats:
             print(f"Минификация: {stats['before'] / 1024:.0f} КБ → {stats['after'] / 1024:.0f} КБ")
     print(f"Версии файлов проставлены: {version_assets(out)}")
+    print(f"CSP добавлена в страниц: {add_csp(out)}")
     return 0
 
 

@@ -61,6 +61,30 @@ class BodyLimit:
         await self.app(scope, limited, send)
 
 
+class SecurityHeaders:
+    """nosniff и no-referrer на всех ответах, no-store — на ответах с личными данными (админка и вход)."""
+
+    PRIVATE = ("/api/v1/admin", "/api/v1/auth")
+
+    def __init__(self, app) -> None:
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        private = scope["path"].startswith(self.PRIVATE)
+
+        async def with_headers(message):
+            if message["type"] == "http.response.start":
+                headers = message.setdefault("headers", [])
+                headers += [(b"x-content-type-options", b"nosniff"), (b"referrer-policy", b"no-referrer")]
+                if private:
+                    headers.append((b"cache-control", b"no-store"))
+            await send(message)
+
+        await self.app(scope, receive, with_headers)
+
+
 service = APIRouter(tags=["service"])
 
 
@@ -100,6 +124,7 @@ def create_app(s: Settings = settings) -> FastAPI:
         allow_headers=["Authorization", "Content-Type"],
     )
     app.add_middleware(BodyLimit, limit=s.max_body_bytes)
+    app.add_middleware(SecurityHeaders)
     for router in (public.router, auth.router, admin.router, service):
         app.include_router(router)
     return app

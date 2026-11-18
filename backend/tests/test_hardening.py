@@ -112,3 +112,13 @@ def test_extra_fields_rejected(client, owner):
     # Объявленные поля, которые шлют витрины (название и цена строки для наглядности), по-прежнему принимаются
     ok = {**ORDER, "mode": "pickup", "items": [{"ref": "s1", "name": "Сет", "qty": 1, "price": 1}], "comment": "", "promo": ""}
     assert client.post("/api/v1/sites/sushi/orders", json=ok).status_code == 201
+
+
+def test_security_headers(client, owner):
+    # SEC-006: API не даёт браузеру угадывать тип ответа и не отдаёт личные данные в кеш и Referer
+    public = client.get("/api/v1/sites/sushi/catalog")
+    assert public.headers["x-content-type-options"] == "nosniff"
+    assert public.headers["referrer-policy"] == "no-referrer"
+    assert "no-store" not in public.headers.get("cache-control", "")
+    for path in ("/api/v1/admin/leads", "/api/v1/auth/me"):
+        assert client.get(path, headers=owner).headers["cache-control"] == "no-store"

@@ -1,5 +1,13 @@
 /* Админ-панель. Работает с window.PortfolioAPI: в демо-режиме данные в браузере, с ?api=… — с настоящим бэкендом. */
 (() => {
+  // Во фрейме чужого сайта админку не показываем: иначе кнопки можно подсунуть под чужой интерфейс (кликджекинг).
+  // На GitHub Pages заголовок frame-ancestors не поставить, поэтому проверка в скрипте
+  let foreignFrame = false;
+  try { foreignFrame = window.top !== window && window.top.location.origin !== location.origin; } catch { foreignFrame = true; }
+  if (foreignFrame) {
+    document.body.innerHTML = '<p style="padding:24px;font:16px system-ui">Админка открывается только в отдельной вкладке.</p>';
+    return;
+  }
   const api = window.PortfolioAPI;
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
