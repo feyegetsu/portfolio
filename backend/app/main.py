@@ -2,10 +2,11 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config import check_secrets, settings
 from .db import SessionLocal, engine
@@ -41,13 +42,38 @@ app.add_middleware(
 )
 
 
-@app.middleware("http")
-async def limit_body_size(request: Request, call_next):
-    """Отклоняем слишком большие запросы до разбора JSON: формы и заказы весят единицы килобайт."""
-    length = request.headers.get("content-length")
-    if length and length.isdigit() and int(length) > settings.max_body_bytes:
-        return JSONResponse({"detail": "Слишком большой запрос"}, status_code=413)
-    return await call_next(request)
+class BodyLimit:
+    """Отклоняет слишком большие запросы до разбора JSON: формы и заказы весят единицы килобайт.
+
+    Content-Length проверяется сразу, но у chunked-запроса его нет, поэтому байты считаются и по ходу чтения.
+    HTTPException, а не любое исключение: иначе FastAPI превратит его в 400 «ошибка разбора тела».
+    """
+
+    def __init__(self, app, limit: int) -> None:
+        self.app, self.limit = app, limit
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        length = dict(scope["headers"]).get(b"content-length", b"")
+        if length.isdigit() and int(length) > self.limit:
+            return await JSONResponse({"detail": TOO_LARGE}, status_code=413)(scope, receive, send)
+        seen = 0
+
+        async def limited():
+            nonlocal seen
+            message = await receive()
+            if message["type"] == "http.request":
+                seen += len(message.get("body", b""))
+                if seen > self.limit:
+                    raise StarletteHTTPException(413, TOO_LARGE)
+            return message
+
+        await self.app(scope, limited, send)
+
+
+TOO_LARGE = "Слишком большой запрос"
+app.add_middleware(BodyLimit, limit=settings.max_body_bytes)
 
 
 app.include_router(public.router)

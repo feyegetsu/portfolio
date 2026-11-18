@@ -1,5 +1,6 @@
 """Проверки к исправлениям по QA-отчёту, которых нет в test_qa_findings.py."""
 
+import json
 from dataclasses import replace
 
 import pytest
@@ -58,3 +59,23 @@ def test_extras_only_for_pizza(client):
 def test_florist_prices_from_catalog(client):
     body = {**ORDER, "mode": "pickup", "items": [{"ref": "3", "qty": 1, "price": 1}]}
     assert _total(client, "florist", body)["total"] == 8900
+
+
+def test_chunked_body_over_limit_rejected(client):
+    # SEC-004: у chunked-запроса нет Content-Length, размер считается по прочитанным байтам
+    chunks = (b"x" * 1024 for _ in range(200))
+    r = client.post("/api/v1/sites/cafe/leads", content=chunks, headers={"Content-Type": "application/json"})
+    assert r.status_code == 413
+
+
+def test_declared_length_over_limit_rejected(client):
+    body = b'{"kind":"table","phone":"+79001234567","message":"' + b"x" * 70_000 + b'"}'
+    r = client.post("/api/v1/sites/cafe/leads", content=body, headers={"Content-Type": "application/json"})
+    assert r.status_code == 413
+
+
+def test_small_chunked_body_accepted(client):
+    body = json.dumps({"kind": "table", "phone": PHONE}).encode()
+    r = client.post("/api/v1/sites/cafe/leads", content=(body[i:i + 8] for i in range(0, len(body), 8)),
+                    headers={"Content-Type": "application/json"})
+    assert r.status_code == 201
