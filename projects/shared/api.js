@@ -241,7 +241,7 @@
     const localIso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
 
     function seedData() {
-      const db = { seq: 1, users: [], leads: [], bookings: [], orders: [], catalog: [] };
+      const db = { seq: 1, users: [], leads: [], bookings: [], orders: [], catalog: [], seeded: [] };
       const id = () => db.seq++;
       const ago = (days, h = 12, m = 0) => { const d = now(); d.setDate(d.getDate() - days); d.setHours(h, m, 0, 0); return iso(d); };
       db.users.push(
@@ -278,19 +278,30 @@
       );
       const menu = CATALOGS.miniapp;
       for (const [ref, name, category, price] of menu) db.catalog.push({ id: id(), site: "miniapp", ref, name, category, price, active: true });
+      db.seeded.push("catalog:miniapp");
       addCatalogs(db);
       return db;
     }
 
-    // Каталоги сайтов, добавленных позже: дописываем в уже сохранённые демо-данные, не трогая остальное
+    // Каталоги сайтов, добавленных позже: дописываем в уже сохранённые демо-данные, не трогая остальное.
+    // Как seed_marks на сервере: каталог заливается один раз, удалённые владельцем позиции не возвращаются
     function addCatalogs(db) {
-      let added = false;
-      for (const [slug, menu] of Object.entries(LATER_CATALOGS)) {
-        if (db.catalog.some((c) => c.site === slug)) continue;
-        for (const [ref, name, category, price] of menu) db.catalog.push({ id: db.seq++, site: slug, ref, name, category, price, active: true });
-        added = true;
+      let changed = false;
+      if (!Array.isArray(db.seeded)) {
+        // Данные, сохранённые до появления отметок: каталоги с позициями уже заливались
+        db.seeded = [...new Set(db.catalog.map((c) => `catalog:${c.site}`))];
+        changed = true;
       }
-      return added;
+      for (const [slug, menu] of Object.entries(LATER_CATALOGS)) {
+        const mark = `catalog:${slug}`;
+        if (db.seeded.includes(mark)) continue;
+        if (!db.catalog.some((c) => c.site === slug)) {
+          for (const [ref, name, category, price] of menu) db.catalog.push({ id: db.seq++, site: slug, ref, name, category, price, active: true });
+        }
+        db.seeded.push(mark);
+        changed = true;
+      }
+      return changed;
     }
 
     function load() {

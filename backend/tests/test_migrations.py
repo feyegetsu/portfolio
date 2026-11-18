@@ -88,3 +88,13 @@ def test_existing_bookings_fill_slot_counters(engine):
     with engine.connect() as conn:
         counters = {(s, k): n for s, k, n in conn.execute(text("select site, resource_key, taken from slot_counters"))}
     assert counters == {("restaurant", ""): 2, ("fitness", "Кроссфит"): 2}
+
+
+def test_sites_with_catalog_are_marked_as_seeded(engine):
+    # BUG-003: каталог, который уже заливался, не зальётся повторно после перехода на отметки
+    migrate.upgrade(engine, "0003")
+    with engine.begin() as conn:
+        conn.execute(text("insert into catalog (site, ref, name, category, price, active) values ('sushi', 's1', 'Сет', '', 1, 1)"))
+    migrate.upgrade(engine)
+    with engine.connect() as conn:
+        assert conn.execute(text("select key from seed_marks")).scalars().all() == ["catalog:sushi"]

@@ -103,6 +103,14 @@ class Order(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+class SeedMark(Base):
+    """Отметка, что начальные данные уже заливались (например, «catalog:sushi»): удалённое владельцем не вернётся."""
+
+    __tablename__ = "seed_marks"
+
+    key: Mapped[str] = mapped_column(String(100), primary_key=True)
+
+
 class CatalogItem(Base):
     """Позиция каталога. ref — внешний id позиции на сайте, по нему сайт применяет цену и стоп-лист."""
 
