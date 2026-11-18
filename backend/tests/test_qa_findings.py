@@ -4,7 +4,7 @@
 После исправления он должен пройти и дальше защищать от повторения.
 """
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from conftest import PHONE, login
 
@@ -148,7 +148,7 @@ def test_staff_cannot_see_other_sites(client, owner):
 
 def test_past_local_time_rejected(client):
     # Сайт шлёт «настенное» московское время без пояса. Час назад по Москве = UTC+2 часа.
-    msk_hour_ago = (datetime.utcnow() + timedelta(hours=2)).replace(second=0, microsecond=0).isoformat()
+    msk_hour_ago = (datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=2)).replace(second=0, microsecond=0).isoformat()
     r = client.post("/api/v1/sites/barbershop/bookings", json={
         "resource": "Денис", "starts_at": msk_hour_ago, "name": "А", "phone": PHONE})
     assert r.status_code == 422, "Запись на время, которое в Москве прошло час назад, принята"

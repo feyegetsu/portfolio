@@ -48,15 +48,15 @@ def check_slot(site: Site, resource: str, starts_at: datetime) -> None:
     """Правила записи: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу."""
     now = site_now(site)
     if starts_at < now - timedelta(minutes=5):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Это время уже прошло")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Это время уже прошло")
     if starts_at > now + timedelta(days=site.horizon_days):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f"Запись открыта на {site.horizon_days} дней вперёд")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"Запись открыта на {site.horizon_days} дней вперёд")
     if starts_at.minute % site.step_minutes:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Выберите время из расписания")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Выберите время из расписания")
     if not site.is_open(starts_at.hour * 60 + starts_at.minute):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "В это время мы закрыты")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "В это время мы закрыты")
     if site.resources is not None and resource not in site.resources:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Такого мастера или занятия нет")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Такого мастера или занятия нет")
 
 
 def check_capacity(db: Session, site: Site, resource: str, starts_at: datetime, exclude_id: int | None = None) -> None:
@@ -78,7 +78,7 @@ def check_capacity(db: Session, site: Site, resource: str, starts_at: datetime, 
 def create_lead(site: SiteDep, body: LeadIn, db: DB):
     _feature(site, "leads")
     if not (body.phone or body.email):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Укажите телефон или e-mail")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Укажите телефон или e-mail")
     if _spam(body.website):
         return Created(id=0, status="new")  # боту отвечаем как обычно, но ничего не сохраняем
     lead = Lead(site=site.slug, **body.model_dump(exclude={"website"}))
@@ -130,7 +130,7 @@ def create_booking(site: SiteDep, body: BookingIn, db: DB):
 def create_order(site: SiteDep, body: OrderIn, db: DB):
     _feature(site, "orders")
     if body.mode == "delivery" and not body.address.strip():
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Укажите адрес доставки")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Укажите адрес доставки")
     if _spam(body.website):
         return Created(id=0, status="new")
 

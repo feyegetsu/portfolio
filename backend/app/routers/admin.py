@@ -233,7 +233,7 @@ def list_users(db: DB):
 @router.post("/users", response_model=UserOut, status_code=201, dependencies=[Depends(require("owner"))])
 def add_user(body: UserIn, db: DB):
     if body.sites is not None and any(s not in SITES for s in body.sites):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Неизвестный сайт")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Неизвестный сайт")
     user = User(email=body.email.lower().strip(), name=body.name, role=body.role, sites=body.sites,
                 password_hash=hash_password(body.password))
     db.add(user)
@@ -248,7 +248,7 @@ def add_user(body: UserIn, db: DB):
 @router.delete("/users/{user_id}", status_code=204)
 def remove_user(user_id: int, owner: Annotated[User, Depends(require("owner"))], db: DB):
     if user_id == owner.id:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Нельзя удалить самого себя")
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Нельзя удалить самого себя")
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Не найдено")

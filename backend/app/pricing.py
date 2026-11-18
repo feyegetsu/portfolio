@@ -14,7 +14,7 @@ SERVICE_REFS = {"delivery", "promo"}  # строки, которые раньш�
 
 
 def _bad(msg: str) -> HTTPException:
-    return HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, msg)
+    return HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, msg)
 
 
 def _line(item: OrderItem, catalog: dict[str, CatalogItem], rules: Pricing) -> dict:
