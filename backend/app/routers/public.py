@@ -11,8 +11,8 @@ from ..deps import DB, get_site
 from ..limits import rate_limit, read_limit
 from ..models import Booking, CatalogItem, Lead, Order
 from ..pricing import price_order
-from ..schemas import BookingIn, CatalogOut, Created, LeadIn, OrderIn, OrderStatusOut
-from ..services.booking import check_slot, local_time, reserve, slot_lock_key
+from ..schemas import BookingIn, CatalogOut, Created, LeadIn, OrderIn, OrderStatusOut, SlotOut
+from ..services.booking import availability, check_slot, local_time, reserve, slot_lock_key
 from ..sites import Site
 
 router = APIRouter(prefix="/api/v1/sites/{site}", tags=["public"])
@@ -56,6 +56,14 @@ def busy_slots(site: SiteDep, db: DB, resource: Annotated[str, Query(max_length=
         )
     )
     return [t.strftime("%H:%M") for t in rows]
+
+
+@router.get("/availability", response_model=list[SlotOut], dependencies=[Depends(read_limit)])
+def slot_availability(site: SiteDep, db: DB, day: Annotated[date, Query(alias="date")],
+                      resource: Annotated[str | None, Query(max_length=100)] = None):
+    """Слоты дня и свободные места: форма записи сразу показывает, где мест нет. У фитнеса и барбершопа нужен resource."""
+    _feature(site, "bookings")
+    return availability(db, site, day, resource)
 
 
 @router.post("/bookings", response_model=Created, status_code=201, dependencies=[Depends(rate_limit)])

@@ -387,17 +387,16 @@
 
     // ---------- Афиша: ближайшие события по дням недели ----------
     const EVENTS = { 2: ["Квиз «Солод»", "Команды до 6 человек, призы от бара. Начало в 20:00.", "1528605248644-14dd04022da1", 12], 4: ["Живой джаз", "Квартет Михаила Ветрова. Начало в 20:00.", "1415201364774-f6f0bb35f28f", 30], 5: ["Стендап-вечер", "Открытый микрофон. Начало в 21:00.", "1493225457124-a3eb161ffa5f", 40], 6: ["Футбол на большом экране", "Трансляция главного матча тура.", "1501386761578-eac5c94b800a", 60] };
-    const upcoming = [...Array(8)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; }).filter((d) => EVENTS[d.getDay()]).slice(0, 4);
+    const upcoming = [...Array(8)].map((_, i) => new Date(`${PortfolioAPI.siteToday("gastrobar", i)}T12:00:00`)).filter((d) => EVENTS[d.getDay()]).slice(0, 4);
     const taken = (() => { try { return JSON.parse(localStorage.getItem("sol-events")) || []; } catch { return []; } })();
     function renderEvents() {
       $("eventList").innerHTML = upcoming.map((d) => {
-        const [title, text, img, seats] = EVENTS[d.getDay()];
-        const key = d.toISOString().slice(0, 10);
-        const left = Math.max(0, seats - ((d.getDate() * 7) % 9) - (taken.includes(key) ? 1 : 0));
+        const [title, text, img] = EVENTS[d.getDay()];
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
         const mine = taken.includes(key);
         return `<article class="event"><div class="event__ph"><img loading="lazy" src="${ph(img, 500)}" alt=""><div class="event__date"><b>${d.getDate()}</b>${d.toLocaleDateString("ru-RU", { month: "short" }).replace(".", "")}</div></div>
-          <div class="event__b"><h3>${title}</h3><p>${text}</p><span class="seats">${mine ? "Вы в списке ✓" : `Свободно мест: ${left}`}</span>
-          <button class="btn" data-ev="${key}" data-title="${title}" ${mine || !left ? "disabled" : ""}>${mine ? "Записаны" : "Записаться"}</button></div></article>`;
+          <div class="event__b"><h3>${title}</h3><p>${text}</p><span class="seats">${mine ? "Вы в списке ✓" : "Вход по списку: запишитесь заранее"}</span>
+          <button class="btn" data-ev="${key}" data-title="${title}" ${mine ? "disabled" : ""}>${mine ? "Записаны" : "Записаться"}</button></div></article>`;
       }).join("");
     }
     $("eventList").addEventListener("click", async (e) => {
@@ -427,8 +426,16 @@
     $("bDate").min = PortfolioAPI.siteToday("gastrobar");
     $("bDate").max = PortfolioAPI.siteToday("gastrobar", PortfolioAPI.rules("gastrobar").horizon - 1);
     function fillTimes() {
-      const opts = $("bDate").value ? PortfolioAPI.openSlots("gastrobar", $("bDate").value) : [];
+      const day = $("bDate").value;
+      const opts = day ? PortfolioAPI.openSlots("gastrobar", day) : [];
       $("bTime").innerHTML = opts.length ? opts.map((x) => `<option value="${x.starts_at}"${x.time === "19:00" ? " selected" : ""}>${x.time}</option>`).join("") : '<option value="">Сегодня уже поздно</option>';
+      // Время без свободных столов — из API (в демо — из записей в этом браузере)
+      if (opts.length) PortfolioAPI.availability("gastrobar", day).then((list) => {
+        if ($("bDate").value !== day) return;
+        const full = new Set(list.filter((x) => x.left === 0).map((x) => x.starts_at));
+        [...$("bTime").options].forEach((o) => { if (full.has(o.value)) { o.disabled = true; o.textContent += " — мест нет"; } });
+        if ($("bTime").selectedOptions[0] && $("bTime").selectedOptions[0].disabled) $("bTime").value = ([...$("bTime").options].find((o) => !o.disabled) || {}).value || "";
+      }).catch(() => {});
     }
     // Если сегодня свободного времени уже нет, предлагаем завтра
     $("bDate").value = PortfolioAPI.siteToday("gastrobar");

@@ -44,6 +44,7 @@ flowchart LR
 |---|---|---|---|
 | POST | `/api/v1/sites/{site}/leads` | все | заявка с формы |
 | GET | `/api/v1/sites/{site}/slots?resource=&date=` | все | занятые слоты на день |
+| GET | `/api/v1/sites/{site}/availability?date=&resource=` | все | слоты дня с числом свободных мест (`left`; у мастера 1 или 0), ночные слоты — уже следующей датой; у фитнеса и барбершопа нужен `resource` |
 | POST | `/api/v1/sites/{site}/bookings` | все | запись на время (409, если занято) |
 | POST | `/api/v1/sites/{site}/orders` | все | заказ |
 | GET | `/api/v1/sites/{site}/orders/{id}` | все | статус заказа для экрана отслеживания |

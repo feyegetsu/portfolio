@@ -423,8 +423,16 @@
     const eveningDate = (i) => new Date(`${evenings[i]}T12:00:00`);
     $("bDay").innerHTML = evenings.map((_, i) => `<option value="${i}">${eveningDate(i).toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" })}</option>`).join("");
     function fillSlots() {
-      const opts = PortfolioAPI.openSlots("bar", evenings[$("bDay").value]);
+      const day = evenings[$("bDay").value];
+      const opts = PortfolioAPI.openSlots("bar", day);
       $("bTime").innerHTML = opts.length ? opts.map((x) => `<option value="${x.starts_at}"${x.time === "21:00" ? " selected" : ""}>${x.time}</option>`).join("") : '<option value="">Сегодня уже не успеть</option>';
+      // Время без свободных мест — из API (в демо — из записей в этом браузере)
+      if (opts.length) PortfolioAPI.availability("bar", day).then((list) => {
+        if (evenings[$("bDay").value] !== day) return;
+        const full = new Set(list.filter((x) => x.left === 0).map((x) => x.starts_at));
+        [...$("bTime").options].forEach((o) => { if (full.has(o.value)) { o.disabled = true; o.textContent += " — мест нет"; } });
+        if ($("bTime").selectedOptions[0] && $("bTime").selectedOptions[0].disabled) $("bTime").value = ([...$("bTime").options].find((o) => !o.disabled) || {}).value || "";
+      }).catch(() => {});
     }
     fillSlots();
     if (!$("bTime").value && evenings.length > 1) { $("bDay").value = "1"; fillSlots(); }

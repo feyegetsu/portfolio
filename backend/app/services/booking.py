@@ -6,15 +6,15 @@ INSERT … ON CONFLICT DO UPDATE SET taken = taken + 1 WHERE taken < вмест�
 запроса не могут оба увидеть «осталось одно место»: проверка и запись происходят в одной строке БД.
 """
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException, status
-from sqlalchemy import update
+from sqlalchemy import select, update
 from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.orm import Session
 
-from ..models import SlotCounter
+from ..models import Booking, SlotCounter
 from ..sites import Site
 
 FULL = "На это время мест уже нет"
@@ -46,6 +46,40 @@ def check_slot(site: Site, resource: str, starts_at: datetime) -> None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, msg)
     if site.resources is not None and resource not in site.resources:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Такого мастера или занятия нет")
+
+
+def day_slots(site: Site, day: date) -> list[datetime]:
+    """Все слоты записи дня открытия day, включая ночные после полуночи (как daySlots в api.js)."""
+    schedule = site.schedule if site.schedule is not None else dict.fromkeys(range(7), site.hours)
+    hours = schedule.get(day.weekday())
+    if not hours:
+        return []
+    start, end = hours[0] * 60, (hours[1] if hours[0] < hours[1] else hours[1] + 24) * 60
+    base = datetime.combine(day, time.min)
+    return [base + timedelta(minutes=m) for m in range(start, end, site.step_minutes)]
+
+
+def availability(db: Session, site: Site, day: date, resource: str | None) -> list[dict]:
+    """Свободные места по слотам дня: по счётчику мест, у мастера — 1 или 0. left=None — ограничения нет."""
+    if site.resources is not None and resource not in site.resources:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Такого мастера или занятия нет")
+    slots = day_slots(site, day)
+    if not slots:
+        return []
+    window = (SlotCounter.starts_at >= slots[0], SlotCounter.starts_at <= slots[-1])
+    cap = capacity(site, resource or "")
+    if cap:
+        taken = dict(db.execute(select(SlotCounter.starts_at, SlotCounter.taken)
+                                .where(SlotCounter.site == site.slug, SlotCounter.resource_key == cap[0], *window)).all())
+        left = {t: max(0, cap[1] - taken.get(t, 0)) for t in slots}
+    elif site.exclusive_slots:
+        busy = set(db.scalars(select(Booking.starts_at).where(
+            Booking.site == site.slug, Booking.resource == resource, Booking.status != "cancelled",
+            Booking.starts_at >= slots[0], Booking.starts_at <= slots[-1])))
+        left = {t: 0 if t in busy else 1 for t in slots}
+    else:
+        left = dict.fromkeys(slots)
+    return [{"time": t.strftime("%H:%M"), "starts_at": t.isoformat(), "left": left[t]} for t in slots]
 
 
 def slot_lock_key(site: Site, resource: str, starts_at: datetime) -> str | None:

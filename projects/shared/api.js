@@ -305,6 +305,7 @@
       base,
       createLead: (site, b) => req("POST", `/api/v1/sites/${site}/leads`, b),
       busySlots: (site, resource, date) => req("GET", `/api/v1/sites/${site}/slots${qs({ resource, date })}`),
+      availability: (site, date, resource) => req("GET", `/api/v1/sites/${site}/availability${qs({ date, resource })}`),
       createBooking: (site, b) => req("POST", `/api/v1/sites/${site}/bookings`, b),
       createOrder: (site, b) => req("POST", `/api/v1/sites/${site}/orders`, b),
       orderStatus: (site, id) => req("GET", `/api/v1/sites/${site}/orders/${id}`),
@@ -531,6 +532,18 @@
         return load().bookings
           .filter((b) => b.site === slug && b.resource === resource && b.status !== "cancelled" && b.starts_at.slice(0, 10) === date)
           .map((b) => b.starts_at.slice(11, 16));
+      }),
+      // Свободные места по слотам дня, как GET /availability: по вместимости, у мастера — 1 или 0
+      availability: (slug, day, resource) => later(() => {
+        const s = site(slug, "bookings");
+        if (s.resources && !(resource in s.resources)) throw new ApiError("Такого мастера или занятия нет", 422);
+        const db = load();
+        const cap = s.resources ? s.resources[resource] : s.capacity;
+        return daySlots(s, day).map(({ time, starts_at }) => {
+          const same = db.bookings.filter((b) => b.site === slug && b.starts_at === starts_at && b.status !== "cancelled"
+            && (!s.resources || b.resource === resource)).length;
+          return { time, starts_at, left: cap ? Math.max(0, cap - same) : s.exclusive ? (same ? 0 : 1) : null };
+        });
       }),
       createBooking: (slug, b) => later(() => {
         const s = site(slug, "bookings");

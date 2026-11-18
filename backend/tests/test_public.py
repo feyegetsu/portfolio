@@ -142,3 +142,41 @@ def test_blank_name_rejected(client):
     assert client.post("/api/v1/sites/cafe/leads", json={"kind": "   ", "phone": PHONE}).status_code == 422
     ok = client.post("/api/v1/sites/barbershop/bookings", json={**booking, "name": "  Иван  "})
     assert ok.status_code == 201
+
+
+def _next_weekday(weekday: int, hour: int) -> datetime:
+    d = TOMORROW
+    while d.weekday() != weekday:
+        d += timedelta(days=1)
+    return d.replace(hour=hour, minute=0)
+
+
+def test_availability(client, monkeypatch):
+    # BUG-005: формы показывают настоящую занятость, а не формулу от даты
+    from app.limits import rate_limit
+    monkeypatch.setattr(rate_limit, "limit", 100)
+    when = _next_weekday(1, 20)  # вторник, ресторан открыт
+    for _ in range(10):
+        assert _book(client, site="restaurant", resource="Стол на 2", when=when).status_code == 201
+    slots = client.get("/api/v1/sites/restaurant/availability", params={"date": when.date().isoformat()}).json()
+    by_time = {s["time"]: s for s in slots}
+    assert by_time["20:00"]["left"] == 0
+    assert by_time["19:30"]["left"] == 10
+    assert by_time["20:00"]["starts_at"] == when.isoformat()
+    assert [s["time"] for s in slots][0] == "18:00" and slots[-1]["time"] == "22:30"
+    monday = _next_weekday(0, 19).date().isoformat()
+    assert client.get("/api/v1/sites/restaurant/availability", params={"date": monday}).json() == []  # выходной
+
+
+def test_availability_per_class_and_master(client):
+    when = TOMORROW.replace(hour=19, minute=30)
+    _book(client, site="fitness", resource="Тайский бокс", when=when)
+    day = when.date().isoformat()
+    fitness = client.get("/api/v1/sites/fitness/availability", params={"date": day, "resource": "Тайский бокс"}).json()
+    assert {s["time"]: s["left"] for s in fitness}["19:30"] == 9
+    assert client.get("/api/v1/sites/fitness/availability", params={"date": day}).status_code == 422  # у фитнеса нужно занятие
+    _book(client, resource="Артём")  # TOMORROW 15:00
+    barber = client.get("/api/v1/sites/barbershop/availability", params={"date": day, "resource": "Артём"}).json()
+    assert {s["time"]: s["left"] for s in barber}["15:00"] == 0
+    assert {s["time"]: s["left"] for s in barber}["16:00"] == 1
+    assert client.get("/api/v1/sites/cafe/availability", params={"date": day}).status_code == 404

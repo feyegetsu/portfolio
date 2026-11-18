@@ -412,12 +412,32 @@
       ["20:00", "Стретчинг", "mind", "Ольга", 50, 18], ["21:00", "Pump", "strength", "Денис", 55, 16],
     ];
     const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-    const week = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
-    // Для каждого дня своё стабильное расписание и заполненность
-    const schedule = week.map((d, di) => pool.filter((_, i) => (i + di) % 3 !== 0).map(([t, n, ty, coach, min, cap], i) => {
-      const taken = Math.min(cap, (i * 7 + di * 5 + 3) % (cap + 3));
-      return { id: `${di}-${i}`, t, n, ty, coach, min, cap, taken, booked: false };
+    // Неделя по московскому времени клуба, а не по часам посетителя
+    const DAYS = [...Array(7)].map((_, i) => PortfolioAPI.siteToday("fitness", i));
+    const week = DAYS.map((s) => new Date(`${s}T12:00:00`));
+    const CAPACITY = PortfolioAPI.rules("fitness").resources;  // мест в зале — как на сервере
+    // «Вы записаны» помнится в этом браузере: ключ — дата, время и занятие
+    const BOOKED_KEY = "pulse-booked";
+    const booked = (() => { try { return JSON.parse(localStorage.getItem(BOOKED_KEY)) || []; } catch { return []; } })();
+    const bookedKey = (di, c) => `${DAYS[di]}T${c.t}|${c.n}`;
+    // Для каждого дня своё стабильное расписание; занятость приходит из API (в демо — из записей в этом браузере)
+    const schedule = week.map((d, di) => pool.filter((_, i) => (i + di) % 3 !== 0).map(([t, n, ty, coach, min], i) => {
+      const c = { id: `${di}-${i}`, t, n, ty, coach, min, cap: CAPACITY[n], taken: 0, booked: false };
+      c.booked = booked.includes(bookedKey(di, c));
+      return c;
     }));
+    const loaded = new Set();
+    async function loadTaken(di) {
+      if (loaded.has(di)) return;
+      loaded.add(di);
+      await Promise.all(schedule[di].map(async (c) => {
+        try {
+          const slot = (await PortfolioAPI.availability("fitness", DAYS[di], c.n)).find((x) => x.time === c.t);
+          if (slot && slot.left !== null) c.taken = c.cap - slot.left;
+        } catch { /* нет сети — покажем без занятости */ }
+      }));
+      if (di === day) renderClasses();
+    }
     let day = 0, type = "all";
 
     $("days").innerHTML = week.map((d, i) => `<button class="day${i === 0 ? " active" : ""}" data-i="${i}">${i === 0 ? "Сегодня" : wd[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
@@ -436,12 +456,15 @@
     });
 
     function renderClasses() {
-      const nowH = new Date().getHours();
+      loadTaken(day);
+      const now = PortfolioAPI.siteNow("fitness");
+      const nowH = now.getHours() + now.getMinutes() / 60;
       const list = schedule[day].filter(c => type === "all" || c.ty === type);
       if (!list.length) { $("classes").innerHTML = `<div class="empty">В этот день таких занятий нет. Попробуйте другой день.</div>`; return; }
       $("classes").innerHTML = list.map((c, i) => {
         const left = c.cap - c.taken;
-        const past = day === 0 && parseInt(c.t) <= nowH;
+        const [h, m] = c.t.split(":").map(Number);
+        const past = day === 0 && h + m / 60 <= nowH;
         const label = c.booked ? "Вы записаны ✓" : past ? "Прошло" : left ? "Записаться" : "Мест нет";
         return `<div class="cls" style="animation-delay:${i * 40}ms">
           <time>${c.t}<small>${c.min} мин</small></time>
@@ -458,12 +481,13 @@
       if (c.booked) { toast("Отменить запись можно у администратора клуба"); return; }
       let contact;
       try { contact = await PortfolioAPI.askContact(`Запись: ${c.n}, ${c.t}`); } catch { return; }
-      const d = week[day];
-      const startsAt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${c.t}:00`;
+      const startsAt = `${DAYS[day]}T${c.t}:00`;
       b.disabled = true;
       try {
         await PortfolioAPI.createBooking("fitness", { resource: c.n, service: `${c.t} · тренер ${c.coach}`, starts_at: startsAt, ...contact });
         c.booked = true; c.taken += 1;
+        booked.push(bookedKey(day, c));
+        try { localStorage.setItem(BOOKED_KEY, JSON.stringify(booked)); } catch {}
         toast(`Вы записаны: ${c.n}, ${c.t}`);
       } catch (err) {
         toast(err.message);

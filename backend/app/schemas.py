@@ -166,6 +166,12 @@ class OrderStatusOut(ORM):
     items: list[dict]
 
 
+class SlotOut(BaseModel):
+    time: str           # «19:30» — как на кнопке
+    starts_at: str      # «2026-11-24T19:30:00» — что отправить в запись (ночные слоты — уже следующей датой)
+    left: int | None    # свободных мест; None — без ограничения
+
+
 class CatalogOut(ORM):
     id: int
     site: str
