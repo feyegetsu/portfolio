@@ -10,11 +10,12 @@
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
     :root { --bg: #fbfbfd; --ink: #0d0f1a; --muted: #6b7086; --indigo: #4f46e5; --indigo-l: #eef0ff; --line: #e8e9f1; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -206,7 +207,7 @@
   <section style="padding-top:20px">
     <div class="container story">
       <div class="story__img" data-reveal="left">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1100&q=75" alt="Команда работает вместе">
+        <img width="1100" height="733" loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1100&q=75" alt="Команда работает вместе">
         <div class="story__chip"><b data-count="38" data-suffix="%">38%</b><span>меньше сорванных сроков</span></div>
       </div>
       <div data-reveal="right">
@@ -215,9 +216,9 @@
       </div>
     </div>
     <div class="container reviews" data-stagger>
-      <figure class="review"><blockquote>«Перенесли всё из чатов за вечер. Наконец видно, кто что делает и когда сдаёт.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Мария</b><span>Руководитель студии дизайна</span></div></figcaption></figure>
-      <figure class="review"><blockquote>«Telegram-бот — киллер-фича. Разработчики отмечают задачи, не открывая браузер.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Алексей</b><span>CTO, интернет-магазин</span></div></figcaption></figure>
-      <figure class="review"><blockquote>«Пробовали три сервиса. Этот единственный, которым команда пользуется без напоминаний.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Ольга</b><span>Маркетинговое агентство</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Перенесли всё из чатов за вечер. Наконец видно, кто что делает и когда сдаёт.»</blockquote><figcaption><img width="120" height="120" loading="lazy" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Мария</b><span>Руководитель студии дизайна</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Telegram-бот — киллер-фича. Разработчики отмечают задачи, не открывая браузер.»</blockquote><figcaption><img width="120" height="120" loading="lazy" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Алексей</b><span>CTO, интернет-магазин</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Пробовали три сервиса. Этот единственный, которым команда пользуется без напоминаний.»</blockquote><figcaption><img width="120" height="120" loading="lazy" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Ольга</b><span>Маркетинговое агентство</span></div></figcaption></figure>
     </div>
   </section>
 

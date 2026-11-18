@@ -11,11 +11,12 @@
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: dark only; }
     :root { --night: #0d0b0a; --night-2: #161210; --velvet: #3b1218; --amber: #d8a85a; --neon: #ff6f91; --cream: #efe4d2; --muted: #a29482; --line: #2c2420; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -199,7 +200,7 @@
   </header>
 
   <section class="hero">
-    <img class="hero__bg" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" alt="" fetchpriority="high">
+    <img width="1400" height="933" class="hero__bg" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" alt="" fetchpriority="high">
     <div class="container">
       <h1 class="neon">Полночь</h1>
       <div class="hero__sub">коктейльный бар без вывески</div>
@@ -245,8 +246,8 @@
   <section id="photos">
     <div class="container">
       <div class="albums">
-        <button data-album="bar"><img loading="lazy" src="https://images.unsplash.com/photo-1597290282695-edc43d0e7129?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Бар</b><small id="cnt-bar"></small></span></button>
-        <button data-album="drinks"><img loading="lazy" src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Коктейли</b><small id="cnt-drinks"></small></span></button>
+        <button data-album="bar"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1597290282695-edc43d0e7129?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Бар</b><small id="cnt-bar"></small></span></button>
+        <button data-album="drinks"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Коктейли</b><small id="cnt-drinks"></small></span></button>
       </div>
     </div>
   </section>
@@ -335,7 +336,7 @@
       $("drinkList").innerHTML = DRINKS.filter((d) => taste === "all" || d[3].includes(taste)).map(([img, n, d, , s, p, recipe], i) => `
         <article class="drink" style="animation-delay:${i * 60}ms">
           <button class="drink__more" aria-label="Рецепт: ${n}">i</button>
-          <div class="drink__ph"><img loading="lazy" src="${ph(img)}" alt="${n}"><div class="drink__recipe"><b>Рецепт</b>${recipe}</div></div>
+          <div class="drink__ph"><img width="500" height="667" loading="lazy" src="${ph(img)}" alt="${n}"><div class="drink__recipe"><b>Рецепт</b>${recipe}</div></div>
           <div class="drink__b"><h3>${n}</h3><small>${d}</small>
             <div class="drink__foot"><span class="strength" title="Крепость">${[1, 2, 3].map((k) => `<i class="${k <= s ? "on" : ""}"></i>`).join("")}</span><span>${p} ₽</span></div></div>
         </article>`).join("");
@@ -367,7 +368,7 @@
       const [t, s, mood] = qAns;
       const score = (d) => (d[3].includes(t) ? 3 : 0) + (3 - Math.abs(d[4] - s)) + (mood === "any" ? 0 : d[3].includes(mood) ? 2 : 0);
       const best = [...DRINKS].sort((a, b) => score(b) - score(a))[mood === "any" ? 1 : 0];
-      $("quiz").innerHTML = `<div class="q__res"><img src="${ph(best[0], 300)}" alt=""><div><span class="q__step">Ваш коктейль</span><b>${best[1]}</b><p class="muted">${best[6]}</p>
+      $("quiz").innerHTML = `<div class="q__res"><img width="300" height="400" src="${ph(best[0], 300)}" alt=""><div><span class="q__step">Ваш коктейль</span><b>${best[1]}</b><p class="muted">${best[6]}</p>
         <button class="q__again" id="qAgain">Подобрать заново</button></div></div>`;
       $("qAgain").onclick = () => { qStep = 0; qAns = []; renderQuiz(); };
     }

@@ -11,11 +11,12 @@
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
     :root { --washi: #f5f0e6; --paper: #fbf8f2; --ink: #17140f; --muted: #6e665b; --red: #c8352b; --red-d: #a8281f; --line: #e5dccb; --gold: #b28a45; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -211,7 +212,7 @@
         </div>
       </div>
       <div class="sun">
-        <div class="sun__img"><img src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" alt="Сет роллов на деревянной доске" fetchpriority="high"></div>
+        <div class="sun__img"><img width="900" height="900" src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" alt="Сет роллов на деревянной доске" fetchpriority="high"></div>
         <div class="sun__stamp">07:00<small>рыба приезжает<br>каждое утро</small></div>
       </div>
     </div>
@@ -321,7 +322,7 @@
         : q ? `<div class="qty"><button data-dec="${m.ref}" aria-label="Убрать">−</button><span>${q}</span><button data-inc="${m.ref}" aria-label="Добавить">+</button></div>`
         : `<button class="add" data-inc="${m.ref}">В корзину</button>`;
       return `<article class="item${m.off ? " item--off" : ""}">
-        <div class="item__ph"><img loading="lazy" src="${ph(m.photo)}" alt="${esc(m.name)}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
+        <div class="item__ph"><img width="500" height="375" loading="lazy" src="${ph(m.photo)}" alt="${esc(m.name)}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
         <div class="item__b"><h3>${esc(m.name)}</h3><span class="item__meta">${esc(m.meta)}</span><p>${esc(m.desc)}</p>
           <div class="item__foot"><span class="price">${rub(m.price)}</span>${control}</div></div></article>`;
     }
@@ -405,7 +406,7 @@
       const sub = subtotal();
       const left = Math.max(0, FREE_FROM - sub);
       $("drawerBody").innerHTML = `
-        ${ls.map((l) => `<div class="line"><img src="${ph(l.photo, 120)}" alt=""><div><b>${esc(l.name)}</b><small>${rub(l.price)} · ${esc(l.meta)}</small></div>
+        ${ls.map((l) => `<div class="line"><img width="120" height="90" src="${ph(l.photo, 120)}" alt=""><div><b>${esc(l.name)}</b><small>${rub(l.price)} · ${esc(l.meta)}</small></div>
           <div class="qty"><button data-dec="${l.ref}" aria-label="Убрать">−</button><span>${l.qty}</span><button data-inc="${l.ref}" aria-label="Добавить">+</button></div></div>`).join("")}
         <div class="sticks"><span>🥢 Палочки, персон</span><div class="qty"><button id="stMinus" aria-label="Меньше">−</button><span>${state.sticks}</span><button id="stPlus" aria-label="Больше">+</button></div></div>
         ${state.mode === "delivery" ? `<div class="free">${left ? `Ещё <b>${rub(left)}</b> до бесплатной доставки` : "🎉 Доставка бесплатная"}<i style="--w:${Math.min(100, (sub / FREE_FROM) * 100)}%"></i></div>` : ""}

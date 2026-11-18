@@ -245,7 +245,7 @@ function workCard(p) {
   return `
     <article class="work">
       <button class="work__preview" data-case="${p.slug}" aria-label="Подробнее о проекте: ${p.title}">
-        <img class="work__shot" src="assets/previews/${p.slug}.jpg" alt="" loading="lazy" decoding="async" data-slug="${p.slug}">
+        <img width="1280" height="800" class="work__shot" src="assets/previews/${p.slug}.jpg" alt="" loading="lazy" decoding="async" data-slug="${p.slug}">
         <span class="work__open">Подробнее о проекте</span>
       </button>
       <div class="work__body">

@@ -11,11 +11,12 @@
   <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" imagesizes="(max-width: 900px) 100vw, 58vw" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
     :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -212,7 +213,7 @@
       </div>
     </div>
     <figure class="hero__photo">
-      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000" srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" sizes="(max-width: 900px) 100vw, 58vw" alt="Подача блюда в зале ресторана" fetchpriority="high">
+      <img width="1000" height="667" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000" srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" sizes="(max-width: 900px) 100vw, 58vw" alt="Подача блюда в зале ресторана" fetchpriority="high">
       <figcaption><b>Только 28 мест</b>Поэтому каждую подачу шеф проверяет лично.</figcaption>
     </figure>
   </section>
@@ -233,7 +234,7 @@
 
   <section id="chef" style="background:var(--cream)">
     <div class="container chef">
-      <div class="chef__ph" data-reveal="left"><img loading="lazy" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=75" alt="Шеф ресторана"></div>
+      <div class="chef__ph" data-reveal="left"><img width="900" height="600" loading="lazy" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=75" alt="Шеф ресторана"></div>
       <div data-reveal="right">
         <span class="eyebrow">Шеф</span>
         <h2>Арсений Белов</h2>
@@ -253,9 +254,9 @@
       <span class="eyebrow" data-reveal>Атмосфера</span>
       <h2 data-reveal>Зал, кухня и погреб</h2>
       <div class="albums">
-        <button data-album="hall"><img loading="lazy" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70" alt=""><span><b>Зал</b><small id="cnt-hall"></small></span></button>
-        <button data-album="kitchen"><img loading="lazy" src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Кухня</b><small id="cnt-kitchen"></small></span></button>
-        <button data-album="wine"><img loading="lazy" src="https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Погреб</b><small id="cnt-wine"></small></span></button>
+        <button data-album="hall"><img width="900" height="600" loading="lazy" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70" alt=""><span><b>Зал</b><small id="cnt-hall"></small></span></button>
+        <button data-album="kitchen"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Кухня</b><small id="cnt-kitchen"></small></span></button>
+        <button data-album="wine"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Погреб</b><small id="cnt-wine"></small></span></button>
       </div>
     </div>
   </section>
@@ -376,7 +377,7 @@
       $("seasonIntro").textContent = s.intro;
       $("courses").innerHTML = s.courses.map(([img, name, desc, wine], i) => `
         <article class="course" style="animation-delay:${i * 60}ms">
-          <div class="course__ph"><img loading="lazy" src="${ph(img)}" alt="${name}"><span class="course__no">${ROMAN[i]}</span></div>
+          <div class="course__ph"><img width="600" height="400" loading="lazy" src="${ph(img)}" alt="${name}"><span class="course__no">${ROMAN[i]}</span></div>
           <div class="course__b"><h3>${name}</h3><p>${desc}</p><p class="course__wine">🍷 ${wine}</p></div>
         </article>`).join("");
       $("courses").classList.toggle("with-wine", $("wine").checked);

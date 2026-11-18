@@ -68,6 +68,17 @@ REQUIRED = {
 }
 
 
+IMG_WITHOUT_SIZE = re.compile(r"<img\b(?![^>]*\bwidth=)[^>]*>")
+
+
+def markup_problems(text: str) -> list[str]:
+    """Правила разметки для страниц и шаблонов в скриптах."""
+    problems = []
+    for tag in IMG_WITHOUT_SIZE.findall(text):
+        problems.append(f"<img> без width/height (сдвиг вёрстки при загрузке): {tag[:80]}")
+    return problems
+
+
 def check() -> int:
     problems = []
     slugs = [d["slug"] for d in registry()]
@@ -95,6 +106,9 @@ def check() -> int:
         for needle, why in FORBIDDEN.items():
             if needle in html:
                 problems.append(f"{slug}: найдено {needle!r} — {why}")
+        problems += [f"{slug}: {p}" for p in markup_problems(html)]
+    for rel in ("index.html", "script.js", "projects/shared/gallery.js"):
+        problems += [f"{rel}: {p}" for p in markup_problems(read(rel))]
 
     if problems:
         print("Проблемы с демо-сайтами:")

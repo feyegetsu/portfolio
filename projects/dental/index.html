@@ -10,11 +10,12 @@
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
     :root { --bg: #f5f8fc; --ink: #0f2137; --muted: #61738a; --blue: #1d6fe0; --blue-l: #e6f0ff; --mint: #0b8a70; --line: #e2e9f2; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -194,7 +195,7 @@
       </div>
       <div class="hero__card">
         <div class="sticker">−15% в октябре</div>
-        <div class="hero__photo"><img fetchpriority="high" src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=900&q=75" alt="Белоснежная улыбка пациентки"></div>
+        <div class="hero__photo"><img width="900" height="600" fetchpriority="high" src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=900&q=75" alt="Белоснежная улыбка пациентки"></div>
         <h2 class="card-title">Первый визит</h2>
         <div class="offer"><span>Консультация и осмотр</span><b>0 ₽</b></div>
         <div class="offer"><span>3D-снимок челюсти</span><b>0 ₽</b></div>
@@ -208,9 +209,9 @@
       <h2 data-reveal>Клиника, в которую не страшно</h2>
       <p class="muted" data-reveal>Врачи объясняют каждый шаг, а кабинеты светлые и с современным оборудованием.</p>
       <div class="clinic">
-        <figure data-reveal="zoom" data-info="rooms" tabindex="0" role="button" aria-label="Кабинеты: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=75" alt="Кабинет клиники"><figcaption>Кабинеты <i>Подробнее и фото →</i></figcaption></figure>
-        <figure data-reveal="zoom" style="--d:120ms" data-info="visit" tabindex="0" role="button" aria-label="Приём: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=75" alt="Врач с пациентом"><figcaption>Приём <i>Подробнее и фото →</i></figcaption></figure>
-        <figure data-reveal="zoom" style="--d:240ms" data-info="tech" tabindex="0" role="button" aria-label="Оборудование: подробнее"><img loading="lazy" src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=700&q=75" alt="Стоматологическое кресло"><figcaption>Оборудование <i>Подробнее и фото →</i></figcaption></figure>
+        <figure data-reveal="zoom" data-info="rooms" tabindex="0" role="button" aria-label="Кабинеты: подробнее"><img width="1000" height="667" loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=75" alt="Кабинет клиники"><figcaption>Кабинеты <i>Подробнее и фото →</i></figcaption></figure>
+        <figure data-reveal="zoom" style="--d:120ms" data-info="visit" tabindex="0" role="button" aria-label="Приём: подробнее"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=75" alt="Врач с пациентом"><figcaption>Приём <i>Подробнее и фото →</i></figcaption></figure>
+        <figure data-reveal="zoom" style="--d:240ms" data-info="tech" tabindex="0" role="button" aria-label="Оборудование: подробнее"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=700&q=75" alt="Стоматологическое кресло"><figcaption>Оборудование <i>Подробнее и фото →</i></figcaption></figure>
       </div>
     </div>
   </section>
@@ -242,10 +243,10 @@
       <h2>Наши врачи</h2>
       <p class="muted">Каждый врач проходит обучение минимум раз в год.</p>
       <div class="doctors" data-stagger>
-        <button class="doc" data-doc="0" aria-label="Анна Соколова: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=500&q=75" alt="Анна Соколова"></div><div class="doc__b"><h3>Анна Соколова</h3><p>Главный врач, терапевт</p><span>Стаж 16 лет</span><em>О враче →</em></div></button>
-        <button class="doc" data-doc="1" aria-label="Михаил Орлов: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=500&q=75" alt="Михаил Орлов"></div><div class="doc__b"><h3>Михаил Орлов</h3><p>Хирург-имплантолог</p><span>Стаж 12 лет</span><em>О враче →</em></div></button>
-        <button class="doc" data-doc="2" aria-label="Елена Ким: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=75" alt="Елена Ким"></div><div class="doc__b"><h3>Елена Ким</h3><p>Ортодонт, элайнеры</p><span>Стаж 9 лет</span><em>О враче →</em></div></button>
-        <button class="doc" data-doc="3" aria-label="Павел Лебедев: о враче"><div class="doc__ph"><img loading="lazy" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=500&q=75" alt="Павел Лебедев"></div><div class="doc__b"><h3>Павел Лебедев</h3><p>Ортопед, виниры</p><span>Стаж 11 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="0" aria-label="Анна Соколова: о враче"><div class="doc__ph"><img width="500" height="333" loading="lazy" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=500&q=75" alt="Анна Соколова"></div><div class="doc__b"><h3>Анна Соколова</h3><p>Главный врач, терапевт</p><span>Стаж 16 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="1" aria-label="Михаил Орлов: о враче"><div class="doc__ph"><img width="500" height="333" loading="lazy" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=500&q=75" alt="Михаил Орлов"></div><div class="doc__b"><h3>Михаил Орлов</h3><p>Хирург-имплантолог</p><span>Стаж 12 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="2" aria-label="Елена Ким: о враче"><div class="doc__ph"><img width="500" height="333" loading="lazy" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=75" alt="Елена Ким"></div><div class="doc__b"><h3>Елена Ким</h3><p>Ортодонт, элайнеры</p><span>Стаж 9 лет</span><em>О враче →</em></div></button>
+        <button class="doc" data-doc="3" aria-label="Павел Лебедев: о враче"><div class="doc__ph"><img width="500" height="333" loading="lazy" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=500&q=75" alt="Павел Лебедев"></div><div class="doc__b"><h3>Павел Лебедев</h3><p>Ортопед, виниры</p><span>Стаж 11 лет</span><em>О враче →</em></div></button>
       </div>
     </div>
   </section>
@@ -276,7 +277,7 @@
   <dialog class="info" id="info" aria-labelledby="infoTitle">
     <button class="info__close" id="infoClose" aria-label="Закрыть">✕</button>
     <div class="info__grid">
-      <div class="info__ph"><img id="infoImg" alt=""></div>
+      <div class="info__ph"><img width="600" height="400" id="infoImg" alt=""></div>
       <div class="info__b">
         <small id="infoKicker"></small>
         <h3 id="infoTitle"></h3>

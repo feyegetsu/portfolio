@@ -11,11 +11,12 @@
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&amp;fit=crop&amp;w=900&amp;q=65" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: dark only; }
     :root { --coal: #17171a; --coal-2: #202024; --board: #263029; --mustard: #e8ab2a; --brick: #c8532f; --cream: #f3ead8; --muted: #a9a294; --line: #33333a; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -201,9 +202,9 @@
         </div>
       </div>
       <div class="bento">
-        <figure><img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&amp;fit=crop&amp;w=900&amp;q=65" alt="Зал гастробара вечером" fetchpriority="high"><span class="tape">наш зал</span></figure>
-        <figure><img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=65" alt="Бургер с картофелем фри"><span class="tape">бургер дня</span></figure>
-        <figure><img src="https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=600&q=65" alt="Пиво из крана"><span class="tape">свежее из крана</span></figure>
+        <figure><img width="900" height="600" src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&amp;fit=crop&amp;w=900&amp;q=65" alt="Зал гастробара вечером" fetchpriority="high"><span class="tape">наш зал</span></figure>
+        <figure><img width="600" height="400" src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=65" alt="Бургер с картофелем фри"><span class="tape">бургер дня</span></figure>
+        <figure><img width="600" height="400" src="https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=600&q=65" alt="Пиво из крана"><span class="tape">свежее из крана</span></figure>
       </div>
     </div>
   </section>
@@ -248,8 +249,8 @@
     <div class="container">
       <h2 data-reveal>Фото</h2>
       <div class="albums">
-        <button data-album="hall"><img loading="lazy" src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Зал и бар</b><small id="cnt-hall"></small></span></button>
-        <button data-album="food"><img loading="lazy" src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Еда</b><small id="cnt-food"></small></span></button>
+        <button data-album="hall"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Зал и бар</b><small id="cnt-hall"></small></span></button>
+        <button data-album="food"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Еда</b><small id="cnt-food"></small></span></button>
       </div>
     </div>
   </section>
@@ -376,7 +377,7 @@
       "", "Плотный стаут с нотами шоколада держит дымную свинину.", "",
       "Тот же хмелевой профиль, что у IPA, но без алкоголя: можно за рулём.",
     ];
-    $("foodList").innerHTML = FOOD.map(([img, n, d, p]) => `<article><img loading="lazy" src="${ph(img)}" alt="${n}"><div><span style="color:var(--cream);font-weight:400"><b>${n}</b><small>${d}</small></span><span>${rub(p)}</span></div></article>`).join("");
+    $("foodList").innerHTML = FOOD.map(([img, n, d, p]) => `<article><img width="600" height="400" loading="lazy" src="${ph(img)}" alt="${n}"><div><span style="color:var(--cream);font-weight:400"><b>${n}</b><small>${d}</small></span><span>${rub(p)}</span></div></article>`).join("");
     $("pairChips").innerHTML = FOOD.map(([, n], i) => `<button class="chip" data-f="${i}" aria-pressed="${i === 0}">${n}</button>`).join("");
     function renderPair(i) {
       const t = TAPS[FOOD[i][4]];
@@ -394,7 +395,7 @@
         const [title, text, img] = EVENTS[d.getDay()];
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
         const mine = taken.includes(key);
-        return `<article class="event"><div class="event__ph"><img loading="lazy" src="${ph(img, 500)}" alt=""><div class="event__date"><b>${d.getDate()}</b>${d.toLocaleDateString("ru-RU", { month: "short" }).replace(".", "")}</div></div>
+        return `<article class="event"><div class="event__ph"><img width="500" height="333" loading="lazy" src="${ph(img, 500)}" alt=""><div class="event__date"><b>${d.getDate()}</b>${d.toLocaleDateString("ru-RU", { month: "short" }).replace(".", "")}</div></div>
           <div class="event__b"><h3>${title}</h3><p>${text}</p><span class="seats">${mine ? "Вы в списке ✓" : "Вход по списку: запишитесь заранее"}</span>
           <button class="btn" data-ev="${key}" data-title="${title}" ${mine ? "disabled" : ""}>${mine ? "Записаны" : "Записаться"}</button></div></article>`;
       }).join("");

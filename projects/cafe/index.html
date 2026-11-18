@@ -11,11 +11,12 @@
   <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=500 500w, https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=800 800w, https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=1100 1100w" imagesizes="(max-width: 900px) 90vw, 480px" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600&family=Caveat:wght@600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
     :root {
       --paper: #f6efe3; --paper-2: #efe4d2; --ink: #2a1b12; --brown: #6f4430;
@@ -196,7 +197,7 @@
         </div>
       </div>
       <div class="arch">
-        <div class="arch__img"><img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=800" srcset="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=500 500w, https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=800 800w, https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=1100 1100w" sizes="(max-width: 900px) 90vw, 480px" alt="Бариста наливает кофе" fetchpriority="high"></div>
+        <div class="arch__img"><img width="800" height="533" src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=800" srcset="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=500 500w, https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=800 800w, https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&amp;fit=crop&amp;q=65&amp;w=1100 1100w" sizes="(max-width: 900px) 90vw, 480px" alt="Бариста наливает кофе" fetchpriority="high"></div>
         <div class="seal" aria-hidden="true">
           <svg viewBox="0 0 132 132"><defs><path id="c" d="M66 66m-50 0a50 50 0 1 1 100 0a50 50 0 1 1-100 0"/></defs><text><textPath href="#c">свежая обжарка · каждую неделю ·</textPath></text></svg>
           <b>8</b>
@@ -213,7 +214,7 @@
         <p class="quote">«Каждая чашка — как для друга. Это правило с первого дня».</p>
         <h3>Своя обжарка</h3>
         <p>Зерно из Эфиопии, Колумбии и Бразилии приходит к нам зелёным. Обжариваем небольшими партиями раз в неделю, поэтому в зале всегда пахнет свежим кофе.</p>
-        <figure><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=75" alt="Капучино с латте-артом"><figcaption>Флэт уайт на эфиопии, самый популярный напиток</figcaption></figure>
+        <figure><img width="600" height="400" data-fade loading="lazy" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=75" alt="Капучино с латте-артом"><figcaption>Флэт уайт на эфиопии, самый популярный напиток</figcaption></figure>
         <h3>Выпечка с утра</h3>
         <p>Круассаны и хлеб на закваске достаём из печи к открытию. К обеду витрина обычно пустеет, так что приходите пораньше.</p>
         <h3>Можно работать</h3>
@@ -235,10 +236,10 @@
     <div class="container">
       <div class="sec-head" data-reveal><span class="no">№3</span><h2>Атмосфера</h2><span class="hand">нажмите на фото — там целый альбом</span></div>
       <div class="wall" data-stagger>
-        <figure class="polaroid" style="--r:-4deg" data-album="hall" tabindex="0" role="button" aria-label="Альбом «Наш зал»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=500&q=75" alt="Барная стойка кофейни"><figcaption>наша стойка<small>5 фото →</small></figcaption></figure>
-        <figure class="polaroid" style="--r:3deg" data-album="bakery" tabindex="0" role="button" aria-label="Альбом «Выпечка и десерты»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=75" alt="Свежие круассаны"><figcaption>круассаны в 7:00<small>9 фото →</small></figcaption></figure>
-        <figure class="polaroid" style="--r:-2deg" data-album="yard" tabindex="0" role="button" aria-label="Альбом «Двор и терраса»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=75" alt="Вывеска кафе"><figcaption>вход со двора<small>3 фото →</small></figcaption></figure>
-        <figure class="polaroid" style="--r:5deg" data-album="coffee" tabindex="0" role="button" aria-label="Альбом «Кофе»"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=75" alt="Латте на столе"><figcaption>латте-арт<small>9 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:-4deg" data-album="hall" tabindex="0" role="button" aria-label="Альбом «Наш зал»"><img width="500" height="333" data-fade loading="lazy" src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=500&q=75" alt="Барная стойка кофейни"><figcaption>наша стойка<small>5 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:3deg" data-album="bakery" tabindex="0" role="button" aria-label="Альбом «Выпечка и десерты»"><img width="500" height="333" data-fade loading="lazy" src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=75" alt="Свежие круассаны"><figcaption>круассаны в 7:00<small>9 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:-2deg" data-album="yard" tabindex="0" role="button" aria-label="Альбом «Двор и терраса»"><img width="500" height="333" data-fade loading="lazy" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=75" alt="Вывеска кафе"><figcaption>вход со двора<small>3 фото →</small></figcaption></figure>
+        <figure class="polaroid" style="--r:5deg" data-album="coffee" tabindex="0" role="button" aria-label="Альбом «Кофе»"><img width="500" height="333" data-fade loading="lazy" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=75" alt="Латте на столе"><figcaption>латте-арт<small>9 фото →</small></figcaption></figure>
       </div>
     </div>
   </section>
@@ -459,7 +460,7 @@
       });
       items.innerHTML = menu[cat].map(([id, n, d, p], i) => `
         <div class="dish" style="animation-delay:${i * 60}ms">
-          <img loading="lazy" src="${ph(id)}" alt="${n}">
+          <img width="160" height="160" loading="lazy" src="${ph(id)}" alt="${n}">
           <div><div class="dish__line"><b>${n}</b><i></i><span>${p} ₽</span></div><p>${d}</p></div>
         </div>`).join("");
     }

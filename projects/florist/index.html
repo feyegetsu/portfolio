@@ -10,11 +10,12 @@
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" media="print" data-async-css>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional" media="print" data-async-css>
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
     :root {
       --bg: #fdf8f5; --ink: #2d2226; --muted: #6f6065; --rose: #c2485d; --rose-d: #a63a4e;
@@ -197,7 +198,7 @@
         </div>
       </div>
       <div class="hero__art" aria-hidden="true">
-        <div class="blob"><img fetchpriority="high" src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1000&q=75" alt=""></div>
+        <div class="blob"><img width="1000" height="667" fetchpriority="high" src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1000&q=75" alt=""></div>
         <div class="float-card fc1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#e0a106"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg> <div><b>4.9 из 5</b>2 300+ отзывов</div></div>
         <div class="float-card fc2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--rose-d)"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <div><b>за 90 минут</b>по всему городу</div></div>
       </div>
@@ -330,7 +331,7 @@
         .sort((a, b) => sort === "asc" ? a.price - b.price : sort === "desc" ? b.price - a.price : b.pop - a.pop);
       $("grid").innerHTML = list.map((p, i) => `
         <article class="product" style="animation-delay:${i * 40}ms">
-          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${esc(p.name)}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
+          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img width="600" height="400" loading="lazy" src="${ph(p.photo)}" alt="${esc(p.name)}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
           <div class="product__body">
             <h3>${esc(p.name)}</h3>
             <p>${esc(p.desc)}</p>
@@ -364,7 +365,7 @@
       }
       $("cartBody").innerHTML = lines.map(l => `
         <div class="line">
-          <div class="line__img" style="background:${l.bg}"><img src="${ph(l.photo, 160)}" alt=""></div>
+          <div class="line__img" style="background:${l.bg}"><img width="160" height="107" src="${ph(l.photo, 160)}" alt=""></div>
           <div class="line__info"><b>${esc(l.name)}</b>
             <div class="qty"><button data-d="-1" data-id="${l.id}" aria-label="Меньше">−</button>${l.q}<button data-d="1" data-id="${l.id}" aria-label="Больше">+</button></div>
           </div>

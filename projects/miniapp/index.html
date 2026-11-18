@@ -10,6 +10,7 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="../shared/api.js"></script>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     /* Цвета берутся из темы Telegram (переменные --tg-theme-* выставляет SDK), в браузере работают запасные значения */
     :root {
       --bg: var(--tg-theme-bg-color, #ffffff);
@@ -366,7 +367,7 @@
       const q = qtyOf(it.id);
       if (it.off) {
         return `<article class="card card--off">
-          <div class="card__img"><img loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+          <div class="card__img"><img width="400" height="267" loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
           <div class="card__b"><b>${it.name}</b><small>${it.w}</small><button class="add" disabled>Закончилось</button></div>
         </article>`;
       }
@@ -376,7 +377,7 @@
           : `<div class="counter"><button data-minus="${it.id}" aria-label="Убрать">−</button>${q}<button data-plus="${it.id}" aria-label="Добавить">+</button></div>`)
         : `<button class="add" data-${it.sizes ? "open" : "plus"}="${it.id}">${it.sizes ? "от " : ""}${rub(it.price + (it.sizes ? SIZES[0][1] : 0))}</button>`;
       return `<article class="card">
-        <div class="card__img" data-open="${it.id}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+        <div class="card__img" data-open="${it.id}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img width="400" height="267" loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
         <div class="card__b"><b>${it.name}</b><small>${it.w}</small>${control}</div>
       </article>`;
     }
@@ -434,7 +435,7 @@
         <div class="group">${state.cart.map((l) => {
           const it = findItem(l.id);
           const meta = [l.size != null ? SIZES[l.size][0] : it.w, ...l.extras.map((e) => EXTRAS[e][0].toLowerCase())].join(", ");
-          return `<div class="line"><img src="${ph(it.photo, 160)}" alt="">
+          return `<div class="line"><img width="160" height="107" src="${ph(it.photo, 160)}" alt="">
             <div class="line__info"><b>${it.name}</b><small>${meta} · ${rub(linePrice(l))}</small></div>
             <div class="mini-counter"><button data-dec="${l.key}" aria-label="Меньше">−</button><span>${l.qty}</span><button data-inc="${l.key}" aria-label="Больше">+</button></div></div>`;
         }).join("")}</div>
@@ -600,7 +601,7 @@
     function renderSheet() {
       const it = sheetItem;
       $("sheet").innerHTML = `
-        <div class="sheet__img"><img src="${ph(it.photo, 800)}" alt="${it.name}"><span class="sheet__grab"></span><button class="sheet__x" data-close aria-label="Закрыть">✕</button></div>
+        <div class="sheet__img"><img width="800" height="533" src="${ph(it.photo, 800)}" alt="${it.name}"><span class="sheet__grab"></span><button class="sheet__x" data-close aria-label="Закрыть">✕</button></div>
         <div class="sheet__b">
           <h2>${it.name}</h2><p>${it.desc}<br>${it.sizes ? SIZES[sheetSize][0] + " · " : ""}${it.w.replace(/^\d+ см · /, "")}</p>
           ${it.sizes ? `<div class="label">Размер</div><div class="seg">${SIZES.map(([s], i) => `<button data-size="${i}" class="${i === sheetSize ? "on" : ""}">${s}</button>`).join("")}</div>

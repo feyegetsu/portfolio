@@ -16,6 +16,7 @@
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: dark only; }
     :root { --bg: #0c0c0c; --card: #161616; --line: #2a2a2a; --gold: #c9a14a; --text: #f2f2f2; --muted: #9a9a9a; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -193,7 +194,7 @@
       <p>Стрижки, бритьё и уход за бородой от мастеров с опытом от 5 лет. Записаться онлайн можно за 30 секунд.</p>
       <div class="hero__btns"><a href="#booking" class="btn">Онлайн-запись</a><a href="#services" class="btn btn--ghost">Прайс</a></div>
       <div class="frame">
-        <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 1120px) 100vw, 1080px" alt="Зал барбершопа" fetchpriority="high" decoding="async">
+        <img width="1200" height="800" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 1120px) 100vw, 1080px" alt="Зал барбершопа" fetchpriority="high" decoding="async">
         <div class="ribbon">
           <div><b data-count="7">7</b><span>лет работы</span></div>
           <div><b data-count="12000" data-suffix="+">12 000+</b><span>стрижек</span></div>
@@ -218,9 +219,9 @@
       <div class="orn">Загляните к нам</div>
       <h2 data-reveal>Фото<em>альбомы</em></h2>
       <div class="albums" data-stagger>
-        <button class="album" data-album="hall"><span class="album__stack"><span class="album__cover"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=600&h=750&q=75" alt=""></span><span class="album__count">6 фото</span></span><span class="album__b"><b>Наш зал</b><span>Смотреть →</span></span></button>
-        <button class="album" data-album="cuts"><span class="album__stack"><span class="album__cover"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=600&h=750&q=75" alt=""></span><span class="album__count">8 фото</span></span><span class="album__b"><b>Стрижки</b><span>Смотреть →</span></span></button>
-        <button class="album" data-album="shave"><span class="album__stack"><span class="album__cover"><img data-fade loading="lazy" src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=600&h=750&q=75" alt=""></span><span class="album__count">4 фото</span></span><span class="album__b"><b>Бритьё и борода</b><span>Смотреть →</span></span></button>
+        <button class="album" data-album="hall"><span class="album__stack"><span class="album__cover"><img width="600" height="750" data-fade loading="lazy" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=600&h=750&q=75" alt=""></span><span class="album__count">6 фото</span></span><span class="album__b"><b>Наш зал</b><span>Смотреть →</span></span></button>
+        <button class="album" data-album="cuts"><span class="album__stack"><span class="album__cover"><img width="600" height="750" data-fade loading="lazy" src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=600&h=750&q=75" alt=""></span><span class="album__count">8 фото</span></span><span class="album__b"><b>Стрижки</b><span>Смотреть →</span></span></button>
+        <button class="album" data-album="shave"><span class="album__stack"><span class="album__cover"><img width="600" height="750" data-fade loading="lazy" src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=600&h=750&q=75" alt=""></span><span class="album__count">4 фото</span></span><span class="album__b"><b>Бритьё и борода</b><span>Смотреть →</span></span></button>
       </div>
     </div>
   </section>
@@ -404,7 +405,7 @@
     document.getElementById("servicesList").innerHTML = services.map(s =>
       `<div class="service"><div><b>${s.name}</b><small>${s.desc} · ${s.time}</small></div><span>${s.price} ₽</span></div>`).join("");
     document.getElementById("mastersList").innerHTML = masters.map(m =>
-      `<div class="master"><div class="master__photo"><img loading="lazy" src="https://images.unsplash.com/photo-${m.photo}?auto=format&fit=crop&w=700&q=75" alt="Барбер ${m.name} за работой"></div><div class="master__info"><h3>${m.name}</h3><p>${m.role}</p></div></div>`).join("");
+      `<div class="master"><div class="master__photo"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-${m.photo}?auto=format&fit=crop&w=700&q=75" alt="Барбер ${m.name} за работой"></div><div class="master__info"><h3>${m.name}</h3><p>${m.role}</p></div></div>`).join("");
 
     // ----- Запись -----
     const state = { service: null, master: null, day: null, time: null };

@@ -16,6 +16,7 @@
   <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: dark only; }
     :root { --bg: #08090b; --card: #121418; --line: #22252c; --lime: #c6ff3d; --text: #f3f4f6; --muted: #8b919c; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -198,7 +199,7 @@
       </div>
     </div>
     <div class="hero__photo">
-      <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 900px) 100vw, 50vw" alt="Тренажёрный зал клуба" fetchpriority="high" decoding="async">
+      <img width="1200" height="800" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 900px) 100vw, 50vw" alt="Тренажёрный зал клуба" fetchpriority="high" decoding="async">
       <div class="sticker sticker--1"><b data-count="2000">2000</b><span>м² площадь зала</span></div>
       <div class="sticker sticker--2"><b>24/7</b><span>без выходных</span></div>
       <div class="sticker sticker--3">
@@ -215,12 +216,12 @@
       <h2 data-reveal>Направ<span>ления</span></h2>
       <p class="muted" data-reveal>Шесть направлений: силовые, групповые, йога, функционал, кроссфит и персональные тренировки.</p>
       <div class="dirs" id="dirs">
-        <a href="#schedule" class="dir open"><img loading="lazy" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=75" alt="Силовая тренировка"><span class="num">01</span><span class="tag">Хит</span><div><h3>Силовые</h3><p>Свободные веса, тренажёры Hammer Strength и помосты для становой.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=75" alt="Групповая тренировка"><span class="num">02</span><div><h3>Групповые</h3><p>Функциональный тренинг, пилатес, зумба и ещё 20 программ.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=75" alt="Йога"><span class="num">03</span><div><h3>Йога</h3><p>Хатха, виньяса и растяжка в отдельном светлом зале.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=75" alt="Функциональная тренировка с канатами"><span class="num">04</span><div><h3>Функционал</h3><p>Канаты, сани, гири. Выносливость и жиросжигание.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=75" alt="Кроссфит"><span class="num">05</span><span class="tag">Новое</span><div><h3>Кроссфит</h3><p>WOD каждый день под присмотром сертифицированного тренера.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=75" alt="Персональная тренировка"><span class="num">06</span><div><h3>Персональные</h3><p>Программа под вашу цель: рельеф, сила, здоровая спина.</p></div></a>
+        <a href="#schedule" class="dir open"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=75" alt="Силовая тренировка"><span class="num">01</span><span class="tag">Хит</span><div><h3>Силовые</h3><p>Свободные веса, тренажёры Hammer Strength и помосты для становой.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=75" alt="Групповая тренировка"><span class="num">02</span><div><h3>Групповые</h3><p>Функциональный тренинг, пилатес, зумба и ещё 20 программ.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=75" alt="Йога"><span class="num">03</span><div><h3>Йога</h3><p>Хатха, виньяса и растяжка в отдельном светлом зале.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=75" alt="Функциональная тренировка с канатами"><span class="num">04</span><div><h3>Функционал</h3><p>Канаты, сани, гири. Выносливость и жиросжигание.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=75" alt="Кроссфит"><span class="num">05</span><span class="tag">Новое</span><div><h3>Кроссфит</h3><p>WOD каждый день под присмотром сертифицированного тренера.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=75" alt="Персональная тренировка"><span class="num">06</span><div><h3>Персональные</h3><p>Программа под вашу цель: рельеф, сила, здоровая спина.</p></div></a>
       </div>
     </div>
   </section>
@@ -230,9 +231,9 @@
       <h2 data-reveal>Клуб <span>изнутри</span></h2>
       <p class="muted" data-reveal>Посмотрите зал, бассейн и студии до первой тренировки.</p>
       <div class="club">
-        <button data-album="gym"><img loading="lazy" src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=70" alt=""><span>10 фото</span><b>Тренажёрный зал</b><i>Смотреть →</i></button>
-        <button data-album="pool"><img loading="lazy" src="https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&w=800&q=70" alt=""><span>3 фото</span><b>Бассейн</b><i>Смотреть →</i></button>
-        <button data-album="group"><img loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=70" alt=""><span>9 фото</span><b>Групповые и йога</b><i>Смотреть →</i></button>
+        <button data-album="gym"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=70" alt=""><span>10 фото</span><b>Тренажёрный зал</b><i>Смотреть →</i></button>
+        <button data-album="pool"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&w=800&q=70" alt=""><span>3 фото</span><b>Бассейн</b><i>Смотреть →</i></button>
+        <button data-album="group"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=70" alt=""><span>9 фото</span><b>Групповые и йога</b><i>Смотреть →</i></button>
       </div>
     </div>
   </section>
