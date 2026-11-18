@@ -41,8 +41,9 @@ def check_slot(site: Site, resource: str, starts_at: datetime) -> None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"Запись открыта на {site.horizon_days} дней вперёд")
     if starts_at.minute % site.step_minutes:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Выберите время из расписания")
-    if not site.is_open(starts_at.hour * 60 + starts_at.minute):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "В это время мы закрыты")
+    if site.opening_day(starts_at) is None:
+        msg = "В этот день мы закрыты" if site.closed_all_day(starts_at) else "В это время мы закрыты"
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, msg)
     if site.resources is not None and resource not in site.resources:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Такого мастера или занятия нет")
 

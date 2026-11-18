@@ -1,6 +1,9 @@
 """Реестр сайтов. Один API обслуживает все проекты, у каждого свой набор возможностей и свои правила."""
 
 from dataclasses import dataclass, field
+from datetime import datetime
+
+Hours = tuple[int, int]  # первый час и «после последнего»; (19, 2) — окно переходит за полночь
 
 
 @dataclass(frozen=True)
@@ -28,15 +31,42 @@ class Site:
     # Правила записи: время заведения, сетка слотов, часы работы и насколько вперёд можно записаться
     tz: str = "Europe/Moscow"
     step_minutes: int = 30
-    hours: tuple[int, int] = (10, 22)  # первый и «после последнего» час; (19, 2) — работает после полуночи
+    hours: Hours = (10, 22)  # окно записи: первый и «после последнего» час; (19, 2) — после полуночи
+    # Окно записи по дням недели (0 — понедельник). Дня нет в словаре — выходной. Ночные часы относятся
+    # к дню открытия: запись на 01:00 четверга — это вечер среды. None — каждый день по hours
+    schedule: dict[int, Hours] | None = None
     horizon_days: int = 60
     # Кого или что можно забронировать и сколько мест; None у ресурса — эксклюзивный слот
     resources: dict[str, int | None] | None = None
     slot_capacity: int | None = None  # сколько броней на одно время по всему заведению
 
     def is_open(self, minutes: int) -> bool:
-        start, end = self.hours[0] * 60, self.hours[1] * 60
-        return start <= minutes < end if start < end else minutes >= start or minutes < end
+        return _evening(self.hours, minutes) or _night(self.hours, minutes)
+
+    def opening_day(self, dt: datetime) -> int | None:
+        """День недели, к которому относится время по расписанию (вечер или ночь после него); None — закрыто."""
+        m, wd = dt.hour * 60 + dt.minute, dt.weekday()
+        schedule = self.schedule if self.schedule is not None else dict.fromkeys(range(7), self.hours)
+        if wd in schedule and _evening(schedule[wd], m):
+            return wd
+        prev = (wd - 1) % 7
+        if prev in schedule and _night(schedule[prev], m):
+            return prev
+        return None
+
+    def closed_all_day(self, dt: datetime) -> bool:
+        """В этот календарный день заведение не открывается (выходной), а не просто «не те часы»."""
+        return self.schedule is not None and dt.weekday() not in self.schedule
+
+
+def _evening(hours: Hours, m: int) -> bool:
+    start, end = hours[0] * 60, hours[1] * 60
+    return start <= m < end if start < end else m >= start
+
+
+def _night(hours: Hours, m: int) -> bool:
+    start, end = hours[0] * 60, hours[1] * 60
+    return start >= end and m < end
 
 
 MINIAPP_PRICING = Pricing(
@@ -65,9 +95,15 @@ SITES: dict[str, Site] = {
         Site("realty", "Агентство «Квадрат»", leads=True),
         Site("saas", "Taskly", leads=True),
         Site("miniapp", "Сытый Лис", orders=True, catalog=True, pricing=MINIAPP_PRICING),
-        Site("restaurant", "Ресторан «Терруар»", leads=True, bookings=True, hours=(18, 23), horizon_days=30, slot_capacity=10),
+        # Вт–Вс с 18:00 до 00:00, последняя бронь в 22:30; понедельник — выходной
+        Site("restaurant", "Ресторан «Терруар»", leads=True, bookings=True, hours=(18, 23), horizon_days=30, slot_capacity=10,
+             schedule=dict.fromkeys(range(1, 7), (18, 23))),
         Site("sushi", "Суши «Кайсэн»", orders=True, catalog=True, pricing=Pricing(delivery=199, free_from=1500)),
-        Site("gastrobar", "Гастробар «Соль и Солод»", leads=True, bookings=True, hours=(12, 24), slot_capacity=20),
-        Site("bar", "Бар «Полночь»", leads=True, bookings=True, hours=(19, 2), horizon_days=30, slot_capacity=8),
+        # Пн–Чт 12:00–00:00, Пт–Вс 12:00–02:00
+        Site("gastrobar", "Гастробар «Соль и Солод»", leads=True, bookings=True, hours=(12, 2), slot_capacity=20,
+             schedule={**dict.fromkeys(range(4), (12, 24)), **dict.fromkeys(range(4, 7), (12, 2))}),
+        # Ср–Вс с 19:00 до 03:00, бронь до 01:30
+        Site("bar", "Бар «Полночь»", leads=True, bookings=True, hours=(19, 2), horizon_days=30, slot_capacity=8,
+             schedule=dict.fromkeys(range(2, 7), (19, 2))),
     ]
 }

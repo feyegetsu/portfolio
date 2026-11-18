@@ -110,7 +110,8 @@ def test_delivery_needs_address(client):
 
 def test_restaurant_table_is_not_exclusive(client):
     # В ресторане на одно время бронируют несколько столов, в отличие от мастера барбершопа
-    evening = TOMORROW.replace(hour=19)
+    # Понедельник у ресторана выходной: берём ближайший вторник
+    evening = next(TOMORROW + timedelta(days=k) for k in range(7) if (TOMORROW + timedelta(days=k)).weekday() == 1).replace(hour=19)
     assert _book(client, site="restaurant", resource="Стол на 2", when=evening).status_code == 201
     assert _book(client, site="restaurant", resource="Стол на 2", when=evening).status_code == 201
 

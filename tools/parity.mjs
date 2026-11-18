@@ -39,7 +39,12 @@ const pad = (n) => String(n).padStart(2, "0");
 for (const c of cases.slots) {
   const s = SITE[c.site];
   const day = siteNow(s.tz);
-  day.setDate(day.getDate() + c.day_offset);
+  if ("weekday" in c) {
+    // Ближайший такой день недели, начиная с завтра; 0 — понедельник, как в Python
+    do day.setDate(day.getDate() + 1); while ((day.getDay() + 6) % 7 !== c.weekday);
+  } else {
+    day.setDate(day.getDate() + c.day_offset);
+  }
   const startsAt = `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}T${c.time}:00`;
   const r = run(() => checkSlot(s, c.resource, startsAt));
   check(c.title, r.error ? r.error.message : null, c.error);

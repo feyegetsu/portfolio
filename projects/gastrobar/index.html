@@ -422,26 +422,17 @@
       zone = +b.dataset.z;
       document.querySelectorAll(".zone").forEach((x) => x.setAttribute("aria-pressed", x === b));
     });
-    const today = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-    const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    $("bDate").min = isoDay(today);
-    $("bDate").max = isoDay(new Date(Date.now() + 59 * 86400000));  // сервер принимает бронь на 60 дней вперёд
+    // Даты и время — из правил гастробара в api.js (Пн–Чт до 00:00, Пт–Вс до 02:00) и по московскому времени
+    $("bDate").min = PortfolioAPI.siteToday("gastrobar");
+    $("bDate").max = PortfolioAPI.siteToday("gastrobar", PortfolioAPI.rules("gastrobar").horizon - 1);
     function fillTimes() {
-      const d = new Date($("bDate").value + "T12:00");
-      const last = [0, 5, 6].includes(d.getDay()) ? 24 : 23;
-      const isToday = $("bDate").value === isoDay(new Date());
-      const opts = [];
-      for (let h = 12; h <= last - 1; h++) for (const m of [0, 30]) {
-        if (isToday && h * 60 + m <= new Date().getHours() * 60 + new Date().getMinutes() + 30) continue;
-        opts.push(`${pad(h)}:${pad(m)}`);
-      }
-      $("bTime").innerHTML = opts.length ? opts.map((t) => `<option${t === "19:00" ? " selected" : ""}>${t}</option>`).join("") : '<option value="">Сегодня уже поздно</option>';
+      const opts = $("bDate").value ? PortfolioAPI.openSlots("gastrobar", $("bDate").value) : [];
+      $("bTime").innerHTML = opts.length ? opts.map((x) => `<option value="${x.starts_at}"${x.time === "19:00" ? " selected" : ""}>${x.time}</option>`).join("") : '<option value="">Сегодня уже поздно</option>';
     }
     // Если сегодня свободного времени уже нет, предлагаем завтра
-    $("bDate").value = isoDay(today);
+    $("bDate").value = PortfolioAPI.siteToday("gastrobar");
     fillTimes();
-    if (!$("bTime").value) { const t = new Date(); t.setDate(t.getDate() + 1); $("bDate").value = isoDay(t); fillTimes(); }
+    if (!$("bTime").value) { $("bDate").value = PortfolioAPI.siteToday("gastrobar", 1); fillTimes(); }
     $("bDate").addEventListener("change", fillTimes);
     $("bookForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -449,10 +440,10 @@
       try {
         await PortfolioAPI.submit(e.target, () => PortfolioAPI.createBooking("gastrobar", {
           resource: ZONES[zone][0], service: `${$("bGuests").selectedOptions[0].text}`,
-          starts_at: `${$("bDate").value}T${$("bTime").value}:00`, name: $("bName").value, phone: $("bPhone").value,
+          starts_at: $("bTime").value, name: $("bName").value, phone: $("bPhone").value,
         }));
       } catch { return; }
-      $("bookBox").innerHTML = `<div class="ok"><h3 style="font-size:1.8rem">Стол ваш 🍺</h3><p class="muted" style="margin-top:8px">${new Date($("bDate").value + "T12:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${$("bTime").value} · ${ZONES[zone][0].toLowerCase()}. Держим бронь 15 минут.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
+      $("bookBox").innerHTML = `<div class="ok"><h3 style="font-size:1.8rem">Стол ваш 🍺</h3><p class="muted" style="margin-top:8px">${new Date($("bDate").value + "T12:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${$("bTime").selectedOptions[0].text} · ${ZONES[zone][0].toLowerCase()}. Держим бронь 15 минут.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
     });
 
     renderBoard();

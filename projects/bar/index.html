@@ -256,7 +256,7 @@
         <span class="eyebrow">Столик</span>
         <h2>Займём для вас <i>место</i></h2>
         <p class="muted" style="margin:16px 0 22px">Мест всего двадцать, поэтому в пятницу и субботу лучше бронировать. Держим столик 20 минут.</p>
-        <p>Гороховая, 9, арка во двор<br><span class="muted">Ср–Вс с 19:00 до 03:00</span><br><a href="tel:+78129053371">+7 (812) 905-33-71</a></p>
+        <p>Гороховая, 9, арка во двор<br><span class="muted">Ср–Вс с 19:00 до 03:00, бронь до 01:30</span><br><a href="tel:+78129053371">+7 (812) 905-33-71</a></p>
       </div>
       <div id="bookBox">
         <form id="bookForm">
@@ -416,16 +416,14 @@
       seat = +b.dataset.s;
       document.querySelectorAll(".seat").forEach((x) => x.setAttribute("aria-pressed", x === b));
     });
-    // Бар работает со среды по воскресенье, с 19:00 до 03:00; ночные часы относятся к тому же вечеру
-    const evenings = [...Array(14)].map((_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }).filter((d) => [3, 4, 5, 6, 0].includes(d.getDay()));
-    $("bDay").innerHTML = evenings.map((d, i) => `<option value="${i}">${d.toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" })}</option>`).join("");
-    const SLOTS = ["19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30", "01:00"];
+    // Вечера и время — из правил бара в api.js (Ср–Вс, бронь с 19:00 до 01:30, ночные часы относятся к тому же вечеру)
+    // и по московскому времени, как проверяет сервер
+    const evenings = [...Array(14)].map((_, i) => PortfolioAPI.siteToday("bar", i)).filter((day) => PortfolioAPI.daySlots("bar", day).length);
+    const eveningDate = (i) => new Date(`${evenings[i]}T12:00:00`);
+    $("bDay").innerHTML = evenings.map((_, i) => `<option value="${i}">${eveningDate(i).toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" })}</option>`).join("");
     function fillSlots() {
-      const d = evenings[$("bDay").value];
-      const isToday = isoDay(d) === isoDay(new Date());
-      const nowM = new Date().getHours() * 60 + new Date().getMinutes();
-      const opts = SLOTS.filter((t) => { const [h, m] = t.split(":").map(Number); const v = (h < 12 ? h + 24 : h) * 60 + m; return !isToday || v > nowM + 30; });
-      $("bTime").innerHTML = opts.length ? opts.map((t) => `<option${t === "21:00" ? " selected" : ""}>${t}</option>`).join("") : '<option value="">Сегодня уже не успеть</option>';
+      const opts = PortfolioAPI.openSlots("bar", evenings[$("bDay").value]);
+      $("bTime").innerHTML = opts.length ? opts.map((x) => `<option value="${x.starts_at}"${x.time === "21:00" ? " selected" : ""}>${x.time}</option>`).join("") : '<option value="">Сегодня уже не успеть</option>';
     }
     fillSlots();
     if (!$("bTime").value && evenings.length > 1) { $("bDay").value = "1"; fillSlots(); }
@@ -433,15 +431,13 @@
     $("bookForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!$("bTime").value) return;
-      const d = new Date(evenings[$("bDay").value]);
-      const [h, m] = $("bTime").value.split(":").map(Number);
-      if (h < 12) d.setDate(d.getDate() + 1); // после полуночи — уже следующая дата
+      const time = $("bTime").selectedOptions[0].text;
       try {
         await PortfolioAPI.submit(e.target, () => PortfolioAPI.createBooking("bar", {
-          resource: SEATS[seat][0], service: $("bGuests").value, starts_at: `${isoDay(d)}T${$("bTime").value}:00`, name: $("bName").value, phone: $("bPhone").value,
+          resource: SEATS[seat][0], service: $("bGuests").value, starts_at: $("bTime").value, name: $("bName").value, phone: $("bPhone").value,
         }));
       } catch { return; }
-      $("bookBox").innerHTML = `<div class="ok"><div class="neon">До встречи</div><p class="muted" style="margin-top:14px">${evenings[$("bDay").value].toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${$("bTime").value} · ${SEATS[seat][0].toLowerCase()}. Пароль скажем в SMS за час до визита.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
+      $("bookBox").innerHTML = `<div class="ok"><div class="neon">До встречи</div><p class="muted" style="margin-top:14px">${eveningDate($("bDay").value).toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${time} · ${SEATS[seat][0].toLowerCase()}. Пароль скажем в SMS за час до визита.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
     });
 
     renderDrinks();

@@ -14,19 +14,19 @@
   // Правила сайтов и каталоги — копия backend/app/sites.py и seed.py. Демо-режим ведёт себя как настоящий сервер.
   /* RULES:START — сгенерировано из backend/app/sites.py и seed.py командой `python -m app.rules_export`, руками не править */
   const SITES = [
-    {"slug": "cafe", "name": "Кофейня «Зерно»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "florist", "name": "Пион & Ко", "leads": true, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 390, "freeFrom": 5000, "sized": [], "sizes": [], "extras": [], "promos": {}}},
-    {"slug": "barbershop", "name": "Барбершоп BLADE", "leads": false, "bookings": true, "exclusive": true, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 60, "hours": [10, 21], "horizon": 30, "resources": {"Артём": null, "Денис": null, "Игорь": null}, "capacity": null},
-    {"slug": "dental", "name": "Стоматология «Белая линия»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "fitness", "name": "Фитнес-клуб PULSE", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [7, 22], "horizon": 14, "resources": {"Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16}, "capacity": null},
-    {"slug": "autoservice", "name": "Автосервис «МоторЛайн»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "realty", "name": "Агентство «Квадрат»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "saas", "name": "Taskly", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "miniapp", "name": "Сытый Лис", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": ["Пицца"], "sizes": [["25 см", -120], ["30 см", 0], ["35 см", 170]], "extras": [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]], "promos": {"FOX10": 10}}},
-    {"slug": "restaurant", "name": "Ресторан «Терруар»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [18, 23], "horizon": 30, "resources": null, "capacity": 10},
-    {"slug": "sushi", "name": "Суши «Кайсэн»", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": [], "sizes": [], "extras": [], "promos": {}}},
-    {"slug": "gastrobar", "name": "Гастробар «Соль и Солод»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [12, 24], "horizon": 60, "resources": null, "capacity": 20},
-    {"slug": "bar", "name": "Бар «Полночь»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [19, 2], "horizon": 30, "resources": null, "capacity": 8},
+    {"slug": "cafe", "name": "Кофейня «Зерно»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "florist", "name": "Пион & Ко", "leads": true, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null, "pricing": {"delivery": 390, "freeFrom": 5000, "sized": [], "sizes": [], "extras": [], "promos": {}}},
+    {"slug": "barbershop", "name": "Барбершоп BLADE", "leads": false, "bookings": true, "exclusive": true, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 60, "hours": [10, 21], "horizon": 30, "resources": {"Артём": null, "Денис": null, "Игорь": null}, "capacity": null, "schedule": null},
+    {"slug": "dental", "name": "Стоматология «Белая линия»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "fitness", "name": "Фитнес-клуб PULSE", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [7, 22], "horizon": 14, "resources": {"Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16}, "capacity": null, "schedule": null},
+    {"slug": "autoservice", "name": "Автосервис «МоторЛайн»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "realty", "name": "Агентство «Квадрат»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "saas", "name": "Taskly", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "miniapp", "name": "Сытый Лис", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": ["Пицца"], "sizes": [["25 см", -120], ["30 см", 0], ["35 см", 170]], "extras": [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]], "promos": {"FOX10": 10}}},
+    {"slug": "restaurant", "name": "Ресторан «Терруар»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [18, 23], "horizon": 30, "resources": null, "capacity": 10, "schedule": {"1": [18, 23], "2": [18, 23], "3": [18, 23], "4": [18, 23], "5": [18, 23], "6": [18, 23]}},
+    {"slug": "sushi", "name": "Суши «Кайсэн»", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": [], "sizes": [], "extras": [], "promos": {}}},
+    {"slug": "gastrobar", "name": "Гастробар «Соль и Солод»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [12, 2], "horizon": 60, "resources": null, "capacity": 20, "schedule": {"0": [12, 24], "1": [12, 24], "2": [12, 24], "3": [12, 24], "4": [12, 2], "5": [12, 2], "6": [12, 2]}},
+    {"slug": "bar", "name": "Бар «Полночь»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [19, 2], "horizon": 30, "resources": null, "capacity": 8, "schedule": {"2": [19, 2], "3": [19, 2], "4": [19, 2], "5": [19, 2], "6": [19, 2]}},
   ];
   // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте
   const CATALOGS = {
@@ -110,6 +110,35 @@
     return new Date(+p.year, p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
   }
 
+  // Расписание как Site.opening_day на сервере: окно записи по дням недели (0 — понедельник), ночные часы
+  // относятся к дню открытия — запись на 01:00 четверга это вечер среды
+  const evening = ([o, c], m) => (o < c ? m >= o * 60 && m < c * 60 : m >= o * 60);
+  const night = ([o, c], m) => o >= c && m < c * 60;
+  const weekday = (d) => (d.getDay() + 6) % 7;
+  const scheduleOf = (s) => s.schedule || Object.fromEntries([...Array(7)].map((_, i) => [i, s.hours]));
+  function openingDay(s, t) {
+    const m = t.getHours() * 60 + t.getMinutes(), wd = weekday(t), sched = scheduleOf(s);
+    if (sched[wd] && evening(sched[wd], m)) return wd;
+    const prev = (wd + 6) % 7;
+    if (sched[prev] && night(sched[prev], m)) return prev;
+    return null;
+  }
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  // Все слоты записи, которые относятся к дню открытия day ("YYYY-MM-DD"), включая ночные после полуночи
+  function daySlots(s, day) {
+    const base = new Date(`${day}T00:00:00`);
+    const hours = scheduleOf(s)[weekday(base)];
+    if (!hours) return [];
+    const [o, c] = hours, end = (o < c ? c : c + 24) * 60, out = [];
+    for (let m = o * 60; m < end; m += s.step) {
+      const d = new Date(base);
+      d.setMinutes(m);
+      out.push({ time: `${pad2(d.getHours())}:${pad2(d.getMinutes())}`, starts_at: `${ymd(d)}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:00` });
+    }
+    return out;
+  }
+
   // Правила записи как на сервере: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу.
   // Время записи — местное время заведения без пояса, как его присылает сайт
   function checkSlot(s, resource, startsAt) {
@@ -120,9 +149,7 @@
     if (t < new Date(+now - 5 * 60000)) throw bad("Это время уже прошло");
     if (t > new Date(+now + s.horizon * 86400000)) throw bad(`Запись открыта на ${s.horizon} дней вперёд`);
     if (t.getMinutes() % s.step) throw bad("Выберите время из расписания");
-    const m = t.getHours() * 60 + t.getMinutes();
-    const [open, close] = s.hours.map((h) => h * 60);
-    if (!(open < close ? m >= open && m < close : m >= open || m < close)) throw bad("В это время мы закрыты");
+    if (openingDay(s, t) === null) throw bad(s.schedule && !s.schedule[weekday(t)] ? "В этот день мы закрыты" : "В это время мы закрыты");
     if (s.resources && !(resource in s.resources)) throw bad("Такого мастера или занятия нет");
   }
   /* ENGINE:END */
@@ -582,6 +609,19 @@
   const api = BASE ? remoteApi(BASE) : demoApi();
   api.SITES = SITES;
   api.ApiError = ApiError;
+
+  // ---------- Правила и время заведения для форм ----------
+  // Списки дней и времени на сайтах строятся из тех же правил, что проверяет сервер, и по часам заведения,
+  // а не браузера: посетитель может сидеть в другом часовом поясе
+  api.rules = (slug) => (SITE[slug] ? JSON.parse(JSON.stringify(SITE[slug])) : null);
+  api.siteNow = (slug) => siteNow((SITE[slug] || {}).tz);
+  api.siteToday = (slug, plusDays = 0) => { const d = api.siteNow(slug); d.setDate(d.getDate() + plusDays); return ymd(d); };
+  api.daySlots = (slug, day) => daySlots(SITE[slug], day);
+  // Слоты дня, на которые ещё можно записаться: не раньше чем через leadMinutes по времени заведения
+  api.openSlots = (slug, day, leadMinutes = 30) => {
+    const edge = +api.siteNow(slug) + leadMinutes * 60000;
+    return api.daySlots(slug, day).filter((x) => +new Date(x.starts_at) > edge);
+  };
 
   // ---------- Помощники для форм на сайтах ----------
 

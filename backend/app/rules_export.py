@@ -37,6 +37,8 @@ def _site(s: Site) -> dict:
         "leads": s.leads, "bookings": s.bookings, "exclusive": s.exclusive_slots, "orders": s.orders, "catalog": s.catalog,
         "tz": s.tz, "step": s.step_minutes, "hours": list(s.hours), "horizon": s.horizon_days,
         "resources": s.resources, "capacity": s.slot_capacity,
+        # Ключ — день недели строкой (0 — понедельник), как его увидит JSON
+        "schedule": {str(d): list(h) for d, h in sorted(s.schedule.items())} if s.schedule is not None else None,
     }
     if s.pricing:
         d["pricing"] = _pricing(s.pricing)

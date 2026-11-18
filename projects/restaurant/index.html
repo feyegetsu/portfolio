@@ -391,25 +391,22 @@
 
     // ---------- Бронь ----------
     const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-    const days = [...Array(14)].map((_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; });
-    const TIMES = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
-    const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    // Дни и время — из правил ресторана в api.js (те же, что проверяет сервер) и по московскому времени
+    const DAYS = [...Array(14)].map((_, i) => PortfolioAPI.siteToday("restaurant", i));
+    const days = DAYS.map((s) => new Date(`${s}T12:00:00`));
+    const slotsOf = (i) => PortfolioAPI.daySlots("restaurant", DAYS[i]);
+    const openOf = (i) => new Set(PortfolioAPI.openSlots("restaurant", DAYS[i]).map((x) => x.time));
     // Занятость: стабильная для каждого дня (как будто часть столов уже забронирована)
     const full = (d, t) => (d.getDate() * 7 + parseInt(t) * 3 + (t.endsWith("30") ? 5 : 0)) % 6 === 0;
-    const isPast = (i, t) => {
-      if (i !== 0) return false;
-      const [h, mm] = t.split(":").map(Number);
-      const now = new Date();
-      return h * 60 + mm <= now.getHours() * 60 + now.getMinutes() + 30;
-    };
     // По умолчанию первый рабочий день, где ещё есть свободное время
-    const book = { day: days.findIndex((d, i) => d.getDay() !== 1 && TIMES.some((t) => !isPast(i, t) && !full(d, t))), time: null, guests: 2 };
+    const book = { day: days.findIndex((d, i) => [...openOf(i)].some((t) => !full(d, t))), time: null, guests: 2 };
 
-    $("dates").innerHTML = days.map((d, i) => `<button type="button" class="chip" data-d="${i}" ${d.getDay() === 1 ? 'disabled title="Понедельник — выходной"' : ""} aria-pressed="${i === book.day}">${i === 0 ? "сегодня" : WD[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
+    $("dates").innerHTML = days.map((d, i) => `<button type="button" class="chip" data-d="${i}" ${slotsOf(i).length ? "" : 'disabled title="Выходной"'} aria-pressed="${i === book.day}">${i === 0 ? "сегодня" : WD[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
     function renderTimes() {
       const d = days[book.day];
-      $("times").innerHTML = TIMES.map((t) => {
-        const off = isPast(book.day, t) || full(d, t);
+      const open = openOf(book.day);
+      $("times").innerHTML = slotsOf(book.day).map(({ time: t }) => {
+        const off = !open.has(t) || full(d, t);
         if (off && book.time === t) book.time = null;
         return `<button type="button" class="chip" data-t="${t}" ${off ? "disabled" : ""} aria-pressed="${book.time === t}">${t}</button>`;
       }).join("");
@@ -447,7 +444,7 @@
         await PortfolioAPI.submit(f, () => PortfolioAPI.createBooking("restaurant", {
           resource: `Стол на ${book.guests}`,
           service: `Сет «${SEASONS[season].name}»${$("bookWine").checked ? " + вино" : ""}${occasion ? ` · ${occasion}` : ""}`,
-          starts_at: `${iso(d)}T${book.time}:00`, name: $("name").value.trim(), phone: $("phone").value.trim(),
+          starts_at: slotsOf(book.day).find((x) => x.time === book.time).starts_at, name: $("name").value.trim(), phone: $("phone").value.trim(),
         }));
       } catch { return; }
       $("bookCard").innerHTML = `<div class="done"><div style="font-size:2.6rem">🍂</div><h3>Стол ваш</h3>

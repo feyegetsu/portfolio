@@ -46,7 +46,11 @@ def test_order_pricing(case):
 @pytest.mark.parametrize("case", CASES["slots"], ids=lambda c: c["title"])
 def test_booking_slot(case):
     site = SITES[case["site"]]
-    day = site_now(site).date() + timedelta(days=case["day_offset"])
+    today = site_now(site).date()
+    if "weekday" in case:  # ближайший такой день недели, начиная с завтра
+        day = next(today + timedelta(days=k) for k in range(1, 8) if (today + timedelta(days=k)).weekday() == case["weekday"])
+    else:
+        day = today + timedelta(days=case["day_offset"])
     starts_at = datetime.combine(day, time.fromisoformat(case["time"]))
     if case["error"]:
         with pytest.raises(HTTPException) as e:
