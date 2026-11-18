@@ -98,3 +98,13 @@ def test_sites_with_catalog_are_marked_as_seeded(engine):
     migrate.upgrade(engine)
     with engine.connect() as conn:
         assert conn.execute(text("select key from seed_marks")).scalars().all() == ["catalog:sushi"]
+
+
+def test_existing_leads_get_search_text(engine):
+    migrate.upgrade(engine, "0004")
+    with engine.begin() as conn:
+        conn.execute(text("insert into leads (site, kind, name, phone, email, message, data, status, created_at) "
+                          "values ('cafe', 'table', 'Анна', '+79001234567', '', 'У ОКНА', '{}', 'new', '2026-11-01')"))
+    migrate.upgrade(engine)
+    with engine.connect() as conn:
+        assert conn.execute(text("select search_text from leads")).scalar() == "анна +79001234567 у окна"

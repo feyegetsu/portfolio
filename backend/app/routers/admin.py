@@ -6,7 +6,7 @@ from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from ..db import utcnow
@@ -77,9 +77,9 @@ def list_leads(user: CurrentUser, db: DB, site: str | None = None, status_: Anno
     query = _scope(Lead, user, site)
     if status_:
         query = query.where(Lead.status == status_)
-    if q:
-        like = f"%{q.strip()}%"
-        query = query.where(or_(Lead.name.ilike(like), Lead.phone.ilike(like), Lead.email.ilike(like), Lead.message.ilike(like)))
+    if q and q.strip():
+        # Без учёта регистра и в SQLite, и в PostgreSQL; % и _ в запросе ищутся как обычные символы
+        query = query.where(Lead.search_text.contains(q.strip().casefold(), autoescape=True))
     return _page(db, query, Lead, limit, offset)
 
 

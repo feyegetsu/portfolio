@@ -113,3 +113,13 @@ def test_catalog_price_must_be_positive(client, owner):
     assert client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json={"price": 0}, headers=owner).status_code == 422
     assert client.post("/api/v1/admin/catalog/sushi", json={"ref": "free", "name": "Даром", "price": 0}, headers=owner).status_code == 422
     assert client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json={"price": 1}, headers=owner).status_code == 200
+
+
+def test_search_case_insensitive_and_escaped(client, owner):
+    # BUG-009: в SQLite ILIKE не приводит кириллицу к нижнему регистру, а % и _ находили всё
+    for name in ("Анна", "Борис", "Вера"):
+        client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "name": name, "phone": PHONE, "message": "Столик у окна"})
+    total = lambda q: client.get("/api/v1/admin/leads", params={"q": q}, headers=owner).json()["total"]  # noqa: E731
+    assert [total(q) for q in ("Анна", "анна", "%", "_")] == [1, 1, 0, 0]
+    assert total("СТОЛИК") == 3
+    assert total("+7900") == 3  # телефон хранится нормализованным

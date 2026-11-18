@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, DateTime, Index, Integer, String, Text, UniqueConstraint, event
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base, utcnow
@@ -44,6 +44,19 @@ class Lead(Base):
     data: Mapped[dict] = mapped_column(JSON, default=dict)
     status: Mapped[str] = mapped_column(String(20), default="new")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    # Имя, телефон, e-mail и комментарий в нижнем регистре (casefold) для поиска: ILIKE в SQLite
+    # не понимает регистр кириллицы. Заполняется автоматически при сохранении
+    search_text: Mapped[str] = mapped_column(Text, default="", server_default="")
+
+    @staticmethod
+    def make_search_text(*parts: str | None) -> str:
+        return " ".join(p for p in parts if p).casefold()
+
+
+@event.listens_for(Lead, "before_insert")
+@event.listens_for(Lead, "before_update")
+def _lead_search_text(_mapper, _conn, lead: Lead) -> None:
+    lead.search_text = Lead.make_search_text(lead.name, lead.phone, lead.email, lead.message)
 
 
 class Booking(Base):
