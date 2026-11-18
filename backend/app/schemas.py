@@ -10,10 +10,17 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_vali
 PHONE_RE = re.compile(r"^\+?\d{10,15}$")
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
 DATA_MAX_CHARS = 4000  # доп. поля заявки: этого хватает любой форме с запасом
+# Предельные длины полей публичных форм. Копию получает демо-движок (rules_export → LIMITS в api.js)
+LIMITS = {
+    "kind": 40, "name": 100, "email": 200, "message": 2000, "data": DATA_MAX_CHARS,
+    "resource": 100, "service": 100,
+    "items": 50, "ref": 60, "item_name": 200, "address": 300, "comment": 1000, "promo": 30,
+    "catalog_name": 200,
+}
 T = TypeVar("T")
 
 # Пробелы по краям обрезаются до проверки длины: имя из одних пробелов — пустое имя
-Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=LIMITS["name"])]
 Text = Annotated[str, StringConstraints(strip_whitespace=True)]
 LeadStatus = Literal["new", "in_progress", "done", "cancelled"]
 BookingStatus = Literal["confirmed", "done", "cancelled"]
@@ -43,11 +50,11 @@ class Honeypot(Input):
 # ---------- Публичные формы ----------
 
 class LeadIn(Honeypot):
-    kind: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
-    name: Text = Field("", max_length=100)
+    kind: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=LIMITS["kind"])]
+    name: Text = Field("", max_length=LIMITS["name"])
     phone: str = ""
-    email: str = Field("", max_length=200)
-    message: str = Field("", max_length=2000)
+    email: str = Field("", max_length=LIMITS["email"])
+    message: str = Field("", max_length=LIMITS["message"])
     data: dict = Field(default_factory=dict)
 
     @field_validator("phone")
@@ -72,8 +79,8 @@ class LeadIn(Honeypot):
 
 
 class BookingIn(Honeypot):
-    resource: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
-    service: Text = Field("", max_length=100)
+    resource: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=LIMITS["resource"])]
+    service: Text = Field("", max_length=LIMITS["service"])
     starts_at: datetime
     name: Name
     phone: str
@@ -85,21 +92,21 @@ class BookingIn(Honeypot):
 
 
 class OrderItem(Input):
-    ref: Annotated[str, Field(min_length=1, max_length=60)]
-    name: str = Field("", max_length=200)
+    ref: Annotated[str, Field(min_length=1, max_length=LIMITS["ref"])]
+    name: str = Field("", max_length=LIMITS["item_name"])
     qty: Annotated[int, Field(ge=1, le=99)]
     # Цену браузер может прислать для наглядности, но сервер её не использует: считает по каталогу
     price: int = Field(0, ge=0, le=1_000_000)
 
 
 class OrderIn(Honeypot):
-    items: Annotated[list[OrderItem], Field(min_length=1, max_length=50)]
+    items: Annotated[list[OrderItem], Field(min_length=1, max_length=LIMITS["items"])]
     name: Name
     phone: str
-    address: Text = Field("", max_length=300)
+    address: Text = Field("", max_length=LIMITS["address"])
     mode: Literal["delivery", "pickup"] = "delivery"
-    comment: str = Field("", max_length=1000)
-    promo: str = Field("", max_length=30)
+    comment: str = Field("", max_length=LIMITS["comment"])
+    promo: str = Field("", max_length=LIMITS["promo"])
 
     @field_validator("phone")
     @classmethod
@@ -250,14 +257,14 @@ class OrderPatch(Input):
 
 class CatalogIn(Input):
     ref: Annotated[str, Field(min_length=1, max_length=60)]
-    name: Annotated[str, Field(min_length=1, max_length=200)]
+    name: Annotated[str, Field(min_length=1, max_length=LIMITS["catalog_name"])]
     category: str = Field("", max_length=60)
     price: Annotated[int, Field(ge=1, le=10_000_000)]  # бесплатных позиций нет: 0 — почти всегда стёртое поле
     active: bool = True
 
 
 class CatalogPatch(Input):
-    name: str | None = Field(None, min_length=1, max_length=200)
+    name: str | None = Field(None, min_length=1, max_length=LIMITS["catalog_name"])
     price: int | None = Field(None, ge=1, le=10_000_000)
     active: bool | None = None
 

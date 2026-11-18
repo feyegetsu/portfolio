@@ -28,6 +28,8 @@
     {"slug": "gastrobar", "name": "Гастробар «Соль и Солод»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [12, 2], "horizon": 60, "resources": null, "capacity": 20, "schedule": {"0": [12, 24], "1": [12, 24], "2": [12, 24], "3": [12, 24], "4": [12, 2], "5": [12, 2], "6": [12, 2]}},
     {"slug": "bar", "name": "Бар «Полночь»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [19, 2], "horizon": 30, "resources": null, "capacity": 8, "schedule": {"2": [19, 2], "3": [19, 2], "4": [19, 2], "5": [19, 2], "6": [19, 2]}},
   ];
+  // Предельные длины полей форм (backend/app/schemas.py LIMITS)
+  const LIMITS = {"kind": 40, "name": 100, "email": 200, "message": 2000, "data": 4000, "resource": 100, "service": 100, "items": 50, "ref": 60, "item_name": 200, "address": 300, "comment": 1000, "promo": 30, "catalog_name": 200};
   // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте
   const CATALOGS = {
     miniapp: [["1", "Маргарита", "Пицца", 549], ["2", "Пепперони", "Пицца", 649], ["3", "Овощная", "Пицца", 599], ["4", "Четыре сезона", "Пицца", 699], ["5", "Классик", "Бургеры", 429], ["6", "Пулд-порк", "Бургеры", 469], ["7", "Бургер + фри", "Бургеры", 549], ["8", "Филадельфия", "Роллы", 589], ["9", "Сет «Лис»", "Роллы", 1590], ["10", "Нигири микс", "Роллы", 690], ["11", "Боул с курицей", "Боулы", 459], ["12", "Поке с лососем", "Боулы", 549], ["13", "Паста с морепродуктами", "Горячее", 589], ["14", "Пенне арабьята", "Горячее", 399], ["15", "Стейк с фри", "Горячее", 890], ["16", "Лимонады", "Напитки", 219]],
@@ -39,7 +41,7 @@
   const SITE = Object.fromEntries(SITES.map((s) => [s.slug, s]));
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
 
-  /* ENGINE:START — чистые функции расчёта: tools/parity.mjs гоняет их на тех же примерах, что и pytest */
+  /* ENGINE:START — чистые функции расчёта и проверки: tools/parity.mjs гоняет их на тех же примерах, что и pytest */
   class ApiError extends Error {
     constructor(message, status) {
       super(message);
@@ -57,7 +59,23 @@
     booking: ["resource", "service", "starts_at", "name", "phone", "website"],
     order: ["items", "name", "phone", "address", "mode", "comment", "promo", "website"],
     item: ["ref", "name", "qty", "price"],
+    catalog: ["ref", "name", "category", "price", "active"],
+    catalogPatch: ["name", "price", "active"],
+    user: ["email", "name", "password", "role", "sites"],
+    userPatch: ["name", "role", "sites", "password"],
   };
+  // Длины и обязательность полей, как в схемах сервера (LIMITS генерируется из backend/app/schemas.py)
+  const text = (v) => (v === undefined || v === null ? "" : String(v));
+  const checkLen = (value, key, label) => {
+    if (text(value).length > LIMITS[key]) throw new ApiError(`${label}: не больше ${LIMITS[key]} символов`, 422);
+  };
+  const required = (value, label) => {
+    const v = text(value).trim();
+    if (!v) throw new ApiError(`${label}: обязательное поле`, 422);
+    return v;
+  };
+  // Скрытое поле-ловушка: люди его не заполняют, боты заполняют. Отвечаем как обычно, но ничего не сохраняем
+  const isSpam = (b) => !!text(b.website).trim();
   const normalizePhone = (v) => {
     const cleaned = String(v || "").replace(/[^\d+]/g, "");
     if (!/^\+?\d{10,15}$/.test(cleaned)) throw new ApiError("Некорректный номер телефона", 422);
@@ -160,6 +178,23 @@
       out.push({ time: `${pad2(d.getHours())}:${pad2(d.getMinutes())}`, starts_at: `${ymd(d)}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:00` });
     }
     return out;
+  }
+
+  // Время из базы (UTC) в «настенное» время заведения, как to_local на сервере
+  const TZ = "Europe/Moscow";
+  const localParts = (v, tz = TZ) => Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date(v)).map((x) => [x.type, x.value]));
+  const localDay = (v, tz) => { const p = localParts(v, tz); return `${p.year}-${p.month}-${p.day}`; };
+  const localStamp = (v, tz) => { const p = localParts(v, tz); return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`; };
+  // Время записи из запроса в часовом поясе заведения, как local_time на сервере: без пояса — уже местное
+  function toSiteTime(value, tz) {
+    const v = String(value || "");
+    if (!/(?:[zZ]|[+-]\d\d:?\d\d)$/.test(v)) return v.slice(0, 16) + ":00";
+    const d = new Date(v);
+    if (Number.isNaN(+d)) return v.slice(0, 16) + ":00";
+    const p = localParts(d, tz);
+    return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:00`;
   }
 
   // Правила записи как на сервере: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу.
@@ -389,13 +424,6 @@
       return s;
     };
     const clone = (o) => JSON.parse(JSON.stringify(o));
-    // Время из базы (UTC) в «настенное» время заведения, как to_local на сервере
-    const TZ = "Europe/Moscow";
-    const localParts = (v, tz = TZ) => Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
-      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
-    }).formatToParts(new Date(v)).map((x) => [x.type, x.value]));
-    const localDay = (v, tz) => { const p = localParts(v, tz); return `${p.year}-${p.month}-${p.day}`; };
-    const localStamp = (v, tz) => { const p = localParts(v, tz); return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`; };
 
     // ---------- сессия и права ----------
     function user() {
@@ -459,12 +487,19 @@
       createLead: (slug, b) => later(() => {
         site(slug, "leads");
         onlyFields(b, FIELDS.lead);
+        const kind = required(b.kind, "Тип заявки");
+        checkLen(kind, "kind", "Тип заявки");
+        const name = text(b.name).trim();
+        checkLen(name, "name", "Имя");
+        checkLen(b.email, "email", "E-mail");
+        checkLen(b.message, "message", "Комментарий");
         const phone = b.phone ? normalizePhone(b.phone) : "";
         const email = normalizeEmail(b.email);
+        if (JSON.stringify(b.data || {}).length > LIMITS.data) throw new ApiError("Слишком много данных в заявке", 422);
         if (!phone && !email) throw new ApiError("Укажите телефон или e-mail", 422);
-        if (JSON.stringify(b.data || {}).length > 4000) throw new ApiError("Слишком много данных в заявке", 422);
+        if (isSpam(b)) return { id: 0, status: "new" };
         const db = load();
-        const lead = { id: db.seq++, site: slug, kind: String(b.kind || "").trim(), name: String(b.name || "").trim(), phone, email, message: b.message || "", data: b.data || {}, status: "new", created_at: iso(now()) };
+        const lead = { id: db.seq++, site: slug, kind, name, phone, email, message: text(b.message), data: b.data || {}, status: "new", created_at: iso(now()) };
         db.leads.push(lead);
         save(db);
         return { id: lead.id, status: lead.status };
@@ -478,13 +513,15 @@
       createBooking: (slug, b) => later(() => {
         const s = site(slug, "bookings");
         onlyFields(b, FIELDS.booking);
-        const phone = normalizePhone(b.phone);
         // Пробелы по краям обрезаются до проверки, как StringConstraints на сервере
-        const name = String(b.name || "").trim(), resource = String(b.resource || "").trim();
-        if (!name) throw new ApiError("Укажите имя", 422);
-        if (!resource) throw new ApiError("Выберите мастера или занятие", 422);
-        const startsAt = String(b.starts_at).slice(0, 16) + ":00";
+        const name = required(b.name, "Имя"), resource = required(b.resource, "Мастер или занятие");
+        checkLen(name, "name", "Имя");
+        checkLen(resource, "resource", "Мастер или занятие");
+        checkLen(text(b.service).trim(), "service", "Услуга");
+        const phone = normalizePhone(b.phone);
+        const startsAt = toSiteTime(b.starts_at, s.tz);
         checkSlot(s, resource, startsAt);
+        if (isSpam(b)) return { id: 0, status: "confirmed" };
         const db = load();
         checkTaken(db, s, resource, startsAt);
         const booking = { id: db.seq++, site: slug, resource, service: String(b.service || "").trim(), starts_at: startsAt, name, phone, status: "confirmed", created_at: iso(now()) };
@@ -496,15 +533,24 @@
         const s = site(slug, "orders");
         onlyFields(b, FIELDS.order);
         (b.items || []).forEach((i) => onlyFields(i, FIELDS.item));
+        const name = required(b.name, "Имя");
+        checkLen(name, "name", "Имя");
         const phone = normalizePhone(b.phone);
-        const name = String(b.name || "").trim();
-        if (!name) throw new ApiError("Укажите имя", 422);
-        if (!b.items || !b.items.length) throw new ApiError("Корзина пуста", 422);
-        if ((b.mode || "delivery") === "delivery" && !String(b.address || "").trim()) throw new ApiError("Укажите адрес доставки", 422);
+        if (!Array.isArray(b.items) || !b.items.length) throw new ApiError("Корзина пуста", 422);
+        if (b.items.length > LIMITS.items) throw new ApiError(`Не больше ${LIMITS.items} строк в заказе`, 422);
+        b.items.forEach((i) => { required(i.ref, "Позиция"); checkLen(i.ref, "ref", "Позиция"); checkLen(i.name, "item_name", "Название"); });
+        const mode = b.mode === undefined ? "delivery" : b.mode;
+        if (!["delivery", "pickup"].includes(mode)) throw new ApiError("Способ получения: delivery или pickup", 422);
+        const address = text(b.address).trim();
+        checkLen(address, "address", "Адрес");
+        checkLen(b.comment, "comment", "Комментарий");
+        checkLen(b.promo, "promo", "Промокод");
+        if (mode === "delivery" && !address) throw new ApiError("Укажите адрес доставки", 422);
+        if (isSpam(b)) return { id: 0, status: "new" };
         const db = load();
         // Цены, доставку и промокод считаем по каталогу, как сервер: цена из запроса не используется
-        const items = priceOrder(s.pricing, db.catalog.filter((c) => c.site === slug), b.items, b.mode || "delivery", b.promo);
-        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name, phone, address: String(b.address || "").trim(), mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
+        const items = priceOrder(s.pricing, db.catalog.filter((c) => c.site === slug), b.items, mode, b.promo);
+        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name, phone, address, mode, comment: text(b.comment), status: "new", created_at: iso(now()) };
         db.orders.push(order);
         save(db);
         return { id: order.id, status: order.status, token: order.token, total: order.total, items: order.items.map(({ name, qty }) => ({ name, qty })) };
@@ -570,8 +616,13 @@
         addCatalog: (slug, b) => later(() => {
           const u = requireUser("admin");
           site(slug, "catalog");
+          onlyFields(b, FIELDS.catalog);
           if (!allowed(u).includes(slug)) throw new ApiError("Нет доступа к этому сайту", 403);
           const db = load();
+          required(b.ref, "Код позиции");
+          checkLen(b.ref, "ref", "Код позиции");
+          if (typeof b.name !== "string" || !b.name.length) throw new ApiError("Название: обязательное поле", 422);
+          checkLen(b.name, "catalog_name", "Название");
           if (db.catalog.some((c) => c.site === slug && c.ref === b.ref)) throw new ApiError("Позиция с таким кодом уже есть в каталоге", 409);
           const item = { id: db.seq++, site: slug, ref: b.ref, name: b.name, category: b.category || "", price: checkPrice(b.price), active: b.active !== false };
           db.catalog.push(item);
@@ -579,8 +630,13 @@
           return clone(item);
         }),
         updateCatalog: (id, b) => later(() => {
+          onlyFields(b, FIELDS.catalogPatch);
           const changes = {};
-          if (b.name !== undefined) changes.name = b.name;
+          if (b.name !== undefined) {
+            if (typeof b.name !== "string" || !b.name.length) throw new ApiError("Название: обязательное поле", 422);
+            checkLen(b.name, "catalog_name", "Название");
+            changes.name = b.name;
+          }
           if (b.price !== undefined) changes.price = checkPrice(b.price);
           if (b.active !== undefined) changes.active = !!b.active;
           return patch("catalog", id, changes, requireUser("admin"));
@@ -620,6 +676,7 @@
         users: () => later(() => { requireUser("owner"); return load().users.map(publicUser); }),
         addUser: (b) => later(() => {
           requireUser("owner");
+          onlyFields(b, FIELDS.user);
           const email = String(b.email || "").trim().toLowerCase();
           if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) throw new ApiError("Некорректный e-mail", 422);
           const name = String(b.name || "").trim();
@@ -635,6 +692,7 @@
         }),
         updateUser: (id, b) => later(() => {
           requireUser("owner");
+          onlyFields(b, FIELDS.userPatch);
           const db = load();
           const u = db.users.find((x) => x.id === Number(id));
           if (!u) throw new ApiError("Не найдено", 404);

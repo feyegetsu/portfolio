@@ -15,6 +15,7 @@ from fastapi import HTTPException
 from app import rules_export
 from app.pricing import price_order
 from app.services.booking import check_slot, site_now
+from app.db import to_local
 from app.schemas import OrderItem
 from app.seed import CATALOGS
 from app.sites import SITES
@@ -58,3 +59,82 @@ def test_booking_slot(case):
         assert e.value.detail == case["error"]
     else:
         check_slot(site, case["resource"], starts_at)
+
+
+# ---------- Поведение API целиком: те же примеры прогоняет демо-движок в tools/parity.mjs ----------
+
+def detail(r) -> str:
+    """Текст ошибки так, как его покажет клиент api.js: у ошибок валидации — без префикса «Value error, »."""
+    d = r.json().get("detail") if r.content else None
+    if isinstance(d, list):
+        return "; ".join(x["msg"].removeprefix("Value error, ") for x in d)
+    return d or ""
+
+
+def stored(client, owner, kind: str) -> int:
+    return client.get(f"/api/v1/admin/{kind}", headers=owner).json()["total"]
+
+
+def check_response(case, r, before=None, after=None):
+    assert r.status_code == case["status"], (r.status_code, r.text)
+    if "message" in case:
+        assert detail(r) == case["message"]
+    if "stored" in case:
+        assert (after > before) == case["stored"]
+
+
+@pytest.mark.parametrize("case", CASES["leads"], ids=lambda c: c["title"])
+def test_lead_rules(case, client, owner):
+    before = stored(client, owner, "leads")
+    r = client.post(f"/api/v1/sites/{case['site']}/leads", json=case["body"])
+    check_response(case, r, before, stored(client, owner, "leads"))
+
+
+@pytest.mark.parametrize("case", CASES["orders_validation"], ids=lambda c: c["title"])
+def test_order_rules(case, client, owner):
+    before = stored(client, owner, "orders")
+    r = client.post(f"/api/v1/sites/{case['site']}/orders", json=case["body"])
+    check_response(case, r, before, stored(client, owner, "orders"))
+
+
+@pytest.mark.parametrize("case", CASES["bookings"], ids=lambda c: c["title"])
+def test_booking_rules(case, client, owner):
+    site = SITES[case["site"]]
+    today = site_now(site).date()
+    day = next(today + timedelta(days=k) for k in range(1, 8) if (today + timedelta(days=k)).weekday() == case["weekday"])
+    body = {"resource": case["resource"], "starts_at": f"{day.isoformat()}T{case['time']}:00{case['suffix']}",
+            "name": "Иван", "phone": "+79001234567"}
+    if "website" in case:
+        body["website"] = case["website"]
+    before = stored(client, owner, "bookings")
+    r = client.post(f"/api/v1/sites/{case['site']}/bookings", json=body)
+    check_response(case, r, before, stored(client, owner, "bookings"))
+
+
+@pytest.mark.parametrize("case", CASES["catalog_patch"], ids=lambda c: c["title"])
+def test_catalog_patch_rules(case, client, owner):
+    item = next(c for c in client.get("/api/v1/admin/catalog", params={"site": case["site"]}, headers=owner).json()
+                if c["ref"] == case["ref"])
+    check_response(case, client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json=case["body"], headers=owner))
+
+
+@pytest.mark.parametrize("case", CASES["users"], ids=lambda c: c["title"])
+def test_user_rules(case, client, owner):
+    if case["action"] == "add":
+        r = client.post("/api/v1/admin/users", json=case["body"], headers=owner)
+    else:
+        r = client.delete("/api/v1/admin/users/99999", headers=owner)
+    check_response(case, r)
+
+
+@pytest.mark.parametrize("case", CASES["search"], ids=lambda c: c["title"])
+def test_search_rules(case, client, owner):
+    for name in case["names"]:
+        client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "name": name, "phone": "+79001234567"})
+    r = client.get("/api/v1/admin/leads", params={"q": case["q"]}, headers=owner)
+    assert r.json()["total"] == case["total"]
+
+
+@pytest.mark.parametrize("case", CASES["csv_dates"], ids=lambda c: c["title"])
+def test_csv_dates(case):
+    assert to_local(datetime.fromisoformat(case["created_at"]), case["tz"]).strftime("%d.%m.%Y %H:%M") == case["expected"]
