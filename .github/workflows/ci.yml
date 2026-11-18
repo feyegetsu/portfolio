@@ -74,6 +74,23 @@ jobs:
       - name: Build contents
         run: pip install pytest && pytest -q tools/test_build.py
 
+  e2e:
+    name: Сквозные сценарии в браузере (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          pip install -r tests-e2e/requirements.txt
+          python -m playwright install --with-deps chromium
+      # Демо-режим и настоящий API (uvicorn на SQLite поднимает фикстура) в Chromium
+      - name: E2E
+        working-directory: tests-e2e
+        run: pytest
+
   links:
     name: Битые ссылки
     runs-on: ubuntu-latest
