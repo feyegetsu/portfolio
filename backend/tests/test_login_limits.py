@@ -7,7 +7,7 @@ import pytest
 from conftest import PHONE
 
 from app import deps
-from app.deps import RedisStore, login_account_limit, login_ip_limit, login_limit, rate_limit
+from app.limits import RedisStore, login_account_limit, login_ip_limit, login_limit, rate_limit
 
 LOGIN = "/api/v1/auth/login"
 

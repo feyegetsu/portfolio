@@ -4,7 +4,7 @@ import fakeredis
 import pytest
 
 from app.config import database_url
-from app.deps import MemoryStore, RedisStore, SlidingWindow
+from app.limits import MemoryStore, RedisStore, SlidingWindow
 
 
 @pytest.fixture
@@ -79,7 +79,7 @@ def test_health_reports_db_and_limits(client):
 
 def test_read_limit(client):
     # SEC-011: публичные GET тоже ограничены по IP, но опрос статуса заказа раз в 2 секунды проходит с запасом
-    from app.deps import read_limit
+    from app.limits import read_limit
     assert read_limit.limit >= 60
     codes = [client.get("/api/v1/sites/sushi/catalog").status_code for _ in range(read_limit.limit + 1)]
     assert codes[:-1] == [200] * read_limit.limit

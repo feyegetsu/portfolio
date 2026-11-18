@@ -10,7 +10,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config import Settings, check_secrets, settings
 from .db import SessionLocal, engine
-from .deps import RedisStore, rate_limit, read_limit
+from .limits import RedisStore, rate_limit, read_limit
 from .migrate import is_up_to_date
 from .routers import admin, auth, public
 from .seed import seed

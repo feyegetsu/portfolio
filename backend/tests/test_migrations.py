@@ -71,3 +71,20 @@ def test_sqlite_tables_get_autoincrement_on_upgrade(engine):
     for table in ("users", "leads", "bookings", "orders", "catalog"):
         assert "AUTOINCREMENT" in ddl[table], table
     assert "ix_catalog_site" in indexes
+
+
+def test_existing_bookings_fill_slot_counters(engine):
+    # BUG-001: при переходе на счётчик уже занятые места учитываются
+    migrate.upgrade(engine, "0002")
+    rows = [("restaurant", "Стол на 2", "confirmed"), ("restaurant", "Стол на 4", "confirmed"),
+            ("restaurant", "Стол на 2", "cancelled"), ("fitness", "Кроссфит", "confirmed"),
+            ("fitness", "Кроссфит", "done"), ("barbershop", "Артём", "confirmed")]
+    with engine.begin() as conn:
+        for site, resource, status in rows:
+            conn.execute(text("insert into bookings (site, resource, service, starts_at, name, phone, status, created_at) "
+                              "values (:s, :r, '', '2026-12-01 20:00:00', 'A', '+79001234567', :st, '2026-11-01')"),
+                         {"s": site, "r": resource, "st": status})
+    migrate.upgrade(engine)
+    with engine.connect() as conn:
+        counters = {(s, k): n for s, k, n in conn.execute(text("select site, resource_key, taken from slot_counters"))}
+    assert counters == {("restaurant", ""): 2, ("fitness", "Кроссфит"): 2}

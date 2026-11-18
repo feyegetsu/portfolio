@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from sqlalchemy import select
 
-from ..deps import DB, CurrentUser, check_login_allowed, login_failed, login_keys, login_limit
+from ..auth import CurrentUser
+from ..deps import DB
+from ..limits import check_login_allowed, login_failed, login_keys, login_limit
 from ..models import User
 from ..schemas import LoginIn, PasswordIn, TokenOut, UserOut
 from ..security import DUMMY_HASH, create_token, hash_password, needs_rehash, verify_password

@@ -73,7 +73,7 @@ def test_booking_far_future_rejected(client):
 
 def test_group_class_has_capacity_limit(client, monkeypatch):
     # TEST-001: ресурс должен существовать, иначе все запросы получают 422 и тест проходит вхолостую
-    from app.deps import rate_limit
+    from app.limits import rate_limit
     from app.sites import FITNESS_CLASSES
     monkeypatch.setattr(rate_limit, "limit", 100)
     capacity = FITNESS_CLASSES["Тайский бокс"]

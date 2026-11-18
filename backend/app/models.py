@@ -47,7 +47,7 @@ class Lead(Base):
 
 
 class Booking(Base):
-    """Запись на время. Для эксклюзивных слотов slot_lock уникален, поэтому двойная запись невозможна даже при гонке."""
+    """Запись на время. Эксклюзивный слот держит уникальный slot_lock, места на занятиях и столы — SlotCounter."""
 
     __tablename__ = "bookings"
     __table_args__ = NO_ID_REUSE
@@ -62,6 +62,22 @@ class Booking(Base):
     status: Mapped[str] = mapped_column(String(20), default="confirmed")
     slot_lock: Mapped[str | None] = mapped_column(String(200), unique=True, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class SlotCounter(Base):
+    """Сколько мест занято на время: по занятию (resource_key — его название) или по заведению (resource_key пуст).
+
+    Строка обновляется атомарно (services/booking.py), поэтому вместимость не превышается и при одновременных запросах.
+    """
+
+    __tablename__ = "slot_counters"
+    __table_args__ = (UniqueConstraint("site", "resource_key", "starts_at", name="uq_slot_counters_slot"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    site: Mapped[str] = mapped_column(String(40))
+    resource_key: Mapped[str] = mapped_column(String(100), default="")
+    starts_at: Mapped[datetime] = mapped_column(DateTime)
+    taken: Mapped[int] = mapped_column(Integer, default=0)
 
 
 def _order_token() -> str:

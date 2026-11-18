@@ -17,7 +17,7 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.db import Base, SessionLocal, engine  # noqa: E402
-from app.deps import LOGIN_LIMITS, rate_limit, read_limit  # noqa: E402
+from app.limits import LOGIN_LIMITS, rate_limit, read_limit  # noqa: E402
 from app.main import app  # noqa: E402
 from app.migrate import stamp_head  # noqa: E402
 from app.seed import seed  # noqa: E402

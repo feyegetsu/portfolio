@@ -10,7 +10,8 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 
 from ..db import utcnow
-from ..deps import DB, CurrentUser, allowed_sites, check_site_access, require
+from ..auth import CurrentUser, allowed_sites, check_site_access, require
+from ..deps import DB
 from ..models import Booking, CatalogItem, Lead, Order, User
 from ..schemas import (
     BookingOut,
@@ -29,7 +30,7 @@ from ..schemas import (
 )
 from ..security import hash_password
 from ..sites import SITES
-from .public import check_capacity, slot_lock_key
+from ..services.booking import release, reserve, slot_lock_key
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
@@ -120,12 +121,13 @@ def update_booking(booking_id: int, body: BookingPatch, user: CurrentUser, db: D
     booking = _get_owned(db, Booking, booking_id, user)
     site = SITES[booking.site]
     if booking.status == "cancelled" and body.status != "cancelled":
-        # Возврат отменённой записи: слот мог уже занять другой клиент, проверяем заново
-        check_capacity(db, site, booking.resource, booking.starts_at, exclude_id=booking.id)
+        # Возврат отменённой записи: слот мог уже занять другой клиент, место занимаем заново
+        reserve(db, site, booking.resource, booking.starts_at)
         booking.slot_lock = slot_lock_key(site, booking.resource, booking.starts_at)
+    elif booking.status != "cancelled" and body.status == "cancelled":
+        release(db, site, booking.resource, booking.starts_at)  # отмена освобождает место
+        booking.slot_lock = None
     booking.status = body.status
-    if body.status == "cancelled":
-        booking.slot_lock = None  # отмена освобождает слот
     try:
         db.commit()
     except IntegrityError:

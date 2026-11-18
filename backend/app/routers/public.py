@@ -2,17 +2,17 @@
 
 from datetime import date, datetime, time, timedelta
 from typing import Annotated
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 
-from ..deps import DB, get_site, rate_limit, read_limit
+from ..deps import DB, get_site
+from ..limits import rate_limit, read_limit
 from ..models import Booking, CatalogItem, Lead, Order
 from ..pricing import price_order
 from ..schemas import BookingIn, CatalogOut, Created, LeadIn, OrderIn, OrderStatusOut
+from ..services.booking import check_slot, local_time, reserve, slot_lock_key
 from ..sites import Site
 
 router = APIRouter(prefix="/api/v1/sites/{site}", tags=["public"])
@@ -26,52 +26,6 @@ def _feature(site: Site, flag: str) -> None:
 
 def _spam(website: str) -> bool:
     return bool(website.strip())
-
-
-def slot_lock_key(site: Site, resource: str, starts_at: datetime) -> str | None:
-    return f"{site.slug}|{resource}|{starts_at.isoformat()}" if site.exclusive_slots else None
-
-
-def site_now(site: Site) -> datetime:
-    """Текущее «настенное» время заведения: сервер может жить в UTC, а запись идёт по местному времени."""
-    return datetime.now(ZoneInfo(site.tz)).replace(tzinfo=None)
-
-
-def local_time(site: Site, value: datetime) -> datetime:
-    """Время из запроса в часовом поясе заведения, без секунд. Время без пояса считаем уже местным."""
-    if value.tzinfo:
-        value = value.astimezone(ZoneInfo(site.tz))
-    return value.replace(tzinfo=None, second=0, microsecond=0)
-
-
-def check_slot(site: Site, resource: str, starts_at: datetime) -> None:
-    """Правила записи: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу."""
-    now = site_now(site)
-    if starts_at < now - timedelta(minutes=5):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Это время уже прошло")
-    if starts_at > now + timedelta(days=site.horizon_days):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"Запись открыта на {site.horizon_days} дней вперёд")
-    if starts_at.minute % site.step_minutes:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Выберите время из расписания")
-    if not site.is_open(starts_at.hour * 60 + starts_at.minute):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "В это время мы закрыты")
-    if site.resources is not None and resource not in site.resources:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Такого мастера или занятия нет")
-
-
-def check_capacity(db: Session, site: Site, resource: str, starts_at: datetime, exclude_id: int | None = None) -> None:
-    """Места на групповом занятии или столы в заведении. Эксклюзивные слоты держит уникальный ключ в БД."""
-    capacity = site.resources.get(resource) if site.resources is not None else site.slot_capacity
-    if not capacity:
-        return
-    query = select(func.count()).select_from(Booking).where(
-        Booking.site == site.slug, Booking.starts_at == starts_at, Booking.status != "cancelled")
-    if site.resources is not None:
-        query = query.where(Booking.resource == resource)
-    if exclude_id:
-        query = query.where(Booking.id != exclude_id)
-    if db.scalar(query) >= capacity:
-        raise HTTPException(status.HTTP_409_CONFLICT, "На это время мест уже нет")
 
 
 @router.post("/leads", response_model=Created, status_code=201, dependencies=[Depends(rate_limit)])
@@ -112,7 +66,7 @@ def create_booking(site: SiteDep, body: BookingIn, db: DB):
     check_slot(site, body.resource, starts_at)
     if _spam(body.website):
         return Created(id=0, status="confirmed")
-    check_capacity(db, site, body.resource, starts_at)
+    reserve(db, site, body.resource, starts_at)  # место занимается в той же транзакции, что и запись
     booking = Booking(
         site=site.slug, resource=body.resource, service=body.service, starts_at=starts_at,
         name=body.name, phone=body.phone, slot_lock=slot_lock_key(site, body.resource, starts_at),

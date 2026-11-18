@@ -14,7 +14,7 @@ from fastapi import HTTPException
 
 from app import rules_export
 from app.pricing import price_order
-from app.routers.public import check_slot, site_now
+from app.services.booking import check_slot, site_now
 from app.schemas import OrderItem
 from app.seed import CATALOGS
 from app.sites import SITES
