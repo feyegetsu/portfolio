@@ -14,6 +14,7 @@ from ..auth import CurrentUser, allowed_sites, check_site_access, require
 from ..deps import DB
 from ..models import Booking, CatalogItem, Lead, Order, User
 from ..schemas import (
+    PHONE_RE,
     BookingOut,
     BookingPatch,
     CatalogIn,
@@ -34,13 +35,22 @@ from ..services.booking import release, reserve, slot_lock_key
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
-FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+FORMULA_CHARS = "=+-@＝＋－＠"  # с полноширинными вариантами: часть редакторов их нормализует
 
 
-def _cell(value) -> str:
-    """Защита от CSV-инъекции: текст, похожий на формулу, Excel покажет как текст, а не выполнит."""
+def _cell(value, phone: bool = False) -> str:
+    """Защита от CSV-инъекции: текст, похожий на формулу, Excel покажет как текст, а не выполнит.
+
+    Смотрим первый непробельный символ: пробелы и переводы строк перед «=» часть редакторов обрезает.
+    Нормализованный телефон (+цифры) формулой быть не может, его не трогаем — иначе Excel покажет '+7…
+    """
     text = str(value)
-    return "'" + text if text.startswith(FORMULA_START) else text
+    if phone and PHONE_RE.match(text):
+        return text
+    if text.startswith(("\t", "\r")) or text.lstrip(" \t\r\n")[:1] in tuple(FORMULA_CHARS):
+        return "'" + text
+    return text
+
 
 Limit = Annotated[int, Query(ge=1, le=200)]
 Offset = Annotated[int, Query(ge=0)]
@@ -101,7 +111,7 @@ def export_leads(user: CurrentUser, db: DB, site: str | None = None):
     for r in rows:
         # Дата в часовом поясе заведения: в базе UTC, а владелец ждёт местное время
         writer.writerow([r.id, to_local(r.created_at, SITES[r.site].tz).strftime("%d.%m.%Y %H:%M"), SITES[r.site].name,
-                         *map(_cell, [r.kind, r.name, r.phone, r.email, r.message]), r.status])
+                         _cell(r.kind), _cell(r.name), _cell(r.phone, phone=True), _cell(r.email), _cell(r.message), r.status])
     return Response("﻿" + buf.getvalue(), media_type="text/csv; charset=utf-8",
                     headers={"Content-Disposition": 'attachment; filename="leads.csv"'})
 

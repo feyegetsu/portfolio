@@ -172,8 +172,13 @@
     return n;
   };
   const newToken = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
-  // Текст, похожий на формулу, Excel покажет как текст, а не выполнит
-  const csvSafe = (v) => (/^[=+\-@\t\r]/.test(String(v ?? "")) ? "'" + v : String(v ?? ""));
+  // Текст, похожий на формулу, Excel покажет как текст, а не выполнит. Как _cell на сервере: смотрим первый
+  // непробельный символ, а нормализованный телефон (+цифры) не трогаем — иначе Excel покажет '+7…
+  const csvSafe = (v, phone = false) => {
+    const s = String(v ?? "");
+    if (phone && /^\+?\d{10,15}$/.test(s)) return s;
+    return /^[\t\r]/.test(s) || /^[=+\-@＝＋－＠]/.test(s.replace(/^[ \t\r\n]+/, "")) ? "'" + s : s;
+  };
 
   // ---------- Выбор режима ----------
   const store = {
@@ -611,7 +616,7 @@
           const rows = scoped(load().leads, requireUser(), f.site).sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
           const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
           const lines = [["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"].join(";")];
-          for (const r of rows) lines.push([r.id, localStamp(r.created_at, SITE[r.site].tz), SITE[r.site].name, ...[r.kind, r.name, r.phone, r.email, r.message].map(csvSafe), r.status].map(cell).join(";"));
+          for (const r of rows) lines.push([r.id, localStamp(r.created_at, SITE[r.site].tz), SITE[r.site].name, csvSafe(r.kind), csvSafe(r.name), csvSafe(r.phone, true), csvSafe(r.email), csvSafe(r.message), r.status].map(cell).join(";"));
           return "﻿" + lines.join("\n");
         }),
       },

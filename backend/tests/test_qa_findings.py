@@ -152,3 +152,18 @@ def test_past_local_time_rejected(client):
     r = client.post("/api/v1/sites/barbershop/bookings", json={
         "resource": "Денис", "starts_at": msk_hour_ago, "name": "А", "phone": PHONE})
     assert r.status_code == 422, "Запись на время, которое в Москве прошло час назад, принята"
+
+
+def test_csv_formulas_after_whitespace_and_phones_intact(client, owner):
+    # SEC-009: формула после пробела или перевода строки тоже нейтрализуется, а телефон остаётся телефоном
+    import csv
+    import io
+    client.post("/api/v1/sites/cafe/leads", json={"kind": "callback", "name": " =1+1", "phone": PHONE, "message": "\n=2+2"})
+    client.post("/api/v1/sites/cafe/leads", json={"kind": "callback", "name": "-5", "message": "@SUM(A1)", "phone": PHONE})
+    text = client.get("/api/v1/admin/leads.csv", headers=owner).text.lstrip("\ufeff")
+    rows = {r[0]: r for r in csv.reader(io.StringIO(text), delimiter=";")}
+    first, second = rows["1"], rows["2"]
+    assert first[4] == "'=1+1"  # имя обрезается при сохранении (BUG-015), формула всё равно нейтрализована
+    assert first[7] == "'\n=2+2"
+    assert first[5] == "+79001234567", "Телефон в выгрузке с апострофом перестаёт быть телефоном"
+    assert second[4] == "'-5" and second[7] == "'@SUM(A1)"
