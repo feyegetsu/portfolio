@@ -17,6 +17,8 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
     :root { color-scheme: light only; }
     :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --brass-ink: #836536; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -71,8 +73,8 @@
     .season:first-child { border-left: 0; }
     .season b { font-family: "Prata", serif; font-weight: 400; font-size: 1.3rem; display: block; }
     .season small { color: var(--muted); font-size: 13px; }
-    .season[aria-selected="true"] { background: var(--green); color: var(--cream); }
-    .season[aria-selected="true"] small { color: rgba(242, 236, 224, .7); }
+    .season[aria-pressed="true"] { background: var(--green); color: var(--cream); }
+    .season[aria-pressed="true"] small { color: rgba(242, 236, 224, .7); }
     .season__now { display: inline-block; margin-left: 8px; font: 600 10px "IBM Plex Sans", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); vertical-align: middle; }
     .set__head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 26px; }
     .set__intro { max-width: 560px; color: var(--muted); }
@@ -193,6 +195,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <nav><a href="#set">Сет</a><a href="#chef">Шеф</a><a href="#photos">Зал</a><a href="#gift">Сертификат</a></nav>
@@ -200,6 +203,7 @@
       <a href="#book" class="btn">Забронировать</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero" style="padding:0">
     <div class="hero__text">
@@ -223,7 +227,7 @@
     <div class="container">
       <span class="eyebrow" data-reveal>Дегустационный сет</span>
       <h2 data-reveal>Четыре сезона — четыре меню</h2>
-      <div class="seasons" role="tablist" aria-label="Сезонное меню" id="seasons"></div>
+      <div class="seasons" role="group" aria-label="Сезонное меню" id="seasons"></div>
       <div class="set__head">
         <p class="set__intro" id="seasonIntro"></p>
         <label class="pairing"><input type="checkbox" id="wine"><span class="pairing__sw"></span><span><b>Винное сопровождение</b><small>бокал к каждой подаче · +3 500 ₽</small></span></label>
@@ -312,6 +316,7 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© Ресторан «Терруар» · Набережная, 7</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
       <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
@@ -372,7 +377,7 @@
     $("seasonNow").textContent = `Сейчас: ${ADJ[current]} сет`;
 
     $("seasons").innerHTML = Object.entries(SEASONS).map(([k, s]) =>
-      `<button class="season" role="tab" data-s="${k}" aria-selected="${k === season}"><b>${s.name}${k === current ? '<span class="season__now">сейчас</span>' : ""}</b><small>${s.months}</small></button>`).join("");
+      `<button class="season" data-s="${k}" aria-pressed="${k === season}"><b>${s.name}${k === current ? '<span class="season__now">сейчас</span>' : ""}</b><small>${s.months}</small></button>`).join("");
     function renderSet() {
       const s = SEASONS[season];
       $("seasonIntro").textContent = s.intro;
@@ -386,7 +391,7 @@
       const total = SET + ($("wine").checked ? WINE : 0);
       $("setLabel").textContent = `${s.name}: шесть подач${$("wine").checked ? " и шесть бокалов" : ""}`;
       $("setPrice").textContent = rub(total);
-      document.querySelectorAll(".season").forEach((b) => b.setAttribute("aria-selected", b.dataset.s === season));
+      document.querySelectorAll(".season").forEach((b) => b.setAttribute("aria-pressed", b.dataset.s === season));
       renderSummary();
     }
     $("seasons").addEventListener("click", (e) => { const b = e.target.closest(".season"); if (b) { season = b.dataset.s; renderSet(); } });

@@ -17,6 +17,8 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
     :root { color-scheme: dark only; }
     :root { --bg: #0c0c0c; --card: #161616; --line: #2a2a2a; --gold: #c9a14a; --text: #f2f2f2; --muted: #9a9a9a; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -168,6 +170,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
 
   <div class="pole" aria-hidden="true"></div>
   <header class="header" data-shrink>
@@ -182,6 +185,7 @@
       <a href="#booking" class="btn">Записаться</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="container">
@@ -265,8 +269,8 @@
           <div class="summary" id="summary"></div>
           <form id="form">
             <div class="fields">
-              <input required placeholder="Ваше имя" name="name">
-              <input required type="tel" placeholder="Телефон" name="phone">
+              <input required placeholder="Ваше имя" name="name" aria-label="Ваше имя" autocomplete="name">
+              <input required type="tel" placeholder="Телефон" name="phone" aria-label="Телефон" autocomplete="tel">
             </div>
             <div class="step__nav"><button type="button" class="btn btn--ghost" data-back>Назад</button><button class="btn" type="submit">Подтвердить запись</button></div>
           </form>
@@ -283,6 +287,7 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot">
       <span>© BLADE Barbershop · ул. Рубинштейна, 7</span>

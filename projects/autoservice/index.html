@@ -17,6 +17,9 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --bg: #f2f2ef; --ink: #17181a; --gray: #26282c; --muted: #5f6269; --orange: #ff5a1f; --line: #dcdcd6; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -150,6 +153,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span>М</span>МоторЛайн</a>
@@ -157,6 +161,7 @@
       <a href="tel:+78126421890" class="phone">+7 (812) 642-18-90</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <img width="1200" height="800" class="hero__bg" data-parallax="0.3" src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
@@ -253,6 +258,7 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© МоторЛайн · ул. Промышленная, 15 · Ежедневно 8:00–21:00</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
       <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>

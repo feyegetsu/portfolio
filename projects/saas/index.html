@@ -16,6 +16,9 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --bg: #fbfbfd; --ink: #0d0f1a; --muted: #6b7086; --indigo: #4f46e5; --indigo-l: #eef0ff; --line: #e8e9f1; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -161,6 +164,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><i>✓</i>Taskly</a>
@@ -168,6 +172,7 @@
       <a href="#start" class="btn">Попробовать</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero" style="padding-bottom:0">
     <div class="container">
@@ -258,6 +263,7 @@
     </div>
   </section>
 
+  </main>
   <footer><div class="container foot"><span>© Taskly</span><span>Демо-сайт для портфолио · компании, отзывы и цифры вымышлены · фото: Unsplash</span></div></footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>

@@ -16,6 +16,8 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Nunito:wght@800;900&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
     :root { color-scheme: light only; }
     :root { --bg: #f5f8fc; --ink: #0f2137; --muted: #61738a; --blue: #1d6fe0; --blue-l: #e6f0ff; --mint: #0b8a70; --line: #e2e9f2; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -158,6 +160,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <div class="top">
     <div class="container">
       <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Кирочная ул., 24 · м. Чернышевская</span>
@@ -176,6 +179,7 @@
       <a href="#book" class="btn">Записаться</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="container hero__grid">
@@ -220,7 +224,7 @@
     <div class="container">
       <h2>Услуги и цены</h2>
       <p class="muted">Цены фиксируем в плане лечения, и они не меняются по ходу работы.</p>
-      <div class="tabs" id="tabs"></div>
+      <div class="tabs" id="tabs" role="group" aria-label="Направления"></div>
       <div class="prices" id="prices-list"></div>
     </div>
   </section>
@@ -291,6 +295,7 @@
     </div>
   </dialog>
 
+  </main>
   <footer>
     <div class="container foot">
       <span>© Стоматология «Белая линия»</span>
@@ -389,11 +394,11 @@
     };
     const tabs = $("tabs");
     function showPrices(cat) {
-      tabs.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.cat === cat));
+      tabs.querySelectorAll(".tab").forEach(t => { t.classList.toggle("active", t.dataset.cat === cat); t.setAttribute("aria-pressed", t.dataset.cat === cat); });
       $("prices-list").innerHTML = prices[cat].map(([n, d, p], i) =>
         `<div class="prow" style="animation-delay:${i * 50}ms"><div>${n}${d ? `<small>${d}</small>` : ""}</div><b>${p}</b></div>`).join("");
     }
-    tabs.innerHTML = Object.keys(prices).map(c => `<button class="tab" data-cat="${c}">${c}</button>`).join("");
+    tabs.innerHTML = Object.keys(prices).map(c => `<button class="tab" type="button" data-cat="${c}" aria-pressed="false">${c}</button>`).join("");
     tabs.addEventListener("click", e => e.target.dataset.cat && showPrices(e.target.dataset.cat));
     showPrices("Лечение");
 

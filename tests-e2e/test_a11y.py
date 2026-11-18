@@ -1,4 +1,4 @@
-"""Доступность: axe-core на всех страницах (A11Y-001 — контраст текста)."""
+"""Доступность: axe-core на всех страницах — контраст (A11Y-001) и все нарушения уровня serious и critical (A11Y-004)."""
 
 import json
 
@@ -34,3 +34,19 @@ def audit(page, site, path):
 def test_color_contrast(page, site, path):
     problems = serious(audit(page, site, path), {"color-contrast"})
     assert not problems, "\n".join(problems)
+
+
+@pytest.mark.parametrize("path", PAGES)
+def test_no_serious_violations(page, site, path):
+    problems = serious(audit(page, site, path))
+    assert not problems, "\n".join(problems)
+
+
+@pytest.mark.parametrize("slug", DEMOS)
+def test_skip_link_and_main(page, site, slug):
+    page.goto(f"{site}/projects/{slug}/")
+    page.keyboard.press("Tab")
+    skip = page.locator("a.skip")
+    assert page.evaluate("() => document.activeElement.classList.contains('skip')")
+    target = skip.get_attribute("href")
+    assert page.locator(f"main{target}").count() == 1

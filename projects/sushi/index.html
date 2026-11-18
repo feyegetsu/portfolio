@@ -17,6 +17,9 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --washi: #f5f0e6; --paper: #fbf8f2; --ink: #17140f; --muted: #6e665b; --red: #c8352b; --red-d: #a8281f; --line: #e5dccb; --gold: #b28a45; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -182,6 +185,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span class="hanko">海</span>Кайсэн</a>
@@ -190,6 +194,7 @@
       <button class="cart-btn" id="cartBtn" aria-label="Корзина"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L22 7H6"/></svg> <span id="cartSum">Корзина</span><i id="cartCount">0</i></button>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero" style="padding-bottom:40px" id="delivery">
     <div class="hero__kanji" aria-hidden="true">海鮮</div>
@@ -242,6 +247,7 @@
     </div>
   </section>
 
+  </main>
   <footer><div class="container foot"><span>© Кайсэн · Большой пр. П. С., 31</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>    <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
 

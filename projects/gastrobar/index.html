@@ -17,6 +17,9 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@800;900&family=Amatic+SC:wght@700&family=Fira+Sans:wght@400;500;700&family=Fira+Sans+Condensed:wght@600;800&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: dark only; }
     :root { --coal: #17171a; --coal-2: #202024; --board: #263029; --mustard: #e8ab2a; --brick: #c8532f; --cream: #f3ead8; --muted: #a9a294; --line: #33333a; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,6 +184,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo">СОЛЬ <span>&amp;</span> СОЛОД</a>
@@ -188,6 +192,7 @@
       <a href="#book" class="btn">Стол</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="container hero__grid">
@@ -278,6 +283,7 @@
     </div>
   </section>
 
+  </main>
   <footer><div class="container foot"><span>© Гастробар «Соль и Солод» · 18+</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div>    <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <div class="toast" id="toast" role="status"></div>

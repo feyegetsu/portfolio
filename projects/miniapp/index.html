@@ -14,6 +14,9 @@
   <script src="../shared/kit.js"></script>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     /* Цвета берутся из темы Telegram (переменные --tg-theme-* выставляет SDK), в браузере работают запасные значения */
     :root {
       --bg: var(--tg-theme-bg-color, #ffffff);
@@ -87,7 +90,7 @@
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px; }
     .card { background: var(--bg); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; animation: up .35s both; }
     @keyframes up { from { opacity: 0; transform: translateY(10px); } }
-    .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; }
+    .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; display: block; width: 100%; padding: 0; border: 0; cursor: pointer; }
     .card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .card:active .card__img img { transform: scale(.97); }
     .card--off .card__img img { filter: grayscale(1); opacity: .5; }
@@ -209,6 +212,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#view">К содержимому</a>
   <div class="stage">
     <div class="intro">
       <a class="back-link" href="../../">← Вернуться в портфолио</a>
@@ -380,7 +384,7 @@
           : `<div class="counter"><button data-minus="${it.id}" aria-label="Убрать">−</button>${q}<button data-plus="${it.id}" aria-label="Добавить">+</button></div>`)
         : `<button class="add" data-${it.sizes ? "open" : "plus"}="${it.id}">${it.sizes ? "от " : ""}${rub(it.price + (it.sizes ? SIZES[0][1] : 0))}</button>`;
       return `<article class="card">
-        <div class="card__img" data-open="${it.id}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img width="400" height="267" loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+        <button type="button" class="card__img" data-open="${it.id}" aria-label="Подробнее: ${it.name}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img width="400" height="267" loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></button>
         <div class="card__b"><b>${it.name}</b><small>${it.w}</small>${control}</div>
       </article>`;
     }

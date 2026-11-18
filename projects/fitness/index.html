@@ -17,6 +17,8 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
     :root { color-scheme: dark only; }
     :root { --bg: #08090b; --card: #121418; --line: #22252c; --lime: #c6ff3d; --text: #f3f4f6; --muted: #8b919c; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,6 +183,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo">PUL<span>S</span>E</a>
@@ -188,6 +191,7 @@
       <a href="#trial" class="btn">Пробная бесплатно</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="hero__poster">
@@ -273,6 +277,7 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© PULSE Fitness · Московский пр., 97</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
       <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>

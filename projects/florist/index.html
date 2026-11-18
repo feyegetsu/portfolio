@@ -16,6 +16,9 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional"></noscript>
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root {
       --bg: #fdf8f5; --ink: #2d2226; --muted: #6f6065; --rose: #c2485d; --rose-d: #a63a4e;
@@ -168,6 +171,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
 
   <header>
     <div class="container head">
@@ -180,6 +184,7 @@
       <button class="cart-btn" id="cartBtn">Корзина <b id="cartCount">0</b></button>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="container hero__grid">
@@ -250,6 +255,7 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot">
       <span>© Пион &amp; Ко · Цветочная мастерская</span>

@@ -14,6 +14,9 @@ h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; margin: 0 0 .5em;
 p { margin: 0 0 1em; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Ссылка «к содержимому»: видна только при переходе с клавиатуры */
+.skip { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font-weight: 600; text-decoration: none; }
+.skip:focus { top: 12px; }
 
 .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 20px; }
 .section { padding: 88px 0; }
