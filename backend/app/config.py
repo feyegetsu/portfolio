@@ -41,6 +41,12 @@ class Settings:
     # Попытки входа: после стольких ошибок e-mail с этого IP блокируется на окно
     login_attempts: int = int(os.getenv("LOGIN_ATTEMPTS", "5"))
     login_window_seconds: int = int(os.getenv("LOGIN_WINDOW_SECONDS", "900"))
+    # Неудачные входы на один аккаунт со всех IP: распределённый перебор упирается в этот лимит
+    login_account_attempts: int = int(os.getenv("LOGIN_ACCOUNT_ATTEMPTS", "20"))
+    login_account_window_seconds: int = int(os.getenv("LOGIN_ACCOUNT_WINDOW_SECONDS", "3600"))
+    # Неудачные входы с одного IP на любые e-mail: перебор адресов
+    login_ip_attempts: int = int(os.getenv("LOGIN_IP_ATTEMPTS", "50"))
+    login_ip_window_seconds: int = int(os.getenv("LOGIN_IP_WINDOW_SECONDS", "900"))
     # Максимальный размер тела запроса: формы и заказы укладываются с огромным запасом
     max_body_bytes: int = int(os.getenv("MAX_BODY_BYTES", "65536"))
     # Сколько доверенных прокси стоит перед API (балансировщик хостинга, nginx). Реальный IP посетителя —
