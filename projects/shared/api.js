@@ -196,7 +196,16 @@
         try { sessionStorage.setItem(tokenKey, r.access_token); } catch {}
         return this.me();
       },
-      logout() { try { sessionStorage.removeItem(tokenKey); } catch {} },
+      // Выход гасит токен и на сервере: украденная копия тоже перестаёт действовать
+      async logout() {
+        if (token()) await req("POST", "/api/v1/auth/logout").catch(() => {});
+        try { sessionStorage.removeItem(tokenKey); } catch {}
+      },
+      async changePassword(current, next) {
+        const r = await req("POST", "/api/v1/auth/password", { current_password: current, new_password: next });
+        try { sessionStorage.setItem(tokenKey, r.access_token); } catch {}
+        return null;
+      },
       me: () => (token() ? req("GET", "/api/v1/auth/me") : Promise.resolve(null)),
       admin: {
         leads: (f) => req("GET", `/api/v1/admin/leads${qs(f)}`),
@@ -416,7 +425,17 @@
         store.set(SESSION, String(u.id));
         return publicUser(u);
       }),
-      logout() { store.del(SESSION); },
+      async logout() { store.del(SESSION); },
+      changePassword: (current, next) => later(() => {
+        const u = requireUser();
+        if (String(next || "").length < 8) throw new ApiError("Новый пароль — от 8 символов", 422);
+        const db = load();
+        const me = db.users.find((x) => x.id === u.id);
+        if (me.password !== current) throw new ApiError("Текущий пароль указан неверно", 403);
+        me.password = next;
+        save(db);
+        return null;
+      }),
       me: () => later(() => { const u = user(); return u ? publicUser(u) : null; }),
 
       admin: {

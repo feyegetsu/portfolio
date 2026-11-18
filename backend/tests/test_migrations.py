@@ -55,3 +55,18 @@ def test_sqlite_refused_in_production():
         check_secrets(prod)
     check_secrets(replace(prod, allow_sqlite=True))
     check_secrets(replace(prod, database_url="postgresql+psycopg://u:p@h/db"))
+
+
+def test_sqlite_tables_get_autoincrement_on_upgrade(engine):
+    # SEC-002: старые таблицы SQLite пересоздаются с AUTOINCREMENT, индексы и данные сохраняются
+    migrate.upgrade(engine, migrate.BASELINE)
+    with engine.begin() as conn:
+        conn.execute(text("insert into catalog (site, ref, name, category, price, active) values ('sushi', 's1', 'Сет', '', 1, 1)"))
+    migrate.upgrade(engine)
+    with engine.connect() as conn:
+        ddl = {n: s for n, s in conn.execute(text("select name, sql from sqlite_master where type = 'table'"))}
+        assert conn.execute(text("select name from catalog")).scalar() == "Сет"
+        indexes = {i["name"] for i in inspect(conn).get_indexes("catalog")}
+    for table in ("users", "leads", "bookings", "orders", "catalog"):
+        assert "AUTOINCREMENT" in ddl[table], table
+    assert "ix_catalog_site" in indexes

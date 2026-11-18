@@ -180,6 +180,11 @@ class LoginIn(BaseModel):
     password: Annotated[str, Field(min_length=1, max_length=200)]
 
 
+class PasswordIn(BaseModel):
+    current_password: Annotated[str, Field(min_length=1, max_length=200)]
+    new_password: Annotated[str, Field(min_length=8, max_length=200)]
+
+
 class TokenOut(BaseModel):
     access_token: str
     token_type: str = "bearer"

@@ -31,9 +31,9 @@ def get_site(site: str) -> Site:
 
 
 def current_user(db: DB, creds: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]) -> User:
-    user_id = decode_token(creds.credentials) if creds else None
-    user = db.get(User, user_id) if user_id else None
-    if not user:
+    claims = decode_token(creds.credentials) if creds else None
+    user = db.get(User, claims[0]) if claims else None
+    if not user or user.token_version != claims[1]:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Нужно войти", headers={"WWW-Authenticate": "Bearer"})
     return user
 

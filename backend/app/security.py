@@ -35,15 +35,20 @@ def verify_password(password: str, stored: str) -> bool:
 DUMMY_HASH = hash_password(secrets.token_urlsafe(16))
 
 
-def create_token(user_id: int) -> str:
+def create_token(user_id: int, version: int) -> str:
+    """Токен знает id и версию пользователя: после выхода или смены пароля версия растёт, и старый токен гаснет."""
     now = utcnow()
-    payload = {"sub": str(user_id), "iat": now, "exp": now + timedelta(minutes=settings.token_ttl_minutes)}
+    payload = {"sub": str(user_id), "ver": version, "iat": now, "exp": now + timedelta(minutes=settings.token_ttl_minutes)}
     return jwt.encode(payload, settings.secret_key, algorithm="HS256")
 
 
-def decode_token(token: str) -> int | None:
+def decode_token(token: str) -> tuple[int, int] | None:
+    """(id, версия) из подписанного токена; None — подпись неверна, срок истёк или токен старого формата."""
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=["HS256"])
-        return int(payload["sub"])
+        payload = jwt.decode(token, settings.secret_key, algorithms=["HS256"], options={"require": ["sub", "ver", "exp"]})
+        version = payload["ver"]
+        if not isinstance(version, int):
+            return None
+        return int(payload["sub"]), version
     except (jwt.PyJWTError, KeyError, ValueError):
         return None

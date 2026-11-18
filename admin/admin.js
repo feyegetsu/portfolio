@@ -95,10 +95,12 @@
     orders: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>',
     catalog: '<path d="M4 6h16M4 12h16M4 18h10"/>',
     team: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M22 21a6 6 0 0 0-4-5.6"/>',
+    profile: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
   };
   const VIEWS = [
     ["overview", "Обзор", "staff"], ["leads", "Заявки", "staff"], ["bookings", "Записи", "staff"],
     ["orders", "Заказы", "staff"], ["catalog", "Каталог", "admin"], ["team", "Команда", "owner"],
+    ["profile", "Пароль", "staff"],
   ];
   const can = (role) => ROLE_LEVEL[state.user.role] >= ROLE_LEVEL[role];
   const mySites = () => (state.user.sites === null ? api.SITES.map((s) => s.slug) : state.user.sites);
@@ -146,7 +148,7 @@
     });
     $("viewTitle").textContent = VIEWS.find(([id]) => id === state.view)[1];
     try {
-      await ({ overview, leads, bookings, orders, catalog, team })[state.view]();
+      await ({ overview, leads, bookings, orders, catalog, team, profile })[state.view]();
     } catch (e) {
       if (e.status === 401) return logout();
       $("content").innerHTML = `<div class="empty">Не удалось загрузить: ${esc(e.message)}</div>`;
@@ -352,6 +354,24 @@
       const sites = [...f.querySelectorAll('[data-us][aria-pressed="true"]')].map((b) => b.dataset.us);
       await run(() => api.admin.addUser({ name: f.name.value, email: f.email.value, password: f.password.value, role: f.role.value, sites: sites.length ? sites : null }), "Сотрудник добавлен");
       team();
+    };
+  }
+
+  // ---------- Свой пароль ----------
+  function profile() {
+    $("content").innerHTML = `
+      <form class="panel" id="passwordForm" style="display:grid;gap:12px;max-width:420px">
+        <h2>Сменить пароль</h2>
+        <input name="current" type="password" autocomplete="current-password" placeholder="Текущий пароль" required aria-label="Текущий пароль">
+        <input name="next" type="password" autocomplete="new-password" minlength="8" placeholder="Новый пароль от 8 символов" required aria-label="Новый пароль">
+        <div><button class="btn btn--primary">Сменить</button></div>
+        <small class="muted">После смены пароля и после выхода все прежние входы на других устройствах перестают действовать.</small>
+      </form>`;
+    $("passwordForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      await run(() => api.changePassword(f.current.value, f.next.value), "Пароль изменён");
+      f.reset();
     };
   }
 

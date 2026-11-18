@@ -32,7 +32,7 @@ class Settings:
     # Общий счётчик лимитов для нескольких копий API. Пусто — счётчик в памяти процесса
     redis_url: str = os.getenv("REDIS_URL", "")
     secret_key: str = os.getenv("SECRET_KEY", DEV_SECRET)
-    token_ttl_minutes: int = int(os.getenv("TOKEN_TTL_MINUTES", "720"))
+    token_ttl_minutes: int = int(os.getenv("TOKEN_TTL_MINUTES", "120"))
     # Пусто — домен портфолио, а в разработке ещё и локальный сервер (см. __post_init__)
     cors_origins: list[str] = field(default_factory=lambda: _list(os.getenv("CORS_ORIGINS", "")))
     # Сколько публичных заявок разрешено с одного IP за окно
