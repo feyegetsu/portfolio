@@ -2,7 +2,7 @@
 
     python tools/build.py [папка, по умолчанию _site] [--no-prerender] [--no-minify]
 
-1. Копия сайта без бэкенда и служебных файлов.
+1. Копия сайта по белому списку: только страницы, стили, скрипты и картинки, без бэкенда и служебных файлов.
 2. Пререндер. То, что JavaScript дорисовывает в пустые контейнеры (меню, цены, карточки), записывается
    прямо в HTML: поисковик и браузер без JavaScript видят содержимое. Затем каждая страница открывается
    ещё раз, и контейнер откатывается, если скрипт его не перерисовал (кнопки остались бы без обработчиков),
@@ -27,9 +27,14 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", ".github", "backend", "tools", "node_modules", "_site", ".lh", "__pycache__", "_template"}
-SKIP_FILES = {"render.yaml", ".gitignore", ".gitattributes"}
-SKIP_SUFFIXES = {".md", ".py", ".pyc", ".toml"}
+# Белый список: на Pages уходит только то, что нужно сайту. Любой новый файл или папка в корне
+# (архивы, кеши инструментов, локальные настройки) по умолчанию не публикуется
+ROOT_FILES = ("index.html", "404.html", "privacy.html", "styles.css", "script.js", "theme.js", "favicon.svg",
+              "manifest.webmanifest", "robots.txt", "sitemap.xml")
+ROOT_DIRS = ("assets", "admin", "projects")
+# Внутри разрешённых папок: исходники бота, шаблон нового демо, реестр демо и описания для GitHub
+SKIP_IN_DIRS = {"cafe-bot", "_template", "demos.json", "__pycache__", "node_modules"}
+SKIP_SUFFIXES = {".md", ".py", ".pyc", ".toml", ".zip"}
 ESBUILD = "esbuild@0.24.0"
 
 # ---------- 1. Копия ----------
@@ -38,15 +43,15 @@ ESBUILD = "esbuild@0.24.0"
 def copy_site(out: Path) -> None:
     if out.exists():
         shutil.rmtree(out)
+    out.mkdir(parents=True)
 
     def ignore(folder: str, names: list[str]) -> set[str]:
-        rel = Path(folder).resolve().relative_to(ROOT)
-        skip = {n for n in names if n in SKIP_DIRS or n in SKIP_FILES or Path(n).suffix in SKIP_SUFFIXES}
-        if rel == Path("projects"):
-            skip.add("cafe-bot")  # исходники бота на Python, сайт ссылается на них в GitHub
-        return skip
+        return {n for n in names if n in SKIP_IN_DIRS or n.startswith(".") or Path(n).suffix in SKIP_SUFFIXES}
 
-    shutil.copytree(ROOT, out, ignore=ignore)
+    for name in ROOT_FILES:
+        shutil.copy2(ROOT / name, out / name)
+    for name in ROOT_DIRS:
+        shutil.copytree(ROOT / name, out / name, ignore=ignore)
     (out / ".nojekyll").write_text("")
 
 

@@ -70,6 +70,9 @@ jobs:
         run: python tools/demos.py check
       - name: Lint tools
         run: pip install ruff==0.6.9 && ruff check --select E,F,W,B,UP --ignore E501 tools
+      # На Pages уходит только белый список файлов: без архивов, кешей и бэкенда
+      - name: Build contents
+        run: pip install pytest && pytest -q tools/test_build.py
 
   links:
     name: Битые ссылки
@@ -81,4 +84,14 @@ jobs:
           # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages.
           # assets/ генерирует воркфлоу Assets после пуша, поэтому эти файлы здесь не проверяем.
           args: --offline --no-progress --exclude-path 404.html --exclude '^data:' --exclude 'assets/' './**/*.html'
+          fail: true
+      # Собранный сайт: файл, забытый в белом списке сборки, даст здесь битую ссылку
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build site without prerender
+        run: python tools/build.py _site --no-prerender --no-minify
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress --root-dir "${{ github.workspace }}/_site" --exclude-path _site/404.html --exclude '^data:' --exclude 'assets/' '_site/**/*.html'
           fail: true
