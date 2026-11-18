@@ -282,6 +282,8 @@
       { ref: "s17", cat: "Горячее", name: "Якитори", desc: "Шашлычки из бедра курицы в соусе тарэ", meta: "4 шт · 200 г", photo: "1588767768106-1b20e51d9d68", price: 450 },
     ];
     const byRef = Object.fromEntries(MENU.map((m) => [m.ref, m]));
+    // Названия и разделы могут прийти из админки (каталог API): в HTML — только экранированными
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     // ---------- Зоны доставки ----------
     const ZONES = [["Центральный", 35], ["Петроградский", 40], ["Василеостровский", 45], ["Московский", 50], ["Приморский", 60], ["Пушкин", 80]];
@@ -311,20 +313,22 @@
     }
 
     // ---------- Меню ----------
-    $("cats").innerHTML = CATS.map((c, i) => `<button class="cat" data-cat="${i}" aria-pressed="${!i}">${c}</button>`).join("");
+    const renderCats = () => { $("cats").innerHTML = CATS.map((c, i) => `<button class="cat" data-cat="${i}" aria-pressed="${!i}">${esc(c)}</button>`).join(""); };
+    renderCats();
     function card(m) {
       const q = state.cart[m.ref] || 0;
       const control = m.off ? `<button class="add" disabled>Закончилось</button>`
         : q ? `<div class="qty"><button data-dec="${m.ref}" aria-label="Убрать">−</button><span>${q}</span><button data-inc="${m.ref}" aria-label="Добавить">+</button></div>`
         : `<button class="add" data-inc="${m.ref}">В корзину</button>`;
       return `<article class="item${m.off ? " item--off" : ""}">
-        <div class="item__ph"><img loading="lazy" src="${ph(m.photo)}" alt="${m.name}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
-        <div class="item__b"><h3>${m.name}</h3><span class="item__meta">${m.meta}</span><p>${m.desc}</p>
+        <div class="item__ph"><img loading="lazy" src="${ph(m.photo)}" alt="${esc(m.name)}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
+        <div class="item__b"><h3>${esc(m.name)}</h3><span class="item__meta">${esc(m.meta)}</span><p>${esc(m.desc)}</p>
           <div class="item__foot"><span class="price">${rub(m.price)}</span>${control}</div></div></article>`;
     }
     function renderMenu() {
-      $("menuBody").innerHTML = CATS.map((c, i) => `<h3 class="sec-title" id="cat-${i}"><span style="font-size:1.5rem">${c}</span><small>${MENU.filter((m) => m.cat === c).length}</small></h3>
-        <div class="grid">${MENU.filter((m) => m.cat === c).map(card).join("")}</div>`).join("");
+      const shown = MENU.filter((m) => !m.gone);
+      $("menuBody").innerHTML = CATS.map((c, i) => `<h3 class="sec-title" id="cat-${i}"><span style="font-size:1.5rem">${esc(c)}</span><small>${shown.filter((m) => m.cat === c).length}</small></h3>
+        <div class="grid">${shown.filter((m) => m.cat === c).map(card).join("")}</div>`).join("");
     }
     document.addEventListener("click", (e) => {
       const t = e.target.closest("[data-inc],[data-dec]");
@@ -353,9 +357,26 @@
     }, { passive: true });
 
     // Цены и стоп-лист из каталога: администратор меняет их в админке
+    // Меню — из каталога: название, раздел, цена и наличие. Фото и описание — из словаря по ref, у позиции,
+    // добавленной в админке, их нет: берём фото раздела. Удалённое в админке с витрины пропадает
     PortfolioAPI.catalog("sushi").then((items) => {
-      for (const c of items) if (byRef[c.ref] && Number.isInteger(c.price)) { byRef[c.ref].price = c.price; byRef[c.ref].off = !c.active; }
-      for (const ref of Object.keys(state.cart)) if (byRef[ref] && byRef[ref].off) delete state.cart[ref];
+      const known = new Set();
+      for (const c of items) {
+        if (!Number.isInteger(c.price)) continue;
+        let m = byRef[c.ref];
+        if (!m) {
+          const cat = String(c.category || "").trim() || "Новинки";
+          m = { ref: c.ref, cat, desc: "", meta: "", photo: (MENU.find((x) => x.cat === cat) || MENU[0]).photo };
+          MENU.push(m);
+          byRef[c.ref] = m;
+          if (!CATS.includes(cat)) CATS.push(cat);
+        }
+        Object.assign(m, { name: c.name, price: c.price, off: !c.active, gone: false });
+        known.add(c.ref);
+      }
+      for (const m of MENU) if (!known.has(m.ref)) m.gone = true;
+      renderCats();
+      for (const ref of Object.keys(state.cart)) if (!byRef[ref] || byRef[ref].off || byRef[ref].gone) delete state.cart[ref];
       renderMenu();
       renderCart();
     }).catch(() => {});
@@ -384,7 +405,7 @@
       const sub = subtotal();
       const left = Math.max(0, FREE_FROM - sub);
       $("drawerBody").innerHTML = `
-        ${ls.map((l) => `<div class="line"><img src="${ph(l.photo, 120)}" alt=""><div><b>${l.name}</b><small>${rub(l.price)} · ${l.meta}</small></div>
+        ${ls.map((l) => `<div class="line"><img src="${ph(l.photo, 120)}" alt=""><div><b>${esc(l.name)}</b><small>${rub(l.price)} · ${esc(l.meta)}</small></div>
           <div class="qty"><button data-dec="${l.ref}" aria-label="Убрать">−</button><span>${l.qty}</span><button data-inc="${l.ref}" aria-label="Добавить">+</button></div></div>`).join("")}
         <div class="sticks"><span>🥢 Палочки, персон</span><div class="qty"><button id="stMinus" aria-label="Меньше">−</button><span>${state.sticks}</span><button id="stPlus" aria-label="Больше">+</button></div></div>
         ${state.mode === "delivery" ? `<div class="free">${left ? `Ещё <b>${rub(left)}</b> до бесплатной доставки` : "🎉 Доставка бесплатная"}<i style="--w:${Math.min(100, (sub / FREE_FROM) * 100)}%"></i></div>` : ""}

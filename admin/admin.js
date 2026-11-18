@@ -344,10 +344,10 @@
     const site = sites.includes(state.site) ? state.site : sites[0];
     const items = await api.admin.catalog({ site });
     $("content").innerHTML = `
-      <div class="notice">Изменения сразу видны на сайте: смените цену или выключите блюдо и откройте <a href="../projects/miniapp/" target="_blank" rel="noopener" style="text-decoration:underline">Mini App</a>.</div>
-      <form class="add-form panel" id="addItem"><input name="name" placeholder="Название" required aria-label="Название">
+      <div class="notice">Изменения сразу видны на сайте: смените цену или выключите позицию и откройте <a href="../projects/${site}/" target="_blank" rel="noopener" style="text-decoration:underline">${esc(SITE_NAME[site])}</a>.${site === "miniapp" ? " У блюд Mini App есть размеры и добавки, поэтому новые блюда добавляются в коде витрины, а здесь — цена и стоп-лист." : " Новая позиция появится на витрине в своём разделе."}</div>
+      ${site === "miniapp" ? "" : `<form class="add-form panel" id="addItem"><input name="name" placeholder="Название" required aria-label="Название">
         <input name="category" placeholder="Категория" aria-label="Категория"><input name="price" type="number" min="1" step="1" placeholder="Цена" required aria-label="Цена">
-        <button class="btn btn--primary">Добавить</button></form>
+        <button class="btn btn--primary">Добавить</button></form>`}
       <div class="table-wrap"><table class="cards"><thead><tr><th>Позиция</th><th>Категория</th><th>Цена, ₽</th><th class="center">В продаже</th><th></th></tr></thead>
       <tbody>${items.map((c) => `<tr>
         <td class="wide"><b>${esc(c.name)}</b><small>${siteTag(c.site)}</small></td><td data-label="Категория">${esc(c.category)}</td>
@@ -355,7 +355,7 @@
         <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${num(c.id)}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
         <td class="actions"><button class="btn btn--sm btn--danger" data-del="${num(c.id)}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
       </tr>`).join("")}</tbody></table></div>`;
-    $("addItem").onsubmit = async (e) => {
+    if ($("addItem")) $("addItem").onsubmit = async (e) => {
       e.preventDefault();
       const f = e.target;
       await run(() => api.admin.addCatalog(site, { ref: `custom-${Date.now()}`, name: f.name.value, category: f.category.value, price: Number(f.price.value) }), "Позиция добавлена");

@@ -309,8 +309,13 @@
     let filter = "Все";
 
     const $ = id => document.getElementById(id);
-    const cats = ["Все", ...new Set(products.map(p => p.cat))];
-    $("filters").innerHTML = cats.map(c => `<button class="chip${c === filter ? " active" : ""}" data-cat="${c}">${c}</button>`).join("");
+    // Названия и разделы могут прийти из админки (каталог API): в HTML — только экранированными
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const renderFilters = () => {
+      const cats = ["Все", ...new Set(products.filter(p => !p.gone).map(p => p.cat))];
+      $("filters").innerHTML = cats.map(c => `<button class="chip${c === filter ? " active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+    };
+    renderFilters();
     $("filters").addEventListener("click", e => {
       const b = e.target.closest(".chip"); if (!b) return;
       filter = b.dataset.cat;
@@ -321,17 +326,17 @@
 
     function renderGrid() {
       const sort = $("sort").value;
-      const list = products.filter(p => filter === "Все" || p.cat === filter)
+      const list = products.filter(p => !p.gone && (filter === "Все" || p.cat === filter))
         .sort((a, b) => sort === "asc" ? a.price - b.price : sort === "desc" ? b.price - a.price : b.pop - a.pop);
       $("grid").innerHTML = list.map((p, i) => `
         <article class="product" style="animation-delay:${i * 40}ms">
-          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${p.name}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
+          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${esc(p.name)}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
           <div class="product__body">
-            <h3>${p.name}</h3>
-            <p>${p.desc}</p>
+            <h3>${esc(p.name)}</h3>
+            <p>${esc(p.desc)}</p>
             <div class="product__foot">
               <span class="price">${rub(p.price)}${p.old ? `<s>${rub(p.old)}</s>` : ""}</span>
-              ${p.off ? "" : `<button class="add" data-id="${p.id}" aria-label="В корзину: ${p.name}">+</button>`}
+              ${p.off ? "" : `<button class="add" data-id="${p.id}" aria-label="В корзину: ${esc(p.name)}">+</button>`}
             </div>
           </div>
         </article>`).join("");
@@ -360,7 +365,7 @@
       $("cartBody").innerHTML = lines.map(l => `
         <div class="line">
           <div class="line__img" style="background:${l.bg}"><img src="${ph(l.photo, 160)}" alt=""></div>
-          <div class="line__info"><b>${l.name}</b>
+          <div class="line__info"><b>${esc(l.name)}</b>
             <div class="qty"><button data-d="-1" data-id="${l.id}" aria-label="Меньше">−</button>${l.q}<button data-d="1" data-id="${l.id}" aria-label="Больше">+</button></div>
           </div>
           <b>${rub(l.q * l.price)}</b>
@@ -430,11 +435,23 @@
     // Цены и наличие из каталога: флорист меняет их в админке, витрина подхватывает
     function syncCatalog() {
       return PortfolioAPI.catalog("florist").then((list) => {
+        // Витрина — из каталога: новое из админки появляется (фото — от букета того же раздела), удалённое пропадает
+        const known = new Set();
         for (const c of list) {
-          const p = products.find((x) => String(x.id) === c.ref);
-          if (p && Number.isInteger(c.price)) { p.price = c.price; p.off = !c.active; }
+          if (!Number.isInteger(c.price)) continue;
+          let p = products.find((x) => String(x.id) === c.ref);
+          if (!p) {
+            const cat = String(c.category || "").trim() || "Новинки";
+            const like = products.find((x) => x.cat === cat) || products[0];
+            p = { id: c.ref, cat, desc: "", photo: like.photo, bg: like.bg, pop: 0 };
+            products.push(p);
+          }
+          Object.assign(p, { name: c.name, price: c.price, off: !c.active, gone: false });
+          known.add(String(p.id));
         }
-        for (const id of Object.keys(cart)) if (products.find((x) => x.id == id)?.off) delete cart[id];
+        for (const p of products) if (!known.has(String(p.id))) p.gone = true;
+        for (const id of Object.keys(cart)) { const p = products.find((x) => x.id == id); if (!p || p.off || p.gone) delete cart[id]; }
+        renderFilters();
         save();
         renderGrid(); renderCart();
       }).catch(() => {});

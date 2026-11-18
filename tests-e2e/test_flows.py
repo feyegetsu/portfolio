@@ -1,6 +1,7 @@
 """Базовые сценарии: заявка, запись, заказ и каталог проходят от сайта до админки (демо-режим и настоящий API)."""
 
 import json
+import re
 import urllib.parse
 import urllib.request
 
@@ -82,3 +83,23 @@ def test_remote_mode_lead_reaches_real_api(page, site, api, errors):
     leads = json.load(urllib.request.urlopen(urllib.request.Request(
         f"{api}/api/v1/admin/leads?q={urllib.parse.quote('удалённая')}", headers={"Authorization": f"Bearer {token}"})))
     assert leads["total"] == 1
+
+
+def test_item_added_in_admin_appears_on_storefront(page, site, errors):
+    # BUG-011: форма «Добавить» в админке раньше ничего не меняла на витрине
+    page.goto(f"{site}/projects/sushi/")
+    demo_login(page, site)
+    page.evaluate("""async () => {
+        await PortfolioAPI.admin.addCatalog('sushi', { ref: 'custom-1', name: 'Ролл <b>Е2Е</b>', category: 'Роллы', price: 555 });
+        await PortfolioAPI.admin.addCatalog('florist', { ref: 'custom-2', name: 'Букет Е2Е', category: 'Сезонные', price: 4321 });
+        const s4 = (await PortfolioAPI.admin.catalog({ site: 'sushi' })).find((c) => c.ref === 's4');
+        await PortfolioAPI.admin.deleteCatalog(s4.id);
+    }""")
+    page.reload()
+    expect(page.locator("#menuBody")).to_contain_text("Ролл <b>Е2Е</b>")  # название — текстом, без разметки
+    expect(page.locator("#menuBody")).to_contain_text("555")
+    expect(page.locator("#menuBody h3", has_text=re.compile("^Филадельфия$"))).to_have_count(0)  # удалённое пропало
+    page.locator("[data-inc='custom-1']").click()
+    page.goto(f"{site}/projects/florist/")
+    expect(page.locator("#grid")).to_contain_text("Букет Е2Е")
+    expect(page.locator("#filters")).to_contain_text("Сезонные")
