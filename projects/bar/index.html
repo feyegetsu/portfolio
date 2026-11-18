@@ -311,7 +311,7 @@
       $("knock").classList.remove("hit"); void $("knock").offsetWidth; $("knock").classList.add("hit");
       if (knocks < 3) { $("knockHint").textContent = `${"тук ".repeat(knocks).trim()}…`; return; }
       $("knockHint").textContent = "Дверь приоткрылась";
-      $("password").textContent = `«${PASSWORDS[new Date().getDay()]}»`;
+      $("password").textContent = `«${PASSWORDS[PortfolioAPI.siteNow("bar").getDay()]}»`;
       $("secret").classList.add("on");
       $("knock").disabled = true;
     };
@@ -381,7 +381,7 @@
     // ---------- Вечера недели и гест-лист ----------
     const NIGHTS = { 3: ["Винил по средам", "Резидент приносит пластинки из своей коллекции. Соул и фанк 60-х."], 4: ["Джаз-трио", "Контрабас, рояль и труба. Два сета: 21:00 и 22:30."], 5: ["Пятница до трёх", "Диджей играет диско и хаус, бармены готовят сеты на компанию."], 6: ["Закрытая суббота", "Вход по гест-листу: запишитесь заранее, мест мало."], 0: ["Тихое воскресенье", "Только свечи и классические коктейли. Хорошо для свиданий."] };
     const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-    const upcoming = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; }).filter((d) => NIGHTS[d.getDay()]);
+    const upcoming = [...Array(7)].map((_, i) => new Date(`${PortfolioAPI.siteToday("bar", i)}T12:00:00`)).filter((d) => NIGHTS[d.getDay()]);
     const listed = (() => { try { return JSON.parse(localStorage.getItem("midnight-list")) || []; } catch { return []; } })();
     const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     function renderNights() {

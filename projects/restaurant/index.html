@@ -363,7 +363,7 @@
         ["1563805042-7684c019e1cb", "Шоколад", "облепиха, солёная карамель", "Портвейн Руби"]] },
     };
     const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
-    const m = new Date().getMonth();
+    const m = PortfolioAPI.siteNow("restaurant").getMonth();  // сезон по Москве
     const current = m <= 1 || m === 11 ? "winter" : m <= 4 ? "spring" : m <= 7 ? "summer" : "autumn";
     let season = current;
     const ADJ = { spring: "весенний", summer: "летний", autumn: "осенний", winter: "зимний" };

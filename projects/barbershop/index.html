@@ -455,8 +455,9 @@
     // Ближайшие 7 дней
     const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
     const months = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+    // Дни — по московскому времени салона: у посетителя из другого пояса «сегодня» может быть другим
     const days = [...Array(7)].map((_, i) => {
-      const d = new Date(); d.setDate(d.getDate() + i);
+      const d = new Date(`${PortfolioAPI.siteToday("barbershop", i)}T12:00:00`);
       return { date: d, label: `${d.getDate()} ${months[d.getMonth()]}, ${wd[d.getDay()]}` };
     });
     const hours = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
@@ -492,7 +493,7 @@
     let renderId = 0;
     async function renderTimes(dayIdx) {
       const id = ++renderId;
-      const now = new Date();
+      const now = PortfolioAPI.siteNow("barbershop");
       state.time = null;
       steps[2].querySelector("[data-next]").disabled = true;
       timesEl.innerHTML = "";

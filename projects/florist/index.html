@@ -387,7 +387,7 @@
     $("closeCart").onclick = $("overlay").onclick = () => openCart(false);
     document.addEventListener("keydown", e => e.key === "Escape" && openCart(false));
 
-    $("date").min = $("date").value = new Date().toISOString().split("T")[0];
+    $("date").min = $("date").value = PortfolioAPI.siteToday("florist");  // по Москве, а не по UTC
 
     // В реальном проекте заказ уходит в CRM и Telegram флористу
     // Заказ уходит в API: состав корзины, доставка отдельной строкой, дата и интервал в комментарии
@@ -403,7 +403,7 @@
       try {
         res = await PortfolioAPI.submit(e.target, () => PortfolioAPI.createOrder("florist", {
           items, name: f["name"].value, phone: f["phone"].value, address: f["address"].value, mode: "delivery",
-          comment: `Доставка ${new Date(f["date"].value).toLocaleDateString("ru-RU")}, ${f["slot"].value}`,
+          comment: `Доставка ${new Date(`${f["date"].value}T12:00`).toLocaleDateString("ru-RU")}, ${f["slot"].value}`,
         }));
       } catch (err) {
         if (err.status === 409) syncCatalog();  // букет закончился — обновим витрину

@@ -448,7 +448,7 @@
       ],
     };
 
-    document.getElementById("today").textContent = new Date().toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" });
+    document.getElementById("today").textContent = PortfolioAPI.siteNow("cafe").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" });
 
     const tabs = document.getElementById("tabs");
     const items = document.getElementById("items");
@@ -475,7 +475,7 @@
     render("Кофе");
 
     const date = document.getElementById("date");
-    date.min = date.value = new Date().toISOString().split("T")[0];
+    date.min = date.value = PortfolioAPI.siteToday("cafe");  // по Москве, а не по UTC
 
     // Заявка уходит в API (в демо — в админку в этом же браузере)
     document.getElementById("form").addEventListener("submit", async e => {

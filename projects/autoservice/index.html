@@ -367,7 +367,7 @@
       };
       requestAnimationFrame(step);
     }
-    $("date").min = $("date").value = new Date().toISOString().split("T")[0];
+    $("date").min = $("date").value = PortfolioAPI.siteToday("autoservice");  // по Москве, а не по UTC
     // Запись на ремонт уходит в API вместе с выбранными работами и расчётом
     $("bookForm").addEventListener("submit", async e => {
       e.preventDefault();
@@ -392,7 +392,7 @@
       const no = $("orderNo").value.trim();
       // Демо: этап определяется по номеру заказа
       const cur = no === "1234" ? 3 : [...no].reduce((s, c) => s + c.charCodeAt(0), 0) % stages.length;
-      const base = new Date(); base.setHours(9, 0, 0, 0);
+      const base = PortfolioAPI.siteNow("autoservice"); base.setHours(9, 0, 0, 0);
       $("timeline").innerHTML = `<p style="margin-bottom:18px"><b>Заказ №${no.replace(/[<>&"]/g, "")}</b> · Toyota Camry</p><div class="tl">` + stages.map(([t, d], i) => {
         const time = new Date(base.getTime() + i * 75 * 60000).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
         const cls = i < cur ? "done" : i === cur ? "now" : "";
