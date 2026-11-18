@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 
 DEV_SECRET = "dev-secret-change-me"
 DEV_PASSWORD = "change-me-please"
+PORTFOLIO_ORIGIN = "https://feyegetsu.github.io"
+DEV_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000"]
 
 
 def database_url(url: str) -> str:
@@ -31,9 +33,8 @@ class Settings:
     redis_url: str = os.getenv("REDIS_URL", "")
     secret_key: str = os.getenv("SECRET_KEY", DEV_SECRET)
     token_ttl_minutes: int = int(os.getenv("TOKEN_TTL_MINUTES", "720"))
-    cors_origins: list[str] = field(
-        default_factory=lambda: _list(os.getenv("CORS_ORIGINS", "https://feyegetsu.github.io,http://localhost:8000"))
-    )
+    # Пусто — домен портфолио, а в разработке ещё и локальный сервер (см. __post_init__)
+    cors_origins: list[str] = field(default_factory=lambda: _list(os.getenv("CORS_ORIGINS", "")))
     # Сколько публичных заявок разрешено с одного IP за окно
     rate_limit: int = int(os.getenv("RATE_LIMIT", "20"))
     rate_window_seconds: int = int(os.getenv("RATE_WINDOW_SECONDS", "600"))
@@ -50,6 +51,12 @@ class Settings:
     owner_password: str = os.getenv("OWNER_PASSWORD", DEV_PASSWORD)
     # SQLite в продакшене — почти всегда забытый DATABASE_URL: файл в контейнере пропадёт при следующем деплое
     allow_sqlite: bool = os.getenv("ALLOW_SQLITE", "") == "1"
+
+    def __post_init__(self) -> None:
+        if not self.cors_origins:
+            # localhost только в разработке: в продакшене любая страница на порту 8000 машины админа могла бы звать API
+            origins = [PORTFOLIO_ORIGIN, *(DEV_ORIGINS if self.env == "development" else [])]
+            object.__setattr__(self, "cors_origins", origins)
 
 
 def check_secrets(s: "Settings") -> None:

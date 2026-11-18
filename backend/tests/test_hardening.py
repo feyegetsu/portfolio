@@ -89,3 +89,13 @@ def test_docs_hidden_in_production(env, code):
     from app.main import create_app
     c = TestClient(create_app(replace(settings, env=env)))
     assert [c.get(p).status_code for p in ("/docs", "/redoc", "/openapi.json")] == [code] * 3
+
+
+def test_cors_default_production(monkeypatch):
+    # SEC-012: без CORS_ORIGINS продакшен разрешает только домен портфолио, localhost — только в разработке
+    from app.config import Settings
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    assert Settings(env="production").cors_origins == ["https://feyegetsu.github.io"]
+    assert "http://localhost:8000" in Settings(env="development").cors_origins
+    monkeypatch.setenv("CORS_ORIGINS", "https://a.ru, https://b.ru")
+    assert Settings(env="production").cors_origins == ["https://a.ru", "https://b.ru"]
