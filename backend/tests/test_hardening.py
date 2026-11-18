@@ -99,3 +99,16 @@ def test_cors_default_production(monkeypatch):
     assert "http://localhost:8000" in Settings(env="development").cors_origins
     monkeypatch.setenv("CORS_ORIGINS", "https://a.ru, https://b.ru")
     assert Settings(env="production").cors_origins == ["https://a.ru", "https://b.ru"]
+
+
+def test_extra_fields_rejected(client, owner):
+    # BE-003: опечатка в имени поля (phon) или попытка прислать status не проходят молча
+    assert client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "phone": PHONE, "status": "done"}).status_code == 422
+    assert client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "email": "a@b.ru", "phon": PHONE}).status_code == 422
+    order = {**ORDER, "mode": "pickup", "items": [{"ref": "s1", "qty": 1, "discount": 100}]}
+    assert client.post("/api/v1/sites/sushi/orders", json=order).status_code == 422
+    item = client.get("/api/v1/admin/catalog", params={"site": "sushi"}, headers=owner).json()[0]
+    assert client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json={"site": "cafe"}, headers=owner).status_code == 422
+    # Объявленные поля, которые шлют витрины (название и цена строки для наглядности), по-прежнему принимаются
+    ok = {**ORDER, "mode": "pickup", "items": [{"ref": "s1", "name": "Сет", "qty": 1, "price": 1}], "comment": "", "promo": ""}
+    assert client.post("/api/v1/sites/sushi/orders", json=ok).status_code == 201

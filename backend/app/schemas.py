@@ -29,7 +29,13 @@ def normalize_phone(value: str) -> str:
     return cleaned
 
 
-class Honeypot(BaseModel):
+class Input(BaseModel):
+    """Все входные схемы: неизвестное поле — 422, а не тихая потеря данных из-за опечатки (phon вместо phone)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class Honeypot(Input):
     # Скрытое поле: люди его не видят и не заполняют, а спам-боты заполняют
     website: str = ""
 
@@ -78,7 +84,7 @@ class BookingIn(Honeypot):
         return normalize_phone(v)
 
 
-class OrderItem(BaseModel):
+class OrderItem(Input):
     ref: Annotated[str, Field(min_length=1, max_length=60)]
     name: str = Field("", max_length=200)
     qty: Annotated[int, Field(ge=1, le=99)]
@@ -177,12 +183,12 @@ class Page(BaseModel, Generic[T]):
 
 # ---------- Админка ----------
 
-class LoginIn(BaseModel):
+class LoginIn(Input):
     email: Annotated[str, Field(min_length=3, max_length=200)]
     password: Annotated[str, Field(min_length=1, max_length=200)]
 
 
-class PasswordIn(BaseModel):
+class PasswordIn(Input):
     current_password: Annotated[str, Field(min_length=1, max_length=200)]
     new_password: Annotated[str, Field(min_length=8, max_length=200)]
 
@@ -205,7 +211,7 @@ Password = Annotated[str, Field(min_length=8, max_length=200)]
 Sites = Annotated[list[str] | None, Field(min_length=1)]
 
 
-class UserIn(BaseModel):
+class UserIn(Input):
     email: Annotated[str, Field(min_length=3, max_length=200)]
     name: Name
     password: Password
@@ -221,7 +227,7 @@ class UserIn(BaseModel):
         return v
 
 
-class UserPatch(BaseModel):
+class UserPatch(Input):
     """Правка сотрудника владельцем. Поле sites передаётся явно: null — все сайты, список — только эти."""
 
     name: Name | None = None
@@ -230,19 +236,19 @@ class UserPatch(BaseModel):
     password: Password | None = None
 
 
-class LeadPatch(BaseModel):
+class LeadPatch(Input):
     status: LeadStatus
 
 
-class BookingPatch(BaseModel):
+class BookingPatch(Input):
     status: BookingStatus
 
 
-class OrderPatch(BaseModel):
+class OrderPatch(Input):
     status: OrderStatus
 
 
-class CatalogIn(BaseModel):
+class CatalogIn(Input):
     ref: Annotated[str, Field(min_length=1, max_length=60)]
     name: Annotated[str, Field(min_length=1, max_length=200)]
     category: str = Field("", max_length=60)
@@ -250,7 +256,7 @@ class CatalogIn(BaseModel):
     active: bool = True
 
 
-class CatalogPatch(BaseModel):
+class CatalogPatch(Input):
     name: str | None = Field(None, min_length=1, max_length=200)
     price: int | None = Field(None, ge=1, le=10_000_000)
     active: bool | None = None

@@ -47,6 +47,17 @@
     }
   }
 
+  // Как extra="forbid" на сервере: неизвестное поле — 422, а не тихая потеря данных из-за опечатки
+  const onlyFields = (body, allowed) => {
+    const extra = Object.keys(body || {}).find((k) => !allowed.includes(k));
+    if (extra) throw new ApiError(`Лишнее поле: ${extra}`, 422);
+  };
+  const FIELDS = {
+    lead: ["kind", "name", "phone", "email", "message", "data", "website"],
+    booking: ["resource", "service", "starts_at", "name", "phone", "website"],
+    order: ["items", "name", "phone", "address", "mode", "comment", "promo", "website"],
+    item: ["ref", "name", "qty", "price"],
+  };
   const normalizePhone = (v) => {
     const cleaned = String(v || "").replace(/[^\d+]/g, "");
     if (!/^\+?\d{10,15}$/.test(cleaned)) throw new ApiError("Некорректный номер телефона", 422);
@@ -447,6 +458,7 @@
       base: "",
       createLead: (slug, b) => later(() => {
         site(slug, "leads");
+        onlyFields(b, FIELDS.lead);
         const phone = b.phone ? normalizePhone(b.phone) : "";
         const email = normalizeEmail(b.email);
         if (!phone && !email) throw new ApiError("Укажите телефон или e-mail", 422);
@@ -465,6 +477,7 @@
       }),
       createBooking: (slug, b) => later(() => {
         const s = site(slug, "bookings");
+        onlyFields(b, FIELDS.booking);
         const phone = normalizePhone(b.phone);
         // Пробелы по краям обрезаются до проверки, как StringConstraints на сервере
         const name = String(b.name || "").trim(), resource = String(b.resource || "").trim();
@@ -481,6 +494,8 @@
       }),
       createOrder: (slug, b) => later(() => {
         const s = site(slug, "orders");
+        onlyFields(b, FIELDS.order);
+        (b.items || []).forEach((i) => onlyFields(i, FIELDS.item));
         const phone = normalizePhone(b.phone);
         const name = String(b.name || "").trim();
         if (!name) throw new ApiError("Укажите имя", 422);
