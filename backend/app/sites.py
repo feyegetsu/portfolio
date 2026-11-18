@@ -18,6 +18,10 @@ class Pricing:
     promos: dict[str, int] = field(default_factory=dict)  # промокод → скидка в процентах
 
 
+# Все заведения портфолио в Москве; отчёты по нескольким сайтам (статистика) считаются в этом поясе
+DEFAULT_TZ = "Europe/Moscow"
+
+
 @dataclass(frozen=True)
 class Site:
     slug: str
@@ -29,7 +33,7 @@ class Site:
     catalog: bool = False    # каталог, которым управляют из админки
     pricing: Pricing | None = None
     # Правила записи: время заведения, сетка слотов, часы работы и насколько вперёд можно записаться
-    tz: str = "Europe/Moscow"
+    tz: str = DEFAULT_TZ
     step_minutes: int = 30
     hours: Hours = (10, 22)  # окно записи: первый и «после последнего» час; (19, 2) — после полуночи
     # Окно записи по дням недели (0 — понедельник). Дня нет в словаре — выходной. Ночные часы относятся

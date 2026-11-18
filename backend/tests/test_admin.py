@@ -123,3 +123,30 @@ def test_search_case_insensitive_and_escaped(client, owner):
     assert [total(q) for q in ("Анна", "анна", "%", "_")] == [1, 1, 0, 0]
     assert total("СТОЛИК") == 3
     assert total("+7900") == 3  # телефон хранится нормализованным
+
+
+def _lead_at(created_at):
+    from app.db import SessionLocal
+    from app.models import Lead
+    with SessionLocal() as db:
+        db.add(Lead(site="cafe", kind="table", name="Ночной", phone="+79001234567", created_at=created_at))
+        db.commit()
+
+
+def test_csv_dates_in_site_timezone(client, owner):
+    # BUG-010: created_at хранится в UTC, а владелец ждёт московское время
+    from datetime import datetime
+    _lead_at(datetime(2026, 11, 17, 22, 30))
+    text = client.get("/api/v1/admin/leads.csv", headers=owner).text
+    assert "18.11.2026 01:30" in text
+
+
+def test_stats_days_in_site_timezone(client, owner):
+    from datetime import datetime, timedelta
+    from zoneinfo import ZoneInfo
+    msk_today = datetime.now(ZoneInfo("Europe/Moscow")).date()
+    # 00:30 по Москве сегодня — это ещё вчера по UTC
+    _lead_at(datetime.combine(msk_today, datetime.min.time()) + timedelta(minutes=30) - timedelta(hours=3))
+    by_day = {d["date"]: d["count"] for d in client.get("/api/v1/admin/stats", headers=owner).json()["by_day"]}
+    assert by_day[msk_today.isoformat()] == 1
+    assert max(by_day) == msk_today.isoformat()

@@ -372,6 +372,13 @@
       return s;
     };
     const clone = (o) => JSON.parse(JSON.stringify(o));
+    // Время из базы (UTC) в «настенное» время заведения, как to_local на сервере
+    const TZ = "Europe/Moscow";
+    const localParts = (v, tz = TZ) => Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    }).formatToParts(new Date(v)).map((x) => [x.type, x.value]));
+    const localDay = (v, tz) => { const p = localParts(v, tz); return `${p.year}-${p.month}-${p.day}`; };
+    const localStamp = (v, tz) => { const p = localParts(v, tz); return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`; };
 
     // ---------- сессия и права ----------
     function user() {
@@ -564,10 +571,11 @@
           const leads = scoped(db.leads, u, f.site), bookings = scoped(db.bookings, u, f.site), orders = scoped(db.orders, u, f.site);
           const days = Number(f.days || 14);
           const byDay = {};
-          for (let i = days - 1; i >= 0; i--) { const d = now(); d.setDate(d.getDate() - i); byDay[d.toISOString().slice(0, 10)] = 0; }
+          // Дни по московскому времени, как на сервере
+          for (let i = days - 1; i >= 0; i--) { const d = siteNow(TZ); d.setDate(d.getDate() - i); byDay[ymd(d)] = 0; }
           const bySite = {};
           for (const x of [...leads, ...bookings, ...orders]) {
-            const k = x.created_at.slice(0, 10);
+            const k = localDay(x.created_at);
             if (k in byDay) byDay[k]++;
             bySite[x.site] = (bySite[x.site] || 0) + 1;
           }
@@ -603,7 +611,7 @@
           const rows = scoped(load().leads, requireUser(), f.site).sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
           const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
           const lines = [["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"].join(";")];
-          for (const r of rows) lines.push([r.id, new Date(r.created_at).toLocaleString("ru-RU"), SITE[r.site].name, ...[r.kind, r.name, r.phone, r.email, r.message].map(csvSafe), r.status].map(cell).join(";"));
+          for (const r of rows) lines.push([r.id, localStamp(r.created_at, SITE[r.site].tz), SITE[r.site].name, ...[r.kind, r.name, r.phone, r.email, r.message].map(csvSafe), r.status].map(cell).join(";"));
           return "﻿" + lines.join("\n");
         }),
       },

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from ..db import utcnow
+from ..db import from_local, to_local, utcnow
 from ..auth import CurrentUser, allowed_sites, check_site_access, require
 from ..deps import DB
 from ..models import Booking, CatalogItem, Lead, Order, User
@@ -29,7 +29,7 @@ from ..schemas import (
     UserOut,
 )
 from ..security import hash_password
-from ..sites import SITES
+from ..sites import DEFAULT_TZ, SITES
 from ..services.booking import release, reserve, slot_lock_key
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
@@ -99,7 +99,8 @@ def export_leads(user: CurrentUser, db: DB, site: str | None = None):
     writer = csv.writer(buf, delimiter=";")
     writer.writerow(["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"])
     for r in rows:
-        writer.writerow([r.id, r.created_at.strftime("%d.%m.%Y %H:%M"), SITES[r.site].name,
+        # Дата в часовом поясе заведения: в базе UTC, а владелец ждёт местное время
+        writer.writerow([r.id, to_local(r.created_at, SITES[r.site].tz).strftime("%d.%m.%Y %H:%M"), SITES[r.site].name,
                          *map(_cell, [r.kind, r.name, r.phone, r.email, r.message]), r.status])
     return Response("﻿" + buf.getvalue(), media_type="text/csv; charset=utf-8",
                     headers={"Content-Disposition": 'attachment; filename="leads.csv"'})
@@ -112,7 +113,9 @@ def list_bookings(user: CurrentUser, db: DB, site: str | None = None, upcoming: 
                   limit: Limit = 50, offset: Offset = 0):
     query = _scope(Booking, user, site)
     if upcoming:
-        query = query.where(Booking.starts_at >= utcnow() - timedelta(hours=12), Booking.status == "confirmed")
+        # starts_at — «настенное» время заведения, поэтому и «сейчас» берём в его поясе, а не UTC
+        local_now = to_local(utcnow(), DEFAULT_TZ)
+        query = query.where(Booking.starts_at >= local_now - timedelta(hours=12), Booking.status == "confirmed")
     return _page(db, query, Booking, limit, offset)
 
 
@@ -201,11 +204,13 @@ def stats(user: CurrentUser, db: DB, site: str | None = None, days: Annotated[in
     orders = _scope(Order, user, site).subquery()
     count = lambda sq, *where: db.scalar(select(func.count()).select_from(sq).where(*where))  # noqa: E731
 
-    since = (utcnow() - timedelta(days=days - 1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    by_day = {(since + timedelta(days=i)).date().isoformat(): 0 for i in range(days)}
+    # Дни считаются по московскому времени: столбик «сегодня» начинается в 00:00 по Москве, а не по UTC
+    first_day = (to_local(utcnow(), DEFAULT_TZ) - timedelta(days=days - 1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    since = from_local(first_day, DEFAULT_TZ)
+    by_day = {(first_day + timedelta(days=i)).date().isoformat(): 0 for i in range(days)}
     for sq in (leads, bookings, orders):
         for (created,) in db.execute(select(sq.c.created_at).where(sq.c.created_at >= since)):
-            key = created.date().isoformat()
+            key = to_local(created, DEFAULT_TZ).date().isoformat()
             if key in by_day:
                 by_day[key] += 1
 
