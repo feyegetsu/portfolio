@@ -443,6 +443,57 @@
     "status": 422,
     "message": "Корзина пуста"
    }
+  },
+  {
+   "title": "Ошибка: размер надстрочной цифрой",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:²",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректный размер для «Маргарита»"
+   }
+  },
+  {
+   "title": "Ошибка: добавка надстрочной цифрой",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:1:²",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректные добавки для «Маргарита»"
+   }
+  },
+  {
+   "title": "Ошибка: размер арабской цифрой",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:٢",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректный размер для «Маргарита»"
+   }
   }
  ],
  "slots": [

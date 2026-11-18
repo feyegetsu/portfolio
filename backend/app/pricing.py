@@ -17,6 +17,11 @@ def _bad(msg: str) -> HTTPException:
     return HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, msg)
 
 
+def _is_index(s: str) -> bool:
+    """Номер размера или добавки: только ASCII-цифры. str.isdigit() пропускает «²» и «٢», а int() на них падает."""
+    return s.isascii() and s.isdigit()
+
+
 def _line(item: OrderItem, catalog: dict[str, CatalogItem], rules: Pricing) -> dict:
     parts = item.ref.split(":")
     base = catalog.get(parts[0])
@@ -30,7 +35,7 @@ def _line(item: OrderItem, catalog: dict[str, CatalogItem], rules: Pricing) -> d
             raise _bad(f"У «{base.name}» нет размеров и добавок")
         size, extras = parts[1], parts[2] if len(parts) == 3 else ""
         if size:
-            if not size.isdigit() or int(size) >= len(rules.sizes):
+            if not _is_index(size) or int(size) >= len(rules.sizes):
                 raise _bad(f"Некорректный размер для «{base.name}»")
             label, delta = rules.sizes[int(size)]
             price += delta
@@ -38,7 +43,7 @@ def _line(item: OrderItem, catalog: dict[str, CatalogItem], rules: Pricing) -> d
                 mods.append(label)
         if extras:
             chosen = extras.split("-")
-            if len(set(chosen)) != len(chosen) or not all(e.isdigit() and int(e) < len(rules.extras) for e in chosen):
+            if len(set(chosen)) != len(chosen) or not all(_is_index(e) and int(e) < len(rules.extras) for e in chosen):
                 raise _bad(f"Некорректные добавки для «{base.name}»")
             for e in chosen:
                 label, extra_price = rules.extras[int(e)]
