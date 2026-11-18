@@ -438,8 +438,13 @@
       return db;
     }
     function save(db) { store.set(KEY, JSON.stringify(db)); }
-    // Маленькая задержка, как у сети: интерфейс честно показывает состояние «отправляется»
-    const later = (fn) => new Promise((resolve, reject) => setTimeout(() => { try { resolve(fn()); } catch (e) { reject(e); } }, 60));
+    // Маленькая задержка, как у сети: интерфейс честно показывает состояние «отправляется».
+    // Каждая операция читает и пишет базу целиком, поэтому две вкладки (сайт и админка) затёрли бы
+    // изменения друг друга и выдали один id дважды. Блокировка pf-db выполняет операции всех вкладок по очереди
+    const locked = (run) => (navigator.locks ? navigator.locks.request("pf-db", run) : Promise.resolve(run()));
+    const later = (fn) => new Promise((resolve, reject) => setTimeout(() => {
+      locked(() => { try { resolve(fn()); } catch (e) { reject(e); } }).catch(reject);
+    }, 60));
     const site = (slug, flag) => {
       const s = SITE[slug];
       if (!s) throw new ApiError("Сайт не найден", 404);
@@ -779,11 +784,13 @@
       },
       // Только для демо: «кухня» сама двигает заказ, пока его статус не поменяли руками в админке
       demoAdvanceOrder(id, next) {
-        const db = load();
-        const o = db.orders.find((x) => x.id === Number(id));
-        if (!o || o.touched || o.status === "done" || o.status === "cancelled") return;
-        o.status = next;
-        save(db);
+        locked(() => {
+          const db = load();
+          const o = db.orders.find((x) => x.id === Number(id));
+          if (!o || o.touched || o.status === "done" || o.status === "cancelled") return;
+          o.status = next;
+          save(db);
+        }).catch(() => {});
       },
       reset() { store.del(KEY); store.del(SESSION); load(); },
     };
