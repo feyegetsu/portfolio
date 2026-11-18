@@ -92,6 +92,7 @@
     .taps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .tap { background: var(--coal-2); border: 1px solid var(--line); border-radius: 6px; padding: 18px; position: relative; overflow: hidden; animation: chalk .4s both; }
     .tap__no { position: absolute; right: 14px; top: 10px; font-family: "Fira Sans Extra Condensed", sans-serif; font-size: 2rem; font-weight: 900; color: rgba(255,255,255,.06); }
+    .tap__no::before { content: attr(data-no); }  /* декоративный номер: не текст страницы */
     .tap__glass { width: 34px; height: 44px; border-radius: 2px 2px 6px 6px; margin-bottom: 14px; background: linear-gradient(0deg, var(--c) 78%, #fff8 78%); box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); }
     .tap h3 { font-size: 1.3rem; text-transform: none; }
     .tap small { color: var(--muted); }
@@ -277,7 +278,7 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Гастробар «Соль и Солод» · 18+</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div>    <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+  <footer><div class="container foot"><span>© Гастробар «Соль и Солод» · 18+</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div>    <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <div class="toast" id="toast" role="status"></div>
 
@@ -347,7 +348,7 @@
     function renderTaps() {
       $("tapList").innerHTML = TAPS.map((t, i) => [t, i]).filter(([t]) => style === "all" || t[1] === style).map(([[n, , d, abv, ibu, price, c], i]) => {
         const p = happy && abv > 1 ? Math.round(price * 0.7 / 10) * 10 : price;
-        return `<article class="tap"><span class="tap__no">${String(i + 1).padStart(2, "0")}</span><div class="tap__glass" style="--c:${c}"></div><h3>${n}</h3><small>${d}</small>
+        return `<article class="tap"><span class="tap__no" aria-hidden="true" data-no="${String(i + 1).padStart(2, "0")}"></span><div class="tap__glass" style="--c:${c}"></div><h3>${n}</h3><small>${d}</small>
           <div class="meter"><span>ABV</span><i style="--w:${Math.min(100, abv * 10)}%"></i><span>${abv}%</span></div>
           <div class="meter"><span>IBU</span><i style="--w:${ibu}%"></i><span>${ibu}</span></div>
           <div class="tap__price"><small>0,5 л</small><span>${p !== price ? `<span class="hh">${price}</span>` : ""}${p} ₽</span></div></article>`;
@@ -381,7 +382,7 @@
     $("pairChips").innerHTML = FOOD.map(([, n], i) => `<button class="chip" data-f="${i}" aria-pressed="${i === 0}">${n}</button>`).join("");
     function renderPair(i) {
       const t = TAPS[FOOD[i][4]];
-      $("pairRes").innerHTML = `<div class="tap__glass" style="--c:${t[6]}"></div><div><small style="color:#7a7263">к блюду «${FOOD[i][1]}»</small><b>${t[0]}</b><p>${WHY[FOOD[i][4]] || ""}</p></div>`;
+      $("pairRes").innerHTML = `<div class="tap__glass" style="--c:${t[6]}"></div><div><small style="color:#5f584b">к блюду «${FOOD[i][1]}»</small><b>${t[0]}</b><p>${WHY[FOOD[i][4]] || ""}</p></div>`;
       document.querySelectorAll("#pairChips .chip").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.f === i));
     }
     $("pairChips").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) renderPair(+b.dataset.f); });

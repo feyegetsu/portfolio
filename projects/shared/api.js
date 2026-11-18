@@ -931,7 +931,7 @@
   if (api.mode === "demo" && /\/projects\//.test(location.pathname) && !new URLSearchParams(location.search).has("embed")) {
     const css = document.createElement("style");
     css.textContent = `.pf-demo-note { display: block; margin: 0 0 12px; padding: 8px 12px; border-radius: 10px; font: 500 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
-      background: rgba(127, 127, 127, .12); color: inherit; opacity: .85; text-align: left; }
+      background: rgba(127, 127, 127, .12); color: inherit; text-align: left; }
       .pf-demo-note a { color: inherit; text-decoration: underline; font-weight: 700; }`;
     document.head.appendChild(css);
     const note = () => {
@@ -987,7 +987,7 @@
       .pf-want__go { overflow: hidden; text-overflow: ellipsis; }
       .pf-want__short { display: none; }
       .pf-want.hide { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
-      .pf-fiction { margin: 14px auto 0; max-width: 1100px; padding: 0 20px; font: 12px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; opacity: .65; text-align: center; }
+      .pf-fiction { margin: 14px auto 0; max-width: 1100px; padding: 0 20px 20px; font: 13px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: inherit; text-align: center; }
       @media (max-width: 520px) { .pf-want { left: 12px; bottom: 12px; font-size: 13px; } .pf-want a { padding: 11px 13px; } .pf-want__back span, .pf-want__long { display: none; } .pf-want__short { display: inline; } }
       @media (prefers-reduced-motion: reduce) { .pf-push, .pf-want { transition: none; } }`;
     document.head.appendChild(css);

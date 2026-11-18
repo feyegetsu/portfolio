@@ -18,7 +18,7 @@
   <style>
     img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
     :root { color-scheme: light only; }
-    :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
+    :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --brass-ink: #836536; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: "IBM Plex Sans", system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; overflow-x: clip; }
@@ -28,10 +28,11 @@
     .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     h1, h2, h3, .logo { font-family: "Prata", Georgia, serif; font-weight: 400; line-height: 1.1; }
     h2 { font-size: clamp(2rem, 4.6vw, 3.3rem); }
-    .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--brass); font-weight: 600; display: block; margin-bottom: 14px; }
+    .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--brass-ink); font-weight: 600; display: block; margin-bottom: 14px; }
+    .book__info .eyebrow { color: var(--brass); }  /* на тёмно-зелёном фоне светлая латунь даёт 5.6:1 */
     .muted { color: var(--muted); }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 28px; background: var(--brass); color: #fff; border: 0; font-weight: 600; letter-spacing: .04em; transition: background .25s, transform .25s; }
-    .btn:hover { background: #9c7643; transform: translateY(-2px); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 28px; background: var(--brass); color: var(--ink); border: 0; font-weight: 600; letter-spacing: .04em; transition: background .25s, transform .25s; }
+    .btn:hover { background: #c49c62; transform: translateY(-2px); }
     .btn--line { background: transparent; border: 1px solid currentColor; }
     .btn--line:hover { background: rgba(255, 255, 255, .08); }
 
@@ -41,7 +42,7 @@
     .head nav { display: flex; gap: 26px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
     .head nav a:hover { color: var(--brass); }
     .logo { font-size: 1.6rem; letter-spacing: .32em; text-align: center; }
-    .logo small { display: block; font: 500 10px "IBM Plex Sans", sans-serif; letter-spacing: .3em; color: var(--brass); margin-top: 2px; }
+    .logo small { display: block; font: 500 10px "IBM Plex Sans", sans-serif; letter-spacing: .3em; color: var(--brass-ink); margin-top: 2px; }
     .head .btn { justify-self: end; padding: 12px 22px; font-size: 14px; }
 
     /* Первый экран: зелёная колонка и фото подачи */
@@ -227,7 +228,7 @@
         <p class="set__intro" id="seasonIntro"></p>
         <label class="pairing"><input type="checkbox" id="wine"><span class="pairing__sw"></span><span><b>Винное сопровождение</b><small>бокал к каждой подаче · +3 500 ₽</small></span></label>
       </div>
-      <div class="courses" id="courses"></div>
+      <div class="courses" id="courses" tabindex="0" role="region" aria-label="Блюда сета"></div>
       <div class="set__total"><span class="muted" id="setLabel"></span><b id="setPrice">6 900 ₽</b><a href="#book" class="btn">Забронировать с этим сетом</a></div>
     </div>
   </section>
@@ -313,7 +314,7 @@
 
   <footer>
     <div class="container foot"><span>© Ресторан «Терруар» · Набережная, 7</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
-      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+      <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
 
   <script src="../shared/api.js"></script>

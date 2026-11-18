@@ -40,7 +40,8 @@ a { color: inherit; }
 .kit-toast.show { transform: translate(-50%, 0); }
 
 .foot { display: flex; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap; padding: 28px 0; font-size: 14px; color: var(--muted); }
-.pf-fiction { margin: 0; padding: 0 20px 20px; text-align: center; font-size: 12px; opacity: .65; }
+/* Без opacity: подпись о вымышленных данных должна читаться (контраст как у текста подвала) */
+.pf-fiction { margin: 0; padding: 0 20px 20px; text-align: center; font-size: 13px; color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
