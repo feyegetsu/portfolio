@@ -1,6 +1,7 @@
 """Базовые сценарии: заявка, запись, заказ и каталог проходят от сайта до админки (демо-режим и настоящий API)."""
 
 import json
+from pathlib import Path
 import re
 import urllib.parse
 import urllib.request
@@ -140,3 +141,29 @@ def test_storefront_rules_come_from_api_js(page, site, errors):
     page.locator("[data-inc='s7']").first.click()
     page.locator("#cartBtn").click()
     expect(page.locator("#drawer")).to_contain_text("2 810")  # 3 000 − 190 ₽
+
+
+def test_forget_saved_contact(page, site, errors):
+    # DOC-001: имя и телефон из окна «Ваши контакты» можно удалить там же
+    page.goto(f"{site}/projects/fitness/")
+    page.evaluate("() => localStorage.setItem('pf-contact', JSON.stringify({ name: 'Анна', phone: '+79001234567' }))")
+    page.locator("#classes button[data-id]:not([disabled])").first.click()
+    dialog = page.locator("dialog.pf-ask")
+    expect(dialog.locator("[name=name]")).to_have_value("Анна")
+    dialog.locator(".pf-ask__forget").click()
+    expect(dialog.locator("[name=name]")).to_have_value("")
+    assert page.evaluate("() => localStorage.getItem('pf-contact')") is None
+
+
+def test_privacy_lists_every_external_domain():
+    # DOC-001: каждый сторонний домен, к которому обращаются страницы, упомянут в политике
+    import glob
+    privacy = (ROOT / "privacy.html").read_text(encoding="utf-8")
+    sources = [ROOT / "index.html", ROOT / "404.html", ROOT / "admin" / "index.html", *map(Path, glob.glob(str(ROOT / "projects" / "*" / "index.html")))]
+    domains = set()
+    for f in sources:
+        domains |= set(re.findall(r'(?:src|href)="https://([a-z0-9.-]+)', f.read_text(encoding="utf-8")))
+    domains -= {"feyegetsu.github.io", "schema.org", "docs.github.com", "github.com"}
+    assert domains, "домены не найдены"
+    missing = sorted(d for d in domains if d not in privacy)
+    assert not missing, f"Не упомянуты в политике: {missing}"

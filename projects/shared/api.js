@@ -866,6 +866,7 @@
         .pf-ask input { width: 100%; box-sizing: border-box; margin: 0; padding: 13px 14px; border: 1.5px solid #d9dce2; border-radius: 12px; background: #fff; color: #14161a; font: 16px system-ui, sans-serif; outline: none; }
         .pf-ask input:focus { border-color: ${accent}; box-shadow: 0 0 0 3px color-mix(in srgb, ${accent} 25%, transparent); }
         .pf-ask__ok { margin: 4px 0 0; padding: 14px; border: 0; border-radius: 12px; background: ${accent}; color: ${accentText}; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+        .pf-ask__forget { margin: -2px 0 0; padding: 0; border: 0; background: none; color: #4b5059; font: 13px system-ui, sans-serif; text-decoration: underline; cursor: pointer; justify-self: start; }
         .pf-ask__x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: #f1f2f4; color: #14161a; font-size: 16px; cursor: pointer; }`;
       document.head.appendChild(css);
     }
@@ -878,11 +879,19 @@
       <input name="name" required placeholder="Имя" autocomplete="name" aria-label="Имя">
       <input name="phone" type="tel" required placeholder="Телефон" autocomplete="tel" aria-label="Телефон">
       <button class="pf-ask__ok" value="ok">Записаться</button>
+      <button class="pf-ask__forget" type="button" ${saved.name || saved.phone ? "" : "hidden"}>Забыть мои контакты</button>
     </form>`;
     document.body.appendChild(dlg);
     const f = dlg.querySelector("form");
     f.elements.name.value = saved.name || "";
     f.elements.phone.value = saved.phone || "";
+    // Имя и телефон хранятся в браузере до удаления: удалить можно здесь же (см. политику обработки данных)
+    dlg.querySelector(".pf-ask__forget").addEventListener("click", (e) => {
+      try { localStorage.removeItem("pf-contact"); } catch {}
+      f.elements.name.value = f.elements.phone.value = "";
+      e.currentTarget.hidden = true;
+      f.elements.name.focus();
+    });
     // Завершаем по отправке формы и по Esc, не дожидаясь события close: в фоновых вкладках оно может запаздывать
     let finished = false;
     const finish = (ok) => {
