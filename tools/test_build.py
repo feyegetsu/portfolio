@@ -3,6 +3,7 @@
     pip install pytest && pytest tools/test_build.py
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -77,3 +78,12 @@ def test_dynamic_offers_js_is_versioned(tmp_path):
     assert '"offers.js?v=' in api_js
     html = (out / "projects" / "cafe" / "index.html").read_text(encoding="utf-8")
     assert "shared/api.js?v=" in html
+
+
+def test_sitemap_gets_lastmod(tmp_path):
+    # SEO-001: у адресов sitemap — дата последнего изменения страницы
+    out = tmp_path / "_site"
+    build.copy_site(out)
+    assert build.add_lastmod(out) > 0
+    xml = (out / "sitemap.xml").read_text(encoding="utf-8")
+    assert re.search(r"/projects/cafe/</loc><lastmod>\d{4}-\d\d-\d\d</lastmod>", xml)

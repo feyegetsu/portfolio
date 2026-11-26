@@ -287,6 +287,40 @@ def version_assets(out: Path) -> int:
     return count
 
 
+# ---------- Дата обновления страниц в sitemap.xml ----------
+
+LOC = re.compile(r"<loc>([^<]+)</loc>")
+
+
+def last_commit_date(path: Path) -> str | None:
+    """Дата последнего коммита файла (ГГГГ-ММ-ДД) или None, если git недоступен или файл не в истории."""
+    git = shutil.which("git")
+    if not git:
+        return None
+    r = subprocess.run([git, "-C", str(ROOT), "log", "-1", "--format=%cs", "--", str(path)], capture_output=True, text=True)  # noqa: S603
+    return r.stdout.strip() or None
+
+
+def add_lastmod(out: Path) -> int:
+    """<lastmod> у каждого адреса sitemap: поисковик видит, когда страница менялась (в CI нужна полная история git)."""
+    path = out / "sitemap.xml"
+    xml = path.read_text(encoding="utf-8")
+    count = 0
+
+    def stamp(m: re.Match) -> str:
+        nonlocal count
+        rel = m.group(1).split("/portfolio/", 1)[-1]
+        page = ROOT / rel / "index.html" if not rel.endswith(".html") else ROOT / rel
+        date = last_commit_date(page) if page.exists() else None
+        if not date or "<lastmod>" in m.string[m.end():m.end() + 30]:
+            return m.group(0)
+        count += 1
+        return f"{m.group(0)}<lastmod>{date}</lastmod>"
+
+    path.write_text(LOC.sub(stamp, xml), encoding="utf-8")
+    return count
+
+
 # ---------- 5. Content-Security-Policy ----------
 
 SCRIPT_BLOCK = re.compile(r"<script\b([^>]*)>(.*?)</script>", re.S)
@@ -364,6 +398,7 @@ def main() -> int:
     version_dynamic_assets(out)
     print(f"Версии файлов проставлены: {version_assets(out)}")
     print(f"CSP добавлена в страниц: {add_csp(out)}")
+    print(f"Даты в sitemap.xml: {add_lastmod(out)}")
     return 0
 
 
