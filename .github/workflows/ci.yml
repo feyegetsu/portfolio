@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Проверкам хватает чтения: токен не может ничего записать, даже если зависимость окажется вредоносной
+permissions:
+  contents: read
+
 jobs:
   bot:
     name: Telegram-бот (Python)
@@ -14,8 +18,8 @@ jobs:
       run:
         working-directory: projects/cafe-bot
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Install
@@ -54,8 +58,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Install
@@ -72,8 +76,8 @@ jobs:
     name: Демо считает как сервер (Node)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
         with:
           node-version: "20"
       # Те же примеры, что в backend/tests/test_parity.py, прогоняются по коду из projects/shared/api.js
@@ -84,8 +88,8 @@ jobs:
     name: Демо-сайты прописаны везде
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Check
@@ -100,8 +104,8 @@ jobs:
     name: Сквозные сценарии в браузере (Playwright)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Install
@@ -117,20 +121,20 @@ jobs:
     name: Битые ссылки
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: lycheeverse/lychee-action@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8  # v2
         with:
           # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages.
           # assets/ генерирует воркфлоу Assets после пуша, поэтому эти файлы здесь не проверяем.
           args: --offline --no-progress --exclude-path 404.html --exclude '^data:' --exclude 'assets/' './**/*.html'
           fail: true
       # Собранный сайт: файл, забытый в белом списке сборки, даст здесь битую ссылку
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Build site without prerender
         run: python tools/build.py _site --no-prerender --no-minify
-      - uses: lycheeverse/lychee-action@v2
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8  # v2
         with:
           args: --offline --no-progress --root-dir "${{ github.workspace }}/_site" --exclude-path _site/404.html --exclude '^data:' --exclude 'assets/' '_site/**/*.html'
           fail: true

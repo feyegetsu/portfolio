@@ -10,8 +10,10 @@ on:
       - "**.md"
   workflow_dispatch:
 
+# По умолчанию только чтение: Playwright, npm и pip ставятся без права записи в репозиторий.
+# Запись нужна одной задаче commit, и она ничего не скачивает из npm и pip
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: assets
@@ -21,13 +23,13 @@ jobs:
   assets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
         with:
           node-version: "20"
 
@@ -59,6 +61,25 @@ jobs:
           python tools/lh_summary.py .lh --readme README.md > assets/lighthouse.json
           cat assets/lighthouse.json
 
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        with:
+          name: assets
+          path: |
+            assets/
+            README.md
+          retention-days: 3
+
+  commit:
+    needs: assets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4
+        with:
+          name: assets
+          path: .
       - name: Commit assets
         run: |
           git config user.name "github-actions[bot]"
