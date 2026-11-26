@@ -5,7 +5,9 @@ import logging
 import os
 import sqlite3
 import sys
+import threading
 from collections.abc import Mapping
+from pathlib import Path
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.exceptions import TelegramBadRequest
@@ -15,7 +17,8 @@ from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 
-load_dotenv()
+HERE = Path(__file__).resolve().parent
+load_dotenv(HERE / ".env")
 
 
 def read_config(env: Mapping[str, str] = os.environ) -> tuple[str, int]:
@@ -36,10 +39,10 @@ def read_config(env: Mapping[str, str] = os.environ) -> tuple[str, int]:
     return token, admin_id
 
 
-try:
-    ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
-except ValueError:
-    ADMIN_ID = 0  # main() всё равно остановит запуск с понятным сообщением
+def db_path(env: Mapping[str, str] = os.environ) -> Path:
+    """Файл базы — из DB_PATH, по умолчанию рядом с bot.py, а не в той папке, откуда бот запустили."""
+    return Path(env.get("DB_PATH") or HERE / "cafe.db")
+
 
 MENU = {
     "coffee": ("☕ Кофе", [("Капучино", 220), ("Латте", 240), ("Флэт уайт", 260)]),
@@ -47,17 +50,57 @@ MENU = {
     "dessert": ("🍰 Десерты", [("Чизкейк", 290), ("Тирамису", 320)]),
 }
 
-# ---------- База данных ----------
-db = sqlite3.connect("cafe.db")
-db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)")
-db.execute(
-    "CREATE TABLE IF NOT EXISTS orders ("
-    "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, items TEXT, total INTEGER, "
-    "created_at TEXT DEFAULT CURRENT_TIMESTAMP)"
-)
-db.commit()
 
-carts: dict[int, list[tuple[str, int]]] = {}
+# ---------- База данных ----------
+class Storage:
+    """Пользователи, заказы и корзины в SQLite. Корзины тоже в базе: перезапуск бота их не стирает.
+
+    Методы с приставкой a — асинхронные: запрос идёт в потоке (asyncio.to_thread), цикл событий не ждёт диск.
+    """
+
+    def __init__(self, path: Path | str) -> None:
+        self.db = sqlite3.connect(path, check_same_thread=False)
+        self.lock = threading.Lock()  # одно соединение на несколько потоков: запросы по очереди
+        with self.lock, self.db:
+            self.db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)")
+            self.db.execute(
+                "CREATE TABLE IF NOT EXISTS orders ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, items TEXT, total INTEGER, "
+                "created_at TEXT DEFAULT CURRENT_TIMESTAMP)"
+            )
+            self.db.execute(
+                "CREATE TABLE IF NOT EXISTS carts (pos INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, name TEXT, price INTEGER)"
+            )
+
+    def _run(self, sql: str, args: tuple = ()) -> list[tuple]:
+        with self.lock, self.db:
+            cur = self.db.execute(sql, args)
+            return cur.fetchall() if cur.description else [(cur.lastrowid,)]
+
+    async def _a(self, sql: str, args: tuple = ()) -> list[tuple]:
+        return await asyncio.to_thread(self._run, sql, args)
+
+    async def add_user(self, user_id: int, name: str) -> None:
+        await self._a("INSERT OR IGNORE INTO users (id, name) VALUES (?, ?)", (user_id, name))
+
+    async def user_ids(self) -> list[int]:
+        return [row[0] for row in await self._a("SELECT id FROM users")]
+
+    async def cart(self, user_id: int) -> list[tuple[str, int]]:
+        return [(n, p) for n, p in await self._a("SELECT name, price FROM carts WHERE user_id = ? ORDER BY pos", (user_id,))]
+
+    async def add_to_cart(self, user_id: int, item: tuple[str, int]) -> None:
+        await self._a("INSERT INTO carts (user_id, name, price) VALUES (?, ?, ?)", (user_id, *item))
+
+    async def clear_cart(self, user_id: int) -> None:
+        await self._a("DELETE FROM carts WHERE user_id = ?", (user_id,))
+
+    async def create_order(self, user_id: int, items: str, total: int) -> int:
+        return (await self._a("INSERT INTO orders (user_id, items, total) VALUES (?, ?, ?)", (user_id, items, total)))[0][0]
+
+    def close(self) -> None:
+        self.db.close()
+
 
 dp = Dispatcher()
 log = logging.getLogger("cafe-bot")
@@ -94,10 +137,10 @@ async def show(call: CallbackQuery, text: str, markup: InlineKeyboardMarkup | No
 
 
 # ---------- Клавиатуры ----------
-def main_kb(user_id: int):
+def main_kb(cart_size: int):
     kb = InlineKeyboardBuilder()
     kb.button(text="📋 Меню", callback_data="menu")
-    kb.button(text=f"🛒 Корзина ({len(carts.get(user_id, []))})", callback_data="cart")
+    kb.button(text=f"🛒 Корзина ({cart_size})", callback_data="cart")
     kb.button(text="📍 Адрес и часы", callback_data="info")
     kb.adjust(2, 1)
     return kb.as_markup()
@@ -112,12 +155,12 @@ def categories_kb():
     return kb.as_markup()
 
 
-def category_kb(key: str, user_id: int):
+def category_kb(key: str, cart_size: int):
     kb = InlineKeyboardBuilder()
     for i, (name, price) in enumerate(MENU[key][1]):
         kb.button(text=f"+ {name} — {price} ₽", callback_data=Add(key=key, idx=i))
     kb.button(text="⬅️ Категории", callback_data="menu")
-    kb.button(text=f"🛒 Корзина ({len(carts.get(user_id, []))})", callback_data="cart")
+    kb.button(text=f"🛒 Корзина ({cart_size})", callback_data="cart")
     kb.adjust(1)
     return kb.as_markup()
 
@@ -132,24 +175,21 @@ def cart_kb():
 
 
 # ---------- Хендлеры ----------
+# store и admin_id передаются в каждый обработчик из dp.start_polling(..., store=..., admin_id=...)
 @dp.message(CommandStart())
-async def start(message: Message):
-    db.execute(
-        "INSERT OR IGNORE INTO users (id, name) VALUES (?, ?)",
-        (message.from_user.id, message.from_user.full_name),
-    )
-    db.commit()
+async def start(message: Message, store: Storage):
+    await store.add_user(message.from_user.id, message.from_user.full_name)
     await message.answer(
         f"Привет, {message.from_user.first_name}! 👋\n"
         "Я бот кофейни «Зерно». Помогу сделать заказ без очереди.",
-        reply_markup=main_kb(message.from_user.id),
+        reply_markup=main_kb(len(await store.cart(message.from_user.id))),
     )
 
 
 @dp.callback_query(F.data == "home")
-async def home(call: CallbackQuery):
+async def home(call: CallbackQuery, store: Storage):
     await call.answer()
-    await show(call, "Выберите, что хотите сделать 👇", main_kb(call.from_user.id))
+    await show(call, "Выберите, что хотите сделать 👇", main_kb(len(await store.cart(call.from_user.id))))
 
 
 @dp.callback_query(F.data == "menu")
@@ -159,32 +199,32 @@ async def menu(call: CallbackQuery):
 
 
 @dp.callback_query(Cat.filter())
-async def category(call: CallbackQuery, callback_data: Cat):
+async def category(call: CallbackQuery, callback_data: Cat, store: Storage):
     if callback_data.key not in MENU:
         await call.answer("Меню обновилось, откройте его заново", show_alert=True)
         return
     await call.answer()
-    await show(call, MENU[callback_data.key][0], category_kb(callback_data.key, call.from_user.id))
+    await show(call, MENU[callback_data.key][0], category_kb(callback_data.key, len(await store.cart(call.from_user.id))))
 
 
 @dp.callback_query(Add.filter())
-async def add_to_cart(call: CallbackQuery, callback_data: Add):
+async def add_to_cart(call: CallbackQuery, callback_data: Add, store: Storage):
     item = menu_item(callback_data.key, callback_data.idx)
     if not item:
         await call.answer("Меню обновилось, откройте его заново", show_alert=True)
         return
-    carts.setdefault(call.from_user.id, []).append(item)
+    await store.add_to_cart(call.from_user.id, item)
     await call.answer(f"✅ {item[0]} добавлен в корзину")
     try:
-        await call.message.edit_reply_markup(reply_markup=category_kb(callback_data.key, call.from_user.id))
+        await call.message.edit_reply_markup(reply_markup=category_kb(callback_data.key, len(await store.cart(call.from_user.id))))
     except TelegramBadRequest as e:
         if "message is not modified" not in str(e):
             raise
 
 
 @dp.callback_query(F.data == "cart")
-async def show_cart(call: CallbackQuery):
-    cart = carts.get(call.from_user.id, [])
+async def show_cart(call: CallbackQuery, store: Storage):
+    cart = await store.cart(call.from_user.id)
     if not cart:
         await call.answer("Корзина пуста 🙂", show_alert=True)
         return
@@ -195,50 +235,45 @@ async def show_cart(call: CallbackQuery):
 
 
 @dp.callback_query(F.data == "clear")
-async def clear_cart(call: CallbackQuery):
-    carts.pop(call.from_user.id, None)
+async def clear_cart(call: CallbackQuery, store: Storage):
+    await store.clear_cart(call.from_user.id)
     await call.answer("Корзина очищена")
-    await show(call, "Корзина очищена.", main_kb(call.from_user.id))
+    await show(call, "Корзина очищена.", main_kb(0))
 
 
 @dp.callback_query(F.data == "checkout")
-async def checkout(call: CallbackQuery, bot: Bot):
-    cart = carts.pop(call.from_user.id, [])
+async def checkout(call: CallbackQuery, bot: Bot, store: Storage, admin_id: int):
+    cart = await store.cart(call.from_user.id)
     if not cart:
         await call.answer("Корзина пуста", show_alert=True)
         return
     await call.answer()
     items = ", ".join(name for name, _ in cart)
     total = sum(price for _, price in cart)
-    cur = db.execute(
-        "INSERT INTO orders (user_id, items, total) VALUES (?, ?, ?)",
-        (call.from_user.id, items, total),
-    )
-    db.commit()
-    order_id = cur.lastrowid
+    order_id = await store.create_order(call.from_user.id, items, total)
+    await store.clear_cart(call.from_user.id)
 
     await show(
         call,
         f"🎉 Заказ №{order_id} принят!\nСумма: {total} ₽\n\n"
         "Будет готов через 10–15 минут. Мы пришлём уведомление.",
-        main_kb(call.from_user.id),
+        main_kb(0),
     )
 
-    if ADMIN_ID:
-        kb = InlineKeyboardBuilder()
-        kb.button(text="✅ Готов", callback_data=Ready(order_id=order_id, user_id=call.from_user.id))
-        await bot.send_message(
-            ADMIN_ID,
-            f"🆕 Заказ №{order_id}\n"
-            f"От: {call.from_user.full_name} (@{call.from_user.username or '—'})\n"
-            f"Состав: {items}\nСумма: {total} ₽",
-            reply_markup=kb.as_markup(),
-        )
+    kb = InlineKeyboardBuilder()
+    kb.button(text="✅ Готов", callback_data=Ready(order_id=order_id, user_id=call.from_user.id))
+    await bot.send_message(
+        admin_id,
+        f"🆕 Заказ №{order_id}\n"
+        f"От: {call.from_user.full_name} (@{call.from_user.username or '—'})\n"
+        f"Состав: {items}\nСумма: {total} ₽",
+        reply_markup=kb.as_markup(),
+    )
 
 
 @dp.callback_query(Ready.filter())
-async def order_ready(call: CallbackQuery, callback_data: Ready, bot: Bot):
-    if call.from_user.id != ADMIN_ID:
+async def order_ready(call: CallbackQuery, callback_data: Ready, bot: Bot, admin_id: int):
+    if call.from_user.id != admin_id:
         await call.answer("Эта кнопка — для администратора", show_alert=True)
         return
     await bot.send_message(callback_data.user_id, f"☕ Заказ №{callback_data.order_id} готов! Заберите его на кассе.")
@@ -247,9 +282,10 @@ async def order_ready(call: CallbackQuery, callback_data: Ready, bot: Bot):
 
 
 @dp.callback_query(F.data == "info")
-async def info(call: CallbackQuery):
+async def info(call: CallbackQuery, store: Storage):
     await call.answer()
-    await show(call, "📍 ул. Примерная, 12\n🕗 Ежедневно 8:00–22:00\n📞 +7 (900) 000-00-00", main_kb(call.from_user.id))
+    await show(call, "📍 ул. Примерная, 12\n🕗 Ежедневно 8:00–22:00\n📞 +7 (900) 000-00-00",
+               main_kb(len(await store.cart(call.from_user.id))))
 
 
 @dp.callback_query()
@@ -260,16 +296,16 @@ async def unknown_button(call: CallbackQuery):
 
 
 @dp.message(Command("broadcast"))
-async def broadcast(message: Message, bot: Bot):
+async def broadcast(message: Message, bot: Bot, store: Storage, admin_id: int):
     """Рассылка всем пользователям: /broadcast текст (только для админа)."""
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id != admin_id:
         return
     text = message.text.removeprefix("/broadcast").strip()
     if not text:
         await message.answer("Использование: /broadcast текст сообщения")
         return
     sent = 0
-    for (user_id,) in db.execute("SELECT id FROM users"):
+    for user_id in await store.user_ids():
         try:
             await bot.send_message(user_id, text)
             sent += 1
@@ -281,9 +317,13 @@ async def broadcast(message: Message, bot: Bot):
 
 async def main():
     logging.basicConfig(level=logging.INFO)
-    token, _ = read_config()
+    token, admin_id = read_config()
+    store = Storage(db_path())
     bot = Bot(token)
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot, store=store, admin_id=admin_id)
+    finally:
+        store.close()
 
 
 if __name__ == "__main__":

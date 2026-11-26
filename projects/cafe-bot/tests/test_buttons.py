@@ -11,28 +11,29 @@ import bot as cafe
 
 
 @pytest.mark.parametrize("handler, data, args", [
-    (cafe.home, "home", ()),
+    (cafe.home, "home", ("store",)),
     (cafe.menu, "menu", ()),
-    (cafe.info, "info", ()),
-    (cafe.clear_cart, "clear", ()),
-    (cafe.category, "cat:coffee", (cafe.Cat(key="coffee"),)),
+    (cafe.info, "info", ("store",)),
+    (cafe.clear_cart, "clear", ("store",)),
+    (cafe.show_cart, "cart", ("store",)),
+    (cafe.category, "cat:coffee", (cafe.Cat(key="coffee"), "store")),
     (cafe.unknown_button, "что-то старое", ()),
 ])
-async def test_every_button_is_answered(handler, data, args):
+async def test_every_button_is_answered(handler, data, args, store):
     call = callback(data)
-    await handler(call, *args)
+    await handler(call, *[store if a == "store" else a for a in args])
     call.answer.assert_awaited()
 
 
-async def test_forged_item_does_not_crash():
+async def test_forged_item_does_not_crash(store):
     call = callback("add:coffee:9")
-    await cafe.add_to_cart(call, cafe.Add(key="coffee", idx=9))
+    await cafe.add_to_cart(call, cafe.Add(key="coffee", idx=9), store)
     assert call.answer.await_args.kwargs.get("show_alert") is True
     call = callback("add:nope:0")
-    await cafe.add_to_cart(call, cafe.Add(key="nope", idx=0))
+    await cafe.add_to_cart(call, cafe.Add(key="nope", idx=0), store)
     call.answer.assert_awaited()
     call = callback("cat:nope")
-    await cafe.category(call, cafe.Cat(key="nope"))
+    await cafe.category(call, cafe.Cat(key="nope"), store)
     assert call.answer.await_args.kwargs.get("show_alert") is True
 
 

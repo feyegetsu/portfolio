@@ -37,3 +37,11 @@ def message(text, uid=7):
 @pytest.fixture
 def bot():
     return SimpleNamespace(send_message=AsyncMock())
+
+
+@pytest.fixture
+def store(tmp_path):
+    import bot as cafe
+    s = cafe.Storage(tmp_path / "test.db")
+    yield s
+    s.close()
