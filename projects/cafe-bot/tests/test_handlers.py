@@ -39,7 +39,7 @@ async def test_broadcast_reaches_users(bot, store):
     report = message("/broadcast Скидка 10%", uid=ADMIN)
     await cafe.broadcast(report, bot, store, ADMIN)
     assert {c.args[0] for c in bot.send_message.await_args_list} >= {7, 8}
-    assert "Отправлено: 2" in report.answer.await_args.args[0] or "2 получател" in report.answer.await_args.args[0]
+    assert "Отправлено: 2" in report.answer.await_args.args[0]
 
 
 async def test_broadcast_only_for_admin(bot, store):

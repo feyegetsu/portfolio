@@ -10,7 +10,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher, F
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.exceptions import TelegramAPIError, TelegramBadRequest, TelegramForbiddenError, TelegramRetryAfter
 from aiogram.filters import Command, CommandStart
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
@@ -62,7 +62,10 @@ class Storage:
         self.db = sqlite3.connect(path, check_same_thread=False)
         self.lock = threading.Lock()  # одно соединение на несколько потоков: запросы по очереди
         with self.lock, self.db:
-            self.db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)")
+            self.db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, active INTEGER NOT NULL DEFAULT 1)")
+            # База прежней версии: колонки active ещё нет
+            if "active" not in [c[1] for c in self.db.execute("PRAGMA table_info(users)")]:
+                self.db.execute("ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1")
             self.db.execute(
                 "CREATE TABLE IF NOT EXISTS orders ("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, items TEXT, total INTEGER, "
@@ -81,10 +84,15 @@ class Storage:
         return await asyncio.to_thread(self._run, sql, args)
 
     async def add_user(self, user_id: int, name: str) -> None:
-        await self._a("INSERT OR IGNORE INTO users (id, name) VALUES (?, ?)", (user_id, name))
+        # /start снова делает пользователя активным: он разблокировал бота
+        await self._a("INSERT INTO users (id, name, active) VALUES (?, ?, 1) ON CONFLICT(id) DO UPDATE SET active = 1", (user_id, name))
 
     async def user_ids(self) -> list[int]:
-        return [row[0] for row in await self._a("SELECT id FROM users")]
+        """Получатели рассылки: пользователи, которые не заблокировали бота."""
+        return [row[0] for row in await self._a("SELECT id FROM users WHERE active = 1")]
+
+    async def deactivate(self, user_id: int) -> None:
+        await self._a("UPDATE users SET active = 0 WHERE id = ?", (user_id,))
 
     async def cart(self, user_id: int) -> list[tuple[str, int]]:
         return [(n, p) for n, p in await self._a("SELECT name, price FROM carts WHERE user_id = ? ORDER BY pos", (user_id,))]
@@ -295,6 +303,34 @@ async def unknown_button(call: CallbackQuery):
     await call.answer("Меню обновилось, откройте его заново: /start", show_alert=True)
 
 
+async def send_all(bot: Bot, store: Storage, text: str, pause: float = 0.05, retries: int = 3) -> dict[str, int]:
+    """Рассылка с учётом ограничений Telegram. Флуд-лимит — ждём, сколько просит Telegram, и повторяем;
+    бот заблокирован — пользователь больше не получает рассылок; прочие ошибки — в лог и в отчёт."""
+    report = {"sent": 0, "blocked": 0, "failed": 0}
+    for user_id in await store.user_ids():
+        for attempt in range(retries):
+            try:
+                await bot.send_message(user_id, text)
+                report["sent"] += 1
+                break
+            except TelegramRetryAfter as e:
+                if attempt == retries - 1:
+                    log.warning("Рассылка: флуд-лимит для %s не прошёл за %s попытки", user_id, retries)
+                    report["failed"] += 1
+                    break
+                await asyncio.sleep(e.retry_after)
+            except TelegramForbiddenError:
+                await store.deactivate(user_id)
+                report["blocked"] += 1
+                break
+            except TelegramAPIError as e:
+                log.warning("Рассылка: не доставлено %s: %s", user_id, e)
+                report["failed"] += 1
+                break
+        await asyncio.sleep(pause)
+    return report
+
+
 @dp.message(Command("broadcast"))
 async def broadcast(message: Message, bot: Bot, store: Storage, admin_id: int):
     """Рассылка всем пользователям: /broadcast текст (только для админа)."""
@@ -304,15 +340,8 @@ async def broadcast(message: Message, bot: Bot, store: Storage, admin_id: int):
     if not text:
         await message.answer("Использование: /broadcast текст сообщения")
         return
-    sent = 0
-    for user_id in await store.user_ids():
-        try:
-            await bot.send_message(user_id, text)
-            sent += 1
-        except Exception:  # noqa: BLE001, S110 — разбор ошибок рассылки — BOT-004
-            pass
-        await asyncio.sleep(0.05)
-    await message.answer(f"Рассылка завершена: {sent} получателей.")
+    r = await send_all(bot, store, text)
+    await message.answer(f"Рассылка завершена.\nОтправлено: {r['sent']}\nЗаблокировали бота: {r['blocked']}\nОшибки: {r['failed']}")
 
 
 async def main():
