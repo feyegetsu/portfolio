@@ -14,6 +14,9 @@ h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; margin: 0 0 .5em;
 p { margin: 0 0 1em; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Ссылка «к содержимому»: видна только при переходе с клавиатуры */
+.skip { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font-weight: 600; text-decoration: none; }
+.skip:focus { top: 12px; }
 
 .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 20px; }
 .section { padding: 88px 0; }
@@ -40,7 +43,8 @@ a { color: inherit; }
 .kit-toast.show { transform: translate(-50%, 0); }
 
 .foot { display: flex; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap; padding: 28px 0; font-size: 14px; color: var(--muted); }
-.pf-fiction { margin: 0; padding: 0 20px 20px; text-align: center; font-size: 12px; opacity: .65; }
+/* Без opacity: подпись о вымышленных данных должна читаться (контраст как у текста подвала) */
+.pf-fiction { margin: 0; padding: 0 20px 20px; text-align: center; font-size: 13px; color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

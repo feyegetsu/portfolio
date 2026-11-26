@@ -2,17 +2,19 @@
 
 import csv
 import io
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from ..db import utcnow
-from ..deps import DB, CurrentUser, allowed_sites, check_site_access, require
+from ..db import from_local, to_local, utcnow
+from ..auth import CurrentUser, allowed_sites, check_site_access, require
+from ..deps import DB
 from ..models import Booking, CatalogItem, Lead, Order, User
 from ..schemas import (
+    PHONE_RE,
     BookingOut,
     BookingPatch,
     CatalogIn,
@@ -26,20 +28,30 @@ from ..schemas import (
     Stats,
     UserIn,
     UserOut,
+    UserPatch,
 )
 from ..security import hash_password
-from ..sites import SITES
-from .public import check_capacity, slot_lock_key
+from ..sites import DEFAULT_TZ, SITES
+from ..services.booking import release, reserve, slot_lock_key
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
-FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+FORMULA_CHARS = "=+-@＝＋－＠"  # с полноширинными вариантами: часть редакторов их нормализует
 
 
-def _cell(value) -> str:
-    """Защита от CSV-инъекции: текст, похожий на формулу, Excel покажет как текст, а не выполнит."""
+def _cell(value, phone: bool = False) -> str:
+    """Защита от CSV-инъекции: текст, похожий на формулу, Excel покажет как текст, а не выполнит.
+
+    Смотрим первый непробельный символ: пробелы и переводы строк перед «=» часть редакторов обрезает.
+    Нормализованный телефон (+цифры) формулой быть не может, его не трогаем — иначе Excel покажет '+7…
+    """
     text = str(value)
-    return "'" + text if text.startswith(FORMULA_START) else text
+    if phone and PHONE_RE.match(text):
+        return text
+    if text.startswith(("\t", "\r")) or text.lstrip(" \t\r\n")[:1] in tuple(FORMULA_CHARS):
+        return "'" + text
+    return text
+
 
 Limit = Annotated[int, Query(ge=1, le=200)]
 Offset = Annotated[int, Query(ge=0)]
@@ -76,9 +88,9 @@ def list_leads(user: CurrentUser, db: DB, site: str | None = None, status_: Anno
     query = _scope(Lead, user, site)
     if status_:
         query = query.where(Lead.status == status_)
-    if q:
-        like = f"%{q.strip()}%"
-        query = query.where(or_(Lead.name.ilike(like), Lead.phone.ilike(like), Lead.email.ilike(like), Lead.message.ilike(like)))
+    if q and q.strip():
+        # Без учёта регистра и в SQLite, и в PostgreSQL; % и _ в запросе ищутся как обычные символы
+        query = query.where(Lead.search_text.contains(q.strip().casefold(), autoescape=True))
     return _page(db, query, Lead, limit, offset)
 
 
@@ -98,8 +110,9 @@ def export_leads(user: CurrentUser, db: DB, site: str | None = None):
     writer = csv.writer(buf, delimiter=";")
     writer.writerow(["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"])
     for r in rows:
-        writer.writerow([r.id, r.created_at.strftime("%d.%m.%Y %H:%M"), SITES[r.site].name,
-                         *map(_cell, [r.kind, r.name, r.phone, r.email, r.message]), r.status])
+        # Дата в часовом поясе заведения: в базе UTC, а владелец ждёт местное время
+        writer.writerow([r.id, to_local(r.created_at, SITES[r.site].tz).strftime("%d.%m.%Y %H:%M"), SITES[r.site].name,
+                         _cell(r.kind), _cell(r.name), _cell(r.phone, phone=True), _cell(r.email), _cell(r.message), r.status])
     return Response("﻿" + buf.getvalue(), media_type="text/csv; charset=utf-8",
                     headers={"Content-Disposition": 'attachment; filename="leads.csv"'})
 
@@ -108,10 +121,21 @@ def export_leads(user: CurrentUser, db: DB, site: str | None = None):
 
 @router.get("/bookings", response_model=Page[BookingOut])
 def list_bookings(user: CurrentUser, db: DB, site: str | None = None, upcoming: bool = False,
-                  limit: Limit = 50, offset: Offset = 0):
+                  date_from: date | None = None, date_to: date | None = None, limit: Limit = 50, offset: Offset = 0):
+    """С date_from/date_to — расписание на эти дни по времени визита; без них — последние созданные записи."""
     query = _scope(Booking, user, site)
     if upcoming:
-        query = query.where(Booking.starts_at >= utcnow() - timedelta(hours=12), Booking.status == "confirmed")
+        # starts_at — «настенное» время заведения, поэтому и «сейчас» берём в его поясе, а не UTC
+        local_now = to_local(utcnow(), DEFAULT_TZ)
+        query = query.where(Booking.starts_at >= local_now - timedelta(hours=12), Booking.status == "confirmed")
+    if date_from or date_to:
+        if date_from:
+            query = query.where(Booking.starts_at >= datetime.combine(date_from, time.min))
+        if date_to:
+            query = query.where(Booking.starts_at < datetime.combine(date_to + timedelta(days=1), time.min))
+        total = db.scalar(select(func.count()).select_from(query.subquery()))
+        items = db.scalars(query.order_by(Booking.starts_at, Booking.id).limit(limit).offset(offset)).all()
+        return {"items": items, "total": total}
     return _page(db, query, Booking, limit, offset)
 
 
@@ -120,12 +144,13 @@ def update_booking(booking_id: int, body: BookingPatch, user: CurrentUser, db: D
     booking = _get_owned(db, Booking, booking_id, user)
     site = SITES[booking.site]
     if booking.status == "cancelled" and body.status != "cancelled":
-        # Возврат отменённой записи: слот мог уже занять другой клиент, проверяем заново
-        check_capacity(db, site, booking.resource, booking.starts_at, exclude_id=booking.id)
+        # Возврат отменённой записи: слот мог уже занять другой клиент, место занимаем заново
+        reserve(db, site, booking.resource, booking.starts_at)
         booking.slot_lock = slot_lock_key(site, booking.resource, booking.starts_at)
+    elif booking.status != "cancelled" and body.status == "cancelled":
+        release(db, site, booking.resource, booking.starts_at)  # отмена освобождает место
+        booking.slot_lock = None
     booking.status = body.status
-    if body.status == "cancelled":
-        booking.slot_lock = None  # отмена освобождает слот
     try:
         db.commit()
     except IntegrityError:
@@ -199,11 +224,13 @@ def stats(user: CurrentUser, db: DB, site: str | None = None, days: Annotated[in
     orders = _scope(Order, user, site).subquery()
     count = lambda sq, *where: db.scalar(select(func.count()).select_from(sq).where(*where))  # noqa: E731
 
-    since = (utcnow() - timedelta(days=days - 1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    by_day = {(since + timedelta(days=i)).date().isoformat(): 0 for i in range(days)}
+    # Дни считаются по московскому времени: столбик «сегодня» начинается в 00:00 по Москве, а не по UTC
+    first_day = (to_local(utcnow(), DEFAULT_TZ) - timedelta(days=days - 1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    since = from_local(first_day, DEFAULT_TZ)
+    by_day = {(first_day + timedelta(days=i)).date().isoformat(): 0 for i in range(days)}
     for sq in (leads, bookings, orders):
         for (created,) in db.execute(select(sq.c.created_at).where(sq.c.created_at >= since)):
-            key = created.date().isoformat()
+            key = to_local(created, DEFAULT_TZ).date().isoformat()
             if key in by_day:
                 by_day[key] += 1
 
@@ -230,11 +257,20 @@ def list_users(db: DB):
     return db.scalars(select(User).order_by(User.id)).all()
 
 
+def _check_sites(sites: list[str] | None) -> None:
+    if sites is not None and any(s not in SITES for s in sites):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Неизвестный сайт")
+
+
+def _owners_left(db, without: User) -> int:
+    """Сколько владельцев останется, если этот пользователь перестанет быть владельцем."""
+    return db.scalar(select(func.count()).select_from(User).where(User.role == "owner", User.id != without.id))
+
+
 @router.post("/users", response_model=UserOut, status_code=201, dependencies=[Depends(require("owner"))])
 def add_user(body: UserIn, db: DB):
-    if body.sites is not None and any(s not in SITES for s in body.sites):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Неизвестный сайт")
-    user = User(email=body.email.lower().strip(), name=body.name, role=body.role, sites=body.sites,
+    _check_sites(body.sites)
+    user = User(email=body.email, name=body.name, role=body.role, sites=body.sites,
                 password_hash=hash_password(body.password))
     db.add(user)
     try:
@@ -245,12 +281,40 @@ def add_user(body: UserIn, db: DB):
     return user
 
 
-@router.delete("/users/{user_id}", status_code=204)
-def remove_user(user_id: int, owner: Annotated[User, Depends(require("owner"))], db: DB):
-    if user_id == owner.id:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Нельзя удалить самого себя")
+@router.patch("/users/{user_id}", response_model=UserOut, dependencies=[Depends(require("owner"))])
+def update_user(user_id: int, body: UserPatch, db: DB):
+    """Имя, роль, сайты и пароль сотрудника. Смена роли, сайтов или пароля гасит его выданные токены."""
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Не найдено")
+    changes = body.model_dump(exclude_unset=True)
+    if ("role" in changes and changes["role"] is None) or ("name" in changes and changes["name"] is None):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Роль и имя не могут быть пустыми")
+    _check_sites(changes.get("sites"))
+    if user.role == "owner" and changes.get("role", "owner") != "owner" and not _owners_left(db, user):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Это последний владелец: назначьте другого, прежде чем менять роль")
+    revoke = False
+    for key in ("name", "role", "sites"):
+        if key in changes and changes[key] != getattr(user, key):
+            setattr(user, key, changes[key])
+            revoke = revoke or key != "name"
+    if changes.get("password"):
+        user.password_hash = hash_password(changes["password"])
+        revoke = True
+    if revoke:
+        user.token_version += 1
+    db.commit()
+    return user
+
+
+@router.delete("/users/{user_id}", status_code=204)
+def remove_user(user_id: int, owner: Annotated[User, Depends(require("owner"))], db: DB):
+    if user_id == owner.id:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Нельзя удалить самого себя")
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Не найдено")
+    if user.role == "owner" and not _owners_left(db, user):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Нельзя удалить последнего владельца")
     db.delete(user)
     db.commit()

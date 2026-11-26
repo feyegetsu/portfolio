@@ -4,7 +4,7 @@
 После исправления он должен пройти и дальше защищать от повторения.
 """
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from conftest import PHONE, login
 
@@ -71,15 +71,16 @@ def test_booking_far_future_rejected(client):
 
 # ---------- BUG-05: групповое занятие без лимита мест ----------
 
-def test_group_class_has_capacity_limit(client):
-    slot = {"resource": "Йога", "starts_at": tomorrow(19), "name": "А", "phone": PHONE}
-    codes = [client.post("/api/v1/sites/fitness/bookings", json=slot).status_code for _ in range(5)]
-    # rate limit в тестах = 5, поэтому проверяем через базу: мест в зале не бесконечно
-    from app.db import SessionLocal
-    from app.models import Booking
-    with SessionLocal() as db:
-        n = db.query(Booking).filter_by(site="fitness", resource="Йога").count()
-    assert n < 5 or 409 in codes, "Сервер не знает вместимость зала, можно записать сколько угодно"
+def test_group_class_has_capacity_limit(client, monkeypatch):
+    # TEST-001: ресурс должен существовать, иначе все запросы получают 422 и тест проходит вхолостую
+    from app.limits import rate_limit
+    from app.sites import FITNESS_CLASSES
+    monkeypatch.setattr(rate_limit, "limit", 100)
+    capacity = FITNESS_CLASSES["Тайский бокс"]
+    slot = {"resource": "Тайский бокс", "starts_at": tomorrow(19), "name": "А", "phone": PHONE}
+    codes = [client.post("/api/v1/sites/fitness/bookings", json=slot).status_code for _ in range(capacity + 1)]
+    assert codes[:capacity] == [201] * capacity
+    assert codes[capacity] == 409, "Сервер не знает вместимость зала, можно записать сколько угодно"
 
 
 # ---------- BUG-06: CSV-инъекция в выгрузке заявок ----------
@@ -147,7 +148,22 @@ def test_staff_cannot_see_other_sites(client, owner):
 
 def test_past_local_time_rejected(client):
     # Сайт шлёт «настенное» московское время без пояса. Час назад по Москве = UTC+2 часа.
-    msk_hour_ago = (datetime.utcnow() + timedelta(hours=2)).replace(second=0, microsecond=0).isoformat()
+    msk_hour_ago = (datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=2)).replace(second=0, microsecond=0).isoformat()
     r = client.post("/api/v1/sites/barbershop/bookings", json={
         "resource": "Денис", "starts_at": msk_hour_ago, "name": "А", "phone": PHONE})
     assert r.status_code == 422, "Запись на время, которое в Москве прошло час назад, принята"
+
+
+def test_csv_formulas_after_whitespace_and_phones_intact(client, owner):
+    # SEC-009: формула после пробела или перевода строки тоже нейтрализуется, а телефон остаётся телефоном
+    import csv
+    import io
+    client.post("/api/v1/sites/cafe/leads", json={"kind": "callback", "name": " =1+1", "phone": PHONE, "message": "\n=2+2"})
+    client.post("/api/v1/sites/cafe/leads", json={"kind": "callback", "name": "-5", "message": "@SUM(A1)", "phone": PHONE})
+    text = client.get("/api/v1/admin/leads.csv", headers=owner).text.lstrip("\ufeff")
+    rows = {r[0]: r for r in csv.reader(io.StringIO(text), delimiter=";")}
+    first, second = rows["1"], rows["2"]
+    assert first[4] == "'=1+1"  # имя обрезается при сохранении (BUG-015), формула всё равно нейтрализована
+    assert first[7] == "'\n=2+2"
+    assert first[5] == "+79001234567", "Телефон в выгрузке с апострофом перестаёт быть телефоном"
+    assert second[4] == "'-5" and second[7] == "'@SUM(A1)"

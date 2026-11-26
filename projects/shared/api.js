@@ -3,7 +3,7 @@
  *
  * Два режима с одинаковым интерфейсом:
  *  - remote: запросы к бэкенду из /backend (FastAPI). Включается параметром ?api=https://адрес-api
- *            (запоминается в браузере, ?api=off возвращает демо) или переменной window.PORTFOLIO_API;
+ *            (только в этой вкладке, ?api=off возвращает демо) или переменной window.PORTFOLIO_API;
  *  - demo:   тот же контракт и те же правила (валидация, занятые слоты, цены из каталога, роли),
  *            но данные хранятся в localStorage. Так всё работает на GitHub Pages без сервера,
  *            а заявка с сайта появляется в админке, открытой в соседней вкладке, без перезагрузки.
@@ -14,20 +14,22 @@
   // Правила сайтов и каталоги — копия backend/app/sites.py и seed.py. Демо-режим ведёт себя как настоящий сервер.
   /* RULES:START — сгенерировано из backend/app/sites.py и seed.py командой `python -m app.rules_export`, руками не править */
   const SITES = [
-    {"slug": "cafe", "name": "Кофейня «Зерно»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "florist", "name": "Пион & Ко", "leads": true, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 390, "freeFrom": 5000, "sized": [], "sizes": [], "extras": [], "promos": {}}},
-    {"slug": "barbershop", "name": "Барбершоп BLADE", "leads": false, "bookings": true, "exclusive": true, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 60, "hours": [10, 21], "horizon": 30, "resources": {"Артём": null, "Денис": null, "Игорь": null}, "capacity": null},
-    {"slug": "dental", "name": "Стоматология «Белая линия»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "fitness", "name": "Фитнес-клуб PULSE", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [7, 22], "horizon": 14, "resources": {"Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16}, "capacity": null},
-    {"slug": "autoservice", "name": "Автосервис «МоторЛайн»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "realty", "name": "Агентство «Квадрат»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "saas", "name": "Taskly", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null},
-    {"slug": "miniapp", "name": "Сытый Лис", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": ["Пицца"], "sizes": [["25 см", -120], ["30 см", 0], ["35 см", 170]], "extras": [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]], "promos": {"FOX10": 10}}},
-    {"slug": "restaurant", "name": "Ресторан «Терруар»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [18, 23], "horizon": 30, "resources": null, "capacity": 10},
-    {"slug": "sushi", "name": "Суши «Кайсэн»", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": [], "sizes": [], "extras": [], "promos": {}}},
-    {"slug": "gastrobar", "name": "Гастробар «Соль и Солод»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [12, 24], "horizon": 60, "resources": null, "capacity": 20},
-    {"slug": "bar", "name": "Бар «Полночь»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [19, 2], "horizon": 30, "resources": null, "capacity": 8},
+    {"slug": "cafe", "name": "Кофейня «Зерно»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "florist", "name": "Пион & Ко", "leads": true, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null, "pricing": {"delivery": 390, "freeFrom": 5000, "sized": [], "sizes": [], "extras": [], "promos": {}}},
+    {"slug": "barbershop", "name": "Барбершоп BLADE", "leads": false, "bookings": true, "exclusive": true, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 60, "hours": [10, 21], "horizon": 30, "resources": {"Артём": null, "Денис": null, "Игорь": null}, "capacity": null, "schedule": null},
+    {"slug": "dental", "name": "Стоматология «Белая линия»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "fitness", "name": "Фитнес-клуб PULSE", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [7, 22], "horizon": 14, "resources": {"Утренняя йога": 14, "Функциональный тренинг": 16, "Пилатес": 12, "Сайкл": 20, "Бокс для начинающих": 12, "Кроссфит": 15, "Zumba": 25, "Тайский бокс": 10, "Стретчинг": 18, "Pump": 16}, "capacity": null, "schedule": null},
+    {"slug": "autoservice", "name": "Автосервис «МоторЛайн»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "realty", "name": "Агентство «Квадрат»", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "saas", "name": "Taskly", "leads": true, "bookings": false, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null},
+    {"slug": "miniapp", "name": "Сытый Лис", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": ["Пицца"], "sizes": [["25 см", -120], ["30 см", 0], ["35 см", 170]], "extras": [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]], "promos": {"FOX10": 10}}},
+    {"slug": "restaurant", "name": "Ресторан «Терруар»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [18, 23], "horizon": 30, "resources": null, "capacity": 10, "schedule": {"1": [18, 23], "2": [18, 23], "3": [18, 23], "4": [18, 23], "5": [18, 23], "6": [18, 23]}},
+    {"slug": "sushi", "name": "Суши «Кайсэн»", "leads": false, "bookings": false, "exclusive": false, "orders": true, "catalog": true, "tz": "Europe/Moscow", "step": 30, "hours": [10, 22], "horizon": 60, "resources": null, "capacity": null, "schedule": null, "pricing": {"delivery": 199, "freeFrom": 1500, "sized": [], "sizes": [], "extras": [], "promos": {}}},
+    {"slug": "gastrobar", "name": "Гастробар «Соль и Солод»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [12, 2], "horizon": 60, "resources": null, "capacity": 20, "schedule": {"0": [12, 24], "1": [12, 24], "2": [12, 24], "3": [12, 24], "4": [12, 2], "5": [12, 2], "6": [12, 2]}},
+    {"slug": "bar", "name": "Бар «Полночь»", "leads": true, "bookings": true, "exclusive": false, "orders": false, "catalog": false, "tz": "Europe/Moscow", "step": 30, "hours": [19, 2], "horizon": 30, "resources": null, "capacity": 8, "schedule": {"2": [19, 2], "3": [19, 2], "4": [19, 2], "5": [19, 2], "6": [19, 2]}},
   ];
+  // Предельные длины полей форм (backend/app/schemas.py LIMITS)
+  const LIMITS = {"kind": 40, "name": 100, "email": 200, "message": 2000, "data": 4000, "resource": 100, "service": 100, "items": 50, "ref": 60, "item_name": 200, "address": 300, "comment": 1000, "promo": 30, "catalog_name": 200};
   // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте
   const CATALOGS = {
     miniapp: [["1", "Маргарита", "Пицца", 549], ["2", "Пепперони", "Пицца", 649], ["3", "Овощная", "Пицца", 599], ["4", "Четыре сезона", "Пицца", 699], ["5", "Классик", "Бургеры", 429], ["6", "Пулд-порк", "Бургеры", 469], ["7", "Бургер + фри", "Бургеры", 549], ["8", "Филадельфия", "Роллы", 589], ["9", "Сет «Лис»", "Роллы", 1590], ["10", "Нигири микс", "Роллы", 690], ["11", "Боул с курицей", "Боулы", 459], ["12", "Поке с лососем", "Боулы", 549], ["13", "Паста с морепродуктами", "Горячее", 589], ["14", "Пенне арабьята", "Горячее", 399], ["15", "Стейк с фри", "Горячее", 890], ["16", "Лимонады", "Напитки", 219]],
@@ -39,7 +41,7 @@
   const SITE = Object.fromEntries(SITES.map((s) => [s.slug, s]));
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
 
-  /* ENGINE:START — чистые функции расчёта: tools/parity.mjs гоняет их на тех же примерах, что и pytest */
+  /* ENGINE:START — чистые функции расчёта и проверки: tools/parity.mjs гоняет их на тех же примерах, что и pytest */
   class ApiError extends Error {
     constructor(message, status) {
       super(message);
@@ -47,6 +49,33 @@
     }
   }
 
+  // Как extra="forbid" на сервере: неизвестное поле — 422, а не тихая потеря данных из-за опечатки
+  const onlyFields = (body, allowed) => {
+    const extra = Object.keys(body || {}).find((k) => !allowed.includes(k));
+    if (extra) throw new ApiError(`Лишнее поле: ${extra}`, 422);
+  };
+  const FIELDS = {
+    lead: ["kind", "name", "phone", "email", "message", "data", "website"],
+    booking: ["resource", "service", "starts_at", "name", "phone", "website"],
+    order: ["items", "name", "phone", "address", "mode", "comment", "promo", "website"],
+    item: ["ref", "name", "qty", "price"],
+    catalog: ["ref", "name", "category", "price", "active"],
+    catalogPatch: ["name", "price", "active"],
+    user: ["email", "name", "password", "role", "sites"],
+    userPatch: ["name", "role", "sites", "password"],
+  };
+  // Длины и обязательность полей, как в схемах сервера (LIMITS генерируется из backend/app/schemas.py)
+  const text = (v) => (v === undefined || v === null ? "" : String(v));
+  const checkLen = (value, key, label) => {
+    if (text(value).length > LIMITS[key]) throw new ApiError(`${label}: не больше ${LIMITS[key]} символов`, 422);
+  };
+  const required = (value, label) => {
+    const v = text(value).trim();
+    if (!v) throw new ApiError(`${label}: обязательное поле`, 422);
+    return v;
+  };
+  // Скрытое поле-ловушка: люди его не заполняют, боты заполняют. Отвечаем как обычно, но ничего не сохраняем
+  const isSpam = (b) => !!text(b.website).trim();
   const normalizePhone = (v) => {
     const cleaned = String(v || "").replace(/[^\d+]/g, "");
     if (!/^\+?\d{10,15}$/.test(cleaned)) throw new ApiError("Некорректный номер телефона", 422);
@@ -59,15 +88,26 @@
   };
 
   // Расчёт заказа как на сервере (backend/app/pricing.py): цена из каталога, размеры, добавки, промокод, доставка
+  const MAX_QTY = 99, MAX_UNITS = 200;
   function priceOrder(rules, catalog, items, mode, promo) {
     const bad = (m) => new ApiError(m, 422);
-    const lines = items.filter((i) => !["delivery", "promo"].includes(String(i.ref))).map((i) => {
+    // Одинаковые позиции из разных строк склеиваем, как _merge на сервере: порядок — по первому появлению
+    const merged = new Map();
+    for (const i of items) {
+      const ref = String(i.ref);
+      if (["delivery", "promo"].includes(ref)) continue;
+      const qty = Number(i.qty);
+      if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) throw bad("Количество от 1 до 99");
+      if (merged.has(ref)) merged.get(ref).qty += qty;
+      else merged.set(ref, { ...i, ref, qty });
+    }
+    const lines = [...merged.values()].map((i) => {
       const parts = String(i.ref || "").split(":");
       const base = catalog.find((c) => c.ref === parts[0]);
       if (!base) throw bad(`Позиции «${i.name || i.ref}» нет в меню, обновите страницу`);
       if (!base.active) throw new ApiError(`«${base.name}» закончилось`, 409);
-      const qty = Number(i.qty);
-      if (!Number.isInteger(qty) || qty < 1 || qty > 99) throw bad("Количество от 1 до 99");
+      const qty = i.qty;
+      if (qty > MAX_QTY) throw bad(`«${base.name}»: не больше ${MAX_QTY} шт. в одном заказе`);
       let price = base.price;
       const mods = [];
       if (parts.length > 1) {
@@ -87,6 +127,7 @@
       return { ref: String(i.ref), name: base.name + (mods.length ? ` (${mods.join(", ")})` : ""), qty, price };
     });
     if (!lines.length) throw bad("Корзина пуста");
+    if (lines.reduce((t, l) => t + l.qty, 0) > MAX_UNITS) throw bad(`Не больше ${MAX_UNITS} штук в одном заказе`);
     const subtotal = lines.reduce((t, l) => t + l.price * l.qty, 0);
     let discount = 0;
     const code = String(promo || "").trim().toUpperCase();
@@ -110,6 +151,52 @@
     return new Date(+p.year, p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
   }
 
+  // Расписание как Site.opening_day на сервере: окно записи по дням недели (0 — понедельник), ночные часы
+  // относятся к дню открытия — запись на 01:00 четверга это вечер среды
+  const evening = ([o, c], m) => (o < c ? m >= o * 60 && m < c * 60 : m >= o * 60);
+  const night = ([o, c], m) => o >= c && m < c * 60;
+  const weekday = (d) => (d.getDay() + 6) % 7;
+  const scheduleOf = (s) => s.schedule || Object.fromEntries([...Array(7)].map((_, i) => [i, s.hours]));
+  function openingDay(s, t) {
+    const m = t.getHours() * 60 + t.getMinutes(), wd = weekday(t), sched = scheduleOf(s);
+    if (sched[wd] && evening(sched[wd], m)) return wd;
+    const prev = (wd + 6) % 7;
+    if (sched[prev] && night(sched[prev], m)) return prev;
+    return null;
+  }
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  // Все слоты записи, которые относятся к дню открытия day ("YYYY-MM-DD"), включая ночные после полуночи
+  function daySlots(s, day) {
+    const base = new Date(`${day}T00:00:00`);
+    const hours = scheduleOf(s)[weekday(base)];
+    if (!hours) return [];
+    const [o, c] = hours, end = (o < c ? c : c + 24) * 60, out = [];
+    for (let m = o * 60; m < end; m += s.step) {
+      const d = new Date(base);
+      d.setMinutes(m);
+      out.push({ time: `${pad2(d.getHours())}:${pad2(d.getMinutes())}`, starts_at: `${ymd(d)}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:00` });
+    }
+    return out;
+  }
+
+  // Время из базы (UTC) в «настенное» время заведения, как to_local на сервере
+  const TZ = "Europe/Moscow";
+  const localParts = (v, tz = TZ) => Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date(v)).map((x) => [x.type, x.value]));
+  const localDay = (v, tz) => { const p = localParts(v, tz); return `${p.year}-${p.month}-${p.day}`; };
+  const localStamp = (v, tz) => { const p = localParts(v, tz); return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`; };
+  // Время записи из запроса в часовом поясе заведения, как local_time на сервере: без пояса — уже местное
+  function toSiteTime(value, tz) {
+    const v = String(value || "");
+    if (!/(?:[zZ]|[+-]\d\d:?\d\d)$/.test(v)) return v.slice(0, 16) + ":00";
+    const d = new Date(v);
+    if (Number.isNaN(+d)) return v.slice(0, 16) + ":00";
+    const p = localParts(d, tz);
+    return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:00`;
+  }
+
   // Правила записи как на сервере: не в прошлом, не дальше горизонта, по сетке, в часы работы, к существующему ресурсу.
   // Время записи — местное время заведения без пояса, как его присылает сайт
   function checkSlot(s, resource, startsAt) {
@@ -120,15 +207,24 @@
     if (t < new Date(+now - 5 * 60000)) throw bad("Это время уже прошло");
     if (t > new Date(+now + s.horizon * 86400000)) throw bad(`Запись открыта на ${s.horizon} дней вперёд`);
     if (t.getMinutes() % s.step) throw bad("Выберите время из расписания");
-    const m = t.getHours() * 60 + t.getMinutes();
-    const [open, close] = s.hours.map((h) => h * 60);
-    if (!(open < close ? m >= open && m < close : m >= open || m < close)) throw bad("В это время мы закрыты");
+    if (openingDay(s, t) === null) throw bad(s.schedule && !s.schedule[weekday(t)] ? "В этот день мы закрыты" : "В это время мы закрыты");
     if (s.resources && !(resource in s.resources)) throw bad("Такого мастера или занятия нет");
   }
   /* ENGINE:END */
+  // Цена позиции каталога, как CatalogIn на сервере: целое от 1 до 10 000 000 (0 — почти всегда стёртое поле)
+  const checkPrice = (v) => {
+    const n = Number(v);
+    if (v === "" || v === null || !Number.isInteger(n) || n < 1 || n > 10000000) throw new ApiError("Цена — целое число от 1 ₽", 422);
+    return n;
+  };
   const newToken = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
-  // Текст, похожий на формулу, Excel покажет как текст, а не выполнит
-  const csvSafe = (v) => (/^[=+\-@\t\r]/.test(String(v ?? "")) ? "'" + v : String(v ?? ""));
+  // Текст, похожий на формулу, Excel покажет как текст, а не выполнит. Как _cell на сервере: смотрим первый
+  // непробельный символ, а нормализованный телефон (+цифры) не трогаем — иначе Excel покажет '+7…
+  const csvSafe = (v, phone = false) => {
+    const s = String(v ?? "");
+    if (phone && /^\+?\d{10,15}$/.test(s)) return s;
+    return /^[\t\r]/.test(s) || /^[=+\-@＝＋－＠]/.test(s.replace(/^[ \t\r\n]+/, "")) ? "'" + s : s;
+  };
 
   // ---------- Выбор режима ----------
   const store = {
@@ -137,20 +233,38 @@
     del(k) { try { localStorage.removeItem(k); } catch {} },
   };
   // Адрес API: в проекте клиента он зашит в window.PORTFOLIO_API, и параметр ссылки игнорируется.
-  // В портфолио ?api= работает, но чужой адрес подключается только после явного подтверждения:
-  // иначе ссылка вида …/admin/?api=https://evil.example увела бы логин и пароль на чужой сервер
+  // В портфолио ?api= работает, но с ограничениями: иначе ссылка вида …/admin/?api=https://evil.example
+  // увела бы логин, пароль и заявки посетителя на чужой сервер.
+  //  - только https (http — лишь для своего компьютера), иначе пароль ушёл бы открытым текстом;
+  //  - чужой адрес — только после подтверждения с полным URL; без вопроса — только KNOWN_APIS;
+  //  - адрес живёт в sessionStorage этой вкладки, а не навсегда в браузере;
+  //  - пока сайт подключён к серверу, сверху висит плашка с его адресом и кнопкой «Отключить».
+  // Свой задеплоенный API впишите сюда, чтобы он подключался без вопроса (адрес из Render, render.yaml)
+  const KNOWN_APIS = [];
+  const session = {
+    get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
+    del(k) { try { sessionStorage.removeItem(k); } catch {} },
+  };
+  store.del("pf-api");  // адрес, запомненный навсегда прежней версией, больше не действует
   const qp = new URLSearchParams(location.search).get("api");
   const isLocal = (u) => { try { return ["localhost", "127.0.0.1", "[::1]"].includes(new URL(u).hostname); } catch { return false; } };
-  const validUrl = (u) => { try { return ["http:", "https:"].includes(new URL(u).protocol); } catch { return false; } };
+  const allowedUrl = (u) => {
+    try {
+      const url = new URL(u);
+      return url.protocol === "https:" || (url.protocol === "http:" && isLocal(u));
+    } catch { return false; }
+  };
   if (!window.PORTFOLIO_API) {
-    if (qp === "off") store.del("pf-api");
-    else if (qp && validUrl(qp)) {
-      const url = qp.replace(/\/$/, "");
-      const ok = isLocal(url) || confirm(`Подключить сайт к серверу ${new URL(url).host}?\n\nЗаявки и пароль от админки будут уходить на этот адрес. Нажимайте «ОК», только если это ваш сервер.`);
-      if (ok) store.set("pf-api", url);
+    if (qp === "off") session.del("pf-api");
+    else if (qp && allowedUrl(qp)) {
+      const url = new URL(qp).origin;
+      const ok = isLocal(url) || KNOWN_APIS.includes(url)
+        || confirm(`Подключить сайт к серверу\n${url}\n\nЗаявки и пароль от админки будут уходить на этот адрес. Нажимайте «ОК», только если это ваш сервер.`);
+      if (ok) session.set("pf-api", url);
     }
   }
-  const BASE = window.PORTFOLIO_API || (qp !== "off" && store.get("pf-api")) || "";
+  const BASE = window.PORTFOLIO_API || (qp !== "off" && session.get("pf-api")) || "";
 
   // =====================================================================
   // remote: настоящий бэкенд
@@ -169,6 +283,10 @@
         throw new ApiError("Сервер недоступен. Проверьте соединение.", 0);
       }
       if (raw && res.ok) return res;
+      // Отвечать должен API, а не что угодно по этому адресу: принимаем только JSON
+      if (res.status !== 204 && !/^application\/json\b/i.test(res.headers.get("content-type") || "")) {
+        throw new ApiError(`Сервер ответил не как API (${res.status})`, res.status || 0);
+      }
       const data = res.status === 204 ? null : await res.json().catch(() => null);
       if (!res.ok) {
         const detail = data && data.detail;
@@ -187,6 +305,7 @@
       base,
       createLead: (site, b) => req("POST", `/api/v1/sites/${site}/leads`, b),
       busySlots: (site, resource, date) => req("GET", `/api/v1/sites/${site}/slots${qs({ resource, date })}`),
+      availability: (site, date, resource) => req("GET", `/api/v1/sites/${site}/availability${qs({ date, resource })}`),
       createBooking: (site, b) => req("POST", `/api/v1/sites/${site}/bookings`, b),
       createOrder: (site, b) => req("POST", `/api/v1/sites/${site}/orders`, b),
       orderStatus: (site, id) => req("GET", `/api/v1/sites/${site}/orders/${id}`),
@@ -196,7 +315,16 @@
         try { sessionStorage.setItem(tokenKey, r.access_token); } catch {}
         return this.me();
       },
-      logout() { try { sessionStorage.removeItem(tokenKey); } catch {} },
+      // Выход гасит токен и на сервере: украденная копия тоже перестаёт действовать
+      async logout() {
+        if (token()) await req("POST", "/api/v1/auth/logout").catch(() => {});
+        try { sessionStorage.removeItem(tokenKey); } catch {}
+      },
+      async changePassword(current, next) {
+        const r = await req("POST", "/api/v1/auth/password", { current_password: current, new_password: next });
+        try { sessionStorage.setItem(tokenKey, r.access_token); } catch {}
+        return null;
+      },
       me: () => (token() ? req("GET", "/api/v1/auth/me") : Promise.resolve(null)),
       admin: {
         leads: (f) => req("GET", `/api/v1/admin/leads${qs(f)}`),
@@ -212,6 +340,7 @@
         stats: (f) => req("GET", `/api/v1/admin/stats${qs(f)}`),
         users: () => req("GET", "/api/v1/admin/users"),
         addUser: (b) => req("POST", "/api/v1/admin/users", b),
+        updateUser: (id, b) => req("PATCH", `/api/v1/admin/users/${id}`, b),
         removeUser: (id) => req("DELETE", `/api/v1/admin/users/${id}`),
         exportLeads: async (f) => (await req("GET", `/api/v1/admin/leads.csv${qs(f)}`, null, { raw: true })).text(),
       },
@@ -232,7 +361,7 @@
     const localIso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
 
     function seedData() {
-      const db = { seq: 1, users: [], leads: [], bookings: [], orders: [], catalog: [] };
+      const db = { seq: 1, users: [], leads: [], bookings: [], orders: [], catalog: [], seeded: [] };
       const id = () => db.seq++;
       const ago = (days, h = 12, m = 0) => { const d = now(); d.setDate(d.getDate() - days); d.setHours(h, m, 0, 0); return iso(d); };
       db.users.push(
@@ -269,19 +398,30 @@
       );
       const menu = CATALOGS.miniapp;
       for (const [ref, name, category, price] of menu) db.catalog.push({ id: id(), site: "miniapp", ref, name, category, price, active: true });
+      db.seeded.push("catalog:miniapp");
       addCatalogs(db);
       return db;
     }
 
-    // Каталоги сайтов, добавленных позже: дописываем в уже сохранённые демо-данные, не трогая остальное
+    // Каталоги сайтов, добавленных позже: дописываем в уже сохранённые демо-данные, не трогая остальное.
+    // Как seed_marks на сервере: каталог заливается один раз, удалённые владельцем позиции не возвращаются
     function addCatalogs(db) {
-      let added = false;
-      for (const [slug, menu] of Object.entries(LATER_CATALOGS)) {
-        if (db.catalog.some((c) => c.site === slug)) continue;
-        for (const [ref, name, category, price] of menu) db.catalog.push({ id: db.seq++, site: slug, ref, name, category, price, active: true });
-        added = true;
+      let changed = false;
+      if (!Array.isArray(db.seeded)) {
+        // Данные, сохранённые до появления отметок: каталоги с позициями уже заливались
+        db.seeded = [...new Set(db.catalog.map((c) => `catalog:${c.site}`))];
+        changed = true;
       }
-      return added;
+      for (const [slug, menu] of Object.entries(LATER_CATALOGS)) {
+        const mark = `catalog:${slug}`;
+        if (db.seeded.includes(mark)) continue;
+        if (!db.catalog.some((c) => c.site === slug)) {
+          for (const [ref, name, category, price] of menu) db.catalog.push({ id: db.seq++, site: slug, ref, name, category, price, active: true });
+        }
+        db.seeded.push(mark);
+        changed = true;
+      }
+      return changed;
     }
 
     function load() {
@@ -298,8 +438,13 @@
       return db;
     }
     function save(db) { store.set(KEY, JSON.stringify(db)); }
-    // Маленькая задержка, как у сети: интерфейс честно показывает состояние «отправляется»
-    const later = (fn) => new Promise((resolve, reject) => setTimeout(() => { try { resolve(fn()); } catch (e) { reject(e); } }, 60));
+    // Маленькая задержка, как у сети: интерфейс честно показывает состояние «отправляется».
+    // Каждая операция читает и пишет базу целиком, поэтому две вкладки (сайт и админка) затёрли бы
+    // изменения друг друга и выдали один id дважды. Блокировка pf-db выполняет операции всех вкладок по очереди
+    const locked = (run) => (navigator.locks ? navigator.locks.request("pf-db", run) : Promise.resolve(run()));
+    const later = (fn) => new Promise((resolve, reject) => setTimeout(() => {
+      locked(() => { try { resolve(fn()); } catch (e) { reject(e); } }).catch(reject);
+    }, 60));
     const site = (slug, flag) => {
       const s = SITE[slug];
       if (!s) throw new ApiError("Сайт не найден", 404);
@@ -350,6 +495,15 @@
       if (capacity && same.length >= capacity) throw new ApiError("На это время мест уже нет", 409);
     }
 
+    // Роль из списка и существующие сайты, как UserIn/UserPatch на сервере; пустой список сайтов запрещён
+    function checkUserFields(b) {
+      if ("role" in b && !ROLE_LEVEL[b.role]) throw new ApiError("Неизвестная роль", 422);
+      if ("sites" in b && b.sites !== null) {
+        if (!Array.isArray(b.sites) || !b.sites.length) throw new ApiError("Выберите хотя бы один сайт", 422);
+        if (b.sites.some((s) => !SITE[s])) throw new ApiError("Неизвестный сайт", 422);
+      }
+    }
+
     const LEAD_STATUSES = ["new", "in_progress", "done", "cancelled"];
     const BOOKING_STATUSES = ["confirmed", "done", "cancelled"];
     const ORDER_STATUSES = ["new", "cooking", "delivering", "done", "cancelled"];
@@ -360,12 +514,20 @@
       base: "",
       createLead: (slug, b) => later(() => {
         site(slug, "leads");
+        onlyFields(b, FIELDS.lead);
+        const kind = required(b.kind, "Тип заявки");
+        checkLen(kind, "kind", "Тип заявки");
+        const name = text(b.name).trim();
+        checkLen(name, "name", "Имя");
+        checkLen(b.email, "email", "E-mail");
+        checkLen(b.message, "message", "Комментарий");
         const phone = b.phone ? normalizePhone(b.phone) : "";
         const email = normalizeEmail(b.email);
+        if (JSON.stringify(b.data || {}).length > LIMITS.data) throw new ApiError("Слишком много данных в заявке", 422);
         if (!phone && !email) throw new ApiError("Укажите телефон или e-mail", 422);
-        if (JSON.stringify(b.data || {}).length > 4000) throw new ApiError("Слишком много данных в заявке", 422);
+        if (isSpam(b)) return { id: 0, status: "new" };
         const db = load();
-        const lead = { id: db.seq++, site: slug, kind: b.kind, name: b.name || "", phone, email, message: b.message || "", data: b.data || {}, status: "new", created_at: iso(now()) };
+        const lead = { id: db.seq++, site: slug, kind, name, phone, email, message: text(b.message), data: b.data || {}, status: "new", created_at: iso(now()) };
         db.leads.push(lead);
         save(db);
         return { id: lead.id, status: lead.status };
@@ -376,28 +538,59 @@
           .filter((b) => b.site === slug && b.resource === resource && b.status !== "cancelled" && b.starts_at.slice(0, 10) === date)
           .map((b) => b.starts_at.slice(11, 16));
       }),
+      // Свободные места по слотам дня, как GET /availability: по вместимости, у мастера — 1 или 0
+      availability: (slug, day, resource) => later(() => {
+        const s = site(slug, "bookings");
+        if (s.resources && !(resource in s.resources)) throw new ApiError("Такого мастера или занятия нет", 422);
+        const db = load();
+        const cap = s.resources ? s.resources[resource] : s.capacity;
+        return daySlots(s, day).map(({ time, starts_at }) => {
+          const same = db.bookings.filter((b) => b.site === slug && b.starts_at === starts_at && b.status !== "cancelled"
+            && (!s.resources || b.resource === resource)).length;
+          return { time, starts_at, left: cap ? Math.max(0, cap - same) : s.exclusive ? (same ? 0 : 1) : null };
+        });
+      }),
       createBooking: (slug, b) => later(() => {
         const s = site(slug, "bookings");
+        onlyFields(b, FIELDS.booking);
+        // Пробелы по краям обрезаются до проверки, как StringConstraints на сервере
+        const name = required(b.name, "Имя"), resource = required(b.resource, "Мастер или занятие");
+        checkLen(name, "name", "Имя");
+        checkLen(resource, "resource", "Мастер или занятие");
+        checkLen(text(b.service).trim(), "service", "Услуга");
         const phone = normalizePhone(b.phone);
-        if (!b.name) throw new ApiError("Укажите имя", 422);
-        const startsAt = String(b.starts_at).slice(0, 16) + ":00";
-        checkSlot(s, b.resource, startsAt);
+        const startsAt = toSiteTime(b.starts_at, s.tz);
+        checkSlot(s, resource, startsAt);
+        if (isSpam(b)) return { id: 0, status: "confirmed" };
         const db = load();
-        checkTaken(db, s, b.resource, startsAt);
-        const booking = { id: db.seq++, site: slug, resource: b.resource, service: b.service || "", starts_at: startsAt, name: b.name, phone, status: "confirmed", created_at: iso(now()) };
+        checkTaken(db, s, resource, startsAt);
+        const booking = { id: db.seq++, site: slug, resource, service: String(b.service || "").trim(), starts_at: startsAt, name, phone, status: "confirmed", created_at: iso(now()) };
         db.bookings.push(booking);
         save(db);
         return { id: booking.id, status: booking.status };
       }),
       createOrder: (slug, b) => later(() => {
         const s = site(slug, "orders");
+        onlyFields(b, FIELDS.order);
+        (b.items || []).forEach((i) => onlyFields(i, FIELDS.item));
+        const name = required(b.name, "Имя");
+        checkLen(name, "name", "Имя");
         const phone = normalizePhone(b.phone);
-        if (!b.items || !b.items.length) throw new ApiError("Корзина пуста", 422);
-        if ((b.mode || "delivery") === "delivery" && !String(b.address || "").trim()) throw new ApiError("Укажите адрес доставки", 422);
+        if (!Array.isArray(b.items) || !b.items.length) throw new ApiError("Корзина пуста", 422);
+        if (b.items.length > LIMITS.items) throw new ApiError(`Не больше ${LIMITS.items} строк в заказе`, 422);
+        b.items.forEach((i) => { required(i.ref, "Позиция"); checkLen(i.ref, "ref", "Позиция"); checkLen(i.name, "item_name", "Название"); });
+        const mode = b.mode === undefined ? "delivery" : b.mode;
+        if (!["delivery", "pickup"].includes(mode)) throw new ApiError("Способ получения: delivery или pickup", 422);
+        const address = text(b.address).trim();
+        checkLen(address, "address", "Адрес");
+        checkLen(b.comment, "comment", "Комментарий");
+        checkLen(b.promo, "promo", "Промокод");
+        if (mode === "delivery" && !address) throw new ApiError("Укажите адрес доставки", 422);
+        if (isSpam(b)) return { id: 0, status: "new" };
         const db = load();
         // Цены, доставку и промокод считаем по каталогу, как сервер: цена из запроса не используется
-        const items = priceOrder(s.pricing, db.catalog.filter((c) => c.site === slug), b.items, b.mode || "delivery", b.promo);
-        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name: b.name, phone, address: b.address || "", mode: b.mode || "delivery", comment: b.comment || "", status: "new", created_at: iso(now()) };
+        const items = priceOrder(s.pricing, db.catalog.filter((c) => c.site === slug), b.items, mode, b.promo);
+        const order = { id: db.seq++, token: newToken(), site: slug, items, total: items.reduce((t, i) => t + i.price * i.qty, 0), name, phone, address, mode, comment: text(b.comment), status: "new", created_at: iso(now()) };
         db.orders.push(order);
         save(db);
         return { id: order.id, status: order.status, token: order.token, total: order.total, items: order.items.map(({ name, qty }) => ({ name, qty })) };
@@ -416,7 +609,17 @@
         store.set(SESSION, String(u.id));
         return publicUser(u);
       }),
-      logout() { store.del(SESSION); },
+      async logout() { store.del(SESSION); },
+      changePassword: (current, next) => later(() => {
+        const u = requireUser();
+        if (String(next || "").length < 8) throw new ApiError("Новый пароль — от 8 символов", 422);
+        const db = load();
+        const me = db.users.find((x) => x.id === u.id);
+        if (me.password !== current) throw new ApiError("Текущий пароль указан неверно", 403);
+        me.password = next;
+        save(db);
+        return null;
+      }),
       me: () => later(() => { const u = user(); return u ? publicUser(u) : null; }),
 
       admin: {
@@ -430,9 +633,16 @@
           return page(list, f);
         }),
         updateLead: (id, status) => later(() => { checkStatus(status, LEAD_STATUSES); return patch("leads", id, { status }, requireUser()); }),
+        // С date_from/date_to — расписание на эти дни по времени визита, как на сервере
         bookings: (f = {}) => later(() => {
           let list = scoped(load().bookings, requireUser(), f.site);
           if (f.upcoming) list = list.filter((b) => b.status === "confirmed" && new Date(b.starts_at) > new Date(Date.now() - 12 * 3600e3));
+          if (f.date_from || f.date_to) {
+            list = list.filter((b) => (!f.date_from || b.starts_at.slice(0, 10) >= f.date_from) && (!f.date_to || b.starts_at.slice(0, 10) <= f.date_to))
+              .sort((a, b) => (a.starts_at < b.starts_at ? -1 : a.starts_at > b.starts_at ? 1 : a.id - b.id));
+            const offset = Number(f.offset || 0), limit = Number(f.limit || 50);
+            return { items: clone(list.slice(offset, offset + limit)), total: list.length };
+          }
           return page(list, f);
         }),
         updateBooking: (id, status) => later(() => {
@@ -453,21 +663,28 @@
         addCatalog: (slug, b) => later(() => {
           const u = requireUser("admin");
           site(slug, "catalog");
+          onlyFields(b, FIELDS.catalog);
           if (!allowed(u).includes(slug)) throw new ApiError("Нет доступа к этому сайту", 403);
           const db = load();
+          required(b.ref, "Код позиции");
+          checkLen(b.ref, "ref", "Код позиции");
+          if (typeof b.name !== "string" || !b.name.length) throw new ApiError("Название: обязательное поле", 422);
+          checkLen(b.name, "catalog_name", "Название");
           if (db.catalog.some((c) => c.site === slug && c.ref === b.ref)) throw new ApiError("Позиция с таким кодом уже есть в каталоге", 409);
-          const item = { id: db.seq++, site: slug, ref: b.ref, name: b.name, category: b.category || "", price: Number(b.price), active: b.active !== false };
+          const item = { id: db.seq++, site: slug, ref: b.ref, name: b.name, category: b.category || "", price: checkPrice(b.price), active: b.active !== false };
           db.catalog.push(item);
           save(db);
           return clone(item);
         }),
         updateCatalog: (id, b) => later(() => {
+          onlyFields(b, FIELDS.catalogPatch);
           const changes = {};
-          if (b.name !== undefined) changes.name = b.name;
-          if (b.price !== undefined) {
-            if (!(Number(b.price) >= 0)) throw new ApiError("Цена должна быть числом", 422);
-            changes.price = Number(b.price);
+          if (b.name !== undefined) {
+            if (typeof b.name !== "string" || !b.name.length) throw new ApiError("Название: обязательное поле", 422);
+            checkLen(b.name, "catalog_name", "Название");
+            changes.name = b.name;
           }
+          if (b.price !== undefined) changes.price = checkPrice(b.price);
           if (b.active !== undefined) changes.active = !!b.active;
           return patch("catalog", id, changes, requireUser("admin"));
         }),
@@ -487,10 +704,11 @@
           const leads = scoped(db.leads, u, f.site), bookings = scoped(db.bookings, u, f.site), orders = scoped(db.orders, u, f.site);
           const days = Number(f.days || 14);
           const byDay = {};
-          for (let i = days - 1; i >= 0; i--) { const d = now(); d.setDate(d.getDate() - i); byDay[d.toISOString().slice(0, 10)] = 0; }
+          // Дни по московскому времени, как на сервере
+          for (let i = days - 1; i >= 0; i--) { const d = siteNow(TZ); d.setDate(d.getDate() - i); byDay[ymd(d)] = 0; }
           const bySite = {};
           for (const x of [...leads, ...bookings, ...orders]) {
-            const k = x.created_at.slice(0, 10);
+            const k = localDay(x.created_at);
             if (k in byDay) byDay[k]++;
             bySite[x.site] = (bySite[x.site] || 0) + 1;
           }
@@ -505,12 +723,36 @@
         users: () => later(() => { requireUser("owner"); return load().users.map(publicUser); }),
         addUser: (b) => later(() => {
           requireUser("owner");
-          if (!b.email || !b.name || !b.password || b.password.length < 8) throw new ApiError("Заполните e-mail, имя и пароль от 8 символов", 422);
+          onlyFields(b, FIELDS.user);
+          const email = String(b.email || "").trim().toLowerCase();
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) throw new ApiError("Некорректный e-mail", 422);
+          const name = String(b.name || "").trim();
+          if (!name || !b.password || b.password.length < 8) throw new ApiError("Заполните имя и пароль от 8 символов", 422);
+          const role = b.role || "staff";
+          checkUserFields({ role, sites: b.sites ?? null });
           const db = load();
-          const email = b.email.trim().toLowerCase();
           if (db.users.some((u) => u.email === email)) throw new ApiError("Пользователь с таким e-mail уже есть", 409);
-          const u = { id: db.seq++, email, name: b.name, password: b.password, role: b.role || "staff", sites: b.sites ?? null };
+          const u = { id: db.seq++, email, name, password: b.password, role, sites: b.sites ?? null };
           db.users.push(u);
+          save(db);
+          return publicUser(u);
+        }),
+        updateUser: (id, b) => later(() => {
+          requireUser("owner");
+          onlyFields(b, FIELDS.userPatch);
+          const db = load();
+          const u = db.users.find((x) => x.id === Number(id));
+          if (!u) throw new ApiError("Не найдено", 404);
+          checkUserFields(b);
+          if ("name" in b && !String(b.name || "").trim()) throw new ApiError("Имя не может быть пустым", 422);
+          if ("password" in b && String(b.password || "").length < 8) throw new ApiError("Пароль — от 8 символов", 422);
+          if (u.role === "owner" && "role" in b && b.role !== "owner" && !db.users.some((x) => x.role === "owner" && x.id !== u.id)) {
+            throw new ApiError("Это последний владелец: назначьте другого, прежде чем менять роль", 422);
+          }
+          if ("name" in b) u.name = String(b.name).trim();
+          if ("role" in b) u.role = b.role;
+          if ("sites" in b) u.sites = b.sites;
+          if ("password" in b) u.password = b.password;
           save(db);
           return publicUser(u);
         }),
@@ -518,7 +760,10 @@
           const me = requireUser("owner");
           if (Number(id) === me.id) throw new ApiError("Нельзя удалить самого себя", 422);
           const db = load();
-          db.users = db.users.filter((u) => u.id !== Number(id));
+          const u = db.users.find((x) => x.id === Number(id));
+          if (!u) throw new ApiError("Не найдено", 404);
+          if (u.role === "owner" && !db.users.some((x) => x.role === "owner" && x.id !== u.id)) throw new ApiError("Нельзя удалить последнего владельца", 422);
+          db.users = db.users.filter((x) => x !== u);
           save(db);
           return null;
         }),
@@ -526,7 +771,7 @@
           const rows = scoped(load().leads, requireUser(), f.site).sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
           const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
           const lines = [["id", "Дата", "Сайт", "Тип", "Имя", "Телефон", "E-mail", "Комментарий", "Статус"].join(";")];
-          for (const r of rows) lines.push([r.id, new Date(r.created_at).toLocaleString("ru-RU"), SITE[r.site].name, ...[r.kind, r.name, r.phone, r.email, r.message].map(csvSafe), r.status].map(cell).join(";"));
+          for (const r of rows) lines.push([r.id, localStamp(r.created_at, SITE[r.site].tz), SITE[r.site].name, csvSafe(r.kind), csvSafe(r.name), csvSafe(r.phone, true), csvSafe(r.email), csvSafe(r.message), r.status].map(cell).join(";"));
           return "﻿" + lines.join("\n");
         }),
       },
@@ -539,11 +784,13 @@
       },
       // Только для демо: «кухня» сама двигает заказ, пока его статус не поменяли руками в админке
       demoAdvanceOrder(id, next) {
-        const db = load();
-        const o = db.orders.find((x) => x.id === Number(id));
-        if (!o || o.touched || o.status === "done" || o.status === "cancelled") return;
-        o.status = next;
-        save(db);
+        locked(() => {
+          const db = load();
+          const o = db.orders.find((x) => x.id === Number(id));
+          if (!o || o.touched || o.status === "done" || o.status === "cancelled") return;
+          o.status = next;
+          save(db);
+        }).catch(() => {});
       },
       reset() { store.del(KEY); store.del(SESSION); load(); },
     };
@@ -552,6 +799,19 @@
   const api = BASE ? remoteApi(BASE) : demoApi();
   api.SITES = SITES;
   api.ApiError = ApiError;
+
+  // ---------- Правила и время заведения для форм ----------
+  // Списки дней и времени на сайтах строятся из тех же правил, что проверяет сервер, и по часам заведения,
+  // а не браузера: посетитель может сидеть в другом часовом поясе
+  api.rules = (slug) => (SITE[slug] ? JSON.parse(JSON.stringify(SITE[slug])) : null);
+  api.siteNow = (slug) => siteNow((SITE[slug] || {}).tz);
+  api.siteToday = (slug, plusDays = 0) => { const d = api.siteNow(slug); d.setDate(d.getDate() + plusDays); return ymd(d); };
+  api.daySlots = (slug, day) => daySlots(SITE[slug], day);
+  // Слоты дня, на которые ещё можно записаться: не раньше чем через leadMinutes по времени заведения
+  api.openSlots = (slug, day, leadMinutes = 30) => {
+    const edge = +api.siteNow(slug) + leadMinutes * 60000;
+    return api.daySlots(slug, day).filter((x) => +new Date(x.starts_at) > edge);
+  };
 
   // ---------- Помощники для форм на сайтах ----------
 
@@ -606,6 +866,7 @@
         .pf-ask input { width: 100%; box-sizing: border-box; margin: 0; padding: 13px 14px; border: 1.5px solid #d9dce2; border-radius: 12px; background: #fff; color: #14161a; font: 16px system-ui, sans-serif; outline: none; }
         .pf-ask input:focus { border-color: ${accent}; box-shadow: 0 0 0 3px color-mix(in srgb, ${accent} 25%, transparent); }
         .pf-ask__ok { margin: 4px 0 0; padding: 14px; border: 0; border-radius: 12px; background: ${accent}; color: ${accentText}; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+        .pf-ask__forget { margin: -2px 0 0; padding: 0; border: 0; background: none; color: #4b5059; font: 13px system-ui, sans-serif; text-decoration: underline; cursor: pointer; justify-self: start; }
         .pf-ask__x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: #f1f2f4; color: #14161a; font-size: 16px; cursor: pointer; }`;
       document.head.appendChild(css);
     }
@@ -618,11 +879,19 @@
       <input name="name" required placeholder="Имя" autocomplete="name" aria-label="Имя">
       <input name="phone" type="tel" required placeholder="Телефон" autocomplete="tel" aria-label="Телефон">
       <button class="pf-ask__ok" value="ok">Записаться</button>
+      <button class="pf-ask__forget" type="button" ${saved.name || saved.phone ? "" : "hidden"}>Забыть мои контакты</button>
     </form>`;
     document.body.appendChild(dlg);
     const f = dlg.querySelector("form");
     f.elements.name.value = saved.name || "";
     f.elements.phone.value = saved.phone || "";
+    // Имя и телефон хранятся в браузере до удаления: удалить можно здесь же (см. политику обработки данных)
+    dlg.querySelector(".pf-ask__forget").addEventListener("click", (e) => {
+      try { localStorage.removeItem("pf-contact"); } catch {}
+      f.elements.name.value = f.elements.phone.value = "";
+      e.currentTarget.hidden = true;
+      f.elements.name.focus();
+    });
     // Завершаем по отправке формы и по Esc, не дожидаясь события close: в фоновых вкладках оно может запаздывать
     let finished = false;
     const finish = (ok) => {
@@ -641,12 +910,37 @@
     dlg.showModal();
   });
 
+  // ---------- Плашка «подключено к серверу» ----------
+  // Посетитель должен видеть, что формы и вход уходят не в демо, а на конкретный сервер, и уметь отключиться
+  if (api.mode === "remote" && !window.PORTFOLIO_API) {
+    const showBar = () => {
+      const off = new URL(location.href);
+      off.searchParams.set("api", "off");
+      const bar = document.createElement("div");
+      bar.className = "pf-remote";
+      bar.setAttribute("role", "status");
+      bar.style.cssText = "position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483001;display:flex;gap:10px;align-items:center;"
+        + "max-width:calc(100% - 16px);padding:7px 8px 7px 14px;border-radius:999px;background:#7a1f12;color:#fff;"
+        + "font:600 13px/1.3 system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 10px 24px -12px rgba(0,0,0,.6)";
+      const text = document.createElement("span");
+      text.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
+      text.textContent = `Подключено к серверу ${new URL(BASE).host}`;
+      const link = document.createElement("a");
+      link.href = off.href;
+      link.textContent = "Отключить";
+      link.style.cssText = "flex-shrink:0;padding:4px 10px;border-radius:999px;background:#fff;color:#7a1f12;text-decoration:none";
+      bar.append(text, link);
+      document.body.appendChild(bar);
+    };
+    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", showBar) : showBar();
+  }
+
   // ---------- Плашка «это демо» над формами ----------
   // Посетитель портфолио мог бы принять форму демо-стоматологии за настоящую и оставить заявку «в никуда»
   if (api.mode === "demo" && /\/projects\//.test(location.pathname) && !new URLSearchParams(location.search).has("embed")) {
     const css = document.createElement("style");
     css.textContent = `.pf-demo-note { display: block; margin: 0 0 12px; padding: 8px 12px; border-radius: 10px; font: 500 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
-      background: rgba(127, 127, 127, .12); color: inherit; opacity: .85; text-align: left; }
+      background: rgba(127, 127, 127, .12); color: inherit; text-align: left; }
       .pf-demo-note a { color: inherit; text-decoration: underline; font-weight: 700; }`;
     document.head.appendChild(css);
     const note = () => {
@@ -702,7 +996,7 @@
       .pf-want__go { overflow: hidden; text-overflow: ellipsis; }
       .pf-want__short { display: none; }
       .pf-want.hide { transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none; }
-      .pf-fiction { margin: 14px auto 0; max-width: 1100px; padding: 0 20px; font: 12px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; opacity: .65; text-align: center; }
+      .pf-fiction { margin: 14px auto 0; max-width: 1100px; padding: 0 20px 20px; font: 13px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: inherit; text-align: center; }
       @media (max-width: 520px) { .pf-want { left: 12px; bottom: 12px; font-size: 13px; } .pf-want a { padding: 11px 13px; } .pf-want__back span, .pf-want__long { display: none; } .pf-want__short { display: inline; } }
       @media (prefers-reduced-motion: reduce) { .pf-push, .pf-want { transition: none; } }`;
     document.head.appendChild(css);

@@ -25,7 +25,7 @@
     .pf-gal__x { margin: 0 0 0 auto; width: 42px; height: 42px; border-radius: 50%; border: 0; padding: 0; background: rgba(255, 255, 255, .1); color: #fff; font-size: 18px; cursor: pointer; }
     .pf-gal__x:hover { background: rgba(255, 255, 255, .2); }
     .pf-gal__stage { position: relative; min-height: 0; overflow: hidden; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; padding: 0 70px; touch-action: pan-y; user-select: none; }
-    .pf-gal__img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; transition: opacity .25s, transform .25s; box-shadow: 0 30px 80px -30px #000; }
+    .pf-gal__img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; transition: opacity .25s, transform .25s; box-shadow: 0 30px 80px -30px #000; }
     .pf-gal__img.out { opacity: 0; transform: scale(.98); }
     .pf-gal__nav { position: absolute; top: 50%; translate: 0 -50%; width: 52px; height: 52px; border-radius: 50%; border: 0; padding: 0; margin: 0;
       background: rgba(255, 255, 255, .12); color: #fff; font-size: 22px; cursor: pointer; transition: background .2s; }
@@ -55,7 +55,7 @@
     dlg.innerHTML = `
       <div class="pf-gal__top"><p class="pf-gal__title"></p><span class="pf-gal__count"></span><button class="pf-gal__x" aria-label="Закрыть">✕</button></div>
       <div class="pf-gal__stage">
-        <img class="pf-gal__img" alt="">
+        <img width="600" height="400" class="pf-gal__img" alt="">
         <button class="pf-gal__nav pf-gal__prev" aria-label="Предыдущее фото">‹</button>
         <button class="pf-gal__nav pf-gal__next" aria-label="Следующее фото">›</button>
       </div>
@@ -115,7 +115,7 @@
     if (!dlg) build();
     dlg.querySelector(".pf-gal__title").textContent = album.title;
     dlg.querySelector(".pf-gal__thumbs").innerHTML = album.photos
-      .map(([id, cap], k) => `<button data-i="${k}" aria-label="Фото ${k + 1}${cap ? `: ${cap}` : ""}"><img loading="lazy" src="${thumb(id)}" alt=""></button>`).join("");
+      .map(([id, cap], k) => `<button data-i="${k}" aria-label="Фото ${k + 1}${cap ? `: ${cap}` : ""}"><img width="600" height="400" loading="lazy" src="${thumb(id)}" alt=""></button>`).join("");
     const single = album.photos.length < 2;
     dlg.querySelectorAll(".pf-gal__nav").forEach((b) => { b.hidden = single; });
     dlg.showModal();

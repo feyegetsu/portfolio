@@ -110,7 +110,8 @@ def test_delivery_needs_address(client):
 
 def test_restaurant_table_is_not_exclusive(client):
     # В ресторане на одно время бронируют несколько столов, в отличие от мастера барбершопа
-    evening = TOMORROW.replace(hour=19)
+    # Понедельник у ресторана выходной: берём ближайший вторник
+    evening = next(TOMORROW + timedelta(days=k) for k in range(7) if (TOMORROW + timedelta(days=k)).weekday() == 1).replace(hour=19)
     assert _book(client, site="restaurant", resource="Стол на 2", when=evening).status_code == 201
     assert _book(client, site="restaurant", resource="Стол на 2", when=evening).status_code == 201
 
@@ -123,3 +124,59 @@ def test_sushi_catalog_seeded_and_delivery_counted_by_server(client):
     body = {"items": items, "name": "Иван", "phone": PHONE, "mode": "delivery", "address": "ул. Примерная, 1"}
     r = client.post("/api/v1/sites/sushi/orders", json=body)
     assert client.get(f"/api/v1/sites/sushi/orders/{r.json()['token']}").json()["total"] == 590 + 199
+
+
+def test_duplicate_lines_cannot_bypass_quantity_limit(client):
+    # BUG-014: 50 одинаковых строк по 99 штук проходили как заказ на 4 950 сетов
+    body = {"items": [{"ref": "s2", "qty": 99}] * 50, "name": "Иван", "phone": PHONE, "mode": "pickup"}
+    assert client.post("/api/v1/sites/sushi/orders", json=body).status_code == 422
+
+
+def test_blank_name_rejected(client):
+    # BUG-015: min_length считался до обрезки пробелов, и в админку попадали записи без имени
+    booking = {"resource": "Артём", "starts_at": TOMORROW.isoformat(), "name": "   ", "phone": PHONE}
+    assert client.post("/api/v1/sites/barbershop/bookings", json=booking).status_code == 422
+    assert client.post("/api/v1/sites/barbershop/bookings", json={**booking, "name": "Иван", "resource": "  "}).status_code == 422
+    order = {"items": [{"ref": "s1", "qty": 1}], "name": " \t ", "phone": PHONE, "mode": "pickup"}
+    assert client.post("/api/v1/sites/sushi/orders", json=order).status_code == 422
+    assert client.post("/api/v1/sites/cafe/leads", json={"kind": "   ", "phone": PHONE}).status_code == 422
+    ok = client.post("/api/v1/sites/barbershop/bookings", json={**booking, "name": "  Иван  "})
+    assert ok.status_code == 201
+
+
+def _next_weekday(weekday: int, hour: int) -> datetime:
+    d = TOMORROW
+    while d.weekday() != weekday:
+        d += timedelta(days=1)
+    return d.replace(hour=hour, minute=0)
+
+
+def test_availability(client, monkeypatch):
+    # BUG-005: формы показывают настоящую занятость, а не формулу от даты
+    from app.limits import rate_limit
+    monkeypatch.setattr(rate_limit, "limit", 100)
+    when = _next_weekday(1, 20)  # вторник, ресторан открыт
+    for _ in range(10):
+        assert _book(client, site="restaurant", resource="Стол на 2", when=when).status_code == 201
+    slots = client.get("/api/v1/sites/restaurant/availability", params={"date": when.date().isoformat()}).json()
+    by_time = {s["time"]: s for s in slots}
+    assert by_time["20:00"]["left"] == 0
+    assert by_time["19:30"]["left"] == 10
+    assert by_time["20:00"]["starts_at"] == when.isoformat()
+    assert slots[0]["time"] == "18:00" and slots[-1]["time"] == "22:30"
+    monday = _next_weekday(0, 19).date().isoformat()
+    assert client.get("/api/v1/sites/restaurant/availability", params={"date": monday}).json() == []  # выходной
+
+
+def test_availability_per_class_and_master(client):
+    when = TOMORROW.replace(hour=19, minute=30)
+    _book(client, site="fitness", resource="Тайский бокс", when=when)
+    day = when.date().isoformat()
+    fitness = client.get("/api/v1/sites/fitness/availability", params={"date": day, "resource": "Тайский бокс"}).json()
+    assert {s["time"]: s["left"] for s in fitness}["19:30"] == 9
+    assert client.get("/api/v1/sites/fitness/availability", params={"date": day}).status_code == 422  # у фитнеса нужно занятие
+    _book(client, resource="Артём")  # TOMORROW 15:00
+    barber = client.get("/api/v1/sites/barbershop/availability", params={"date": day, "resource": "Артём"}).json()
+    assert {s["time"]: s["left"] for s in barber}["15:00"] == 0
+    assert {s["time"]: s["left"] for s in barber}["16:00"] == 1
+    assert client.get("/api/v1/sites/cafe/availability", params={"date": day}).status_code == 404

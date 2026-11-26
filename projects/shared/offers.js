@@ -45,7 +45,7 @@
     const a = n % 10, b = n % 100;
     return a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 10 || b > 20) ? few : many;
   };
-  const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+  const rub = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;
 
   // Расчёт: полная цена, цена со скидкой, предоплата и срок
   function quote({ type, opts: chosen = [], k = 1, pilot: usePilot = false }) {

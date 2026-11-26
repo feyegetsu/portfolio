@@ -275,3 +275,12 @@ td small a { color: inherit; }
 }
 @media (max-width: 480px) { .kpis { grid-template-columns: 1fr 1fr; } .kpi b { font-size: 22px; } .slot { grid-template-columns: 56px 1fr; } .slot > :last-child { grid-column: 1 / -1; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Команда: доступ к сайтам и сброс пароля раскрываются по клику */
+.cards details > summary { cursor: pointer; }
+.cards details[open] { display: grid; gap: 8px; }
+.cards details .chips { max-width: 420px; }
+.reset { display: inline-grid; gap: 6px; margin-right: 6px; vertical-align: top; }
+.reset > summary { list-style: none; }
+.reset > summary::-webkit-details-marker { display: none; }
+.reset input { padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: inherit; font: inherit; }

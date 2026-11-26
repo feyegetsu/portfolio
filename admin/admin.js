@@ -1,9 +1,19 @@
 /* Админ-панель. Работает с window.PortfolioAPI: в демо-режиме данные в браузере, с ?api=… — с настоящим бэкендом. */
 (() => {
+  // Во фрейме чужого сайта админку не показываем: иначе кнопки можно подсунуть под чужой интерфейс (кликджекинг).
+  // На GitHub Pages заголовок frame-ancestors не поставить, поэтому проверка в скрипте
+  let foreignFrame = false;
+  try { foreignFrame = window.top !== window && window.top.location.origin !== location.origin; } catch { foreignFrame = true; }
+  if (foreignFrame) {
+    document.body.innerHTML = '<p style="padding:24px;font:16px system-ui">Админка открывается только в отдельной вкладке.</p>';
+    return;
+  }
   const api = window.PortfolioAPI;
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const rub = (n) => `${Number(n || 0).toLocaleString("ru-RU")} ₽`;
+  // Ответам API не доверяем типы: числа приводим к числу, строки экранируем (esc) — даже от своего сервера
+  const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
   const SITE_NAME = Object.fromEntries(api.SITES.map((s) => [s.slug, s.name]));
   const ROLE_NAME = { owner: "Владелец", admin: "Администратор", staff: "Сотрудник" };
   const ROLE_LEVEL = { staff: 1, admin: 2, owner: 3 };
@@ -21,7 +31,7 @@
   const fmtDate = (s) => new Date(/Z|[+-]\d\d:\d\d$/.test(s) ? s : `${s}Z`)
     .toLocaleString("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
-  const state = { user: null, view: "overview", site: "", leadStatus: "", q: "", offset: 0, known: null };
+  const state = { user: null, view: "overview", site: "", leadStatus: "", q: "", offset: 0, known: null, week: 0 };
 
   // ---------- Уведомления ----------
   let tt;
@@ -95,10 +105,12 @@
     orders: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>',
     catalog: '<path d="M4 6h16M4 12h16M4 18h10"/>',
     team: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M22 21a6 6 0 0 0-4-5.6"/>',
+    profile: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
   };
   const VIEWS = [
     ["overview", "Обзор", "staff"], ["leads", "Заявки", "staff"], ["bookings", "Записи", "staff"],
     ["orders", "Заказы", "staff"], ["catalog", "Каталог", "admin"], ["team", "Команда", "owner"],
+    ["profile", "Пароль", "staff"],
   ];
   const can = (role) => ROLE_LEVEL[state.user.role] >= ROLE_LEVEL[role];
   const mySites = () => (state.user.sites === null ? api.SITES.map((s) => s.slug) : state.user.sites);
@@ -146,7 +158,7 @@
     });
     $("viewTitle").textContent = VIEWS.find(([id]) => id === state.view)[1];
     try {
-      await ({ overview, leads, bookings, orders, catalog, team })[state.view]();
+      await ({ overview, leads, bookings, orders, catalog, team, profile })[state.view]();
     } catch (e) {
       if (e.status === 401) return logout();
       $("content").innerHTML = `<div class="empty">Не удалось загрузить: ${esc(e.message)}</div>`;
@@ -165,29 +177,29 @@
   const siteFilter = () => (state.site ? { site: state.site } : {});
   const siteTag = (s) => `<span class="site-tag">${esc(SITE_NAME[s] || s)}</span>`;
   const statusSelect = (kind, id, value, map) =>
-    `<select class="status s-${value}" data-${kind}="${id}" aria-label="Статус">${Object.entries(map).map(([k, v]) => `<option value="${k}"${k === value ? " selected" : ""}>${v}</option>`).join("")}</select>`;
+    `<select class="status s-${esc(value)}" data-${kind}="${num(id)}" aria-label="Статус">${Object.entries(map).map(([k, v]) => `<option value="${k}"${k === value ? " selected" : ""}>${v}</option>`).join("")}</select>`;
 
   // ---------- Обзор ----------
   async function overview() {
     const [s, latest] = await Promise.all([api.admin.stats(siteFilter()), api.admin.leads({ ...siteFilter(), limit: 6 })]);
-    const max = Math.max(1, ...s.by_day.map((d) => d.count));
-    const siteTotal = Math.max(1, ...Object.values(s.by_site));
+    const max = Math.max(1, ...s.by_day.map((d) => num(d.count)));
+    const siteTotal = Math.max(1, ...Object.values(s.by_site).map(num));
     $("content").innerHTML = `
       <div class="kpis">
-        <div class="kpi"><span>Заявки</span><b>${s.leads}</b><small>${s.new_leads} новых</small></div>
-        <div class="kpi"><span>Записи</span><b>${s.bookings}</b><small>на услуги и занятия</small></div>
-        <div class="kpi"><span>Заказы</span><b>${s.orders}</b><small>доставка и самовывоз</small></div>
+        <div class="kpi"><span>Заявки</span><b>${num(s.leads)}</b><small>${num(s.new_leads)} новых</small></div>
+        <div class="kpi"><span>Записи</span><b>${num(s.bookings)}</b><small>на услуги и занятия</small></div>
+        <div class="kpi"><span>Заказы</span><b>${num(s.orders)}</b><small>доставка и самовывоз</small></div>
         <div class="kpi"><span>Выручка по заказам</span><b>${rub(s.revenue)}</b><small>без отменённых</small></div>
       </div>
       <div class="grid2">
         <div class="panel"><h2>Обращения за 14 дней</h2>
           <div class="chart" role="img" aria-label="Обращения по дням">${s.by_day.map((d) => {
-            const day = new Date(d.date + "T12:00:00");
-            return `<div class="chart__bar" title="${day.toLocaleDateString("ru-RU")}: ${d.count}"><em>${d.count || ""}</em><i style="height:${(d.count / max) * 100}%"></i><small>${day.getDate()}</small></div>`;
+            const day = new Date(String(d.date).slice(0, 10) + "T12:00:00"), n = num(d.count);
+            return `<div class="chart__bar" title="${esc(day.toLocaleDateString("ru-RU"))}: ${n}"><em>${n || ""}</em><i style="height:${(n / max) * 100}%"></i><small>${num(day.getDate())}</small></div>`;
           }).join("")}</div>
         </div>
         <div class="panel"><h2>По сайтам</h2><div class="bars">${Object.entries(s.by_site).sort((a, b) => b[1] - a[1]).map(([slug, n]) =>
-          `<div><span>${esc(SITE_NAME[slug])}<b>${n}</b></span><i style="--w:${(n / siteTotal) * 100}%"></i></div>`).join("") || '<p class="muted">Пока пусто</p>'}</div></div>
+          `<div><span>${esc(SITE_NAME[slug])}<b>${num(n)}</b></span><i style="--w:${(num(n) / siteTotal) * 100}%"></i></div>`).join("") || '<p class="muted">Пока пусто</p>'}</div></div>
       </div>
       <div class="panel"><h2>Последние заявки <button class="btn btn--sm" data-goto="leads">Все заявки →</button></h2>${leadTable(latest.items, true)}</div>
       ${api.mode === "demo" ? `<div class="notice">💡 Откройте любой демо-сайт в соседней вкладке и оставьте заявку или оформите заказ. Здесь она появится сама, без перезагрузки.</div>` : ""}`;
@@ -221,13 +233,13 @@
     if (!items.length) return '<div class="empty">Заявок пока нет</div>';
     return `<div class="table-wrap"><table class="cards">
       <thead><tr><th>Дата</th><th>Сайт</th><th>Тип</th><th>Клиент</th>${compact ? "" : "<th>Детали</th>"}<th class="center">Статус</th></tr></thead>
-      <tbody>${items.map((l) => `<tr data-id="lead-${l.id}">
-        <td class="mono" data-label="Дата">${fmtDate(l.created_at)}</td>
+      <tbody>${items.map((l) => `<tr data-id="lead-${num(l.id)}">
+        <td class="mono" data-label="Дата">${esc(fmtDate(l.created_at))}</td>
         <td data-label="Сайт">${siteTag(l.site)}</td>
         <td data-label="Тип">${esc(KIND[l.kind] || l.kind)}</td>
         <td data-label="Клиент">${esc(l.name || "—")}<small>${l.phone ? `<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>` : esc(l.email)}</small></td>
         ${compact ? "" : `<td data-label="Детали" class="wide">${leadDetails(l)}</td>`}
-        <td class="center" data-label="Статус">${statusSelect("lead", l.id, l.status, LEAD_STATUS)}</td>
+        <td class="center" data-label="Статус">${statusSelect("lead", num(l.id), l.status, LEAD_STATUS)}</td>
       </tr>`).join("")}</tbody></table></div>`;
   }
 
@@ -269,34 +281,60 @@
   }
 
   // ---------- Записи ----------
+  // Неделя по московскому времени (все заведения в Москве): понедельник — воскресенье, со сдвигом state.week
+  const weekRange = () => {
+    const today = new Date(`${api.siteToday("restaurant")}T12:00:00`);
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7) + state.week * 7);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    return { from: ymd(monday), to: ymd(sunday), label: `${monday.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })} — ${sunday.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}` };
+  };
   async function bookings() {
-    const data = await api.admin.bookings({ ...siteFilter(), limit: 100 });
-    const items = [...data.items].sort((a, b) => (a.starts_at > b.starts_at ? 1 : -1));
+    const week = weekRange();
+    const data = await api.admin.bookings({ ...siteFilter(), date_from: week.from, date_to: week.to, limit: 200 });
+    const items = data.items;
     const groups = {};
-    for (const b of items) (groups[b.starts_at.slice(0, 10)] ||= []).push(b);
-    $("content").innerHTML = items.length ? Object.entries(groups).map(([day, list]) => `
-      <div class="day-group"><h3>${new Date(day + "T12:00:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}</h3>
-        ${list.map((b) => `<div class="slot ${b.status === "cancelled" ? "cancelled" : ""}" data-id="booking-${b.id}">
-          <time>${b.starts_at.slice(11, 16)}</time>
+    for (const b of items) (groups[String(b.starts_at).slice(0, 10)] ||= []).push(b);
+    const nav = `<div class="toolbar"><div class="chips" role="group" aria-label="Неделя">
+        <button class="chip" data-week="-1" aria-label="Предыдущая неделя">←</button>
+        <button class="chip" data-week="0" aria-pressed="${state.week === 0}">Эта неделя</button>
+        <button class="chip" data-week="1" aria-label="Следующая неделя">→</button></div>
+        <span class="muted">${esc(week.label)} · записей: ${num(data.total)}${data.total > items.length ? `, показаны первые ${items.length}` : ""}</span></div>`;
+    $("content").innerHTML = nav + (items.length ? Object.entries(groups).map(([day, list]) => `
+      <div class="day-group"><h3>${esc(new Date(day + "T12:00:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }))}</h3>
+        ${list.map((b) => `<div class="slot ${b.status === "cancelled" ? "cancelled" : ""}" data-id="booking-${num(b.id)}">
+          <time>${esc(String(b.starts_at).slice(11, 16))}</time>
           <div><b>${esc(b.name)}</b> · <span class="mono">${esc(b.phone)}</span><br><small class="muted">${siteTag(b.site)} ${esc(b.resource)}${b.service ? " · " + esc(b.service) : ""}</small></div>
           <div>${statusSelect("booking", b.id, b.status, BOOKING_STATUS)}</div>
         </div>`).join("")}
-      </div>`).join("") : '<div class="empty">Записей нет. Запишитесь в демо барбершопа или фитнес-клуба — запись появится здесь.</div>';
+      </div>`).join("") : '<div class="empty">На этой неделе записей нет. Запишитесь в демо барбершопа или фитнес-клуба — запись появится здесь.</div>');
+    $("content").querySelectorAll("[data-week]").forEach((b) => b.onclick = () => {
+      state.week = +b.dataset.week === 0 ? 0 : state.week + +b.dataset.week;
+      bookings();
+    });
   }
 
   // ---------- Заказы ----------
   const ORDER_FLOW = ["new", "cooking", "delivering", "done"];
   async function orders() {
-    const data = await api.admin.orders({ ...siteFilter(), limit: 60 });
-    $("content").innerHTML = data.items.length ? `<div class="orders">${data.items.map((o) => `
-      <article class="order" data-id="order-${o.id}">
-        <div class="order__head"><div><b>Заказ №${o.id}</b><br><small class="muted">${fmtDate(o.created_at)} · ${siteTag(o.site)}</small></div>
+    const limit = 20;
+    const data = await api.admin.orders({ ...siteFilter(), limit, offset: state.offset });
+    const pager = `<div class="pager"><span>Показано ${data.items.length ? state.offset + 1 : 0}–${state.offset + data.items.length} из ${num(data.total)}</span>
+        <span><button class="btn btn--sm" id="prev" ${state.offset ? "" : "disabled"} aria-label="Предыдущие">←</button>
+        <button class="btn btn--sm" id="next" ${state.offset + limit < data.total ? "" : "disabled"} aria-label="Следующие">→</button></span></div>`;
+    $("content").innerHTML = (data.items.length ? `<div class="orders">${data.items.map((o) => `
+      <article class="order" data-id="order-${num(o.id)}">
+        <div class="order__head"><div><b>Заказ №${num(o.id)}</b><br><small class="muted">${esc(fmtDate(o.created_at))} · ${siteTag(o.site)}</small></div>
           ${statusSelect("order", o.id, o.status, ORDER_STATUS)}</div>
         <div>${esc(o.name)} · <span class="mono">${esc(o.phone)}</span><br><small class="muted">${o.mode === "pickup" ? "Самовывоз" : "🛵 " + esc(o.address)}${o.comment ? " · " + esc(o.comment) : ""}</small></div>
-        <ul>${o.items.map((i) => `<li><span>${esc(i.name)} × ${i.qty}</span><span class="mono">${rub(i.price * i.qty)}</span></li>`).join("")}</ul>
+        <ul>${o.items.map((i) => `<li><span>${esc(i.name)} × ${num(i.qty)}</span><span class="mono">${rub(num(i.price) * num(i.qty))}</span></li>`).join("")}</ul>
         <div class="order__total"><span>Итого</span><span class="mono">${rub(o.total)}</span></div>
-        ${o.status === "cancelled" ? "" : `<div class="steps">${ORDER_FLOW.map((s) => `<button data-order-step="${o.id}" data-status="${s}" class="${ORDER_FLOW.indexOf(s) <= ORDER_FLOW.indexOf(o.status) ? "on" : ""}">${ORDER_STATUS[s]}</button>`).join("")}</div>`}
-      </article>`).join("")}</div>` : '<div class="empty">Заказов нет. Оформите заказ в Mini App или магазине цветов.</div>';
+        ${o.status === "cancelled" ? "" : `<div class="steps">${ORDER_FLOW.map((s) => `<button data-order-step="${num(o.id)}" data-status="${s}" class="${ORDER_FLOW.indexOf(s) <= ORDER_FLOW.indexOf(o.status) ? "on" : ""}">${ORDER_STATUS[s]}</button>`).join("")}</div>`}
+      </article>`).join("")}</div>` : '<div class="empty">Заказов нет. Оформите заказ в Mini App или магазине цветов.</div>') + pager;
+    $("prev").onclick = () => { state.offset = Math.max(0, state.offset - limit); orders(); };
+    $("next").onclick = () => { state.offset += limit; orders(); };
   }
 
   // ---------- Каталог ----------
@@ -306,18 +344,18 @@
     const site = sites.includes(state.site) ? state.site : sites[0];
     const items = await api.admin.catalog({ site });
     $("content").innerHTML = `
-      <div class="notice">Изменения сразу видны на сайте: смените цену или выключите блюдо и откройте <a href="../projects/miniapp/" target="_blank" rel="noopener" style="text-decoration:underline">Mini App</a>.</div>
-      <form class="add-form panel" id="addItem"><input name="name" placeholder="Название" required aria-label="Название">
-        <input name="category" placeholder="Категория" aria-label="Категория"><input name="price" type="number" min="0" placeholder="Цена" required aria-label="Цена">
-        <button class="btn btn--primary">Добавить</button></form>
+      <div class="notice">Изменения сразу видны на сайте: смените цену или выключите позицию и откройте <a href="../projects/${site}/" target="_blank" rel="noopener" style="text-decoration:underline">${esc(SITE_NAME[site])}</a>.${site === "miniapp" ? " У блюд Mini App есть размеры и добавки, поэтому новые блюда добавляются в коде витрины, а здесь — цена и стоп-лист." : " Новая позиция появится на витрине в своём разделе."}</div>
+      ${site === "miniapp" ? "" : `<form class="add-form panel" id="addItem"><input name="name" placeholder="Название" required aria-label="Название">
+        <input name="category" placeholder="Категория" aria-label="Категория"><input name="price" type="number" min="1" step="1" placeholder="Цена" required aria-label="Цена">
+        <button class="btn btn--primary">Добавить</button></form>`}
       <div class="table-wrap"><table class="cards"><thead><tr><th>Позиция</th><th>Категория</th><th>Цена, ₽</th><th class="center">В продаже</th><th></th></tr></thead>
       <tbody>${items.map((c) => `<tr>
         <td class="wide"><b>${esc(c.name)}</b><small>${siteTag(c.site)}</small></td><td data-label="Категория">${esc(c.category)}</td>
-        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="0" value="${c.price}" data-price="${c.id}" aria-label="Цена: ${esc(c.name)}"></td>
-        <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${c.id}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
-        <td class="actions"><button class="btn btn--sm btn--danger" data-del="${c.id}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
+        <td data-label="Цена, ₽"><input class="price-input mono" type="number" min="1" step="1" value="${num(c.price)}" data-price="${num(c.id)}" aria-label="Цена: ${esc(c.name)}"></td>
+        <td class="center" data-label="В продаже"><label class="switch"><input type="checkbox" data-active="${num(c.id)}" ${c.active ? "checked" : ""} aria-label="В продаже: ${esc(c.name)}"><span></span></label></td>
+        <td class="actions"><button class="btn btn--sm btn--danger" data-del="${num(c.id)}" aria-label="Удалить ${esc(c.name)}">Удалить</button></td>
       </tr>`).join("")}</tbody></table></div>`;
-    $("addItem").onsubmit = async (e) => {
+    if ($("addItem")) $("addItem").onsubmit = async (e) => {
       e.preventDefault();
       const f = e.target;
       await run(() => api.admin.addCatalog(site, { ref: `custom-${Date.now()}`, name: f.name.value, category: f.category.value, price: Number(f.price.value) }), "Позиция добавлена");
@@ -328,11 +366,20 @@
   // ---------- Команда ----------
   async function team() {
     const users = await api.admin.users();
+    const roleSelect = (u) => `<select class="status" data-user-role="${num(u.id)}" aria-label="Роль: ${esc(u.name)}">${Object.entries(ROLE_NAME)
+      .map(([k, v]) => `<option value="${k}"${k === u.role ? " selected" : ""}>${v}</option>`).join("")}</select>`;
+    const siteChips = (u) => `<div class="chips" data-user-sites="${num(u.id)}" role="group" aria-label="Сайты: ${esc(u.name)}">${api.SITES.map((s) =>
+      `<button type="button" class="chip" data-us="${s.slug}" aria-pressed="${u.sites !== null && u.sites.includes(s.slug)}">${esc(s.name)}</button>`).join("")}</div>
+      <small class="muted">Не выбран ни один — все сайты.</small> <button class="btn btn--sm" data-save-sites="${num(u.id)}">Сохранить доступ</button>`;
     $("content").innerHTML = `
       <div class="table-wrap"><table class="cards"><thead><tr><th>Сотрудник</th><th>Роль</th><th>Доступ</th><th></th></tr></thead>
-      <tbody>${users.map((u) => `<tr><td class="wide"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td><td data-label="Роль">${ROLE_NAME[u.role]}</td>
-        <td data-label="Доступ">${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</td>
-        <td class="actions">${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<button class="btn btn--sm btn--danger" data-remove="${u.id}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
+      <tbody>${users.map((u) => `<tr><td class="wide"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></td>
+        <td data-label="Роль">${roleSelect(u)}</td>
+        <td data-label="Доступ"><details><summary>${u.sites === null ? "Все сайты" : u.sites.map(siteTag).join(" ")}</summary>${siteChips(u)}</details></td>
+        <td class="actions">${u.id === state.user.id ? '<small class="muted">это вы</small>' : `<details class="reset"><summary class="btn btn--sm">Пароль</summary>
+          <input type="password" minlength="8" placeholder="Новый пароль" aria-label="Новый пароль: ${esc(u.name)}" data-pass-input="${num(u.id)}">
+          <button class="btn btn--sm" data-set-pass="${num(u.id)}">Сохранить</button></details>
+          <button class="btn btn--sm btn--danger" data-remove="${num(u.id)}">Удалить</button>`}</td></tr>`).join("")}</tbody></table></div>
       <form class="panel" id="addUser" style="display:grid;gap:12px">
         <h2>Добавить сотрудника</h2>
         <div class="add-form add-form--user">
@@ -345,7 +392,9 @@
         <div><button class="btn btn--primary">Добавить</button></div>
       </form>
       <div class="notice">Сотрудник видит только свои сайты и меняет статусы, администратор ещё и каталог, владелец управляет командой.</div>`;
-    $("userSites").onclick = (e) => { const b = e.target.closest("[data-us]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); };
+    $("content").querySelectorAll("[data-user-sites], #userSites").forEach((g) => g.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-us]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true");
+    }));
     $("addUser").onsubmit = async (e) => {
       e.preventDefault();
       const f = e.target;
@@ -355,16 +404,47 @@
     };
   }
 
+  // ---------- Свой пароль ----------
+  function profile() {
+    $("content").innerHTML = `
+      <form class="panel" id="passwordForm" style="display:grid;gap:12px;max-width:420px">
+        <h2>Сменить пароль</h2>
+        <input name="current" type="password" autocomplete="current-password" placeholder="Текущий пароль" required aria-label="Текущий пароль">
+        <input name="next" type="password" autocomplete="new-password" minlength="8" placeholder="Новый пароль от 8 символов" required aria-label="Новый пароль">
+        <div><button class="btn btn--primary">Сменить</button></div>
+        <small class="muted">После смены пароля и после выхода все прежние входы на других устройствах перестают действовать.</small>
+      </form>`;
+    $("passwordForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      await run(() => api.changePassword(f.current.value, f.next.value), "Пароль изменён");
+      f.reset();
+    };
+  }
+
   // ---------- Действия в списках (делегирование) ----------
   $("content").addEventListener("change", async (e) => {
     const t = e.target;
     const d = t.dataset;
     // Если сервер отказал (например, слот уже занят), перерисовываем список: в нём останется настоящий статус
     if (d.lead) { try { await run(() => api.admin.updateLead(d.lead, t.value), "Статус заявки обновлён"); t.className = `status s-${t.value}`; updateBadges(); } catch { render(); } }
-    if (d.booking) { try { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); } finally { bookings(); } }
-    if (d.order) { try { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); } finally { orders(); } }
-    if (d.price) { await run(() => api.admin.updateCatalog(d.price, { price: Number(t.value) }), "Цена сохранена"); }
+    if (d.booking) { try { await run(() => api.admin.updateBooking(d.booking, t.value), "Запись обновлена"); } catch { /* ошибку показал run */ } finally { bookings(); } }
+    if (d.order) { try { await run(() => api.admin.updateOrder(d.order, t.value), "Статус заказа обновлён"); } catch { /* ошибку показал run */ } finally { orders(); } }
+    if (d.price) {
+      // Пустое поле или не целое число ≥ 1 не отправляем: Number("") === 0, и позиция стала бы бесплатной
+      const price = Number(t.value);
+      if (t.value.trim() === "" || !Number.isInteger(price) || price < 1) {
+        toast("Цена — целое число от 1 ₽", true);
+        t.value = t.defaultValue;
+        return;
+      }
+      try {
+        await run(() => api.admin.updateCatalog(d.price, { price }), "Цена сохранена");
+        t.defaultValue = String(price);
+      } catch { t.value = t.defaultValue; }
+    }
     if (d.active) { await run(() => api.admin.updateCatalog(d.active, { active: t.checked }), t.checked ? "Снова в продаже" : "Убрано в стоп-лист"); }
+    if (d.userRole) { try { await run(() => api.admin.updateUser(d.userRole, { role: t.value }), "Роль изменена"); } catch { /* ошибку показал run */ } finally { team(); } }
   });
   $("content").addEventListener("click", async (e) => {
     const t = e.target.closest("button");
@@ -375,6 +455,16 @@
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Точно?"; setTimeout(() => { t.dataset.confirm = ""; t.textContent = "Удалить"; }, 2500); return; }
       await run(() => api.admin.deleteCatalog(d.del), "Позиция удалена"); catalog();
     }
+    if (d.saveSites) {
+      const sites = [...$("content").querySelectorAll(`[data-user-sites="${d.saveSites}"] [aria-pressed="true"]`)].map((b) => b.dataset.us);
+      try { await run(() => api.admin.updateUser(d.saveSites, { sites: sites.length ? sites : null }), "Доступ сохранён"); } catch { /* ошибку показал run */ } finally { team(); }
+    }
+    if (d.setPass) {
+      const input = $("content").querySelector(`[data-pass-input="${d.setPass}"]`);
+      if (input.value.length < 8) { toast("Пароль — от 8 символов", true); input.focus(); return; }
+      await run(() => api.admin.updateUser(d.setPass, { password: input.value }), "Пароль изменён, прежние входы сотрудника закрыты");
+      team();
+    }
     if (d.remove) {
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Точно?"; setTimeout(() => { t.dataset.confirm = ""; t.textContent = "Удалить"; }, 2500); return; }
       await run(() => api.admin.removeUser(d.remove), "Сотрудник удалён"); team();
@@ -382,18 +472,33 @@
   });
 
   // ---------- Живые обновления ----------
+  // Раздел перерисовывается, только если данные изменились, и не тогда, когда в нём фокус: иначе опрос
+  // раз в 15 секунд закрывал бы открытый список статусов, сбрасывал прокрутку и съедал ввод в поиске
   async function snapshot() {
     const s = await api.admin.stats({});
-    return s.leads + s.bookings + s.orders;
+    return { total: num(s.leads) + num(s.bookings) + num(s.orders), sig: JSON.stringify(s) };
+  }
+  const LIVE_VIEWS = ["overview", "leads", "bookings", "orders"];
+  let pending = false;
+  const busy = () => $("content").contains(document.activeElement) && document.activeElement !== $("content");
+  function refresh() {
+    pending = false;
+    if (LIVE_VIEWS.includes(state.view)) render();
   }
   api.onChange(async () => {
     if (!state.user) return;
-    try {
-      const total = await snapshot();
-      if (state.known !== null && total > state.known) toast("🔔 Новое обращение с сайта");
-      state.known = total;
-    } catch { /* сеть */ }
-    if (["overview", "leads", "bookings", "orders"].includes(state.view)) render();
+    let snap;
+    try { snap = await snapshot(); } catch { return; /* сеть */ }
+    const changed = !state.known || snap.sig !== state.known.sig;
+    if (state.known && snap.total > state.known.total) toast("🔔 Новое обращение с сайта");
+    state.known = snap;
+    if (!changed) return;
+    if (busy()) { pending = true; return; }
+    refresh();
+  });
+  // Отложенное обновление — как только фокус ушёл из раздела
+  $("content").addEventListener("focusout", (e) => {
+    if (pending && !$("content").contains(e.relatedTarget)) setTimeout(() => { if (pending && !busy()) refresh(); }, 0);
   });
 
   // ---------- Старт ----------

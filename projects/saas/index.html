@@ -6,14 +6,28 @@
   <meta name="color-scheme" content="light only">
   <title>Taskly — задачи команды в одном месте</title>
   <meta name="description" content="Таск-менеджер для небольших команд: доски, сроки, интеграция с Telegram. 14 дней бесплатно.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/saas/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/saas/">
+  <meta property="og:title" content="Taskly — задачи команды в одном месте">
+  <meta property="og:description" content="Таск-менеджер для небольших команд: доски, сроки, интеграция с Telegram. 14 дней бесплатно.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/saas.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%234f46e5'/><path d='M28 52l14 14 30-32' stroke='white' stroke-width='12' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --bg: #fbfbfd; --ink: #0d0f1a; --muted: #6b7086; --indigo: #4f46e5; --indigo-l: #eef0ff; --line: #e8e9f1; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -63,6 +77,8 @@
     .task { background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(13, 15, 26, .06); cursor: grab; user-select: none; transition: transform .15s, box-shadow .15s; font-size: 14px; }
     .task:hover { box-shadow: 0 6px 16px -8px rgba(13, 15, 26, .3); }
     .task.dragging { opacity: .4; }
+    .task:focus-visible { outline: 3px solid var(--indigo); outline-offset: 2px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .task .lbl { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
     .task .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--muted); }
     .ava { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 700; }
@@ -157,6 +173,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><i>✓</i>Taskly</a>
@@ -164,6 +181,7 @@
       <a href="#start" class="btn">Попробовать</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero" style="padding-bottom:0">
     <div class="container">
@@ -175,7 +193,9 @@
 
       <div class="app" data-reveal="zoom" style="--d:200ms">
         <div class="app__bar"><i></i><i></i><i></i><span>Taskly · Запуск сайта</span><em class="app__hint">Перетащите карточку ↔</em></div>
+        <p class="sr-only" id="boardHelp">Карточки можно двигать с клавиатуры: стрелки влево и вправо — в соседнюю колонку, вверх и вниз — порядок в колонке.</p>
         <div class="board" id="board"></div>
+        <div class="sr-only" id="boardLive" role="status" aria-live="polite"></div>
       </div>
     </div>
   </section>
@@ -205,7 +225,7 @@
   <section style="padding-top:20px">
     <div class="container story">
       <div class="story__img" data-reveal="left">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1100&q=75" alt="Команда работает вместе">
+        <img width="1100" height="733" loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1100&q=75" alt="Команда работает вместе">
         <div class="story__chip"><b data-count="38" data-suffix="%">38%</b><span>меньше сорванных сроков</span></div>
       </div>
       <div data-reveal="right">
@@ -214,9 +234,9 @@
       </div>
     </div>
     <div class="container reviews" data-stagger>
-      <figure class="review"><blockquote>«Перенесли всё из чатов за вечер. Наконец видно, кто что делает и когда сдаёт.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Мария</b><span>Руководитель студии дизайна</span></div></figcaption></figure>
-      <figure class="review"><blockquote>«Telegram-бот — киллер-фича. Разработчики отмечают задачи, не открывая браузер.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Алексей</b><span>CTO, интернет-магазин</span></div></figcaption></figure>
-      <figure class="review"><blockquote>«Пробовали три сервиса. Этот единственный, которым команда пользуется без напоминаний.»</blockquote><figcaption><img loading="lazy" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Ольга</b><span>Маркетинговое агентство</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Перенесли всё из чатов за вечер. Наконец видно, кто что делает и когда сдаёт.»</blockquote><figcaption><img width="120" height="120" loading="lazy" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Мария</b><span>Руководитель студии дизайна</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Telegram-бот — киллер-фича. Разработчики отмечают задачи, не открывая браузер.»</blockquote><figcaption><img width="120" height="120" loading="lazy" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Алексей</b><span>CTO, интернет-магазин</span></div></figcaption></figure>
+      <figure class="review"><blockquote>«Пробовали три сервиса. Этот единственный, которым команда пользуется без напоминаний.»</blockquote><figcaption><img width="120" height="120" loading="lazy" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&h=120&q=75" alt=""><div><b>Ольга</b><span>Маркетинговое агентство</span></div></figcaption></figure>
     </div>
   </section>
 
@@ -252,6 +272,7 @@
     </div>
   </section>
 
+  </main>
   <footer><div class="container foot"><span>© Taskly</span><span>Демо-сайт для портфолио · компании, отзывы и цифры вымышлены · фото: Unsplash</span></div></footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
@@ -267,8 +288,8 @@
       ["done", "Готово", [["Логотип", "Дизайн", "К", "✓"]]],
     ];
     $("board").innerHTML = cols.map(([id, title, tasks]) => `
-      <div class="col" data-col="${id}"><div class="col__title">${title}<b>${tasks.length}</b></div>
-        ${tasks.map(([t, l, p, d]) => `<div class="task" draggable="true"><span class="lbl" style="background:${labels[l][0]};color:${labels[l][1]}">${l}</span><div>${t}</div>
+      <div class="col" data-col="${id}" role="group" aria-label="${title}"><div class="col__title">${title}<b>${tasks.length}</b></div>
+        ${tasks.map(([t, l, p, d]) => `<div class="task" draggable="true" tabindex="0" aria-describedby="boardHelp" data-title="${t}"><span class="lbl" style="background:${labels[l][0]};color:${labels[l][1]}">${l}</span><div>${t}</div>
           <div class="meta"><span>📅 ${d}</span><span class="ava" style="background:${people[p]}">${p}</span></div></div>`).join("")}
       </div>`).join("");
 
@@ -311,6 +332,35 @@
       document.querySelectorAll(".col").forEach(c => c.classList.remove("over"));
       dropInto(col, p.clientX, p.clientY);
       dragged = null;
+    });
+
+    // Клавиатура (WCAG 2.1.1, 2.5.7): у перетаскивания есть альтернатива — стрелки на карточке в фокусе
+    const COLS = [...document.querySelectorAll(".col")];
+    const colTitle = (col) => col.querySelector(".col__title").firstChild.textContent.trim();
+    $("board").addEventListener("keydown", (e) => {
+      const task = e.target.closest(".task");
+      if (!task || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+      e.preventDefault();
+      const col = task.closest(".col");
+      let message = "";
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        const target = COLS[COLS.indexOf(col) + (e.key === "ArrowRight" ? 1 : -1)];
+        if (!target) return;
+        target.appendChild(task);
+        message = `«${task.dataset.title}» — в колонке «${colTitle(target)}»`;
+        if (target.dataset.col === "done") {
+          const r = task.getBoundingClientRect();
+          celebrate(r.left + r.width / 2, r.top + r.height / 2);
+        }
+      } else {
+        const sibling = e.key === "ArrowUp" ? task.previousElementSibling : task.nextElementSibling;
+        if (!sibling || !sibling.classList.contains("task")) return;
+        e.key === "ArrowUp" ? col.insertBefore(task, sibling) : col.insertBefore(sibling, task);
+        message = `«${task.dataset.title}»: ${[...col.querySelectorAll(".task")].indexOf(task) + 1}-я в колонке «${colTitle(col)}»`;
+      }
+      updateCounts();
+      task.focus();
+      $("boardLive").textContent = message;
     });
 
     function celebrate(x, y) {

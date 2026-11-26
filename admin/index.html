@@ -7,12 +7,13 @@
   <meta name="description" content="Демо админ-панели для сайтов портфолио: заявки, записи, заказы, каталог и команда с ролями.">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#064E3B">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")==="dark"?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
+  <script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="dark"||t==="light"?t:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Inter:wght@400;500;600;700&display=swap" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -58,7 +59,7 @@
           <div class="user" id="userBox"></div>
         </div>
       </header>
-      <section class="content" id="content" aria-live="polite"></section>
+      <section class="content" id="content"></section>
     </div>
   </div>
 

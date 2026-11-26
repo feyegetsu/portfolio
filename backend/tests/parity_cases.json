@@ -1,5 +1,5 @@
 {
- "_about": "Общие примеры для серверной логики (pytest) и демо-клиента (node tools/parity.mjs). Ответы посчитаны серверным кодом; если логика меняется намеренно, обновите их.",
+ "_about": "Общие примеры для серверной логики (pytest) и демо-клиента (node tools/parity.mjs). Ответы посчитаны серверным кодом; если логика меняется намеренно, обновите их. В примерах записи day_offset — дни от сегодняшней даты заведения, weekday — ближайший такой день недели (0 — понедельник) начиная с завтра.",
  "orders": [
   {
    "title": "Суши: доставка платная ниже порога",
@@ -443,6 +443,138 @@
     "status": 422,
     "message": "Корзина пуста"
    }
+  },
+  {
+   "title": "Ошибка: размер надстрочной цифрой",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:²",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректный размер для «Маргарита»"
+   }
+  },
+  {
+   "title": "Ошибка: добавка надстрочной цифрой",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:1:²",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректные добавки для «Маргарита»"
+   }
+  },
+  {
+   "title": "Ошибка: размер арабской цифрой",
+   "site": "miniapp",
+   "items": [
+    {
+     "ref": "1:٢",
+     "qty": 1
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Некорректный размер для «Маргарита»"
+   }
+  },
+  {
+   "title": "Повторяющиеся строки склеиваются в порядке первого появления",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s7",
+     "qty": 1
+    },
+    {
+     "ref": "s4",
+     "qty": 1
+    },
+    {
+     "ref": "s7",
+     "qty": 2
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "lines": [
+    {
+     "ref": "s7",
+     "name": "Маки с огурцом",
+     "qty": 3,
+     "price": 190
+    },
+    {
+     "ref": "s4",
+     "name": "Филадельфия",
+     "qty": 1,
+     "price": 590
+    }
+   ]
+  },
+  {
+   "title": "Ошибка: одна позиция разными строками больше 99 шт.",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s2",
+     "qty": 60
+    },
+    {
+     "ref": "s2",
+     "qty": 40
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "«Сет «Филадельфия»»: не больше 99 шт. в одном заказе"
+   }
+  },
+  {
+   "title": "Ошибка: больше 200 штук в заказе",
+   "site": "sushi",
+   "items": [
+    {
+     "ref": "s1",
+     "qty": 99
+    },
+    {
+     "ref": "s2",
+     "qty": 99
+    },
+    {
+     "ref": "s3",
+     "qty": 3
+    }
+   ],
+   "mode": "pickup",
+   "promo": "",
+   "inactive": [],
+   "error": {
+    "status": 422,
+    "message": "Не больше 200 штук в одном заказе"
+   }
   }
  ],
  "slots": [
@@ -487,10 +619,10 @@
    "error": "Запись открыта на 30 дней вперёд"
   },
   {
-   "title": "Бар: после полуночи открыто",
+   "title": "Бар: ночь со среды на четверг открыто",
    "site": "bar",
    "resource": "",
-   "day_offset": 1,
+   "weekday": 3,
    "time": "01:00",
    "error": null
   },
@@ -498,7 +630,7 @@
    "title": "Бар: в 3 ночи закрыто",
    "site": "bar",
    "resource": "",
-   "day_offset": 1,
+   "weekday": 3,
    "time": "03:00",
    "error": "В это время мы закрыты"
   },
@@ -511,18 +643,18 @@
    "error": "Это время уже прошло"
   },
   {
-   "title": "Гастробар: 23:30 открыто",
+   "title": "Гастробар: понедельник 23:30 открыто",
    "site": "gastrobar",
    "resource": "",
-   "day_offset": 2,
+   "weekday": 0,
    "time": "23:30",
    "error": null
   },
   {
-   "title": "Гастробар: полночь уже закрыто",
+   "title": "Гастробар: в ночь на вторник полночь уже закрыто",
    "site": "gastrobar",
    "resource": "",
-   "day_offset": 2,
+   "weekday": 1,
    "time": "00:00",
    "error": "В это время мы закрыты"
   },
@@ -541,6 +673,823 @@
    "day_offset": 3,
    "time": "08:00",
    "error": "Такого мастера или занятия нет"
+  },
+  {
+   "title": "Ресторан: понедельник — выходной",
+   "site": "restaurant",
+   "resource": "",
+   "weekday": 0,
+   "time": "19:00",
+   "error": "В этот день мы закрыты"
+  },
+  {
+   "title": "Ресторан: вторник открыто",
+   "site": "restaurant",
+   "resource": "",
+   "weekday": 1,
+   "time": "19:00",
+   "error": null
+  },
+  {
+   "title": "Ресторан: последняя бронь в 22:30",
+   "site": "restaurant",
+   "resource": "",
+   "weekday": 6,
+   "time": "22:30",
+   "error": null
+  },
+  {
+   "title": "Бар: вторник — выходной",
+   "site": "bar",
+   "resource": "",
+   "weekday": 1,
+   "time": "21:00",
+   "error": "В этот день мы закрыты"
+  },
+  {
+   "title": "Бар: ночь со вторника на среду закрыто",
+   "site": "bar",
+   "resource": "",
+   "weekday": 2,
+   "time": "01:00",
+   "error": "В это время мы закрыты"
+  },
+  {
+   "title": "Бар: ночь с воскресенья на понедельник открыто",
+   "site": "bar",
+   "resource": "",
+   "weekday": 0,
+   "time": "01:30",
+   "error": null
+  },
+  {
+   "title": "Бар: после 02:00 бронь не принимается",
+   "site": "bar",
+   "resource": "",
+   "weekday": 4,
+   "time": "02:30",
+   "error": "В это время мы закрыты"
+  },
+  {
+   "title": "Гастробар: ночь с пятницы на субботу открыто",
+   "site": "gastrobar",
+   "resource": "",
+   "weekday": 5,
+   "time": "01:00",
+   "error": null
+  },
+  {
+   "title": "Гастробар: ночь с понедельника на вторник закрыто",
+   "site": "gastrobar",
+   "resource": "",
+   "weekday": 1,
+   "time": "01:00",
+   "error": "В это время мы закрыты"
+  },
+  {
+   "title": "Гастробар: в 02:00 субботы уже закрыто",
+   "site": "gastrobar",
+   "resource": "",
+   "weekday": 5,
+   "time": "02:00",
+   "error": "В это время мы закрыты"
+  }
+ ],
+ "leads": [
+  {
+   "title": "Заявка: обычная, имя обрезается",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "name": " Анна ",
+    "phone": "+79001234567"
+   },
+   "status": 201,
+   "stored": true
+  },
+  {
+   "title": "Заявка: honeypot — ответ как обычно, но не сохраняется",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "phone": "+79001234567",
+    "website": "http://spam"
+   },
+   "status": 201,
+   "stored": false
+  },
+  {
+   "title": "Заявка: без типа",
+   "site": "cafe",
+   "body": {
+    "phone": "+79001234567"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заявка: тип из пробелов",
+   "site": "cafe",
+   "body": {
+    "kind": "   ",
+    "phone": "+79001234567"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заявка: тип длиннее 40",
+   "site": "cafe",
+   "body": {
+    "kind": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+    "phone": "+79001234567"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заявка: имя длиннее 100",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "name": "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+    "phone": "+79001234567"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заявка: комментарий длиннее 2000",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "message": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+    "phone": "+79001234567"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заявка: нет ни телефона, ни e-mail",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "name": "Анна"
+   },
+   "status": 422,
+   "message": "Укажите телефон или e-mail"
+  },
+  {
+   "title": "Заявка: короткий телефон",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "phone": "12"
+   },
+   "status": 422,
+   "message": "Некорректный номер телефона"
+  },
+  {
+   "title": "Заявка: e-mail без домена",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "email": "a"
+   },
+   "status": 422,
+   "message": "Некорректный e-mail"
+  },
+  {
+   "title": "Заявка: слишком много данных",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "phone": "+79001234567",
+    "data": {
+     "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    }
+   },
+   "status": 422,
+   "message": "Слишком много данных в заявке"
+  },
+  {
+   "title": "Заявка: сайт без заявок",
+   "site": "barbershop",
+   "body": {
+    "kind": "table",
+    "phone": "+79001234567"
+   },
+   "status": 404,
+   "message": "Этот сайт так не умеет"
+  },
+  {
+   "title": "Заявка: лишнее поле",
+   "site": "cafe",
+   "body": {
+    "kind": "table",
+    "phone": "+79001234567",
+    "status": "done"
+   },
+   "status": 422
+  }
+ ],
+ "orders_validation": [
+  {
+   "title": "Заказ: самовывоз",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ]
+   },
+   "status": 201,
+   "stored": true
+  },
+  {
+   "title": "Заказ: honeypot — ответ как обычно, но не сохраняется",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ],
+    "website": "x"
+   },
+   "status": 201,
+   "stored": false
+  },
+  {
+   "title": "Заказ: неизвестный способ получения",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "courier",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ]
+   },
+   "status": 422
+  },
+  {
+   "title": "Заказ: больше 50 строк",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     },
+     {
+      "ref": "s2",
+      "qty": 1
+     },
+     {
+      "ref": "s3",
+      "qty": 1
+     },
+     {
+      "ref": "s4",
+      "qty": 1
+     },
+     {
+      "ref": "s5",
+      "qty": 1
+     },
+     {
+      "ref": "s6",
+      "qty": 1
+     },
+     {
+      "ref": "s7",
+      "qty": 1
+     },
+     {
+      "ref": "s8",
+      "qty": 1
+     },
+     {
+      "ref": "s9",
+      "qty": 1
+     },
+     {
+      "ref": "s10",
+      "qty": 1
+     },
+     {
+      "ref": "s11",
+      "qty": 1
+     },
+     {
+      "ref": "s12",
+      "qty": 1
+     },
+     {
+      "ref": "s13",
+      "qty": 1
+     },
+     {
+      "ref": "s14",
+      "qty": 1
+     },
+     {
+      "ref": "s15",
+      "qty": 1
+     },
+     {
+      "ref": "s16",
+      "qty": 1
+     },
+     {
+      "ref": "s17",
+      "qty": 1
+     },
+     {
+      "ref": "s1",
+      "qty": 1
+     },
+     {
+      "ref": "s2",
+      "qty": 1
+     },
+     {
+      "ref": "s3",
+      "qty": 1
+     },
+     {
+      "ref": "s4",
+      "qty": 1
+     },
+     {
+      "ref": "s5",
+      "qty": 1
+     },
+     {
+      "ref": "s6",
+      "qty": 1
+     },
+     {
+      "ref": "s7",
+      "qty": 1
+     },
+     {
+      "ref": "s8",
+      "qty": 1
+     },
+     {
+      "ref": "s9",
+      "qty": 1
+     },
+     {
+      "ref": "s10",
+      "qty": 1
+     },
+     {
+      "ref": "s11",
+      "qty": 1
+     },
+     {
+      "ref": "s12",
+      "qty": 1
+     },
+     {
+      "ref": "s13",
+      "qty": 1
+     },
+     {
+      "ref": "s14",
+      "qty": 1
+     },
+     {
+      "ref": "s15",
+      "qty": 1
+     },
+     {
+      "ref": "s16",
+      "qty": 1
+     },
+     {
+      "ref": "s17",
+      "qty": 1
+     },
+     {
+      "ref": "s1",
+      "qty": 1
+     },
+     {
+      "ref": "s2",
+      "qty": 1
+     },
+     {
+      "ref": "s3",
+      "qty": 1
+     },
+     {
+      "ref": "s4",
+      "qty": 1
+     },
+     {
+      "ref": "s5",
+      "qty": 1
+     },
+     {
+      "ref": "s6",
+      "qty": 1
+     },
+     {
+      "ref": "s7",
+      "qty": 1
+     },
+     {
+      "ref": "s8",
+      "qty": 1
+     },
+     {
+      "ref": "s9",
+      "qty": 1
+     },
+     {
+      "ref": "s10",
+      "qty": 1
+     },
+     {
+      "ref": "s11",
+      "qty": 1
+     },
+     {
+      "ref": "s12",
+      "qty": 1
+     },
+     {
+      "ref": "s13",
+      "qty": 1
+     },
+     {
+      "ref": "s14",
+      "qty": 1
+     },
+     {
+      "ref": "s15",
+      "qty": 1
+     },
+     {
+      "ref": "s16",
+      "qty": 1
+     },
+     {
+      "ref": "s17",
+      "qty": 1
+     }
+    ]
+   },
+   "status": 422
+  },
+  {
+   "title": "Заказ: промокод длиннее 30",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ],
+    "promo": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заказ: адрес длиннее 300",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "delivery",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ],
+    "address": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   },
+   "status": 422
+  },
+  {
+   "title": "Заказ: доставка без адреса",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "delivery",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ],
+    "address": "   "
+   },
+   "status": 422,
+   "message": "Укажите адрес доставки"
+  },
+  {
+   "title": "Заказ: имя из пробелов",
+   "site": "sushi",
+   "body": {
+    "name": "  ",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1
+     }
+    ]
+   },
+   "status": 422
+  },
+  {
+   "title": "Заказ: пустой ref",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "",
+      "qty": 1
+     }
+    ]
+   },
+   "status": 422
+  },
+  {
+   "title": "Заказ: лишнее поле в строке",
+   "site": "sushi",
+   "body": {
+    "name": "Иван",
+    "phone": "+79001234567",
+    "mode": "pickup",
+    "items": [
+     {
+      "ref": "s1",
+      "qty": 1,
+      "discount": 100
+     }
+    ]
+   },
+   "status": 422
+  }
+ ],
+ "bookings": [
+  {
+   "title": "Запись: время с поясом +10:00 переводится в Москву (12:00 — закрыто)",
+   "site": "restaurant",
+   "resource": "Стол на 2",
+   "weekday": 1,
+   "time": "19:00",
+   "suffix": "+10:00",
+   "status": 422,
+   "message": "В это время мы закрыты"
+  },
+  {
+   "title": "Запись: время с поясом +03:00 — то же московское",
+   "site": "restaurant",
+   "resource": "Стол на 2",
+   "weekday": 1,
+   "time": "19:00",
+   "suffix": "+03:00",
+   "status": 201,
+   "stored": true
+  },
+  {
+   "title": "Запись: время в UTC (16:00Z — 19:00 по Москве)",
+   "site": "restaurant",
+   "resource": "Стол на 2",
+   "weekday": 1,
+   "time": "16:00",
+   "suffix": "Z",
+   "status": 201,
+   "stored": true
+  },
+  {
+   "title": "Запись: honeypot — ответ как обычно, но не сохраняется",
+   "site": "restaurant",
+   "resource": "Стол на 2",
+   "weekday": 1,
+   "time": "19:00",
+   "suffix": "",
+   "website": "x",
+   "status": 201,
+   "stored": false
+  },
+  {
+   "title": "Запись: ресурс из пробелов",
+   "site": "barbershop",
+   "resource": "  ",
+   "weekday": 1,
+   "time": "12:00",
+   "suffix": "",
+   "status": 422
+  }
+ ],
+ "catalog_patch": [
+  {
+   "title": "Каталог: новая цена",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "price": 2590
+   },
+   "status": 200
+  },
+  {
+   "title": "Каталог: цена 0",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "price": 0
+   },
+   "status": 422
+  },
+  {
+   "title": "Каталог: дробная цена",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "price": 1.5
+   },
+   "status": 422
+  },
+  {
+   "title": "Каталог: цена строкой",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "price": "abc"
+   },
+   "status": 422
+  },
+  {
+   "title": "Каталог: пустое название",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "name": ""
+   },
+   "status": 422
+  },
+  {
+   "title": "Каталог: название длиннее 200",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "name": "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+   },
+   "status": 422
+  },
+  {
+   "title": "Каталог: лишнее поле",
+   "site": "sushi",
+   "ref": "s1",
+   "body": {
+    "site": "cafe"
+   },
+   "status": 422
+  }
+ ],
+ "users": [
+  {
+   "title": "Команда: новый сотрудник",
+   "action": "add",
+   "body": {
+    "email": "new@test.dev",
+    "name": "Новый",
+    "password": "password123",
+    "sites": [
+     "cafe"
+    ]
+   },
+   "status": 201
+  },
+  {
+   "title": "Команда: e-mail без домена",
+   "action": "add",
+   "body": {
+    "email": "abc",
+    "name": "Новый",
+    "password": "password123"
+   },
+   "status": 422
+  },
+  {
+   "title": "Команда: пустой список сайтов",
+   "action": "add",
+   "body": {
+    "email": "new@test.dev",
+    "name": "Новый",
+    "password": "password123",
+    "sites": []
+   },
+   "status": 422
+  },
+  {
+   "title": "Команда: неизвестный сайт",
+   "action": "add",
+   "body": {
+    "email": "new@test.dev",
+    "name": "Новый",
+    "password": "password123",
+    "sites": [
+     "nope"
+    ]
+   },
+   "status": 422
+  },
+  {
+   "title": "Команда: неизвестная роль",
+   "action": "add",
+   "body": {
+    "email": "new@test.dev",
+    "name": "Новый",
+    "password": "password123",
+    "role": "boss"
+   },
+   "status": 422
+  },
+  {
+   "title": "Команда: удалить несуществующего",
+   "action": "remove_missing",
+   "status": 404
+  }
+ ],
+ "search": [
+  {
+   "title": "Поиск: строчными по кириллице",
+   "names": [
+    "Анна",
+    "Борис"
+   ],
+   "q": "анна",
+   "total": 1
+  },
+  {
+   "title": "Поиск: прописными",
+   "names": [
+    "Анна",
+    "Борис"
+   ],
+   "q": "БОРИС",
+   "total": 1
+  },
+  {
+   "title": "Поиск: % ищется буквально",
+   "names": [
+    "Анна",
+    "Борис"
+   ],
+   "q": "%",
+   "total": 0
+  },
+  {
+   "title": "Поиск: _ ищется буквально",
+   "names": [
+    "Анна",
+    "Борис"
+   ],
+   "q": "_",
+   "total": 0
+  }
+ ],
+ "csv_dates": [
+  {
+   "title": "CSV: поздний вечер по UTC — уже следующий день в Москве",
+   "created_at": "2026-11-17T22:30:00",
+   "tz": "Europe/Moscow",
+   "expected": "18.11.2026 01:30"
+  },
+  {
+   "title": "CSV: полдень по UTC",
+   "created_at": "2026-06-01T12:05:00",
+   "tz": "Europe/Moscow",
+   "expected": "01.06.2026 15:05"
   }
  ]
 }

@@ -1,0 +1,169 @@
+"""Базовые сценарии: заявка, запись, заказ и каталог проходят от сайта до админки (демо-режим и настоящий API)."""
+
+import json
+from pathlib import Path
+import re
+import urllib.parse
+import urllib.request
+
+from conftest import OWNER, ROOT, demo_login
+from playwright.sync_api import expect
+
+
+def test_cafe_lead_appears_in_admin(page, site, errors):
+    page.goto(f"{site}/projects/cafe/")
+    form = page.locator("#form")
+    form.locator("[name=name]").fill("Е2Е Анна")
+    form.locator("[name=phone]").fill("+7 900 123-45-67")
+    form.locator("button[type=submit], button:not([type])").last.click()
+    expect(page.locator("#success")).to_be_visible()
+
+    page.goto(f"{site}/admin/#leads")
+    page.locator("#loginForm [name=email]").fill("demo@feyegetsu.dev")
+    page.locator("#loginForm [name=password]").fill("demo")
+    page.locator("#loginForm button[type=submit]").click()
+    page.locator("[data-view=leads]").click()
+    expect(page.locator("#content")).to_contain_text("Е2Е Анна")
+
+
+def test_barbershop_booking_blocks_slot(page, site, errors):
+    page.goto(f"{site}/projects/barbershop/")
+    day = page.evaluate("() => PortfolioAPI.siteToday('barbershop', 1)")
+    page.evaluate("""(day) => PortfolioAPI.createBooking('barbershop', {
+        resource: 'Артём', service: 'Стрижка', starts_at: `${day}T15:00:00`, name: 'Занял', phone: '+79001234567' })""", day)
+    page.reload()
+    page.locator("#optServices .opt").first.click()
+    page.locator(".step[data-step='0'] [data-next]").click()
+    page.locator("#optMasters .opt", has_text="Артём").click()
+    page.locator(".step[data-step='1'] [data-next]").click()
+    page.locator("#days .day").nth(1).click()
+    slot = page.locator("#times .time", has_text="15:00")
+    expect(slot).to_be_disabled()
+    expect(page.locator("#times .time", has_text="16:00")).to_be_enabled()
+
+
+def test_admin_price_change_shows_on_sushi(page, site, errors):
+    page.goto(f"{site}/projects/sushi/")
+    demo_login(page, site)
+    page.evaluate("""async () => {
+        const item = (await PortfolioAPI.admin.catalog({ site: 'sushi' })).find((c) => c.ref === 's4');
+        await PortfolioAPI.admin.updateCatalog(item.id, { price: 777 });
+    }""")
+    page.reload()
+    expect(page.locator("body")).to_contain_text("777")
+
+
+def test_miniapp_order_moves_through_statuses(page, site, errors):
+    page.clock.install()
+    page.goto(f"{site}/projects/miniapp/")
+    page.locator("[data-plus='5']").first.click()  # бургер без размеров
+    page.locator("#mainBtn").click()               # корзина
+    page.locator("[data-mode='pickup']").first.click()
+    page.locator("#mainBtn").click()               # оформление
+    page.locator("#checkoutForm [name=name]").fill("Е2Е Никита")
+    page.locator("#checkoutForm [name=phone]").fill("+79001234567")
+    page.locator("#mainBtn").click()
+    expect(page.locator(".status h2")).to_contain_text("Заказ №")
+    expect(page.locator(".tstep.now")).to_contain_text("Заказ принят")
+    page.clock.run_for(15_000)  # «кухня» в демо двигает заказ раз в 6 секунд, экран опрашивает раз в 2
+    expect(page.locator(".tstep.now, .tstep.done").last).not_to_contain_text("Заказ принят")
+
+
+def test_remote_mode_lead_reaches_real_api(page, site, api, errors):
+    page.goto(f"{site}/projects/cafe/?api={api}")
+    assert page.evaluate("() => PortfolioAPI.mode") == "remote"
+    form = page.locator("#form")
+    form.locator("[name=name]").fill("Е2Е Удалённая")
+    form.locator("[name=phone]").fill("+79001234567")
+    form.locator("button[type=submit], button:not([type])").last.click()
+    expect(page.locator("#success")).to_be_visible()
+
+    token = json.load(urllib.request.urlopen(urllib.request.Request(
+        f"{api}/api/v1/auth/login", data=json.dumps({"email": OWNER[0], "password": OWNER[1]}).encode(),
+        headers={"Content-Type": "application/json"})))["access_token"]
+    leads = json.load(urllib.request.urlopen(urllib.request.Request(
+        f"{api}/api/v1/admin/leads?q={urllib.parse.quote('удалённая')}", headers={"Authorization": f"Bearer {token}"})))
+    assert leads["total"] == 1
+
+
+def test_item_added_in_admin_appears_on_storefront(page, site, errors):
+    # BUG-011: форма «Добавить» в админке раньше ничего не меняла на витрине
+    page.goto(f"{site}/projects/sushi/")
+    demo_login(page, site)
+    page.evaluate("""async () => {
+        await PortfolioAPI.admin.addCatalog('sushi', { ref: 'custom-1', name: 'Ролл <b>Е2Е</b>', category: 'Роллы', price: 555 });
+        await PortfolioAPI.admin.addCatalog('florist', { ref: 'custom-2', name: 'Букет Е2Е', category: 'Сезонные', price: 4321 });
+        const s4 = (await PortfolioAPI.admin.catalog({ site: 'sushi' })).find((c) => c.ref === 's4');
+        await PortfolioAPI.admin.deleteCatalog(s4.id);
+    }""")
+    page.reload()
+    expect(page.locator("#menuBody")).to_contain_text("Ролл <b>Е2Е</b>")  # название — текстом, без разметки
+    expect(page.locator("#menuBody")).to_contain_text("555")
+    expect(page.locator("#menuBody h3", has_text=re.compile("^Филадельфия$"))).to_have_count(0)  # удалённое пропало
+    page.locator("[data-inc='custom-1']").click()
+    page.goto(f"{site}/projects/florist/")
+    expect(page.locator("#grid")).to_contain_text("Букет Е2Е")
+    expect(page.locator("#filters")).to_contain_text("Сезонные")
+
+
+def test_first_visit_theme_follows_system(browser, site):
+    # FE-002: при пустом localStorage тема берётся из настроек системы, выбор пользователя важнее
+    ctx = browser.new_context(color_scheme="dark")
+    page = ctx.new_page()
+    for path in ("", "admin/", "privacy.html"):
+        page.goto(f"{site}/{path}")
+        assert page.evaluate("() => document.documentElement.dataset.theme") == "dark", path
+    page.evaluate("() => localStorage.setItem('theme', 'light')")
+    page.reload()
+    assert page.evaluate("() => document.documentElement.dataset.theme") == "light"
+    ctx.close()
+
+
+def test_miniapp_outside_telegram_does_not_load_sdk(page, site, errors):
+    # PERF-002: в обычном браузере Mini App не ходит на telegram.org и не ждёт его
+    urls = []
+    page.on("request", lambda r: urls.append(r.url))
+    page.route("https://telegram.org/**", lambda r: r.fulfill(status=200, content_type="text/javascript", body=""))
+    page.goto(f"{site}/projects/miniapp/")
+    expect(page.locator("[data-plus]").first).to_be_visible()
+    assert not [u for u in urls if "telegram.org" in u]
+    page.goto(f"{site}/projects/miniapp/?tg=1#tgWebAppData=query_id%3D1")  # новая загрузка, а не смена hash
+    assert [u for u in urls if "telegram.org" in u]  # внутри Telegram SDK подключается
+
+
+def test_storefront_rules_come_from_api_js(page, site, errors):
+    # ARCH-001: порог бесплатной доставки меняется в sites.py → rules_export → api.js, без правки HTML витрины
+    src = (ROOT / "projects" / "shared" / "api.js").read_text(encoding="utf-8")
+    patched = re.sub(r'("slug": "sushi".*?"freeFrom": )1500', r"\g<1>3000", src, count=1)
+    assert patched != src
+    page.route("**/projects/shared/api.js*", lambda r: r.fulfill(status=200, content_type="text/javascript", body=patched))
+    page.goto(f"{site}/projects/sushi/")
+    page.locator("[data-inc='s7']").first.click()
+    page.locator("#cartBtn").click()
+    expect(page.locator("#drawer")).to_contain_text("2 810")  # 3 000 − 190 ₽
+
+
+def test_forget_saved_contact(page, site, errors):
+    # DOC-001: имя и телефон из окна «Ваши контакты» можно удалить там же
+    page.goto(f"{site}/projects/fitness/")
+    page.evaluate("() => localStorage.setItem('pf-contact', JSON.stringify({ name: 'Анна', phone: '+79001234567' }))")
+    page.locator("#classes button[data-id]:not([disabled])").first.click()
+    dialog = page.locator("dialog.pf-ask")
+    expect(dialog.locator("[name=name]")).to_have_value("Анна")
+    dialog.locator(".pf-ask__forget").click()
+    expect(dialog.locator("[name=name]")).to_have_value("")
+    assert page.evaluate("() => localStorage.getItem('pf-contact')") is None
+
+
+def test_privacy_lists_every_external_domain():
+    # DOC-001: каждый сторонний домен, к которому обращаются страницы, упомянут в политике
+    import glob
+    privacy = (ROOT / "privacy.html").read_text(encoding="utf-8")
+    sources = [ROOT / "index.html", ROOT / "404.html", ROOT / "admin" / "index.html", *map(Path, glob.glob(str(ROOT / "projects" / "*" / "index.html")))]
+    domains = set()
+    for f in sources:
+        domains |= set(re.findall(r'(?:src|href)="https://([a-z0-9.-]+)', f.read_text(encoding="utf-8")))
+    domains -= {"feyegetsu.github.io", "schema.org", "docs.github.com", "github.com"}
+    assert domains, "домены не найдены"
+    missing = sorted(d for d in domains if d not in privacy)
+    assert not missing, f"Не упомянуты в политике: {missing}"

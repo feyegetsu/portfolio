@@ -6,14 +6,28 @@
   <meta name="color-scheme" content="light only">
   <title>Пион и Ко — доставка цветов за 90 минут</title>
   <meta name="description" content="Авторские букеты с доставкой по городу за 90 минут. Фото букета перед отправкой.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/florist/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/florist/">
+  <meta property="og:title" content="Пион и Ко — доставка цветов за 90 минут">
+  <meta property="og:description" content="Авторские букеты с доставкой по городу за 90 минут. Фото букета перед отправкой.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/florist.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root {
       --bg: #fdf8f5; --ink: #2d2226; --muted: #6f6065; --rose: #c2485d; --rose-d: #a63a4e;
@@ -166,6 +180,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
 
   <header>
     <div class="container head">
@@ -178,6 +193,7 @@
       <button class="cart-btn" id="cartBtn">Корзина <b id="cartCount">0</b></button>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="container hero__grid">
@@ -196,7 +212,7 @@
         </div>
       </div>
       <div class="hero__art" aria-hidden="true">
-        <div class="blob"><img fetchpriority="high" src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1000&q=75" alt=""></div>
+        <div class="blob"><img width="1000" height="667" fetchpriority="high" src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=1000&q=75" alt=""></div>
         <div class="float-card fc1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#e0a106"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg> <div><b>4.9 из 5</b>2 300+ отзывов</div></div>
         <div class="float-card fc2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--rose-d)"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <div><b>за 90 минут</b>по всему городу</div></div>
       </div>
@@ -248,14 +264,16 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot">
       <span>© Пион &amp; Ко · Цветочная мастерская</span>
       <span>Демо-сайт для портфолио · фото: Unsplash</span>
     </div>
-      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+      <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <div class="overlay" id="overlay"></div>
@@ -296,8 +314,9 @@
       { id: 12, name: "Пионовидные розы", desc: "Кустовые розы Бомбастик", price: 5900, cat: "Розы", photo: "1591886960571-74d43a9d4166", bg: "#fbe0e6", pop: 9, tag: "Сезон" },
     ];
     const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
-    const FREE_DELIVERY = 5000, DELIVERY = 390;
-    const rub = n => n.toLocaleString("ru-RU") + " ₽";
+    // Доставка — из правил сайта в api.js (копия backend/app/sites.py), а не своей константой
+    const { freeFrom: FREE_DELIVERY, delivery: DELIVERY } = PortfolioAPI.rules("florist").pricing;
+    const rub = PF.rub;  // общий помощник из ../shared/kit.js
 
     // Корзина хранится в localStorage, но страница работает и без него
     const store = {
@@ -308,8 +327,13 @@
     let filter = "Все";
 
     const $ = id => document.getElementById(id);
-    const cats = ["Все", ...new Set(products.map(p => p.cat))];
-    $("filters").innerHTML = cats.map(c => `<button class="chip${c === filter ? " active" : ""}" data-cat="${c}">${c}</button>`).join("");
+    // Названия и разделы могут прийти из админки (каталог API): в HTML — только экранированными
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const renderFilters = () => {
+      const cats = ["Все", ...new Set(products.filter(p => !p.gone).map(p => p.cat))];
+      $("filters").innerHTML = cats.map(c => `<button class="chip${c === filter ? " active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+    };
+    renderFilters();
     $("filters").addEventListener("click", e => {
       const b = e.target.closest(".chip"); if (!b) return;
       filter = b.dataset.cat;
@@ -320,17 +344,17 @@
 
     function renderGrid() {
       const sort = $("sort").value;
-      const list = products.filter(p => filter === "Все" || p.cat === filter)
+      const list = products.filter(p => !p.gone && (filter === "Все" || p.cat === filter))
         .sort((a, b) => sort === "asc" ? a.price - b.price : sort === "desc" ? b.price - a.price : b.pop - a.pop);
       $("grid").innerHTML = list.map((p, i) => `
         <article class="product" style="animation-delay:${i * 40}ms">
-          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img loading="lazy" src="${ph(p.photo)}" alt="${p.name}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
+          <div class="product__img" style="background:${p.bg}">${p.off ? '<span class="product__tag">Закончился</span>' : p.tag ? `<span class="product__tag">${p.tag}</span>` : ""}<img width="600" height="400" loading="lazy" src="${ph(p.photo)}" alt="${esc(p.name)}"${p.off ? ' style="filter:grayscale(1);opacity:.6"' : ""}>${p.off ? "" : `<button class="quick" data-id="${p.id}">В корзину</button>`}</div>
           <div class="product__body">
-            <h3>${p.name}</h3>
-            <p>${p.desc}</p>
+            <h3>${esc(p.name)}</h3>
+            <p>${esc(p.desc)}</p>
             <div class="product__foot">
               <span class="price">${rub(p.price)}${p.old ? `<s>${rub(p.old)}</s>` : ""}</span>
-              ${p.off ? "" : `<button class="add" data-id="${p.id}" aria-label="В корзину: ${p.name}">+</button>`}
+              ${p.off ? "" : `<button class="add" data-id="${p.id}" aria-label="В корзину: ${esc(p.name)}">+</button>`}
             </div>
           </div>
         </article>`).join("");
@@ -358,8 +382,8 @@
       }
       $("cartBody").innerHTML = lines.map(l => `
         <div class="line">
-          <div class="line__img" style="background:${l.bg}"><img src="${ph(l.photo, 160)}" alt=""></div>
-          <div class="line__info"><b>${l.name}</b>
+          <div class="line__img" style="background:${l.bg}"><img width="160" height="107" src="${ph(l.photo, 160)}" alt=""></div>
+          <div class="line__info"><b>${esc(l.name)}</b>
             <div class="qty"><button data-d="-1" data-id="${l.id}" aria-label="Меньше">−</button>${l.q}<button data-d="1" data-id="${l.id}" aria-label="Больше">+</button></div>
           </div>
           <b>${rub(l.q * l.price)}</b>
@@ -377,16 +401,19 @@
       save();
     });
 
+    // Корзина — диалог: закрытая недоступна с клавиатуры, открытая держит фокус, Esc возвращает его на кнопку
+    const drawer = PF.sheet($("drawer"), { label: "Корзина", keep: [$("overlay")] });
     const openCart = v => {
       $("drawer").classList.toggle("open", v);
       $("overlay").classList.toggle("open", v);
       document.body.classList.toggle("lock", v);
+      v ? drawer.open() : drawer.close();
     };
     $("cartBtn").onclick = () => openCart(true);
     $("closeCart").onclick = $("overlay").onclick = () => openCart(false);
     document.addEventListener("keydown", e => e.key === "Escape" && openCart(false));
 
-    $("date").min = $("date").value = new Date().toISOString().split("T")[0];
+    $("date").min = $("date").value = PortfolioAPI.siteToday("florist");  // по Москве, а не по UTC
 
     // В реальном проекте заказ уходит в CRM и Telegram флористу
     // Заказ уходит в API: состав корзины, доставка отдельной строкой, дата и интервал в комментарии
@@ -402,7 +429,7 @@
       try {
         res = await PortfolioAPI.submit(e.target, () => PortfolioAPI.createOrder("florist", {
           items, name: f["name"].value, phone: f["phone"].value, address: f["address"].value, mode: "delivery",
-          comment: `Доставка ${new Date(f["date"].value).toLocaleDateString("ru-RU")}, ${f["slot"].value}`,
+          comment: `Доставка ${new Date(`${f["date"].value}T12:00`).toLocaleDateString("ru-RU")}, ${f["slot"].value}`,
         }));
       } catch (err) {
         if (err.status === 409) syncCatalog();  // букет закончился — обновим витрину
@@ -429,11 +456,23 @@
     // Цены и наличие из каталога: флорист меняет их в админке, витрина подхватывает
     function syncCatalog() {
       return PortfolioAPI.catalog("florist").then((list) => {
+        // Витрина — из каталога: новое из админки появляется (фото — от букета того же раздела), удалённое пропадает
+        const known = new Set();
         for (const c of list) {
-          const p = products.find((x) => String(x.id) === c.ref);
-          if (p) { p.price = c.price; p.off = !c.active; }
+          if (!Number.isInteger(c.price)) continue;
+          let p = products.find((x) => String(x.id) === c.ref);
+          if (!p) {
+            const cat = String(c.category || "").trim() || "Новинки";
+            const like = products.find((x) => x.cat === cat) || products[0];
+            p = { id: c.ref, cat, desc: "", photo: like.photo, bg: like.bg, pop: 0 };
+            products.push(p);
+          }
+          Object.assign(p, { name: c.name, price: c.price, off: !c.active, gone: false });
+          known.add(String(p.id));
         }
-        for (const id of Object.keys(cart)) if (products.find((x) => x.id == id)?.off) delete cart[id];
+        for (const p of products) if (!known.has(String(p.id))) p.gone = true;
+        for (const id of Object.keys(cart)) { const p = products.find((x) => x.id == id); if (!p || p.off || p.gone) delete cart[id]; }
+        renderFilters();
         save();
         renderGrid(); renderCart();
       }).catch(() => {});

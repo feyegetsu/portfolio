@@ -1,10 +1,14 @@
-"""Начальные данные: первый владелец и каталоги Mini App, суши и магазина цветов. Запускается при старте и ничего не дублирует."""
+"""Начальные данные: первый владелец и каталоги Mini App, суши и магазина цветов.
+
+Запускается при каждом старте и ничего не дублирует. Каталог сайта заливается один раз: отметка в seed_marks
+не даёт вернуть исходное меню, если владелец удалил все позиции, чтобы вести каталог с нуля.
+"""
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .config import settings
-from .models import CatalogItem, User
+from .models import CatalogItem, SeedMark, User
 from .security import hash_password
 
 # ref совпадает с id блюда в projects/miniapp
@@ -55,6 +59,10 @@ def seed(db: Session) -> None:
         db.add(User(email=settings.owner_email.lower(), name="Владелец", role="owner", sites=None,
                     password_hash=hash_password(settings.owner_password)))
     for site, menu in CATALOGS.items():
+        mark = f"catalog:{site}"
+        if db.get(SeedMark, mark):
+            continue
         if not db.scalar(select(func.count()).select_from(CatalogItem).where(CatalogItem.site == site)):
             db.add_all(CatalogItem(site=site, ref=ref, name=name, category=cat, price=price) for ref, name, cat, price in menu)
+        db.add(SeedMark(key=mark))
     db.commit()

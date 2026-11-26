@@ -11,13 +11,19 @@ import jwt
 from .config import settings
 from .db import utcnow
 
-_ITERATIONS = 390_000
-
-
-def hash_password(password: str) -> str:
+def hash_password(password: str, iterations: int | None = None) -> str:
+    iterations = iterations or settings.password_iterations
     salt = secrets.token_bytes(16)
-    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, _ITERATIONS)
-    return f"pbkdf2${_ITERATIONS}${base64.b64encode(salt).decode()}${base64.b64encode(digest).decode()}"
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, iterations)
+    return f"pbkdf2${iterations}${base64.b64encode(salt).decode()}${base64.b64encode(digest).decode()}"
+
+
+def needs_rehash(stored: str) -> bool:
+    """Хеш посчитан с меньшим числом итераций, чем сейчас положено: пересчитаем при удачном входе."""
+    try:
+        return int(stored.split("$")[1]) < settings.password_iterations
+    except (IndexError, ValueError):
+        return True
 
 
 def verify_password(password: str, stored: str) -> bool:
@@ -35,15 +41,20 @@ def verify_password(password: str, stored: str) -> bool:
 DUMMY_HASH = hash_password(secrets.token_urlsafe(16))
 
 
-def create_token(user_id: int) -> str:
+def create_token(user_id: int, version: int) -> str:
+    """Токен знает id и версию пользователя: после выхода или смены пароля версия растёт, и старый токен гаснет."""
     now = utcnow()
-    payload = {"sub": str(user_id), "iat": now, "exp": now + timedelta(minutes=settings.token_ttl_minutes)}
+    payload = {"sub": str(user_id), "ver": version, "iat": now, "exp": now + timedelta(minutes=settings.token_ttl_minutes)}
     return jwt.encode(payload, settings.secret_key, algorithm="HS256")
 
 
-def decode_token(token: str) -> int | None:
+def decode_token(token: str) -> tuple[int, int] | None:
+    """(id, версия) из подписанного токена; None — подпись неверна, срок истёк или токен старого формата."""
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=["HS256"])
-        return int(payload["sub"])
+        payload = jwt.decode(token, settings.secret_key, algorithms=["HS256"], options={"require": ["sub", "ver", "exp"]})
+        version = payload["ver"]
+        if not isinstance(version, int):
+            return None
+        return int(payload["sub"]), version
     except (jwt.PyJWTError, KeyError, ValueError):
         return None

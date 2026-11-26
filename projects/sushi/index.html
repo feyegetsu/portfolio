@@ -6,15 +6,29 @@
   <meta name="color-scheme" content="light only">
   <title>Кайсэн — доставка суши и роллов</title>
   <meta name="description" content="Доставка суши, роллов и рамена за 45 минут. Рыба приходит каждое утро, палочки и соусы бесплатно.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/sushi/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/sushi/">
+  <meta property="og:title" content="Кайсэн — доставка суши и роллов">
+  <meta property="og:description" content="Доставка суши, роллов и рамена за 45 минут. Рыба приходит каждое утро, палочки и соусы бесплатно.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/sushi.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍣</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --washi: #f5f0e6; --paper: #fbf8f2; --ink: #17140f; --muted: #6e665b; --red: #c8352b; --red-d: #a8281f; --line: #e5dccb; --gold: #b28a45; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -180,6 +194,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span class="hanko">海</span>Кайсэн</a>
@@ -188,6 +203,7 @@
       <button class="cart-btn" id="cartBtn" aria-label="Корзина"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L22 7H6"/></svg> <span id="cartSum">Корзина</span><i id="cartCount">0</i></button>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero" style="padding-bottom:40px" id="delivery">
     <div class="hero__kanji" aria-hidden="true">海鮮</div>
@@ -210,7 +226,7 @@
         </div>
       </div>
       <div class="sun">
-        <div class="sun__img"><img src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" alt="Сет роллов на деревянной доске" fetchpriority="high"></div>
+        <div class="sun__img"><img width="900" height="900" src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;w=900&amp;h=900&amp;q=70" alt="Сет роллов на деревянной доске" fetchpriority="high"></div>
         <div class="sun__stamp">07:00<small>рыба приезжает<br>каждое утро</small></div>
       </div>
     </div>
@@ -240,11 +256,12 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Кайсэн · Большой пр. П. С., 31</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>    <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+  </main>
+  <footer><div class="container foot"><span>© Кайсэн · Большой пр. П. С., 31</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>    <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
 
   <div class="overlay" id="overlay"></div>
-  <aside class="drawer" id="drawer" aria-label="Корзина" aria-hidden="true">
+  <aside class="drawer" id="drawer" aria-label="Корзина">
     <div class="drawer__head"><h3 id="drawerTitle">Корзина</h3><button id="drawerClose" aria-label="Закрыть">✕</button></div>
     <div class="drawer__body" id="drawerBody"></div>
     <div class="drawer__foot" id="drawerFoot"></div>
@@ -252,12 +269,14 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const rub = PF.rub;  // общий помощник из ../shared/kit.js
     const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${Math.round(w * .75)}&q=70`;
-    const FREE_FROM = 1500, DELIVERY = 199;
+    // Доставка — из правил сайта в api.js (копия backend/app/sites.py), а не своей константой
+    const { freeFrom: FREE_FROM, delivery: DELIVERY } = PortfolioAPI.rules("sushi").pricing;
 
     // ref совпадает с каталогом в API: цены и наличие приходят оттуда, здесь значения по умолчанию
     const CATS = ["Сеты", "Роллы", "Запечённые", "Нигири и сашими", "Горячее"];
@@ -281,6 +300,8 @@
       { ref: "s17", cat: "Горячее", name: "Якитори", desc: "Шашлычки из бедра курицы в соусе тарэ", meta: "4 шт · 200 г", photo: "1588767768106-1b20e51d9d68", price: 450 },
     ];
     const byRef = Object.fromEntries(MENU.map((m) => [m.ref, m]));
+    // Названия и разделы могут прийти из админки (каталог API): в HTML — только экранированными
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
     // ---------- Зоны доставки ----------
     const ZONES = [["Центральный", 35], ["Петроградский", 40], ["Василеостровский", 45], ["Московский", 50], ["Приморский", 60], ["Пушкин", 80]];
@@ -310,20 +331,22 @@
     }
 
     // ---------- Меню ----------
-    $("cats").innerHTML = CATS.map((c, i) => `<button class="cat" data-cat="${i}" aria-pressed="${!i}">${c}</button>`).join("");
+    const renderCats = () => { $("cats").innerHTML = CATS.map((c, i) => `<button class="cat" data-cat="${i}" aria-pressed="${!i}">${esc(c)}</button>`).join(""); };
+    renderCats();
     function card(m) {
       const q = state.cart[m.ref] || 0;
       const control = m.off ? `<button class="add" disabled>Закончилось</button>`
         : q ? `<div class="qty"><button data-dec="${m.ref}" aria-label="Убрать">−</button><span>${q}</span><button data-inc="${m.ref}" aria-label="Добавить">+</button></div>`
         : `<button class="add" data-inc="${m.ref}">В корзину</button>`;
       return `<article class="item${m.off ? " item--off" : ""}">
-        <div class="item__ph"><img loading="lazy" src="${ph(m.photo)}" alt="${m.name}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
-        <div class="item__b"><h3>${m.name}</h3><span class="item__meta">${m.meta}</span><p>${m.desc}</p>
+        <div class="item__ph"><img width="500" height="375" loading="lazy" src="${ph(m.photo)}" alt="${esc(m.name)}">${m.hit && !m.off ? '<span class="badge">хит</span>' : ""}</div>
+        <div class="item__b"><h3>${esc(m.name)}</h3><span class="item__meta">${esc(m.meta)}</span><p>${esc(m.desc)}</p>
           <div class="item__foot"><span class="price">${rub(m.price)}</span>${control}</div></div></article>`;
     }
     function renderMenu() {
-      $("menuBody").innerHTML = CATS.map((c, i) => `<h3 class="sec-title" id="cat-${i}"><span style="font-size:1.5rem">${c}</span><small>${MENU.filter((m) => m.cat === c).length}</small></h3>
-        <div class="grid">${MENU.filter((m) => m.cat === c).map(card).join("")}</div>`).join("");
+      const shown = MENU.filter((m) => !m.gone);
+      $("menuBody").innerHTML = CATS.map((c, i) => `<h3 class="sec-title" id="cat-${i}"><span style="font-size:1.5rem">${esc(c)}</span><small>${shown.filter((m) => m.cat === c).length}</small></h3>
+        <div class="grid">${shown.filter((m) => m.cat === c).map(card).join("")}</div>`).join("");
     }
     document.addEventListener("click", (e) => {
       const t = e.target.closest("[data-inc],[data-dec]");
@@ -352,16 +375,35 @@
     }, { passive: true });
 
     // Цены и стоп-лист из каталога: администратор меняет их в админке
+    // Меню — из каталога: название, раздел, цена и наличие. Фото и описание — из словаря по ref, у позиции,
+    // добавленной в админке, их нет: берём фото раздела. Удалённое в админке с витрины пропадает
     PortfolioAPI.catalog("sushi").then((items) => {
-      for (const c of items) if (byRef[c.ref]) { byRef[c.ref].price = c.price; byRef[c.ref].off = !c.active; }
-      for (const ref of Object.keys(state.cart)) if (byRef[ref] && byRef[ref].off) delete state.cart[ref];
+      const known = new Set();
+      for (const c of items) {
+        if (!Number.isInteger(c.price)) continue;
+        let m = byRef[c.ref];
+        if (!m) {
+          const cat = String(c.category || "").trim() || "Новинки";
+          m = { ref: c.ref, cat, desc: "", meta: "", photo: (MENU.find((x) => x.cat === cat) || MENU[0]).photo };
+          MENU.push(m);
+          byRef[c.ref] = m;
+          if (!CATS.includes(cat)) CATS.push(cat);
+        }
+        Object.assign(m, { name: c.name, price: c.price, off: !c.active, gone: false });
+        known.add(c.ref);
+      }
+      for (const m of MENU) if (!known.has(m.ref)) m.gone = true;
+      renderCats();
+      for (const ref of Object.keys(state.cart)) if (!byRef[ref] || byRef[ref].off || byRef[ref].gone) delete state.cart[ref];
       renderMenu();
       renderCart();
     }).catch(() => {});
 
     // ---------- Шторка корзины ----------
-    const openDrawer = () => { $("drawer").classList.add("on"); $("overlay").classList.add("on"); $("drawer").setAttribute("aria-hidden", "false"); document.body.classList.add("lock"); renderCart(); };
-    const closeDrawer = () => { $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); $("drawer").setAttribute("aria-hidden", "true"); document.body.classList.remove("lock"); };
+    // Корзина — диалог: фокус внутрь, фон недоступен с клавиатуры, Esc закрывает, фокус возвращается на кнопку
+    const drawer = PF.sheet($("drawer"), { label: "Корзина", keep: [$("overlay")] });
+    const openDrawer = () => { $("drawer").classList.add("on"); $("overlay").classList.add("on"); document.body.classList.add("lock"); renderCart(); drawer.open(); };
+    const closeDrawer = () => { $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); document.body.classList.remove("lock"); drawer.close(); };
     $("cartBtn").onclick = openDrawer;
     $("drawerClose").onclick = closeDrawer;
     $("overlay").onclick = closeDrawer;
@@ -383,7 +425,7 @@
       const sub = subtotal();
       const left = Math.max(0, FREE_FROM - sub);
       $("drawerBody").innerHTML = `
-        ${ls.map((l) => `<div class="line"><img src="${ph(l.photo, 120)}" alt=""><div><b>${l.name}</b><small>${rub(l.price)} · ${l.meta}</small></div>
+        ${ls.map((l) => `<div class="line"><img width="120" height="90" src="${ph(l.photo, 120)}" alt=""><div><b>${esc(l.name)}</b><small>${rub(l.price)} · ${esc(l.meta)}</small></div>
           <div class="qty"><button data-dec="${l.ref}" aria-label="Убрать">−</button><span>${l.qty}</span><button data-inc="${l.ref}" aria-label="Добавить">+</button></div></div>`).join("")}
         <div class="sticks"><span>🥢 Палочки, персон</span><div class="qty"><button id="stMinus" aria-label="Меньше">−</button><span>${state.sticks}</span><button id="stPlus" aria-label="Больше">+</button></div></div>
         ${state.mode === "delivery" ? `<div class="free">${left ? `Ещё <b>${rub(left)}</b> до бесплатной доставки` : "🎉 Доставка бесплатная"}<i style="--w:${Math.min(100, (sub / FREE_FROM) * 100)}%"></i></div>` : ""}

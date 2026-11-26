@@ -6,17 +6,30 @@
   <meta name="color-scheme" content="light only">
   <title>Терруар — ресторан сезонной кухни</title>
   <meta name="description" content="Ресторан сезонной кухни: дегустационный сет из шести подач, винное сопровождение, бронь стола онлайн.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/restaurant/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/restaurant/">
+  <meta property="og:title" content="Терруар — ресторан сезонной кухни">
+  <meta property="og:description" content="Ресторан сезонной кухни: дегустационный сет из шести подач, винное сопровождение, бронь стола онлайн.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/restaurant.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍂</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" imagesizes="(max-width: 900px) 100vw, 58vw" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=IBM+Plex+Sans:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
     :root { color-scheme: light only; }
-    :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
+    :root { --green: #18261f; --green-2: #22362c; --cream: #f2ece0; --paper: #faf7f1; --brass: #b38b52; --brass-ink: #836536; --ink: #1c1b17; --muted: #6b675d; --line: #e2dacb; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: "IBM Plex Sans", system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; overflow-x: clip; }
@@ -26,10 +39,11 @@
     .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     h1, h2, h3, .logo { font-family: "Prata", Georgia, serif; font-weight: 400; line-height: 1.1; }
     h2 { font-size: clamp(2rem, 4.6vw, 3.3rem); }
-    .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--brass); font-weight: 600; display: block; margin-bottom: 14px; }
+    .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--brass-ink); font-weight: 600; display: block; margin-bottom: 14px; }
+    .book__info .eyebrow { color: var(--brass); }  /* на тёмно-зелёном фоне светлая латунь даёт 5.6:1 */
     .muted { color: var(--muted); }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 28px; background: var(--brass); color: #fff; border: 0; font-weight: 600; letter-spacing: .04em; transition: background .25s, transform .25s; }
-    .btn:hover { background: #9c7643; transform: translateY(-2px); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 28px; background: var(--brass); color: var(--ink); border: 0; font-weight: 600; letter-spacing: .04em; transition: background .25s, transform .25s; }
+    .btn:hover { background: #c49c62; transform: translateY(-2px); }
     .btn--line { background: transparent; border: 1px solid currentColor; }
     .btn--line:hover { background: rgba(255, 255, 255, .08); }
 
@@ -39,7 +53,7 @@
     .head nav { display: flex; gap: 26px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
     .head nav a:hover { color: var(--brass); }
     .logo { font-size: 1.6rem; letter-spacing: .32em; text-align: center; }
-    .logo small { display: block; font: 500 10px "IBM Plex Sans", sans-serif; letter-spacing: .3em; color: var(--brass); margin-top: 2px; }
+    .logo small { display: block; font: 500 10px "IBM Plex Sans", sans-serif; letter-spacing: .3em; color: var(--brass-ink); margin-top: 2px; }
     .head .btn { justify-self: end; padding: 12px 22px; font-size: 14px; }
 
     /* Первый экран: зелёная колонка и фото подачи */
@@ -68,8 +82,8 @@
     .season:first-child { border-left: 0; }
     .season b { font-family: "Prata", serif; font-weight: 400; font-size: 1.3rem; display: block; }
     .season small { color: var(--muted); font-size: 13px; }
-    .season[aria-selected="true"] { background: var(--green); color: var(--cream); }
-    .season[aria-selected="true"] small { color: rgba(242, 236, 224, .7); }
+    .season[aria-pressed="true"] { background: var(--green); color: var(--cream); }
+    .season[aria-pressed="true"] small { color: rgba(242, 236, 224, .7); }
     .season__now { display: inline-block; margin-left: 8px; font: 600 10px "IBM Plex Sans", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); vertical-align: middle; }
     .set__head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 26px; }
     .set__intro { max-width: 560px; color: var(--muted); }
@@ -190,6 +204,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <nav><a href="#set">Сет</a><a href="#chef">Шеф</a><a href="#photos">Зал</a><a href="#gift">Сертификат</a></nav>
@@ -197,6 +212,7 @@
       <a href="#book" class="btn">Забронировать</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero" style="padding:0">
     <div class="hero__text">
@@ -211,7 +227,7 @@
       </div>
     </div>
     <figure class="hero__photo">
-      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000" srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" sizes="(max-width: 900px) 100vw, 58vw" alt="Подача блюда в зале ресторана" fetchpriority="high">
+      <img width="1000" height="667" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000" srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=600 600w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1000 1000w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;q=65&amp;w=1400 1400w" sizes="(max-width: 900px) 100vw, 58vw" alt="Подача блюда в зале ресторана" fetchpriority="high">
       <figcaption><b>Только 28 мест</b>Поэтому каждую подачу шеф проверяет лично.</figcaption>
     </figure>
   </section>
@@ -220,19 +236,19 @@
     <div class="container">
       <span class="eyebrow" data-reveal>Дегустационный сет</span>
       <h2 data-reveal>Четыре сезона — четыре меню</h2>
-      <div class="seasons" role="tablist" aria-label="Сезонное меню" id="seasons"></div>
+      <div class="seasons" role="group" aria-label="Сезонное меню" id="seasons" data-no-prerender></div>
       <div class="set__head">
         <p class="set__intro" id="seasonIntro"></p>
         <label class="pairing"><input type="checkbox" id="wine"><span class="pairing__sw"></span><span><b>Винное сопровождение</b><small>бокал к каждой подаче · +3 500 ₽</small></span></label>
       </div>
-      <div class="courses" id="courses"></div>
-      <div class="set__total"><span class="muted" id="setLabel"></span><b id="setPrice">6 900 ₽</b><a href="#book" class="btn">Забронировать с этим сетом</a></div>
+      <div class="courses" id="courses" data-no-prerender tabindex="0" role="region" aria-label="Блюда сета"></div>
+      <div class="set__total"><span class="muted" id="setLabel"></span><b id="setPrice" data-no-prerender>6 900 ₽</b><a href="#book" class="btn">Забронировать с этим сетом</a></div>
     </div>
   </section>
 
   <section id="chef" style="background:var(--cream)">
     <div class="container chef">
-      <div class="chef__ph" data-reveal="left"><img loading="lazy" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=75" alt="Шеф ресторана"></div>
+      <div class="chef__ph" data-reveal="left"><img width="900" height="600" loading="lazy" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=75" alt="Шеф ресторана"></div>
       <div data-reveal="right">
         <span class="eyebrow">Шеф</span>
         <h2>Арсений Белов</h2>
@@ -252,9 +268,9 @@
       <span class="eyebrow" data-reveal>Атмосфера</span>
       <h2 data-reveal>Зал, кухня и погреб</h2>
       <div class="albums">
-        <button data-album="hall"><img loading="lazy" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70" alt=""><span><b>Зал</b><small id="cnt-hall"></small></span></button>
-        <button data-album="kitchen"><img loading="lazy" src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Кухня</b><small id="cnt-kitchen"></small></span></button>
-        <button data-album="wine"><img loading="lazy" src="https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Погреб</b><small id="cnt-wine"></small></span></button>
+        <button data-album="hall"><img width="900" height="600" loading="lazy" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70" alt=""><span><b>Зал</b><small id="cnt-hall"></small></span></button>
+        <button data-album="kitchen"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Кухня</b><small id="cnt-kitchen"></small></span></button>
+        <button data-album="wine"><img width="700" height="467" loading="lazy" src="https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=700&q=70" alt=""><span><b>Погреб</b><small id="cnt-wine"></small></span></button>
       </div>
     </div>
   </section>
@@ -273,8 +289,8 @@
       </div>
       <div class="card" id="bookCard">
         <form id="bookForm" novalidate>
-          <div class="step"><b>Дата</b><div class="dates" id="dates" role="group" aria-label="Дата"></div></div>
-          <div class="step"><b>Время</b><div class="times" id="times" role="group" aria-label="Время"></div></div>
+          <div class="step"><b>Дата</b><div class="dates" id="dates" data-no-prerender role="group" aria-label="Дата"></div></div>
+          <div class="step"><b>Время</b><div class="times" id="times" data-no-prerender role="group" aria-label="Время"></div></div>
           <div class="step row">
             <div><b style="display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Гостей</b>
               <div class="guests"><button type="button" id="gMinus" aria-label="Меньше гостей">−</button><output id="guests">2</output><button type="button" id="gPlus" aria-label="Больше гостей">+</button></div></div>
@@ -309,9 +325,10 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© Ресторан «Терруар» · Набережная, 7</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
-      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+      <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
 
   <script src="../shared/api.js"></script>
@@ -326,7 +343,7 @@
   <script src="../shared/gallery.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
+    const rub = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;
     const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=72`;
     const SET = 6900, WINE = 3500;
 
@@ -362,20 +379,20 @@
         ["1563805042-7684c019e1cb", "Шоколад", "облепиха, солёная карамель", "Портвейн Руби"]] },
     };
     const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
-    const m = new Date().getMonth();
+    const m = PortfolioAPI.siteNow("restaurant").getMonth();  // сезон по Москве
     const current = m <= 1 || m === 11 ? "winter" : m <= 4 ? "spring" : m <= 7 ? "summer" : "autumn";
     let season = current;
     const ADJ = { spring: "весенний", summer: "летний", autumn: "осенний", winter: "зимний" };
     $("seasonNow").textContent = `Сейчас: ${ADJ[current]} сет`;
 
     $("seasons").innerHTML = Object.entries(SEASONS).map(([k, s]) =>
-      `<button class="season" role="tab" data-s="${k}" aria-selected="${k === season}"><b>${s.name}${k === current ? '<span class="season__now">сейчас</span>' : ""}</b><small>${s.months}</small></button>`).join("");
+      `<button class="season" data-s="${k}" aria-pressed="${k === season}"><b>${s.name}${k === current ? '<span class="season__now">сейчас</span>' : ""}</b><small>${s.months}</small></button>`).join("");
     function renderSet() {
       const s = SEASONS[season];
       $("seasonIntro").textContent = s.intro;
       $("courses").innerHTML = s.courses.map(([img, name, desc, wine], i) => `
         <article class="course" style="animation-delay:${i * 60}ms">
-          <div class="course__ph"><img loading="lazy" src="${ph(img)}" alt="${name}"><span class="course__no">${ROMAN[i]}</span></div>
+          <div class="course__ph"><img width="600" height="400" loading="lazy" src="${ph(img)}" alt="${name}"><span class="course__no">${ROMAN[i]}</span></div>
           <div class="course__b"><h3>${name}</h3><p>${desc}</p><p class="course__wine">🍷 ${wine}</p></div>
         </article>`).join("");
       $("courses").classList.toggle("with-wine", $("wine").checked);
@@ -383,7 +400,7 @@
       const total = SET + ($("wine").checked ? WINE : 0);
       $("setLabel").textContent = `${s.name}: шесть подач${$("wine").checked ? " и шесть бокалов" : ""}`;
       $("setPrice").textContent = rub(total);
-      document.querySelectorAll(".season").forEach((b) => b.setAttribute("aria-selected", b.dataset.s === season));
+      document.querySelectorAll(".season").forEach((b) => b.setAttribute("aria-pressed", b.dataset.s === season));
       renderSummary();
     }
     $("seasons").addEventListener("click", (e) => { const b = e.target.closest(".season"); if (b) { season = b.dataset.s; renderSet(); } });
@@ -391,25 +408,30 @@
 
     // ---------- Бронь ----------
     const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-    const days = [...Array(14)].map((_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; });
-    const TIMES = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
-    const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    // Занятость: стабильная для каждого дня (как будто часть столов уже забронирована)
-    const full = (d, t) => (d.getDate() * 7 + parseInt(t) * 3 + (t.endsWith("30") ? 5 : 0)) % 6 === 0;
-    const isPast = (i, t) => {
-      if (i !== 0) return false;
-      const [h, mm] = t.split(":").map(Number);
-      const now = new Date();
-      return h * 60 + mm <= now.getHours() * 60 + now.getMinutes() + 30;
-    };
-    // По умолчанию первый рабочий день, где ещё есть свободное время
-    const book = { day: days.findIndex((d, i) => d.getDay() !== 1 && TIMES.some((t) => !isPast(i, t) && !full(d, t))), time: null, guests: 2 };
+    // Дни и время — из правил ресторана в api.js (те же, что проверяет сервер) и по московскому времени
+    const DAYS = [...Array(14)].map((_, i) => PortfolioAPI.siteToday("restaurant", i));
+    const days = DAYS.map((s) => new Date(`${s}T12:00:00`));
+    const slotsOf = (i) => PortfolioAPI.daySlots("restaurant", DAYS[i]);
+    const openOf = (i) => new Set(PortfolioAPI.openSlots("restaurant", DAYS[i]).map((x) => x.time));
+    // Занятость — настоящая, из API (в демо — из записей в этом браузере): время без свободных столов неактивно
+    const fullAt = {};
+    const full = (i, t) => !!(fullAt[i] && fullAt[i].has(t));
+    async function loadAvailability(i) {
+      try {
+        const list = await PortfolioAPI.availability("restaurant", DAYS[i]);
+        fullAt[i] = new Set(list.filter((x) => x.left === 0).map((x) => x.time));
+      } catch { fullAt[i] = new Set(); }
+    }
+    // По умолчанию первый рабочий день, где ещё есть время
+    const book = { day: days.findIndex((d, i) => openOf(i).size > 0), time: null, guests: 2 };
 
-    $("dates").innerHTML = days.map((d, i) => `<button type="button" class="chip" data-d="${i}" ${d.getDay() === 1 ? 'disabled title="Понедельник — выходной"' : ""} aria-pressed="${i === book.day}">${i === 0 ? "сегодня" : WD[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
+    $("dates").innerHTML = days.map((d, i) => `<button type="button" class="chip" data-d="${i}" ${slotsOf(i).length ? "" : 'disabled title="Выходной"'} aria-pressed="${i === book.day}">${i === 0 ? "сегодня" : WD[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
     function renderTimes() {
-      const d = days[book.day];
-      $("times").innerHTML = TIMES.map((t) => {
-        const off = isPast(book.day, t) || full(d, t);
+      const i = book.day;
+      const open = openOf(i);
+      if (!fullAt[i]) loadAvailability(i).then(() => { if (book.day === i) renderTimes(); });
+      $("times").innerHTML = slotsOf(i).map(({ time: t }) => {
+        const off = !open.has(t) || full(i, t);
         if (off && book.time === t) book.time = null;
         return `<button type="button" class="chip" data-t="${t}" ${off ? "disabled" : ""} aria-pressed="${book.time === t}">${t}</button>`;
       }).join("");
@@ -447,7 +469,7 @@
         await PortfolioAPI.submit(f, () => PortfolioAPI.createBooking("restaurant", {
           resource: `Стол на ${book.guests}`,
           service: `Сет «${SEASONS[season].name}»${$("bookWine").checked ? " + вино" : ""}${occasion ? ` · ${occasion}` : ""}`,
-          starts_at: `${iso(d)}T${book.time}:00`, name: $("name").value.trim(), phone: $("phone").value.trim(),
+          starts_at: slotsOf(book.day).find((x) => x.time === book.time).starts_at, name: $("name").value.trim(), phone: $("phone").value.trim(),
         }));
       } catch { return; }
       $("bookCard").innerHTML = `<div class="done"><div style="font-size:2.6rem">🍂</div><h3>Стол ваш</h3>

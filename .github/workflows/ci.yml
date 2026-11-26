@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Проверкам хватает чтения: токен не может ничего записать, даже если зависимость окажется вредоносной
+permissions:
+  contents: read
+
 jobs:
   bot:
     name: Telegram-бот (Python)
@@ -14,44 +18,75 @@ jobs:
       run:
         working-directory: projects/cafe-bot
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Install
-        run: pip install -r requirements.txt ruff==0.6.9
+        run: pip install -r requirements.txt ruff==0.17.5 pip-audit==2.10.1
+      # Известные уязвимости в зависимостях бота (aiogram, aiohttp и т. д.) роняют сборку
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt
       - name: Lint
-        run: ruff check --select E,F,W,B,UP --ignore E501 .
+        run: ruff check .
+      # Обработчики с заглушками Telegram: заказ, кнопка «Готов», рассылка, настройки
+      - name: Tests
+        run: pip install -r requirements-dev.txt && pytest -v
       - name: Import check
         # Импортируем модуль без запуска polling: проверяем, что зависимости и хендлеры собираются
         run: BOT_TOKEN=123:test ADMIN_ID=1 python -c "import bot; print('handlers:', len(bot.dp.message.handlers) + len(bot.dp.callback_query.handlers))"
 
   api:
-    name: API (FastAPI)
+    name: API (FastAPI, ${{ matrix.db }})
     runs-on: ubuntu-latest
+    # Продакшен — PostgreSQL и Redis, поэтому тесты идут и на них, а не только на SQLite в памяти
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: portfolio
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U portfolio" --health-interval 3s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: ${{ matrix.db == 'postgres' && 'postgresql+psycopg://portfolio:portfolio@localhost:5432/portfolio' || '' }}
+      TEST_REDIS_URL: ${{ matrix.db == 'postgres' && 'redis://localhost:6379/0' || '' }}
     defaults:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Install
         run: pip install -r requirements-dev.txt
       - name: Lint
-        run: ruff check --select E,F,W,B,UP --ignore E501 .
+        run: ruff check .
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt -r requirements-dev.txt
+      # Покрытие ветвей не должно проседать: новые правила — вместе с тестами
       - name: Tests
-        run: pytest -v
+        run: pytest -v --cov=app --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Docker image builds
+        if: matrix.db == 'sqlite'
         run: docker build -t portfolio-api .
 
   parity:
     name: Демо считает как сервер (Node)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
         with:
           node-version: "20"
       # Те же примеры, что в backend/tests/test_parity.py, прогоняются по коду из projects/shared/api.js
@@ -62,23 +97,53 @@ jobs:
     name: Демо-сайты прописаны везде
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
         with:
           python-version: "3.12"
       - name: Check
         run: python tools/demos.py check
       - name: Lint tools
-        run: pip install ruff==0.6.9 && ruff check --select E,F,W,B,UP --ignore E501 tools
+        run: pip install ruff==0.17.5 && ruff check tools tests-e2e
+      # На Pages уходит только белый список файлов: без архивов, кешей и бэкенда
+      - name: Build contents
+        run: pip install pytest && pytest -q tools/test_build.py
+
+  e2e:
+    name: Сквозные сценарии в браузере (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          pip install -r tests-e2e/requirements.txt
+          python -m playwright install --with-deps chromium
+      # Демо-режим и настоящий API (uvicorn на SQLite поднимает фикстура) в Chromium
+      - name: E2E
+        working-directory: tests-e2e
+        run: pytest
 
   links:
     name: Битые ссылки
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: lycheeverse/lychee-action@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8  # v2
         with:
           # 404.html ссылается на абсолютный путь /portfolio/, он проверяется уже на Pages.
           # assets/ генерирует воркфлоу Assets после пуша, поэтому эти файлы здесь не проверяем.
           args: --offline --no-progress --exclude-path 404.html --exclude '^data:' --exclude 'assets/' './**/*.html'
+          fail: true
+      # Собранный сайт: файл, забытый в белом списке сборки, даст здесь битую ссылку
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: "3.12"
+      - name: Build site without prerender
+        run: python tools/build.py _site --no-prerender --no-minify
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8  # v2
+        with:
+          args: --offline --no-progress --root-dir "${{ github.workspace }}/_site" --exclude-path _site/404.html --exclude '^data:' --exclude 'assets/' '_site/**/*.html'
           fail: true

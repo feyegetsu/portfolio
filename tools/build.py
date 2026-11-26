@@ -2,18 +2,22 @@
 
     python tools/build.py [папка, по умолчанию _site] [--no-prerender] [--no-minify]
 
-1. Копия сайта без бэкенда и служебных файлов.
+1. Копия сайта по белому списку: только страницы, стили, скрипты и картинки, без бэкенда и служебных файлов.
 2. Пререндер. То, что JavaScript дорисовывает в пустые контейнеры (меню, цены, карточки), записывается
    прямо в HTML: поисковик и браузер без JavaScript видят содержимое. Затем каждая страница открывается
    ещё раз, и контейнер откатывается, если скрипт его не перерисовал (кнопки остались бы без обработчиков),
-   задвоил содержимое или страница начала падать с ошибкой.
+   задвоил содержимое или страница начала падать с ошибкой. Контейнеры с data-no-prerender (дата, сезон,
+   афиша, расписание) не запекаются: поисковик увидел бы день сборки.
 3. Минификация CSS и JS — внешних файлов и блоков внутри страниц — через esbuild (нужен Node, в CI он есть).
 4. Версия ?v=<хеш> в ссылках на CSS и JS: после обновления браузер не возьмёт старый файл из кэша.
+5. Content-Security-Policy в каждой странице: встроенные скрипты разрешены по SHA-256 своего текста,
+   внешние — только с этого сайта (и telegram.org для Mini App). На Pages заголовки не настроить, поэтому <meta>.
 
 Нужен Playwright: pip install playwright && python -m playwright install chromium
 """
 
 import argparse
+import base64
 import functools
 import hashlib
 import json
@@ -27,9 +31,14 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", ".github", "backend", "tools", "node_modules", "_site", ".lh", "__pycache__", "_template"}
-SKIP_FILES = {"render.yaml", ".gitignore", ".gitattributes"}
-SKIP_SUFFIXES = {".md", ".py", ".pyc", ".toml"}
+# Белый список: на Pages уходит только то, что нужно сайту. Любой новый файл или папка в корне
+# (архивы, кеши инструментов, локальные настройки) по умолчанию не публикуется
+ROOT_FILES = ("index.html", "404.html", "privacy.html", "styles.css", "script.js", "theme.js", "favicon.svg",
+              "manifest.webmanifest", "robots.txt", "sitemap.xml")
+ROOT_DIRS = ("assets", "admin", "projects")
+# Внутри разрешённых папок: исходники бота, шаблон нового демо, реестр демо и описания для GitHub
+SKIP_IN_DIRS = {"cafe-bot", "_template", "demos.json", "__pycache__", "node_modules"}
+SKIP_SUFFIXES = {".md", ".py", ".pyc", ".toml", ".zip"}
 ESBUILD = "esbuild@0.24.0"
 
 # ---------- 1. Копия ----------
@@ -38,15 +47,15 @@ ESBUILD = "esbuild@0.24.0"
 def copy_site(out: Path) -> None:
     if out.exists():
         shutil.rmtree(out)
+    out.mkdir(parents=True)
 
     def ignore(folder: str, names: list[str]) -> set[str]:
-        rel = Path(folder).resolve().relative_to(ROOT)
-        skip = {n for n in names if n in SKIP_DIRS or n in SKIP_FILES or Path(n).suffix in SKIP_SUFFIXES}
-        if rel == Path("projects"):
-            skip.add("cafe-bot")  # исходники бота на Python, сайт ссылается на них в GitHub
-        return skip
+        return {n for n in names if n in SKIP_IN_DIRS or n.startswith(".") or Path(n).suffix in SKIP_SUFFIXES}
 
-    shutil.copytree(ROOT, out, ignore=ignore)
+    for name in ROOT_FILES:
+        shutil.copy2(ROOT / name, out / name)
+    for name in ROOT_DIRS:
+        shutil.copytree(ROOT / name, out / name, ignore=ignore)
     (out / ".nojekyll").write_text("")
 
 
@@ -58,7 +67,8 @@ SNAPSHOT_JS = """async () => {
   const doc = new DOMParser().parseFromString(src, "text/html");
   const out = {};
   for (const el of doc.querySelectorAll("body [id]")) {
-    if (SKIP.has(el.tagName) || el.innerHTML.trim()) continue;
+    // data-no-prerender — содержимое зависит от даты (сегодняшний день, сезон, афиша): в HTML оно бы устарело
+    if (SKIP.has(el.tagName) || el.innerHTML.trim() || el.hasAttribute("data-no-prerender")) continue;
     if (doc.querySelectorAll(`[id="${CSS.escape(el.id)}"]`).length !== 1) continue;
     const live = document.getElementById(el.id);
     // Закрытые окна и декоративные блоки поиску не нужны
@@ -216,7 +226,7 @@ def minify(out: Path) -> dict:
         for i in range(0, len(entries), 60):
             batch = entries[i:i + 60]
             common = Path(min(batch)).anchor
-            subprocess.run([*cmd, *batch, "--minify", "--charset=utf8", "--target=es2020", "--log-level=warning",
+            subprocess.run([*cmd, *batch, "--minify", "--charset=utf8", "--target=es2020", "--log-level=warning",  # noqa: S603 — esbuild и пути из своей сборки
                             f"--outdir={min_dir}", f"--outbase={common}"], check=True, shell=sys.platform == "win32" and cmd[0].endswith(".cmd"))
 
         def minified(src: Path) -> Path:
@@ -240,6 +250,28 @@ def minify(out: Path) -> dict:
 LOCAL_ASSET = re.compile(r'\b(href|src)="((?![a-z]+:|//|#)[^"?#]+\.(?:css|js))"')
 
 
+# Файлы, которые скрипты подключают сами: в HTML их нет, поэтому версию вписываем в строку внутри скрипта
+DYNAMIC_ASSETS = {"projects/shared/api.js": ["offers.js"]}
+
+
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()[:10]
+
+
+def version_dynamic_assets(out: Path) -> int:
+    """«offers.js» в api.js → «offers.js?v=<хеш>». До version_assets: хеш api.js должен учесть эту правку."""
+    count = 0
+    for script, names in DYNAMIC_ASSETS.items():
+        path = out / script
+        text = path.read_text(encoding="utf-8")
+        for name in names:
+            target = path.parent / name
+            text, n = re.subn(r"""(["'])(""" + re.escape(name) + r""")\1""", lambda m, t=target: f"{m.group(1)}{m.group(2)}?v={file_hash(t)}{m.group(1)}", text)
+            count += n
+        path.write_text(text, encoding="utf-8")
+    return count
+
+
 def version_assets(out: Path) -> int:
     count = 0
 
@@ -249,11 +281,93 @@ def version_assets(out: Path) -> int:
         if not target.is_file():
             return m.group(0)
         count += 1
-        return f'{m.group(1)}="{m.group(2)}?v={hashlib.sha256(target.read_bytes()).hexdigest()[:10]}"'
+        return f'{m.group(1)}="{m.group(2)}?v={file_hash(target)}"'
 
     for f in out.rglob("*.html"):
         html = f.read_text(encoding="utf-8")
         f.write_text(LOCAL_ASSET.sub(functools.partial(stamp, folder=f.parent), html), encoding="utf-8")
+    return count
+
+
+# ---------- Дата обновления страниц в sitemap.xml ----------
+
+LOC = re.compile(r"<loc>([^<]+)</loc>")
+
+
+def last_commit_date(path: Path) -> str | None:
+    """Дата последнего коммита файла (ГГГГ-ММ-ДД) или None, если git недоступен или файл не в истории."""
+    git = shutil.which("git")
+    if not git:
+        return None
+    r = subprocess.run([git, "-C", str(ROOT), "log", "-1", "--format=%cs", "--", str(path)], capture_output=True, text=True)  # noqa: S603 — git и путь из репозитория
+    return r.stdout.strip() or None
+
+
+def add_lastmod(out: Path) -> int:
+    """<lastmod> у каждого адреса sitemap: поисковик видит, когда страница менялась (в CI нужна полная история git)."""
+    path = out / "sitemap.xml"
+    xml = path.read_text(encoding="utf-8")
+    count = 0
+
+    def stamp(m: re.Match) -> str:
+        nonlocal count
+        rel = m.group(1).split("/portfolio/", 1)[-1]
+        page = ROOT / rel / "index.html" if not rel.endswith(".html") else ROOT / rel
+        date = last_commit_date(page) if page.exists() else None
+        if not date or "<lastmod>" in m.string[m.end():m.end() + 30]:
+            return m.group(0)
+        count += 1
+        return f"{m.group(0)}<lastmod>{date}</lastmod>"
+
+    path.write_text(LOC.sub(stamp, xml), encoding="utf-8")
+    return count
+
+
+# ---------- 5. Content-Security-Policy ----------
+
+SCRIPT_BLOCK = re.compile(r"<script\b([^>]*)>(.*?)</script>", re.S)
+KNOWN_APIS = re.compile(r"const KNOWN_APIS = \[(.*?)\];", re.S)
+
+
+def known_apis() -> list[str]:
+    """Адреса API, которым портфолио доверяет (KNOWN_APIS в api.js): им разрешены запросы из браузера."""
+    m = KNOWN_APIS.search((ROOT / "projects" / "shared" / "api.js").read_text(encoding="utf-8"))
+    return re.findall(r"[\"']([^\"']+)[\"']", m.group(1)) if m else []
+
+
+def csp_for(html: str, apis: list[str]) -> str:
+    hashes = sorted({
+        "'sha256-" + base64.b64encode(hashlib.sha256(body.encode()).digest()).decode() + "'"
+        for attrs, body in SCRIPT_BLOCK.findall(html)
+        if "src=" not in attrs and ("type=" not in attrs or "text/javascript" in attrs or "module" in attrs)
+    })
+    scripts = ["'self'", *hashes, *(["https://telegram.org"] if "telegram.org" in html else [])]
+    return "; ".join([
+        "default-src 'self'",
+        "script-src " + " ".join(scripts),
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data: https://images.unsplash.com",
+        "connect-src " + " ".join(["'self'", *apis, "http://localhost:*", "http://127.0.0.1:*"]),
+        "frame-src 'self'",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'self'",
+    ])
+
+
+def add_csp(out: Path) -> int:
+    """CSP в <head> сразу после charset: политика действует на всё, что ниже. Считается по готовому HTML."""
+    apis, count = known_apis(), 0
+    for f in out.rglob("*.html"):
+        html = f.read_text(encoding="utf-8")
+        if 'http-equiv="Content-Security-Policy"' in html:
+            continue
+        meta = f'<meta http-equiv="Content-Security-Policy" content="{csp_for(html, apis)}">'
+        html, n = re.subn(r"(<meta charset=[^>]*>)", lambda m, meta=meta: m.group(1) + meta, html, count=1, flags=re.I)
+        if n:
+            f.write_text(html, encoding="utf-8")
+            count += 1
     return count
 
 
@@ -283,7 +397,10 @@ def main() -> int:
         stats = minify(out)
         if stats:
             print(f"Минификация: {stats['before'] / 1024:.0f} КБ → {stats['after'] / 1024:.0f} КБ")
+    version_dynamic_assets(out)
     print(f"Версии файлов проставлены: {version_assets(out)}")
+    print(f"CSP добавлена в страниц: {add_csp(out)}")
+    print(f"Даты в sitemap.xml: {add_lastmod(out)}")
     return 0
 
 

@@ -1,6 +1,7 @@
 """Правила сайтов и каталоги для демо-режима в браузере.
 
-Источник правды один: sites.py (часы, сетка, вместимость, цены доставки, размеры, промокоды) и seed.py (каталоги).
+Источник правды один: sites.py (часы, сетка, вместимость, цены доставки, размеры, промокоды), seed.py (каталоги)
+и schemas.py (предельные длины полей).
 Демо-клиент projects/shared/api.js получает их копию между маркерами RULES:START и RULES:END,
 сгенерированную этим модулем. Тест test_rules_sync падает, если копия устарела.
 
@@ -12,6 +13,7 @@ import json
 import sys
 from pathlib import Path
 
+from .schemas import LIMITS
 from .seed import CATALOGS
 from .sites import SITES, Pricing, Site
 
@@ -37,6 +39,8 @@ def _site(s: Site) -> dict:
         "leads": s.leads, "bookings": s.bookings, "exclusive": s.exclusive_slots, "orders": s.orders, "catalog": s.catalog,
         "tz": s.tz, "step": s.step_minutes, "hours": list(s.hours), "horizon": s.horizon_days,
         "resources": s.resources, "capacity": s.slot_capacity,
+        # Ключ — день недели строкой (0 — понедельник), как его увидит JSON
+        "schedule": {str(d): list(h) for d, h in sorted(s.schedule.items())} if s.schedule is not None else None,
     }
     if s.pricing:
         d["pricing"] = _pricing(s.pricing)
@@ -44,13 +48,15 @@ def _site(s: Site) -> dict:
 
 
 def render() -> str:
-    """Блок кода для api.js: константы SITES и CATALOGS."""
+    """Блок кода для api.js: константы SITES, LIMITS и CATALOGS."""
     dump = lambda v: json.dumps(v, ensure_ascii=False)  # noqa: E731
     lines = [
         f"  {START} — сгенерировано из backend/app/sites.py и seed.py командой `python -m app.rules_export`, руками не править */",
         "  const SITES = [",
         *(f"    {dump(_site(s))}," for s in SITES.values()),
         "  ];",
+        "  // Предельные длины полей форм (backend/app/schemas.py LIMITS)",
+        f"  const LIMITS = {dump(LIMITS)};",
         "  // Каталоги, которыми управляют из админки; ref совпадает с id позиции на сайте",
         "  const CATALOGS = {",
         *(f"    {slug}: {dump([list(i) for i in items])}," for slug, items in CATALOGS.items()),

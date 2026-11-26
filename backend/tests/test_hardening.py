@@ -1,5 +1,6 @@
 """Проверки к исправлениям по QA-отчёту, которых нет в test_qa_findings.py."""
 
+import json
 from dataclasses import replace
 
 import pytest
@@ -58,3 +59,66 @@ def test_extras_only_for_pizza(client):
 def test_florist_prices_from_catalog(client):
     body = {**ORDER, "mode": "pickup", "items": [{"ref": "3", "qty": 1, "price": 1}]}
     assert _total(client, "florist", body)["total"] == 8900
+
+
+def test_chunked_body_over_limit_rejected(client):
+    # SEC-004: у chunked-запроса нет Content-Length, размер считается по прочитанным байтам
+    chunks = (b"x" * 1024 for _ in range(200))
+    r = client.post("/api/v1/sites/cafe/leads", content=chunks, headers={"Content-Type": "application/json"})
+    assert r.status_code == 413
+
+
+def test_declared_length_over_limit_rejected(client):
+    body = b'{"kind":"table","phone":"+79001234567","message":"' + b"x" * 70_000 + b'"}'
+    r = client.post("/api/v1/sites/cafe/leads", content=body, headers={"Content-Type": "application/json"})
+    assert r.status_code == 413
+
+
+def test_small_chunked_body_accepted(client):
+    body = json.dumps({"kind": "table", "phone": PHONE}).encode()
+    r = client.post("/api/v1/sites/cafe/leads", content=(body[i:i + 8] for i in range(0, len(body), 8)),
+                    headers={"Content-Type": "application/json"})
+    assert r.status_code == 201
+
+
+@pytest.mark.parametrize("env, code", [("production", 404), ("development", 200)])
+def test_docs_hidden_in_production(env, code):
+    # SEC-008: карта админских эндпоинтов открыта только в разработке
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+    c = TestClient(create_app(replace(settings, env=env)))
+    assert [c.get(p).status_code for p in ("/docs", "/redoc", "/openapi.json")] == [code] * 3
+
+
+def test_cors_default_production(monkeypatch):
+    # SEC-012: без CORS_ORIGINS продакшен разрешает только домен портфолио, localhost — только в разработке
+    from app.config import Settings
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    assert Settings(env="production").cors_origins == ["https://feyegetsu.github.io"]
+    assert "http://localhost:8000" in Settings(env="development").cors_origins
+    monkeypatch.setenv("CORS_ORIGINS", "https://a.ru, https://b.ru")
+    assert Settings(env="production").cors_origins == ["https://a.ru", "https://b.ru"]
+
+
+def test_extra_fields_rejected(client, owner):
+    # BE-003: опечатка в имени поля (phon) или попытка прислать status не проходят молча
+    assert client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "phone": PHONE, "status": "done"}).status_code == 422
+    assert client.post("/api/v1/sites/cafe/leads", json={"kind": "table", "email": "a@b.ru", "phon": PHONE}).status_code == 422
+    order = {**ORDER, "mode": "pickup", "items": [{"ref": "s1", "qty": 1, "discount": 100}]}
+    assert client.post("/api/v1/sites/sushi/orders", json=order).status_code == 422
+    item = client.get("/api/v1/admin/catalog", params={"site": "sushi"}, headers=owner).json()[0]
+    assert client.patch(f"/api/v1/admin/catalog/item/{item['id']}", json={"site": "cafe"}, headers=owner).status_code == 422
+    # Объявленные поля, которые шлют витрины (название и цена строки для наглядности), по-прежнему принимаются
+    ok = {**ORDER, "mode": "pickup", "items": [{"ref": "s1", "name": "Сет", "qty": 1, "price": 1}], "comment": "", "promo": ""}
+    assert client.post("/api/v1/sites/sushi/orders", json=ok).status_code == 201
+
+
+def test_security_headers(client, owner):
+    # SEC-006: API не даёт браузеру угадывать тип ответа и не отдаёт личные данные в кеш и Referer
+    public = client.get("/api/v1/sites/sushi/catalog")
+    assert public.headers["x-content-type-options"] == "nosniff"
+    assert public.headers["referrer-policy"] == "no-referrer"
+    assert "no-store" not in public.headers.get("cache-control", "")
+    for path in ("/api/v1/admin/leads", "/api/v1/auth/me"):
+        assert client.get(path, headers=owner).headers["cache-control"] == "no-store"

@@ -6,15 +6,29 @@
   <meta name="color-scheme" content="light only">
   <title>МоторЛайн — автосервис с честными ценами</title>
   <meta name="description" content="Ремонт и обслуживание автомобилей. Онлайн-калькулятор стоимости, гарантия 12 месяцев, отслеживание ремонта.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/autoservice/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/autoservice/">
+  <meta property="og:title" content="МоторЛайн — автосервис с честными ценами">
+  <meta property="og:description" content="Ремонт и обслуживание автомобилей. Онлайн-калькулятор стоимости, гарантия 12 месяцев, отслеживание ремонта.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/autoservice.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" imagesizes="100vw" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;800&family=Exo+2:ital,wght@1,800;1,900&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --bg: #f2f2ef; --ink: #17181a; --gray: #26282c; --muted: #5f6269; --orange: #ff5a1f; --line: #dcdcd6; --r: 18px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -148,6 +162,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span>М</span>МоторЛайн</a>
@@ -155,9 +170,10 @@
       <a href="tel:+78126421890" class="phone">+7 (812) 642-18-90</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
-    <img class="hero__bg" data-parallax="0.3" src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
+    <img width="1200" height="800" class="hero__bg" data-parallax="0.3" src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1625047509248-ec889cbff17f?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
     <div class="stripes" aria-hidden="true"></div>
     <div class="container hero__grid">
       <div>
@@ -179,10 +195,10 @@
       <h2>Что ремонтируем</h2>
       <p class="muted">Все марки, кроме грузовых. Оригинальные запчасти и проверенные аналоги.</p>
       <div class="services" data-stagger>
-        <div class="svc"><div class="svc__img"><img loading="lazy" src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=75" alt="Двигатель автомобиля"></div><div class="svc__b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.9 2.9M16.9 16.9l2.9 2.9M1 12h4M19 12h4M4.2 19.8l2.9-2.9M16.9 7.1l2.9-2.9"/></svg><h3>Двигатель</h3><p>Диагностика, ремонт, замена ГРМ</p></div></div>
-        <div class="svc"><div class="svc__img"><img loading="lazy" src="https://images.unsplash.com/photo-1613214149922-f1809c99b414?auto=format&fit=crop&w=600&q=75" alt="Колесо автомобиля"></div><div class="svc__b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg><h3>Ходовая</h3><p>Подвеска, рулевое, развал-схождение</p></div></div>
-        <div class="svc"><div class="svc__img"><img loading="lazy" src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=75" alt="Мастер за работой"></div><div class="svc__b"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg><h3>Электрика</h3><p>Компьютерная диагностика, проводка</p></div></div>
-        <div class="svc"><div class="svc__img"><img loading="lazy" src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=600&q=75" alt="Замена масла"></div><div class="svc__b"><svg viewBox="0 0 24 24"><path d="M12 2.7c3.5 4 6 7.3 6 10.3a6 6 0 0 1-12 0c0-3 2.5-6.3 6-10.3z"/></svg><h3>ТО и масло</h3><p>Регламентное ТО по книжке</p></div></div>
+        <div class="svc"><div class="svc__img"><img width="600" height="400" loading="lazy" src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=75" alt="Двигатель автомобиля"></div><div class="svc__b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.9 2.9M16.9 16.9l2.9 2.9M1 12h4M19 12h4M4.2 19.8l2.9-2.9M16.9 7.1l2.9-2.9"/></svg><h3>Двигатель</h3><p>Диагностика, ремонт, замена ГРМ</p></div></div>
+        <div class="svc"><div class="svc__img"><img width="600" height="400" loading="lazy" src="https://images.unsplash.com/photo-1613214149922-f1809c99b414?auto=format&fit=crop&w=600&q=75" alt="Колесо автомобиля"></div><div class="svc__b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg><h3>Ходовая</h3><p>Подвеска, рулевое, развал-схождение</p></div></div>
+        <div class="svc"><div class="svc__img"><img width="600" height="400" loading="lazy" src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=75" alt="Мастер за работой"></div><div class="svc__b"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg><h3>Электрика</h3><p>Компьютерная диагностика, проводка</p></div></div>
+        <div class="svc"><div class="svc__img"><img width="600" height="400" loading="lazy" src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=600&q=75" alt="Замена масла"></div><div class="svc__b"><svg viewBox="0 0 24 24"><path d="M12 2.7c3.5 4 6 7.3 6 10.3a6 6 0 0 1-12 0c0-3 2.5-6.3 6-10.3z"/></svg><h3>ТО и масло</h3><p>Регламентное ТО по книжке</p></div></div>
       </div>
     </div>
   </section>
@@ -191,7 +207,7 @@
     <div class="container why">
       <div class="why__img" data-reveal="left">
         <button class="why__photos" data-album="service">📷 Фото сервиса · 11</button>
-        <img loading="lazy" src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=75" alt="Автомобиль после обслуживания">
+        <img width="1000" height="667" loading="lazy" src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=75" alt="Автомобиль после обслуживания">
         <div class="why__badge"><b data-count="9400" data-suffix="+">9 400+</b>машин отремонтировали</div>
       </div>
       <div data-reveal="right">
@@ -251,9 +267,10 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© МоторЛайн · ул. Промышленная, 15 · Ежедневно 8:00–21:00</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
-      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+      <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
@@ -366,7 +383,7 @@
       };
       requestAnimationFrame(step);
     }
-    $("date").min = $("date").value = new Date().toISOString().split("T")[0];
+    $("date").min = $("date").value = PortfolioAPI.siteToday("autoservice");  // по Москве, а не по UTC
     // Запись на ремонт уходит в API вместе с выбранными работами и расчётом
     $("bookForm").addEventListener("submit", async e => {
       e.preventDefault();
@@ -391,7 +408,7 @@
       const no = $("orderNo").value.trim();
       // Демо: этап определяется по номеру заказа
       const cur = no === "1234" ? 3 : [...no].reduce((s, c) => s + c.charCodeAt(0), 0) % stages.length;
-      const base = new Date(); base.setHours(9, 0, 0, 0);
+      const base = PortfolioAPI.siteNow("autoservice"); base.setHours(9, 0, 0, 0);
       $("timeline").innerHTML = `<p style="margin-bottom:18px"><b>Заказ №${no.replace(/[<>&"]/g, "")}</b> · Toyota Camry</p><div class="tl">` + stages.map(([t, d], i) => {
         const time = new Date(base.getTime() + i * 75 * 60000).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
         const cls = i < cur ? "done" : i === cur ? "now" : "";

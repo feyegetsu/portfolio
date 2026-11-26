@@ -51,6 +51,9 @@ PLACES = {
     "копия правил в демо-клиенте (api.js)": ("projects/shared/api.js", lambda s: f'{{"slug": "{s}"'),
 }
 
+# Правила сайта, которые демо не должно держать своей копией: они приходят из PortfolioAPI.rules(slug)
+HARDCODED_RULES = re.compile(r"\b(?:FREE_FROM|FREE_DELIVERY|DELIVERY)\s*=\s*\d|\bPROMOS\s*=\s*\{|\b(?:SIZES|EXTRAS)\s*=\s*\[\[")
+
 # Чего не должно быть на страницах демо
 FORBIDDEN = {
     "+7 (900) 000-00-00": "телефон-заглушка: у каждого демо свой номер",
@@ -65,7 +68,24 @@ REQUIRED = {
     "<title>": "заголовок страницы",
     "../shared/api.js": "клиент API: формы, кнопка «Хочу такой сайт», уведомление администратору",
     "<footer": "подвал с подписью о вымышленных данных",
+    "<main": "ориентир <main> для скринридеров",
+    'class="skip"': "ссылка «к содержимому» для клавиатуры",
+    'rel="canonical"': "канонический адрес для поиска",
+    'property="og:image"': "превью ссылки в мессенджерах (assets/previews/<slug>.jpg)",
 }
+
+
+IMG_WITHOUT_SIZE = re.compile(r"<img\b(?![^>]*\bwidth=)[^>]*>")
+
+
+def markup_problems(text: str) -> list[str]:
+    """Правила разметки для страниц и шаблонов в скриптах."""
+    problems = []
+    for m in HARDCODED_RULES.finditer(text):
+        problems.append(f"правило сайта константой «{m.group(0)}»: берите PortfolioAPI.rules(slug).pricing")
+    for tag in IMG_WITHOUT_SIZE.findall(text):
+        problems.append(f"<img> без width/height (сдвиг вёрстки при загрузке): {tag[:80]}")
+    return problems
 
 
 def check() -> int:
@@ -76,6 +96,9 @@ def check() -> int:
         problems.append(f"projects/{name}/ нет в projects/demos.json")
     for name in sorted(set(slugs) - set(dirs)):
         problems.append(f"{name} есть в projects/demos.json, но папки projects/{name}/ нет")
+    assets = read(".github/workflows/screenshots.yml")
+    if "projects/demos.json" not in assets:
+        problems.append("Lighthouse в .github/workflows/screenshots.yml должен брать список демо из projects/demos.json")
     shots = read("tools/screenshots.py")
     if "demos.json" not in shots:
         problems.append("tools/screenshots.py должен брать список демо из projects/demos.json")
@@ -95,6 +118,9 @@ def check() -> int:
         for needle, why in FORBIDDEN.items():
             if needle in html:
                 problems.append(f"{slug}: найдено {needle!r} — {why}")
+        problems += [f"{slug}: {p}" for p in markup_problems(html)]
+    for rel in ("index.html", "script.js", "projects/shared/gallery.js"):
+        problems += [f"{rel}: {p}" for p in markup_problems(read(rel))]
 
     if problems:
         print("Проблемы с демо-сайтами:")

@@ -6,15 +6,28 @@
   <meta name="color-scheme" content="dark only">
   <title>PULSE — фитнес-клуб 24/7</title>
   <meta name="description" content="Фитнес-клуб 24/7: тренажёрный зал, групповые тренировки, бассейн. Первая тренировка бесплатно.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/fitness/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/fitness/">
+  <meta property="og:title" content="PULSE — фитнес-клуб 24/7">
+  <meta property="og:description" content="Фитнес-клуб 24/7: тренажёрный зал, групповые тренировки, бассейн. Первая тренировка бесплатно.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/fitness.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" imagesizes="(max-width: 900px) 100vw, 50vw" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=optional">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=optional" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
     :root { color-scheme: dark only; }
     :root { --bg: #08090b; --card: #121418; --line: #22252c; --lime: #c6ff3d; --text: #f3f4f6; --muted: #8b919c; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,6 +192,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo">PUL<span>S</span>E</a>
@@ -186,10 +200,11 @@
       <a href="#trial" class="btn">Пробная бесплатно</a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="hero__poster">
-      <span class="live"><i></i> Сейчас в клубе: <b id="now" style="display:inline-block;min-width:2ch;font-variant-numeric:tabular-nums">34</b> человека</span>
+      <span class="live"><i></i> Сейчас в клубе: <b id="now" data-no-prerender style="display:inline-block;min-width:2ch;font-variant-numeric:tabular-nums">34</b> человека</span>
       <h1>Зал <span>24/7</span> и бассейн</h1>
       <div>
         <p>Зал 2 000 м², 40+ групповых тренировок в неделю, бассейн 25 м и сауна. Открыто круглосуточно, без выходных.</p>
@@ -197,7 +212,7 @@
       </div>
     </div>
     <div class="hero__photo">
-      <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 900px) 100vw, 50vw" alt="Тренажёрный зал клуба" fetchpriority="high" decoding="async">
+      <img width="1200" height="800" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="(max-width: 900px) 100vw, 50vw" alt="Тренажёрный зал клуба" fetchpriority="high" decoding="async">
       <div class="sticker sticker--1"><b data-count="2000">2000</b><span>м² площадь зала</span></div>
       <div class="sticker sticker--2"><b>24/7</b><span>без выходных</span></div>
       <div class="sticker sticker--3">
@@ -214,12 +229,12 @@
       <h2 data-reveal>Направ<span>ления</span></h2>
       <p class="muted" data-reveal>Шесть направлений: силовые, групповые, йога, функционал, кроссфит и персональные тренировки.</p>
       <div class="dirs" id="dirs">
-        <a href="#schedule" class="dir open"><img loading="lazy" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=75" alt="Силовая тренировка"><span class="num">01</span><span class="tag">Хит</span><div><h3>Силовые</h3><p>Свободные веса, тренажёры Hammer Strength и помосты для становой.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=75" alt="Групповая тренировка"><span class="num">02</span><div><h3>Групповые</h3><p>Функциональный тренинг, пилатес, зумба и ещё 20 программ.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=75" alt="Йога"><span class="num">03</span><div><h3>Йога</h3><p>Хатха, виньяса и растяжка в отдельном светлом зале.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=75" alt="Функциональная тренировка с канатами"><span class="num">04</span><div><h3>Функционал</h3><p>Канаты, сани, гири. Выносливость и жиросжигание.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=75" alt="Кроссфит"><span class="num">05</span><span class="tag">Новое</span><div><h3>Кроссфит</h3><p>WOD каждый день под присмотром сертифицированного тренера.</p></div></a>
-        <a href="#schedule" class="dir"><img loading="lazy" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=75" alt="Персональная тренировка"><span class="num">06</span><div><h3>Персональные</h3><p>Программа под вашу цель: рельеф, сила, здоровая спина.</p></div></a>
+        <a href="#schedule" class="dir open"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=75" alt="Силовая тренировка"><span class="num">01</span><span class="tag">Хит</span><div><h3>Силовые</h3><p>Свободные веса, тренажёры Hammer Strength и помосты для становой.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=75" alt="Групповая тренировка"><span class="num">02</span><div><h3>Групповые</h3><p>Функциональный тренинг, пилатес, зумба и ещё 20 программ.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=75" alt="Йога"><span class="num">03</span><div><h3>Йога</h3><p>Хатха, виньяса и растяжка в отдельном светлом зале.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=75" alt="Функциональная тренировка с канатами"><span class="num">04</span><div><h3>Функционал</h3><p>Канаты, сани, гири. Выносливость и жиросжигание.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=75" alt="Кроссфит"><span class="num">05</span><span class="tag">Новое</span><div><h3>Кроссфит</h3><p>WOD каждый день под присмотром сертифицированного тренера.</p></div></a>
+        <a href="#schedule" class="dir"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=75" alt="Персональная тренировка"><span class="num">06</span><div><h3>Персональные</h3><p>Программа под вашу цель: рельеф, сила, здоровая спина.</p></div></a>
       </div>
     </div>
   </section>
@@ -229,9 +244,9 @@
       <h2 data-reveal>Клуб <span>изнутри</span></h2>
       <p class="muted" data-reveal>Посмотрите зал, бассейн и студии до первой тренировки.</p>
       <div class="club">
-        <button data-album="gym"><img loading="lazy" src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=70" alt=""><span>10 фото</span><b>Тренажёрный зал</b><i>Смотреть →</i></button>
-        <button data-album="pool"><img loading="lazy" src="https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&w=800&q=70" alt=""><span>3 фото</span><b>Бассейн</b><i>Смотреть →</i></button>
-        <button data-album="group"><img loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=70" alt=""><span>9 фото</span><b>Групповые и йога</b><i>Смотреть →</i></button>
+        <button data-album="gym"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=70" alt=""><span>10 фото</span><b>Тренажёрный зал</b><i>Смотреть →</i></button>
+        <button data-album="pool"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&w=800&q=70" alt=""><span>3 фото</span><b>Бассейн</b><i>Смотреть →</i></button>
+        <button data-album="group"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=70" alt=""><span>9 фото</span><b>Групповые и йога</b><i>Смотреть →</i></button>
       </div>
     </div>
   </section>
@@ -240,10 +255,10 @@
     <div class="container">
       <div class="sched__top">
         <div><h2>Распи<span>сание</span></h2><p class="muted">Запишитесь на занятие в один клик.</p></div>
-        <div class="days" id="days"></div>
+        <div class="days" id="days" data-no-prerender></div>
       </div>
       <div class="types" id="types"></div>
-      <div class="classes" id="classes"></div>
+      <div class="classes" id="classes" data-no-prerender></div>
     </div>
   </section>
 
@@ -271,9 +286,10 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© PULSE Fitness · Московский пр., 97</span><span>Демо-сайт для портфолио · фото: Unsplash</span></div>
-      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+      <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
   <script src="../shared/motion.js" defer></script>
@@ -411,12 +427,32 @@
       ["20:00", "Стретчинг", "mind", "Ольга", 50, 18], ["21:00", "Pump", "strength", "Денис", 55, 16],
     ];
     const wd = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-    const week = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
-    // Для каждого дня своё стабильное расписание и заполненность
-    const schedule = week.map((d, di) => pool.filter((_, i) => (i + di) % 3 !== 0).map(([t, n, ty, coach, min, cap], i) => {
-      const taken = Math.min(cap, (i * 7 + di * 5 + 3) % (cap + 3));
-      return { id: `${di}-${i}`, t, n, ty, coach, min, cap, taken, booked: false };
+    // Неделя по московскому времени клуба, а не по часам посетителя
+    const DAYS = [...Array(7)].map((_, i) => PortfolioAPI.siteToday("fitness", i));
+    const week = DAYS.map((s) => new Date(`${s}T12:00:00`));
+    const CAPACITY = PortfolioAPI.rules("fitness").resources;  // мест в зале — как на сервере
+    // «Вы записаны» помнится в этом браузере: ключ — дата, время и занятие
+    const BOOKED_KEY = "pulse-booked";
+    const booked = (() => { try { return JSON.parse(localStorage.getItem(BOOKED_KEY)) || []; } catch { return []; } })();
+    const bookedKey = (di, c) => `${DAYS[di]}T${c.t}|${c.n}`;
+    // Для каждого дня своё стабильное расписание; занятость приходит из API (в демо — из записей в этом браузере)
+    const schedule = week.map((d, di) => pool.filter((_, i) => (i + di) % 3 !== 0).map(([t, n, ty, coach, min], i) => {
+      const c = { id: `${di}-${i}`, t, n, ty, coach, min, cap: CAPACITY[n], taken: 0, booked: false };
+      c.booked = booked.includes(bookedKey(di, c));
+      return c;
     }));
+    const loaded = new Set();
+    async function loadTaken(di) {
+      if (loaded.has(di)) return;
+      loaded.add(di);
+      await Promise.all(schedule[di].map(async (c) => {
+        try {
+          const slot = (await PortfolioAPI.availability("fitness", DAYS[di], c.n)).find((x) => x.time === c.t);
+          if (slot && slot.left !== null) c.taken = c.cap - slot.left;
+        } catch { /* нет сети — покажем без занятости */ }
+      }));
+      if (di === day) renderClasses();
+    }
     let day = 0, type = "all";
 
     $("days").innerHTML = week.map((d, i) => `<button class="day${i === 0 ? " active" : ""}" data-i="${i}">${i === 0 ? "Сегодня" : wd[d.getDay()]}<b>${d.getDate()}</b></button>`).join("");
@@ -435,12 +471,15 @@
     });
 
     function renderClasses() {
-      const nowH = new Date().getHours();
+      loadTaken(day);
+      const now = PortfolioAPI.siteNow("fitness");
+      const nowH = now.getHours() + now.getMinutes() / 60;
       const list = schedule[day].filter(c => type === "all" || c.ty === type);
       if (!list.length) { $("classes").innerHTML = `<div class="empty">В этот день таких занятий нет. Попробуйте другой день.</div>`; return; }
       $("classes").innerHTML = list.map((c, i) => {
         const left = c.cap - c.taken;
-        const past = day === 0 && parseInt(c.t) <= nowH;
+        const [h, m] = c.t.split(":").map(Number);
+        const past = day === 0 && h + m / 60 <= nowH;
         const label = c.booked ? "Вы записаны ✓" : past ? "Прошло" : left ? "Записаться" : "Мест нет";
         return `<div class="cls" style="animation-delay:${i * 40}ms">
           <time>${c.t}<small>${c.min} мин</small></time>
@@ -457,12 +496,13 @@
       if (c.booked) { toast("Отменить запись можно у администратора клуба"); return; }
       let contact;
       try { contact = await PortfolioAPI.askContact(`Запись: ${c.n}, ${c.t}`); } catch { return; }
-      const d = week[day];
-      const startsAt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${c.t}:00`;
+      const startsAt = `${DAYS[day]}T${c.t}:00`;
       b.disabled = true;
       try {
         await PortfolioAPI.createBooking("fitness", { resource: c.n, service: `${c.t} · тренер ${c.coach}`, starts_at: startsAt, ...contact });
         c.booked = true; c.taken += 1;
+        booked.push(bookedKey(day, c));
+        try { localStorage.setItem(BOOKED_KEY, JSON.stringify(booked)); } catch {}
         toast(`Вы записаны: ${c.n}, ${c.t}`);
       } catch (err) {
         toast(err.message);

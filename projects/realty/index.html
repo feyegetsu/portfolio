@@ -6,15 +6,29 @@
   <meta name="color-scheme" content="light only">
   <title>Квадрат — агентство недвижимости</title>
   <meta name="description" content="Квартиры в новостройках и на вторичном рынке. Подбор, проверка юристом, ипотека под ключ.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/realty/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/realty/">
+  <meta property="og:title" content="Квадрат — агентство недвижимости">
+  <meta property="og:description" content="Квартиры в новостройках и на вторичном рынке. Подбор, проверка юристом, ипотека под ключ.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/realty.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏙️</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preload" as="image" imagesrcset="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" imagesizes="100vw" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Tenor+Sans&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Tenor+Sans&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Tenor+Sans&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Tenor+Sans&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Tenor+Sans&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Tenor+Sans&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: light only; }
     :root { --bg: #f6f5f2; --ink: #141414; --muted: #5e5e5e; --green: #1f5c4a; --green-l: #e4efe9; --gold: #d8b26e; --line: #e6e3dc; --r: 20px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -150,6 +164,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <header>
     <div class="container head">
       <a href="#" class="logo"><span></span>Квадрат</a>
@@ -157,11 +172,12 @@
       <a href="#catalog" class="fav-link" id="favLink">♥ Избранное <b id="favCount">0</b></a>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
     <div class="container">
       <div class="hero__box">
-        <img class="hero__bg" data-parallax="0.2" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
+        <img width="1200" height="800" class="hero__bg" data-parallax="0.2" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200" srcset="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=500 500w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=800 800w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1200 1200w, https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&amp;fit=crop&amp;q=60&amp;w=1800 1800w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
         <h1>Новостройки и вторичка с проверкой юриста</h1>
         <p><span data-count="1800" data-suffix="+">1 800+</span> проверенных объектов. Юрист проверит документы, ипотечный брокер найдёт ставку ниже, чем в банке.</p>
         <form class="search" id="search">
@@ -222,11 +238,13 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <div class="container foot"><span>© Агентство недвижимости «Квадрат»</span><span>Демо-сайт для портфолио · не является публичной офертой · фото: Unsplash</span></div>
-      <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+      <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Карточка квартиры">
@@ -275,7 +293,7 @@
 
     // Фото объекта (Unsplash): первое — обложка, остальные — галерея в карточке
     function building(o, w = 700, idx = 0) {
-      return `<img loading="lazy" src="https://images.unsplash.com/photo-${o.photos[idx]}?auto=format&fit=crop&w=${w}&q=75" alt="${o.title}">`;
+      return `<img width="600" height="400" loading="lazy" src="https://images.unsplash.com/photo-${o.photos[idx]}?auto=format&fit=crop&w=${w}&q=75" alt="${o.title}">`;
     }
 
     let favs = new Set((() => { try { return JSON.parse(localStorage.getItem("kvadrat-favs")) || []; } catch { return []; } })());
@@ -335,6 +353,7 @@
     $("grid").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList.contains("obj")) openModal(+e.target.dataset.id); });
 
     let modalObj = null;
+    const modal = PF.sheet($("modal"), { label: "Карточка квартиры" });
     function openModal(id) {
       const o = modalObj = objects.find(x => x.id === id);
       $("mImg").innerHTML = `<div class="m-main">${building(o, 1100)}</div><div class="m-thumbs">${o.photos.map((_, i) => `<button data-i="${i}" class="${i ? "" : "on"}">${building(o, 200, i)}</button>`).join("")}</div>`;
@@ -349,8 +368,9 @@
       $("mSpecs").innerHTML = `<div>Площадь<b>${o.area} м²</b></div><div>Этаж<b>${o.floor} из ${o.floors}</b></div>
         <div>Тип<b>${o.type === "new" ? "Новостройка" : "Вторичка"}</b></div><div>Ипотека от<b>${fmt(Math.round(pay))} ₽/мес</b></div>`;
       $("modal").classList.add("open"); document.body.classList.add("lock");
+      modal.open();
     }
-    const closeModal = () => { $("modal").classList.remove("open"); document.body.classList.remove("lock"); };
+    const closeModal = () => { $("modal").classList.remove("open"); document.body.classList.remove("lock"); modal.close(); };
     $("mClose").onclick = closeModal;
     $("modal").addEventListener("click", e => e.target === $("modal") && closeModal());
     document.addEventListener("keydown", e => e.key === "Escape" && closeModal());

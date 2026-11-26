@@ -1,14 +1,18 @@
 """Настройки из переменных окружения.
 
-В продакшене SECRET_KEY и OWNER_PASSWORD обязательны: без них API не стартует (см. check_secrets).
+В продакшене SECRET_KEY, OWNER_PASSWORD и DATABASE_URL обязательны: без них API не стартует (см. check_secrets).
 Для локальной разработки можно запустить с ENV=development, тогда подойдут значения по умолчанию.
 """
 
+import functools
 import os
 from dataclasses import dataclass, field
 
-DEV_SECRET = "dev-secret-change-me"
-DEV_PASSWORD = "change-me-please"
+DEV_SECRET = "dev-secret-change-me"  # noqa: S105 — только для ENV=development, check_secrets не пускает его в продакшен
+DEV_PASSWORD = "change-me-please"  # noqa: S105 — то же для пароля первого владельца
+MIN_PASSWORD_ITERATIONS = 600_000
+PORTFOLIO_ORIGIN = "https://feyegetsu.github.io"
+DEV_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000"]
 
 
 def database_url(url: str) -> str:
@@ -25,26 +29,46 @@ def _list(value: str) -> list[str]:
 
 @dataclass(frozen=True)
 class Settings:
-    env: str = os.getenv("ENV", "production")
-    database_url: str = field(default_factory=lambda: database_url(os.getenv("DATABASE_URL", "sqlite:///./portfolio.db")))
+    env: str = field(default_factory=lambda: os.getenv("ENV", "production"))
+    database_url: str = field(default_factory=lambda: database_url(os.getenv("DATABASE_URL") or "sqlite:///./portfolio.db"))
     # Общий счётчик лимитов для нескольких копий API. Пусто — счётчик в памяти процесса
-    redis_url: str = os.getenv("REDIS_URL", "")
-    secret_key: str = os.getenv("SECRET_KEY", DEV_SECRET)
-    token_ttl_minutes: int = int(os.getenv("TOKEN_TTL_MINUTES", "720"))
-    cors_origins: list[str] = field(
-        default_factory=lambda: _list(os.getenv("CORS_ORIGINS", "https://feyegetsu.github.io,http://localhost:8000"))
-    )
+    redis_url: str = field(default_factory=lambda: os.getenv("REDIS_URL", ""))
+    secret_key: str = field(default_factory=lambda: os.getenv("SECRET_KEY", DEV_SECRET))
+    token_ttl_minutes: int = field(default_factory=lambda: int(os.getenv("TOKEN_TTL_MINUTES", "120")))
+    # Пусто — домен портфолио, а в разработке ещё и локальный сервер (см. __post_init__)
+    cors_origins: list[str] = field(default_factory=lambda: _list(os.getenv("CORS_ORIGINS", "")))
     # Сколько публичных заявок разрешено с одного IP за окно
-    rate_limit: int = int(os.getenv("RATE_LIMIT", "20"))
-    rate_window_seconds: int = int(os.getenv("RATE_WINDOW_SECONDS", "600"))
+    rate_limit: int = field(default_factory=lambda: int(os.getenv("RATE_LIMIT", "20")))
+    rate_window_seconds: int = field(default_factory=lambda: int(os.getenv("RATE_WINDOW_SECONDS", "600")))
+    # Публичные GET (каталог, свободные слоты, статус заказа) с одного IP за минуту
+    read_limit: int = field(default_factory=lambda: int(os.getenv("READ_LIMIT", "300")))
     # Попытки входа: после стольких ошибок e-mail с этого IP блокируется на окно
-    login_attempts: int = int(os.getenv("LOGIN_ATTEMPTS", "5"))
-    login_window_seconds: int = int(os.getenv("LOGIN_WINDOW_SECONDS", "900"))
+    login_attempts: int = field(default_factory=lambda: int(os.getenv("LOGIN_ATTEMPTS", "5")))
+    login_window_seconds: int = field(default_factory=lambda: int(os.getenv("LOGIN_WINDOW_SECONDS", "900")))
+    # Неудачные входы на один аккаунт со всех IP: распределённый перебор упирается в этот лимит
+    login_account_attempts: int = field(default_factory=lambda: int(os.getenv("LOGIN_ACCOUNT_ATTEMPTS", "20")))
+    login_account_window_seconds: int = field(default_factory=lambda: int(os.getenv("LOGIN_ACCOUNT_WINDOW_SECONDS", "3600")))
+    # Неудачные входы с одного IP на любые e-mail: перебор адресов
+    login_ip_attempts: int = field(default_factory=lambda: int(os.getenv("LOGIN_IP_ATTEMPTS", "50")))
+    login_ip_window_seconds: int = field(default_factory=lambda: int(os.getenv("LOGIN_IP_WINDOW_SECONDS", "900")))
     # Максимальный размер тела запроса: формы и заказы укладываются с огромным запасом
-    max_body_bytes: int = int(os.getenv("MAX_BODY_BYTES", "65536"))
+    max_body_bytes: int = field(default_factory=lambda: int(os.getenv("MAX_BODY_BYTES", "65536")))
+    # Сколько доверенных прокси стоит перед API (балансировщик хостинга, nginx). Реальный IP посетителя —
+    # элемент X-Forwarded-For с этим номером справа: всё левее мог дописать сам клиент. 0 — заголовку не верим
+    trusted_proxy_hops: int = field(default_factory=lambda: int(os.getenv("TRUSTED_PROXY_HOPS", "0")))
     # Первый владелец создаётся при старте, если пользователей ещё нет
-    owner_email: str = os.getenv("OWNER_EMAIL", "owner@example.com")
-    owner_password: str = os.getenv("OWNER_PASSWORD", DEV_PASSWORD)
+    owner_email: str = field(default_factory=lambda: os.getenv("OWNER_EMAIL", "owner@example.com"))
+    owner_password: str = field(default_factory=lambda: os.getenv("OWNER_PASSWORD", DEV_PASSWORD))
+    # Итерации PBKDF2-SHA256 (рекомендация OWASP — от 600 000). Меньше можно только в разработке и тестах (ENV=test)
+    password_iterations: int = field(default_factory=lambda: int(os.getenv("PASSWORD_ITERATIONS", str(MIN_PASSWORD_ITERATIONS))))
+    # SQLite в продакшене — почти всегда забытый DATABASE_URL: файл в контейнере пропадёт при следующем деплое
+    allow_sqlite: bool = field(default_factory=lambda: os.getenv("ALLOW_SQLITE", "") == "1")
+
+    def __post_init__(self) -> None:
+        if not self.cors_origins:
+            # localhost только в разработке: в продакшене любая страница на порту 8000 машины админа могла бы звать API
+            origins = [PORTFOLIO_ORIGIN, *(DEV_ORIGINS if self.env == "development" else [])]
+            object.__setattr__(self, "cors_origins", origins)
 
 
 def check_secrets(s: "Settings") -> None:
@@ -56,9 +80,20 @@ def check_secrets(s: "Settings") -> None:
         problems.append("SECRET_KEY: задайте случайную строку длиной от 32 символов (python -c \"import secrets; print(secrets.token_urlsafe(48))\")")
     if s.owner_password == DEV_PASSWORD or len(s.owner_password) < 10 or "замените" in s.owner_password:
         problems.append("OWNER_PASSWORD: задайте свой пароль владельца длиной от 10 символов")
+    if s.password_iterations < MIN_PASSWORD_ITERATIONS and s.env != "test":
+        problems.append(f"PASSWORD_ITERATIONS: в продакшене не меньше {MIN_PASSWORD_ITERATIONS}")
+    if s.database_url.startswith("sqlite") and not s.allow_sqlite:
+        problems.append("DATABASE_URL: не задан адрес PostgreSQL, а файл SQLite в контейнере пропадёт при следующем деплое. "
+                        "Задайте DATABASE_URL или, если SQLite нужен осознанно, ALLOW_SQLITE=1")
     if problems:
         raise RuntimeError("API не запущен, небезопасные настройки:\n- " + "\n- ".join(problems)
                            + "\nДля локальной разработки запустите с ENV=development.")
 
 
-settings = Settings()
+@functools.cache
+def get_settings() -> Settings:
+    """Настройки читаются из окружения один раз, при первом обращении. В тестах — replace(settings, ...)."""
+    return Settings()
+
+
+settings = get_settings()

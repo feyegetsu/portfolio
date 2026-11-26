@@ -1,7 +1,9 @@
-fastapi==0.115.0
-uvicorn[standard]==0.30.6
-SQLAlchemy==2.0.35
-PyJWT==2.9.0
-psycopg[binary]==3.2.3
-tzdata==2025.2
-redis==5.0.8
+fastapi==0.164.0
+starlette==1.10.0
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.0.58
+alembic==1.20.1
+PyJWT==2.15.1
+psycopg[binary]==3.3.9
+tzdata==2026.6
+redis==8.1.0

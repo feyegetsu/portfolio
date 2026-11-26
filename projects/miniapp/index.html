@@ -5,11 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Сытый Лис — Telegram Mini App доставки еды</title>
   <meta name="description" content="Демо Telegram Mini App: меню, корзина, промокод, оформление и отслеживание заказа прямо в Telegram.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/miniapp/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/miniapp/">
+  <meta property="og:title" content="Сытый Лис — Telegram Mini App доставки еды">
+  <meta property="og:description" content="Демо Telegram Mini App: меню, корзина, промокод, оформление и отслеживание заказа прямо в Telegram.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/miniapp.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦊</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- SDK Telegram нужен только внутри Telegram: он передаёт данные запуска в hash (#tgWebAppData=…).
+       В обычном браузере страница не ходит на telegram.org и не ждёт его до первой отрисовки -->
+  <script>if (/tgWebAppData/.test(location.hash)) document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>');</script>
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     /* Цвета берутся из темы Telegram (переменные --tg-theme-* выставляет SDK), в браузере работают запасные значения */
     :root {
       --bg: var(--tg-theme-bg-color, #ffffff);
@@ -37,7 +53,7 @@
     .intro p { color: var(--hint); font-size: 1.05rem; line-height: 1.6; max-width: 480px; }
     .intro ul { list-style: none; margin: 26px 0; display: grid; gap: 12px; }
     .why-biz { margin: 0 0 22px; max-width: 480px; }
-    .intro__foot { margin-top: 18px; font-size: 12px; color: var(--hint); opacity: .8; }
+    .intro__foot { margin-top: 18px; font-size: 12px; color: #5b616e; }
     .why-biz h2 { font-size: 1.05rem; margin: 0 0 8px; }
     .intro .why-biz p { font-size: .95rem; }
     .intro .why-biz p + p { margin-top: 8px; }
@@ -83,7 +99,7 @@
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px; }
     .card { background: var(--bg); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; animation: up .35s both; }
     @keyframes up { from { opacity: 0; transform: translateY(10px); } }
-    .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; }
+    .card__img { aspect-ratio: 1; position: relative; background: var(--bg2); overflow: hidden; display: block; width: 100%; padding: 0; border: 0; cursor: pointer; }
     .card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .card:active .card__img img { transform: scale(.97); }
     .card--off .card__img img { filter: grayscale(1); opacity: .5; }
@@ -205,6 +221,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#view">К содержимому</a>
   <div class="stage">
     <div class="intro">
       <a class="back-link" href="../../">← Вернуться в портфолио</a>
@@ -246,6 +263,10 @@
   </div>
 
   <script>
+    // initDataUnsafe берём только чтобы подставить имя в форму. Сервер заказы с пользователем Telegram не связывает,
+    // поэтому подпись не проверяется. Если появятся история заказов или уведомления в чат — отправлять tg.initData
+    // на сервер и проверять HMAC-SHA256 с ключом от BOT_TOKEN (алгоритм из документации Telegram Mini Apps),
+    // иначе пользователя можно подделать
     const tg = window.Telegram && window.Telegram.WebApp;
     const inTG = !!(tg && tg.initData);
     if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");
@@ -257,7 +278,7 @@
 
     const $ = (id) => document.getElementById(id);
     const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
-    const rub = (n) => n.toLocaleString("ru-RU") + " ₽";
+    const rub = PF.rub;  // общий помощник из ../shared/kit.js
     const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const haptic = (type = "light") => { if (inTG && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(type); };
 
@@ -281,11 +302,12 @@
       { id: 15, cat: "pasta", name: "Стейк с фри", desc: "Мачете из говядины, картофель фри, соус демиглас.", w: "390 г", price: 890, photo: "1600891964092-4316c288032e" },
       { id: 16, cat: "drinks", name: "Лимонады", desc: "Маракуйя, клубника-базилик или классический. 0,4 л.", w: "400 мл", price: 219, photo: "1544145945-f90425340c7e" },
     ];
-    const SIZES = [["25 см", -120], ["30 см", 0], ["35 см", 170]];
-    const EXTRAS = [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]];
-    // Публичный промокод для предпросмотра скидки; принимает и проверяет его сервер
-    const PROMOS = { FOX10: 0.1 };
-    const FREE_FROM = 1500, DELIVERY = 199;
+    // Правила заказа — из api.js, копии backend/app/sites.py: размеры, добавки, промокоды и доставка живут в одном
+    // месте, и витрина показывает то же, что посчитает сервер. Промокод здесь — только предпросмотр скидки
+    const RULES = PortfolioAPI.rules("miniapp").pricing;
+    const SIZES = RULES.sizes, EXTRAS = RULES.extras;
+    const PROMOS = Object.fromEntries(Object.entries(RULES.promos).map(([code, percent]) => [code, percent / 100]));
+    const FREE_FROM = RULES.freeFrom, DELIVERY = RULES.delivery;
 
     // Корзина: ключ строки = товар + размер + добавки
     const state = { screen: "menu", cart: [], promo: null, mode: "delivery", query: "" };
@@ -366,7 +388,7 @@
       const q = qtyOf(it.id);
       if (it.off) {
         return `<article class="card card--off">
-          <div class="card__img"><img loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+          <div class="card__img"><img width="400" height="267" loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
           <div class="card__b"><b>${it.name}</b><small>${it.w}</small><button class="add" disabled>Закончилось</button></div>
         </article>`;
       }
@@ -376,7 +398,7 @@
           : `<div class="counter"><button data-minus="${it.id}" aria-label="Убрать">−</button>${q}<button data-plus="${it.id}" aria-label="Добавить">+</button></div>`)
         : `<button class="add" data-${it.sizes ? "open" : "plus"}="${it.id}">${it.sizes ? "от " : ""}${rub(it.price + (it.sizes ? SIZES[0][1] : 0))}</button>`;
       return `<article class="card">
-        <div class="card__img" data-open="${it.id}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></div>
+        <button type="button" class="card__img" data-open="${it.id}" aria-label="Подробнее: ${it.name}">${it.hit ? '<span class="badge">ХИТ</span>' : ""}<img width="400" height="267" loading="lazy" src="${ph(it.photo, 400)}" alt="${it.name}"></button>
         <div class="card__b"><b>${it.name}</b><small>${it.w}</small>${control}</div>
       </article>`;
     }
@@ -434,7 +456,7 @@
         <div class="group">${state.cart.map((l) => {
           const it = findItem(l.id);
           const meta = [l.size != null ? SIZES[l.size][0] : it.w, ...l.extras.map((e) => EXTRAS[e][0].toLowerCase())].join(", ");
-          return `<div class="line"><img src="${ph(it.photo, 160)}" alt="">
+          return `<div class="line"><img width="160" height="107" src="${ph(it.photo, 160)}" alt="">
             <div class="line__info"><b>${it.name}</b><small>${meta} · ${rub(linePrice(l))}</small></div>
             <div class="mini-counter"><button data-dec="${l.key}" aria-label="Меньше">−</button><span>${l.qty}</span><button data-inc="${l.key}" aria-label="Больше">+</button></div></div>`;
         }).join("")}</div>
@@ -594,13 +616,14 @@
       sheetItem = findItem(id); sheetSize = 1; sheetExtras = [];
       renderSheet();
       $("sheet").classList.add("on"); $("sheetBg").classList.add("on");
+      sheetDialog.open();
       setMain(`Добавить · ${rub(sheetPrice())}`, () => { addToCart(sheetItem.id, sheetItem.sizes ? sheetSize : null, sheetExtras); closeSheet(); toast(`${sheetItem.name} в корзине`); });
     }
     const sheetPrice = () => sheetItem.price + (sheetItem.sizes ? SIZES[sheetSize][1] : 0) + sheetExtras.reduce((s, e) => s + EXTRAS[e][1], 0);
     function renderSheet() {
       const it = sheetItem;
       $("sheet").innerHTML = `
-        <div class="sheet__img"><img src="${ph(it.photo, 800)}" alt="${it.name}"><span class="sheet__grab"></span><button class="sheet__x" data-close aria-label="Закрыть">✕</button></div>
+        <div class="sheet__img"><img width="800" height="533" src="${ph(it.photo, 800)}" alt="${it.name}"><span class="sheet__grab"></span><button class="sheet__x" data-close aria-label="Закрыть">✕</button></div>
         <div class="sheet__b">
           <h2>${it.name}</h2><p>${it.desc}<br>${it.sizes ? SIZES[sheetSize][0] + " · " : ""}${it.w.replace(/^\d+ см · /, "")}</p>
           ${it.sizes ? `<div class="label">Размер</div><div class="seg">${SIZES.map(([s], i) => `<button data-size="${i}" class="${i === sheetSize ? "on" : ""}">${s}</button>`).join("")}</div>
@@ -609,8 +632,12 @@
       if (inTG) tg.MainButton.setText(`Добавить · ${rub(sheetPrice())}`);
       else $("mainBtn").textContent = `Добавить · ${rub(sheetPrice())}`;
     }
+    // Шторка — диалог; кнопка «Добавить» внизу (mainBtn) остаётся доступной, Esc закрывает
+    const sheetDialog = PF.sheet($("sheet"), { label: "Карточка блюда", keep: [$("sheetBg"), $("mainBtn")] });
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetDialog.isOpen) closeSheet(); });
     function closeSheet() {
       $("sheet").classList.remove("on"); $("sheetBg").classList.remove("on");
+      sheetDialog.close();
       render();
     }
     $("sheetBg").addEventListener("click", closeSheet);
@@ -704,7 +731,7 @@
         const list = await PortfolioAPI.catalog("miniapp");
         for (const c of list) {
           const it = MENU.find((m) => String(m.id) === c.ref);
-          if (it) { it.price = c.price; it.off = !c.active; }
+          if (it && Number.isInteger(c.price)) { it.price = c.price; it.off = !c.active; }
         }
         // Если позиция закончилась, убираем её из корзины
         const before = state.cart.length;

@@ -1,0 +1,19 @@
+# Обновления зависимостей: действия GitHub (закреплены по SHA) и пакеты Python бэкенда, бота и e2e
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /projects/cafe-bot
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /tests-e2e
+    schedule:
+      interval: monthly

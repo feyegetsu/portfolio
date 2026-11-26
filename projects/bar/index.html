@@ -6,15 +6,29 @@
   <meta name="color-scheme" content="dark only">
   <title>Полночь — коктейльный бар</title>
   <meta name="description" content="Коктейльный бар без вывески: авторские коктейли, винил и джаз, бронь столика онлайн. 18+.">
+  <link rel="canonical" href="https://feyegetsu.github.io/portfolio/projects/bar/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://feyegetsu.github.io/portfolio/projects/bar/">
+  <meta property="og:title" content="Полночь — коктейльный бар">
+  <meta property="og:description" content="Коктейльный бар без вывески: авторские коктейли, винил и джаз, бронь столика онлайн. 18+.">
+  <meta property="og:image" content="https://feyegetsu.github.io/portfolio/assets/previews/bar.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="800">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=optional">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=optional" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Jost:wght@400;500;600&display=optional"></noscript>
   <style>
+    img { height: auto; } /* width/height у картинок — только пропорции до загрузки, без сдвига вёрстки */
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 2147483002; padding: 10px 16px; border-radius: 10px; background: #111; color: #fff; font: 600 14px system-ui, sans-serif; text-decoration: none; }
+    .skip:focus { top: 12px; }  /* ссылка «к содержимому» видна только с клавиатуры */
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }  /* видимый фокус для клавиатуры */
     :root { color-scheme: dark only; }
     :root { --night: #0d0b0a; --night-2: #161210; --velvet: #3b1218; --amber: #d8a85a; --neon: #ff6f91; --cream: #efe4d2; --muted: #a29482; --line: #2c2420; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,6 +195,7 @@
   </style>
 </head>
 <body>
+  <a class="skip" href="#main">К содержимому</a>
   <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate__box">
       <div class="neon" aria-hidden="true">Полночь</div>
@@ -196,9 +211,10 @@
       <nav><a href="#drinks">Коктейли</a><a href="#nights">Вечера</a><a href="#photos">Фото</a><a href="#book">Столик</a></nav>
     </div>
   </header>
+  <main id="main">
 
   <section class="hero">
-    <img class="hero__bg" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" alt="" fetchpriority="high">
+    <img width="1400" height="933" class="hero__bg" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=1400&amp;q=60" alt="" fetchpriority="high">
     <div class="container">
       <h1 class="neon">Полночь</h1>
       <div class="hero__sub">коктейльный бар без вывески</div>
@@ -208,7 +224,7 @@
         <div class="door__hint" id="knockHint">Постучите три раза</div>
         <div class="secret" id="secret" aria-live="polite">
           <small class="eyebrow" style="margin:0">Пароль на сегодня</small>
-          <b id="password">«Лунный свет»</b>
+          <b id="password" data-no-prerender>«Лунный свет»</b>
           <a href="#book" class="btn">Забронировать столик</a>
         </div>
       </div>
@@ -231,7 +247,7 @@
   <section id="nights" style="background:var(--night-2)">
     <div class="container">
       <span class="eyebrow">Неделя</span><h2 style="margin-bottom:30px">Каждый вечер <i>свой</i></h2>
-      <div class="nights" id="nightList"></div>
+      <div class="nights" id="nightList" data-no-prerender></div>
       <div class="rules">
         <div><b>I</b><p>Не фотографируем гостей. Только коктейли и интерьер.</p></div>
         <div><b>II</b><p>Говорим вполголоса: это бар для разговоров.</p></div>
@@ -244,8 +260,8 @@
   <section id="photos">
     <div class="container">
       <div class="albums">
-        <button data-album="bar"><img loading="lazy" src="https://images.unsplash.com/photo-1597290282695-edc43d0e7129?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Бар</b><small id="cnt-bar"></small></span></button>
-        <button data-album="drinks"><img loading="lazy" src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Коктейли</b><small id="cnt-drinks"></small></span></button>
+        <button data-album="bar"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1597290282695-edc43d0e7129?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Бар</b><small id="cnt-bar"></small></span></button>
+        <button data-album="drinks"><img width="800" height="533" loading="lazy" src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=65" alt=""><span><b>Коктейли</b><small id="cnt-drinks"></small></span></button>
       </div>
     </div>
   </section>
@@ -256,7 +272,7 @@
         <span class="eyebrow">Столик</span>
         <h2>Займём для вас <i>место</i></h2>
         <p class="muted" style="margin:16px 0 22px">Мест всего двадцать, поэтому в пятницу и субботу лучше бронировать. Держим столик 20 минут.</p>
-        <p>Гороховая, 9, арка во двор<br><span class="muted">Ср–Вс с 19:00 до 03:00</span><br><a href="tel:+78129053371">+7 (812) 905-33-71</a></p>
+        <p>Гороховая, 9, арка во двор<br><span class="muted">Ср–Вс с 19:00 до 03:00, бронь до 01:30</span><br><a href="tel:+78129053371">+7 (812) 905-33-71</a></p>
       </div>
       <div id="bookBox">
         <form id="bookForm">
@@ -273,11 +289,13 @@
     </div>
   </section>
 
-  <footer><div class="container foot"><span>© Бар «Полночь» · только для гостей старше 18 лет</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div>    <p class="pf-fiction" style="margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
+  </main>
+  <footer><div class="container foot"><span>© Бар «Полночь» · только для гостей старше 18 лет</span><span>Демо-сайт для портфолио · фото: Unsplash · чрезмерное употребление алкоголя вредит вашему здоровью</span></div>    <p class="pf-fiction">Демо-проект из портфолио: компании, адреса, отзывы и цифры вымышлены.</p>
   </footer>
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../shared/api.js"></script>
+  <script src="../shared/kit.js"></script>
   <script src="../shared/motion.js" defer></script>
   <script>
     window.PF_ALBUMS = {
@@ -295,11 +313,14 @@
     // ---------- Возраст: спрашиваем один раз; роботу для скриншотов не показываем ----------
     let adult = false;
     try { adult = localStorage.getItem("midnight-18") === "1"; } catch {}
-    if (!adult && !navigator.webdriver) { $("gate").hidden = false; document.body.classList.add("gate-on"); $("gateYes").focus(); }
+    // Вопрос о возрасте — модальный диалог: пока нет ответа, сайт за ним недоступен и с клавиатуры
+    const gate = PF.sheet($("gate"));
+    if (!adult && (!navigator.webdriver || new URLSearchParams(location.search).has("gate"))) { $("gate").hidden = false; document.body.classList.add("gate-on"); gate.open(); }
     $("gateYes").onclick = () => {
       try { localStorage.setItem("midnight-18", "1"); } catch {}
       $("gate").hidden = true;
       document.body.classList.remove("gate-on");
+      gate.close();
     };
 
     // ---------- Дверь: три стука открывают пароль дня ----------
@@ -310,7 +331,7 @@
       $("knock").classList.remove("hit"); void $("knock").offsetWidth; $("knock").classList.add("hit");
       if (knocks < 3) { $("knockHint").textContent = `${"тук ".repeat(knocks).trim()}…`; return; }
       $("knockHint").textContent = "Дверь приоткрылась";
-      $("password").textContent = `«${PASSWORDS[new Date().getDay()]}»`;
+      $("password").textContent = `«${PASSWORDS[PortfolioAPI.siteNow("bar").getDay()]}»`;
       $("secret").classList.add("on");
       $("knock").disabled = true;
     };
@@ -334,7 +355,7 @@
       $("drinkList").innerHTML = DRINKS.filter((d) => taste === "all" || d[3].includes(taste)).map(([img, n, d, , s, p, recipe], i) => `
         <article class="drink" style="animation-delay:${i * 60}ms">
           <button class="drink__more" aria-label="Рецепт: ${n}">i</button>
-          <div class="drink__ph"><img loading="lazy" src="${ph(img)}" alt="${n}"><div class="drink__recipe"><b>Рецепт</b>${recipe}</div></div>
+          <div class="drink__ph"><img width="500" height="667" loading="lazy" src="${ph(img)}" alt="${n}"><div class="drink__recipe"><b>Рецепт</b>${recipe}</div></div>
           <div class="drink__b"><h3>${n}</h3><small>${d}</small>
             <div class="drink__foot"><span class="strength" title="Крепость">${[1, 2, 3].map((k) => `<i class="${k <= s ? "on" : ""}"></i>`).join("")}</span><span>${p} ₽</span></div></div>
         </article>`).join("");
@@ -366,7 +387,7 @@
       const [t, s, mood] = qAns;
       const score = (d) => (d[3].includes(t) ? 3 : 0) + (3 - Math.abs(d[4] - s)) + (mood === "any" ? 0 : d[3].includes(mood) ? 2 : 0);
       const best = [...DRINKS].sort((a, b) => score(b) - score(a))[mood === "any" ? 1 : 0];
-      $("quiz").innerHTML = `<div class="q__res"><img src="${ph(best[0], 300)}" alt=""><div><span class="q__step">Ваш коктейль</span><b>${best[1]}</b><p class="muted">${best[6]}</p>
+      $("quiz").innerHTML = `<div class="q__res"><img width="300" height="400" src="${ph(best[0], 300)}" alt=""><div><span class="q__step">Ваш коктейль</span><b>${best[1]}</b><p class="muted">${best[6]}</p>
         <button class="q__again" id="qAgain">Подобрать заново</button></div></div>`;
       $("qAgain").onclick = () => { qStep = 0; qAns = []; renderQuiz(); };
     }
@@ -380,7 +401,7 @@
     // ---------- Вечера недели и гест-лист ----------
     const NIGHTS = { 3: ["Винил по средам", "Резидент приносит пластинки из своей коллекции. Соул и фанк 60-х."], 4: ["Джаз-трио", "Контрабас, рояль и труба. Два сета: 21:00 и 22:30."], 5: ["Пятница до трёх", "Диджей играет диско и хаус, бармены готовят сеты на компанию."], 6: ["Закрытая суббота", "Вход по гест-листу: запишитесь заранее, мест мало."], 0: ["Тихое воскресенье", "Только свечи и классические коктейли. Хорошо для свиданий."] };
     const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-    const upcoming = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; }).filter((d) => NIGHTS[d.getDay()]);
+    const upcoming = [...Array(7)].map((_, i) => new Date(`${PortfolioAPI.siteToday("bar", i)}T12:00:00`)).filter((d) => NIGHTS[d.getDay()]);
     const listed = (() => { try { return JSON.parse(localStorage.getItem("midnight-list")) || []; } catch { return []; } })();
     const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     function renderNights() {
@@ -416,16 +437,22 @@
       seat = +b.dataset.s;
       document.querySelectorAll(".seat").forEach((x) => x.setAttribute("aria-pressed", x === b));
     });
-    // Бар работает со среды по воскресенье, с 19:00 до 03:00; ночные часы относятся к тому же вечеру
-    const evenings = [...Array(14)].map((_, i) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + i); return d; }).filter((d) => [3, 4, 5, 6, 0].includes(d.getDay()));
-    $("bDay").innerHTML = evenings.map((d, i) => `<option value="${i}">${d.toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" })}</option>`).join("");
-    const SLOTS = ["19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30", "00:00", "00:30", "01:00"];
+    // Вечера и время — из правил бара в api.js (Ср–Вс, бронь с 19:00 до 01:30, ночные часы относятся к тому же вечеру)
+    // и по московскому времени, как проверяет сервер
+    const evenings = [...Array(14)].map((_, i) => PortfolioAPI.siteToday("bar", i)).filter((day) => PortfolioAPI.daySlots("bar", day).length);
+    const eveningDate = (i) => new Date(`${evenings[i]}T12:00:00`);
+    $("bDay").innerHTML = evenings.map((_, i) => `<option value="${i}">${eveningDate(i).toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" })}</option>`).join("");
     function fillSlots() {
-      const d = evenings[$("bDay").value];
-      const isToday = isoDay(d) === isoDay(new Date());
-      const nowM = new Date().getHours() * 60 + new Date().getMinutes();
-      const opts = SLOTS.filter((t) => { const [h, m] = t.split(":").map(Number); const v = (h < 12 ? h + 24 : h) * 60 + m; return !isToday || v > nowM + 30; });
-      $("bTime").innerHTML = opts.length ? opts.map((t) => `<option${t === "21:00" ? " selected" : ""}>${t}</option>`).join("") : '<option value="">Сегодня уже не успеть</option>';
+      const day = evenings[$("bDay").value];
+      const opts = PortfolioAPI.openSlots("bar", day);
+      $("bTime").innerHTML = opts.length ? opts.map((x) => `<option value="${x.starts_at}"${x.time === "21:00" ? " selected" : ""}>${x.time}</option>`).join("") : '<option value="">Сегодня уже не успеть</option>';
+      // Время без свободных мест — из API (в демо — из записей в этом браузере)
+      if (opts.length) PortfolioAPI.availability("bar", day).then((list) => {
+        if (evenings[$("bDay").value] !== day) return;
+        const full = new Set(list.filter((x) => x.left === 0).map((x) => x.starts_at));
+        [...$("bTime").options].forEach((o) => { if (full.has(o.value)) { o.disabled = true; o.textContent += " — мест нет"; } });
+        if ($("bTime").selectedOptions[0] && $("bTime").selectedOptions[0].disabled) $("bTime").value = ([...$("bTime").options].find((o) => !o.disabled) || {}).value || "";
+      }).catch(() => {});
     }
     fillSlots();
     if (!$("bTime").value && evenings.length > 1) { $("bDay").value = "1"; fillSlots(); }
@@ -433,15 +460,13 @@
     $("bookForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!$("bTime").value) return;
-      const d = new Date(evenings[$("bDay").value]);
-      const [h, m] = $("bTime").value.split(":").map(Number);
-      if (h < 12) d.setDate(d.getDate() + 1); // после полуночи — уже следующая дата
+      const time = $("bTime").selectedOptions[0].text;
       try {
         await PortfolioAPI.submit(e.target, () => PortfolioAPI.createBooking("bar", {
-          resource: SEATS[seat][0], service: $("bGuests").value, starts_at: `${isoDay(d)}T${$("bTime").value}:00`, name: $("bName").value, phone: $("bPhone").value,
+          resource: SEATS[seat][0], service: $("bGuests").value, starts_at: $("bTime").value, name: $("bName").value, phone: $("bPhone").value,
         }));
       } catch { return; }
-      $("bookBox").innerHTML = `<div class="ok"><div class="neon">До встречи</div><p class="muted" style="margin-top:14px">${evenings[$("bDay").value].toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${$("bTime").value} · ${SEATS[seat][0].toLowerCase()}. Пароль скажем в SMS за час до визита.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
+      $("bookBox").innerHTML = `<div class="ok"><div class="neon">До встречи</div><p class="muted" style="margin-top:14px">${eveningDate($("bDay").value).toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}, ${time} · ${SEATS[seat][0].toLowerCase()}. Пароль скажем в SMS за час до визита.</p>${PortfolioAPI.adminLink("bookings")}</div>`;
     });
 
     renderDrinks();

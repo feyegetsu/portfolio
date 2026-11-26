@@ -6,7 +6,7 @@
   <title>Сайт, который сам принимает заказы, от 5 дней | feyegetsu.dev</title>
   <meta name="description" content="Сайты и Telegram-боты для кафе, салонов, клиник и магазинов. Заявки приходят вам в Telegram, цены и меню меняете сами. Цена фиксируется в договоре, запуск от 5 дней.">
   <meta name="theme-color" content="#064E3B">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")==="dark"?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
+  <script>try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="dark"||t==="light"?t:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
   <meta property="og:type" content="website">
   <meta property="og:title" content="Сайт, который сам принимает заказы, — запуск от 5 дней">
   <meta property="og:description" content="Клиент оставляет заявку — она приходит вам в Telegram. Цены, меню и фото меняете сами, без программиста.">
@@ -16,6 +16,7 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="canonical" href="https://feyegetsu.github.io/portfolio/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
@@ -48,7 +49,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap" media="print" data-async-css>
+  <script>document.querySelectorAll("link[data-async-css]").forEach((l) => { const on = () => { l.media = "all"; }; l.sheet ? on() : l.addEventListener("load", on); });</script>
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600&display=swap"></noscript>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -224,7 +226,7 @@
           </div>
         </div>
         <a class="backend__shot" href="admin/" target="_blank" rel="noopener" aria-label="Открыть админку">
-          <img src="assets/previews/admin.jpg" alt="Админ-панель: дашборд с заявками и заказами" loading="lazy" decoding="async">
+          <img width="1280" height="800" src="assets/previews/admin.jpg" alt="Админ-панель: дашборд с заявками и заказами" loading="lazy" decoding="async">
         </a>
       </div>
     </section>
