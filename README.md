@@ -9,7 +9,6 @@
 [![Deploy](https://github.com/feyegetsu/portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/feyegetsu/portfolio/actions/workflows/deploy.yml)
 ![Frontend](https://img.shields.io/badge/frontend-HTML%20·%20CSS%20·%20JS-7c5cff)
 ![Backend](https://img.shields.io/badge/backend-FastAPI%20·%20PostgreSQL-22d3ee)
-![Tests](https://img.shields.io/badge/tests-93%20passed-34d399)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ### [Открыть портфолио →](https://feyegetsu.github.io/portfolio/)
@@ -49,7 +48,7 @@
 - **API на FastAPI**: заявки, запись на время без двойных записей, заказы с ценами из каталога, статистика, выгрузка в CSV.
 - **Роли и доступ**: владелец, администратор, сотрудник; сотрудник видит только свои сайты.
 - **Защита форм**: валидация телефона, honeypot, лимит заявок с одного IP.
-- **93 автотеста** на pytest, включая регрессионные тесты по независимому QA-ревью, Docker и docker-compose с PostgreSQL, отдельная проверка в CI.
+- **Тесты в CI на каждый пуш**: pytest на SQLite и на PostgreSQL с Redis (покрытие ветвей не ниже 95%), миграции, общие с демо-клиентом примеры, сквозные сценарии и проверка доступности (axe) в браузере на Playwright, тесты бота, pip-audit, сборка Docker.
 - **Цены считает сервер**: размеры, добавки, промокод и доставка; подменить цену из браузера нельзя.
 - **Демо-режим.** На GitHub Pages сервер запустить нельзя, поэтому клиент [`api.js`](projects/shared/api.js) повторяет контракт и правила API прямо в браузере. С настоящим сервером он работает через параметр `?api=`.
 
@@ -116,12 +115,13 @@ projects/
   shared/motion.js                  анимации через data-атрибуты: появление, параллакс, счётчики
   shared/api.js                     клиент API: настоящий сервер или демо-режим в браузере
   shared/offers.js                  цены и сроки услуг: калькулятор, карточки работ, кнопки в демо
-  cafe-bot/                         Telegram-бот на Python (aiogram 3, SQLite)
-admin/                              админ-панель: дашборд, заявки, записи, заказы, каталог, команда
-backend/                            API на FastAPI: модели, роуты, тесты, Dockerfile, docker-compose
-  shared/kit.css, kit.js            общий набор для новых демо: сетка, кнопки, формы, уведомления
+  shared/kit.css, kit.js            общие помощники: окна-диалоги, цены, уведомления, формы заявок
   demos.json                        реестр демо-сайтов
   _template/                        заготовка нового демо
+  cafe-bot/                         Telegram-бот на Python (aiogram 3, SQLite), с тестами
+admin/                              админ-панель: дашборд, заявки, записи, заказы, каталог, команда
+backend/                            API на FastAPI: модели, роуты, миграции Alembic, тесты, Dockerfile, docker-compose
+tests-e2e/                          сквозные сценарии, CSP и доступность (axe) в браузере на Playwright
 tools/
   build.py                          сборка: пререндер для поиска, минификация, версии файлов
   demos.py                          проверка демо и создание нового из заготовки
@@ -130,7 +130,7 @@ tools/
   lh_summary.py                     сводка отчётов Lighthouse
 render.yaml                         деплой API, PostgreSQL и Redis на Render одной кнопкой
 .github/workflows/
-  ci.yml                            тесты API, паритет с демо, проверка демо, ссылки, сборка Docker
+  ci.yml                            тесты API (SQLite и PostgreSQL), бот, паритет с демо, e2e, проверка демо, ссылки, Docker
   deploy.yml                        сборка сайта и публикация на GitHub Pages
   screenshots.yml                   скриншоты и Lighthouse с автокоммитом
 ```
