@@ -37,11 +37,16 @@ def upgrade() -> None:
     active = bookings.c.status != "cancelled"
     conn = op.get_bind()
     rows = []
-    for key, sites in ((bookings.c.resource, PER_RESOURCE), (sa.literal(""), PER_VENUE)):
-        query = (sa.select(bookings.c.site, key.label("k"), bookings.c.starts_at, sa.func.count())
-                 .where(active, bookings.c.site.in_(sites))
-                 .group_by(bookings.c.site, key, bookings.c.starts_at))
-        rows += [{"site": s, "resource_key": k, "starts_at": t, "taken": n} for s, k, t, n in conn.execute(query)]
+    # Места на занятии — по занятию, столы — по всему заведению (ключ пустой). Группировать по константе
+    # PostgreSQL не умеет, поэтому пустой ключ подставляем уже в Python
+    per_resource = (sa.select(bookings.c.site, bookings.c.resource, bookings.c.starts_at, sa.func.count())
+                    .where(active, bookings.c.site.in_(PER_RESOURCE))
+                    .group_by(bookings.c.site, bookings.c.resource, bookings.c.starts_at))
+    per_venue = (sa.select(bookings.c.site, bookings.c.starts_at, sa.func.count())
+                 .where(active, bookings.c.site.in_(PER_VENUE))
+                 .group_by(bookings.c.site, bookings.c.starts_at))
+    rows += [{"site": s, "resource_key": k, "starts_at": t, "taken": n} for s, k, t, n in conn.execute(per_resource)]
+    rows += [{"site": s, "resource_key": "", "starts_at": t, "taken": n} for s, t, n in conn.execute(per_venue)]
     if rows:
         op.bulk_insert(counters, rows)
 

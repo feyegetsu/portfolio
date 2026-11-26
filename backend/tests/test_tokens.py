@@ -1,6 +1,7 @@
 """SEC-002: токен привязан к версии пользователя, его можно погасить, а id удалённого пользователя не переиспользуется."""
 
 import jwt
+import pytest
 from conftest import login
 from sqlalchemy import text
 
@@ -30,6 +31,7 @@ def test_deleted_users_token_does_not_pass_to_new_user(client, owner):
     assert client.get(ME, headers=token_a).status_code == 401
 
 
+@pytest.mark.skipif(engine.dialect.name != "sqlite", reason="AUTOINCREMENT — особенность SQLite; в PostgreSQL id не переиспользуются и так")
 def test_sqlite_tables_do_not_reuse_ids():
     with engine.connect() as conn:
         ddl = conn.execute(text("select sql from sqlite_master where name = 'users'")).scalar()

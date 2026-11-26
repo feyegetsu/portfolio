@@ -72,9 +72,10 @@ def test_database_url_from_hosting(given, expected):
 
 
 def test_health_reports_db_and_limits(client):
+    from conftest import TEST_REDIS_URL
     r = client.get("/health")
     assert r.status_code == 200
-    assert r.json() == {"status": "ok", "db": "ok", "limits": "memory"}
+    assert r.json() == {"status": "ok", "db": "ok", "limits": "redis" if TEST_REDIS_URL else "memory"}
 
 
 def test_read_limit(client):

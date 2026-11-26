@@ -1,22 +1,40 @@
 """BE-001: схему создают миграции Alembic, и она совпадает с моделями."""
 
+import uuid
 from dataclasses import replace
 
 import pytest
 from alembic.autogenerate import compare_metadata
 from alembic.runtime.migration import MigrationContext
-from sqlalchemy import inspect, text
+from sqlalchemy import create_engine, inspect, text
 
 from app import migrate
 from app.config import check_secrets, settings
 from app.db import Base, make_engine
 
 
-@pytest.fixture
-def engine(tmp_path):
-    e = make_engine(f"sqlite:///{(tmp_path / 'm.db').as_posix()}")
+@pytest.fixture(params=["sqlite", pytest.param("postgres", marks=pytest.mark.postgres)])
+def engine(request, tmp_path):
+    """Пустая база: файл SQLite или отдельная схема в PostgreSQL из TEST_DATABASE_URL (в CI)."""
+    if request.param == "sqlite":
+        e = make_engine(f"sqlite:///{(tmp_path / 'm.db').as_posix()}")
+        yield e
+        e.dispose()
+        return
+    from conftest import POSTGRES, TEST_DATABASE_URL
+    if not POSTGRES:
+        pytest.skip("нужен TEST_DATABASE_URL с PostgreSQL")
+    schema = f"mig_{uuid.uuid4().hex[:8]}"
+    admin = create_engine(TEST_DATABASE_URL)
+    with admin.begin() as conn:
+        conn.execute(text(f"create schema {schema}"))
+    e = create_engine(TEST_DATABASE_URL, connect_args={"options": f"-csearch_path={schema}"})
     yield e
     e.dispose()
+    with admin.begin() as conn:
+        conn.execute(text(f"drop schema {schema} cascade"))
+    admin.dispose()
+
 
 
 def test_upgrade_creates_schema_matching_models(engine):
@@ -59,10 +77,12 @@ def test_sqlite_refused_in_production():
 
 
 def test_sqlite_tables_get_autoincrement_on_upgrade(engine):
+    if engine.dialect.name != "sqlite":
+        pytest.skip("AUTOINCREMENT — особенность SQLite")
     # SEC-002: старые таблицы SQLite пересоздаются с AUTOINCREMENT, индексы и данные сохраняются
     migrate.upgrade(engine, migrate.BASELINE)
     with engine.begin() as conn:
-        conn.execute(text("insert into catalog (site, ref, name, category, price, active) values ('sushi', 's1', 'Сет', '', 1, 1)"))
+        conn.execute(text("insert into catalog (site, ref, name, category, price, active) values ('sushi', 's1', 'Сет', '', 1, true)"))
     migrate.upgrade(engine)
     with engine.connect() as conn:
         ddl = {n: s for n, s in conn.execute(text("select name, sql from sqlite_master where type = 'table'"))}
@@ -94,7 +114,7 @@ def test_sites_with_catalog_are_marked_as_seeded(engine):
     # BUG-003: каталог, который уже заливался, не зальётся повторно после перехода на отметки
     migrate.upgrade(engine, "0003")
     with engine.begin() as conn:
-        conn.execute(text("insert into catalog (site, ref, name, category, price, active) values ('sushi', 's1', 'Сет', '', 1, 1)"))
+        conn.execute(text("insert into catalog (site, ref, name, category, price, active) values ('sushi', 's1', 'Сет', '', 1, true)"))
     migrate.upgrade(engine)
     with engine.connect() as conn:
         assert conn.execute(text("select key from seed_marks")).scalars().all() == ["catalog:sushi"]

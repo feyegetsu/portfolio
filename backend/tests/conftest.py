@@ -1,8 +1,15 @@
 import os
 
+# По умолчанию — SQLite в памяти и лимиты в памяти. CI прогоняет те же тесты на PostgreSQL и Redis:
+# TEST_DATABASE_URL=postgresql+psycopg://… TEST_REDIS_URL=redis://… pytest
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL") or "sqlite://"
+TEST_REDIS_URL = os.getenv("TEST_REDIS_URL", "")
+POSTGRES = TEST_DATABASE_URL.startswith("postgresql")
+
 # Настройки читаются при импорте приложения, поэтому задаём их до него
 os.environ.update(
-    DATABASE_URL="sqlite://",
+    DATABASE_URL=TEST_DATABASE_URL,
+    REDIS_URL=TEST_REDIS_URL,
     SECRET_KEY="test-secret-key-that-is-long-enough-1234567890",
     OWNER_EMAIL="owner@test.dev",
     OWNER_PASSWORD="owner-password",
@@ -25,6 +32,7 @@ from app.seed import seed  # noqa: E402
 PHONE = "+7 (900) 123-45-67"
 
 # Для скорости схему в тестах создаёт create_all; что миграции дают ту же схему, проверяет test_migrations.py
+Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
 stamp_head(engine)
 

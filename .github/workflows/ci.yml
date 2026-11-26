@@ -27,8 +27,29 @@ jobs:
         run: BOT_TOKEN=123:test ADMIN_ID=1 python -c "import bot; print('handlers:', len(bot.dp.message.handlers) + len(bot.dp.callback_query.handlers))"
 
   api:
-    name: API (FastAPI)
+    name: API (FastAPI, ${{ matrix.db }})
     runs-on: ubuntu-latest
+    # Продакшен — PostgreSQL и Redis, поэтому тесты идут и на них, а не только на SQLite в памяти
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: portfolio
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U portfolio" --health-interval 3s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: ${{ matrix.db == 'postgres' && 'postgresql+psycopg://portfolio:portfolio@localhost:5432/portfolio' || '' }}
+      TEST_REDIS_URL: ${{ matrix.db == 'postgres' && 'redis://localhost:6379/0' || '' }}
     defaults:
       run:
         working-directory: backend
@@ -44,6 +65,7 @@ jobs:
       - name: Tests
         run: pytest -v
       - name: Docker image builds
+        if: matrix.db == 'sqlite'
         run: docker build -t portfolio-api .
 
   parity:

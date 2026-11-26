@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import sessionmaker
 
 from app import migrate
-from app.db import make_engine
+from app.db import Base, make_engine
 from app.models import Booking, SlotCounter
 from app.services.booking import release, reserve, site_now
 from app.sites import SITES
@@ -18,11 +18,19 @@ from app.sites import SITES
 RESTAURANT = SITES["restaurant"]
 
 
-@pytest.fixture
-def sessions(tmp_path):
-    # Файловая база и отдельные соединения: как у нескольких воркеров API
-    engine = make_engine(f"sqlite:///{(tmp_path / 'race.db').as_posix()}")
-    migrate.upgrade(engine)
+@pytest.fixture(params=["sqlite", pytest.param("postgres", marks=pytest.mark.postgres)])
+def sessions(request, tmp_path):
+    # Отдельные соединения: как у нескольких воркеров API. SQLite — файл, PostgreSQL — база из TEST_DATABASE_URL
+    if request.param == "postgres":
+        from conftest import POSTGRES, TEST_DATABASE_URL
+        if not POSTGRES:
+            pytest.skip("нужен TEST_DATABASE_URL с PostgreSQL")
+        engine = make_engine(TEST_DATABASE_URL)
+        Base.metadata.drop_all(engine)
+        Base.metadata.create_all(engine)
+    else:
+        engine = make_engine(f"sqlite:///{(tmp_path / 'race.db').as_posix()}")
+        migrate.upgrade(engine)
     yield sessionmaker(bind=engine, expire_on_commit=False)
     engine.dispose()
 
