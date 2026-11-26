@@ -4,6 +4,8 @@ import asyncio
 import logging
 import os
 import sqlite3
+import sys
+from collections.abc import Mapping
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart
@@ -12,8 +14,30 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 
 load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+
+
+def read_config(env: Mapping[str, str] = os.environ) -> tuple[str, int]:
+    """Токен и Telegram ID администратора. Без них бот не запускается: иначе он принимал бы заказы,
+    отвечал клиенту «Заказ принят», а администратор ничего бы не получил."""
+    token = (env.get("BOT_TOKEN") or "").strip()
+    try:
+        admin_id = int((env.get("ADMIN_ID") or "").strip())
+    except ValueError:
+        admin_id = 0
+    problems = []
+    if not token:
+        problems.append("BOT_TOKEN — токен бота от @BotFather")
+    if admin_id <= 0:
+        problems.append("ADMIN_ID — ваш числовой Telegram ID (узнать у @userinfobot)")
+    if problems:
+        sys.exit("Бот не запущен. Задайте в .env:\n- " + "\n- ".join(problems))
+    return token, admin_id
+
+
+try:
+    ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+except ValueError:
+    ADMIN_ID = 0  # main() всё равно остановит запуск с понятным сообщением
 
 MENU = {
     "coffee": ("☕ Кофе", [("Капучино", 220), ("Латте", 240), ("Флэт уайт", 260)]),
@@ -203,7 +227,8 @@ async def broadcast(message: Message, bot: Bot):
 
 async def main():
     logging.basicConfig(level=logging.INFO)
-    bot = Bot(BOT_TOKEN)
+    token, _ = read_config()
+    bot = Bot(token)
     await dp.start_polling(bot)
 
 
