@@ -104,3 +104,37 @@ def test_settings_read_at_instantiation(monkeypatch):
     monkeypatch.setenv("RATE_LIMIT", "77")
     assert Settings().rate_limit == 77  # окружение читается при создании, а не при импорте модуля
     assert get_settings() is get_settings()
+
+
+def test_health_when_database_is_down(client, monkeypatch):
+    # TEST-002: хостинг перезапускает API по 503, если база недоступна
+    from app import main
+
+    class Broken:
+        def __enter__(self):
+            raise OSError("база недоступна")
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(main, "SessionLocal", lambda: Broken())
+    r = client.get("/health")
+    assert r.status_code == 503 and r.json()["db"] == "unavailable"
+
+
+def test_rules_export_writes_only_on_change(tmp_path):
+    from app import rules_export
+    target = tmp_path / "api.js"
+    target.write_text(f"// до\n  {rules_export.START} старое */\n  {rules_export.END}\n// после\n", encoding="utf-8")
+    assert rules_export.write(target) is True
+    assert rules_export.write(target) is False
+    assert rules_export.render() in target.read_text(encoding="utf-8")
+
+
+def test_memory_store_forgets_old_keys():
+    store = MemoryStore()
+    limit = SlidingWindow("public", 5, 0, store)
+    limit.add("a")
+    for _ in range(1000):
+        limit.full("b")
+    assert "public:a" not in store.hits

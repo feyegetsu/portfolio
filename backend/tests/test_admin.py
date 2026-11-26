@@ -221,3 +221,36 @@ def test_orders_paginated(client, owner, monkeypatch):
         client.post("/api/v1/sites/sushi/orders", json={"items": [{"ref": "s7", "qty": 1}], "name": "И", "phone": PHONE, "mode": "pickup"})
     page = client.get("/api/v1/admin/orders", params={"limit": 5, "offset": 5}, headers=owner).json()
     assert page["total"] == 7 and len(page["items"]) == 2
+
+
+def test_order_status_and_filter(client, owner):
+    # TEST-002: смена статуса заказа и фильтр по статусу
+    r = client.post("/api/v1/sites/sushi/orders", json={"items": [{"ref": "s7", "qty": 1}], "name": "И", "phone": PHONE, "mode": "pickup"})
+    order_id = r.json()["id"]
+    assert client.patch(f"/api/v1/admin/orders/{order_id}", json={"status": "cooking"}, headers=owner).json()["status"] == "cooking"
+    assert client.get("/api/v1/admin/orders", params={"status": "cooking"}, headers=owner).json()["total"] == 1
+    assert client.get("/api/v1/admin/orders", params={"status": "done"}, headers=owner).json()["total"] == 0
+    assert client.patch("/api/v1/admin/orders/999", json={"status": "done"}, headers=owner).status_code == 404
+
+
+def test_catalog_item_delete_and_unknown_site(client, owner):
+    item = client.get("/api/v1/admin/catalog", params={"site": "florist"}, headers=owner).json()[0]
+    assert client.delete(f"/api/v1/admin/catalog/item/{item['id']}", headers=owner).status_code == 204
+    assert client.delete(f"/api/v1/admin/catalog/item/{item['id']}", headers=owner).status_code == 404
+    assert client.post("/api/v1/admin/catalog/cafe", json={"ref": "x", "name": "x", "price": 1}, headers=owner).status_code == 404
+
+
+def test_list_users_and_remove(client, owner):
+    u = _user(client, owner, sites=["cafe"]).json()
+    assert [x["email"] for x in client.get("/api/v1/admin/users", headers=owner).json()] == ["owner@test.dev", "u@test.dev"]
+    assert client.delete(f"/api/v1/admin/users/{u['id']}", headers=owner).status_code == 204
+    assert client.delete(f"/api/v1/admin/users/{u['id']}", headers=owner).status_code == 404
+
+
+def test_upcoming_bookings_and_cancel_booking(client, owner):
+    from datetime import datetime, timedelta
+    when = (datetime.now() + timedelta(days=1)).replace(hour=15, minute=0, second=0, microsecond=0).isoformat()
+    b = client.post("/api/v1/sites/barbershop/bookings", json={"resource": "Денис", "starts_at": when, "name": "И", "phone": PHONE}).json()
+    assert client.get("/api/v1/admin/bookings", params={"upcoming": True}, headers=owner).json()["total"] == 1
+    client.patch(f"/api/v1/admin/bookings/{b['id']}", json={"status": "cancelled"}, headers=owner)
+    assert client.get("/api/v1/admin/bookings", params={"upcoming": True}, headers=owner).json()["total"] == 0
