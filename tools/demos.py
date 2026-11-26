@@ -96,6 +96,9 @@ def check() -> int:
         problems.append(f"projects/{name}/ нет в projects/demos.json")
     for name in sorted(set(slugs) - set(dirs)):
         problems.append(f"{name} есть в projects/demos.json, но папки projects/{name}/ нет")
+    assets = read(".github/workflows/screenshots.yml")
+    if "projects/demos.json" not in assets:
+        problems.append("Lighthouse в .github/workflows/screenshots.yml должен брать список демо из projects/demos.json")
     shots = read("tools/screenshots.py")
     if "demos.json" not in shots:
         problems.append("tools/screenshots.py должен брать список демо из projects/demos.json")

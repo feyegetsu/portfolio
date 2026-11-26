@@ -226,7 +226,7 @@ def minify(out: Path) -> dict:
         for i in range(0, len(entries), 60):
             batch = entries[i:i + 60]
             common = Path(min(batch)).anchor
-            subprocess.run([*cmd, *batch, "--minify", "--charset=utf8", "--target=es2020", "--log-level=warning",
+            subprocess.run([*cmd, *batch, "--minify", "--charset=utf8", "--target=es2020", "--log-level=warning",  # noqa: S603 — esbuild и пути из своей сборки
                             f"--outdir={min_dir}", f"--outbase={common}"], check=True, shell=sys.platform == "win32" and cmd[0].endswith(".cmd"))
 
         def minified(src: Path) -> Path:
@@ -299,7 +299,7 @@ def last_commit_date(path: Path) -> str | None:
     git = shutil.which("git")
     if not git:
         return None
-    r = subprocess.run([git, "-C", str(ROOT), "log", "-1", "--format=%cs", "--", str(path)], capture_output=True, text=True)  # noqa: S603
+    r = subprocess.run([git, "-C", str(ROOT), "log", "-1", "--format=%cs", "--", str(path)], capture_output=True, text=True)  # noqa: S603 — git и путь из репозитория
     return r.stdout.strip() or None
 
 

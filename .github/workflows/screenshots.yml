@@ -49,7 +49,7 @@ jobs:
       - name: Install Playwright
         if: steps.changes.outputs.site == 'true'
         run: |
-          pip install playwright==1.47.0
+          pip install playwright==1.65.2
           python -m playwright install --with-deps chromium
 
       - name: Start local server
@@ -72,7 +72,8 @@ jobs:
           }
           run home-mobile ""
           run home-desktop "" --preset=desktop
-          for p in miniapp florist dental cafe barbershop fitness autoservice realty saas; do
+          # Все демо из реестра projects/demos.json: новое демо попадает в замеры без правки воркфлоу
+          for p in $(python -c "import json; print(' '.join(d['slug'] for d in json.load(open('projects/demos.json', encoding='utf-8'))['demos']))"); do
             run "$p" "projects/$p/"
           done
           python tools/lh_summary.py .lh --readme README.md > assets/lighthouse.json

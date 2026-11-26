@@ -6,7 +6,7 @@ import sys
 from conftest import ROOT
 
 sys.path.insert(0, str(ROOT / "tools"))
-import build  # noqa: E402
+import build
 
 
 def test_dated_containers_are_not_prerendered(tmp_path):

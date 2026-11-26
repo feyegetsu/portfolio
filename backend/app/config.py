@@ -8,8 +8,8 @@ import functools
 import os
 from dataclasses import dataclass, field
 
-DEV_SECRET = "dev-secret-change-me"
-DEV_PASSWORD = "change-me-please"
+DEV_SECRET = "dev-secret-change-me"  # noqa: S105 — только для ENV=development, check_secrets не пускает его в продакшен
+DEV_PASSWORD = "change-me-please"  # noqa: S105 — то же для пароля первого владельца
 MIN_PASSWORD_ITERATIONS = 600_000
 PORTFOLIO_ORIGIN = "https://feyegetsu.github.io"
 DEV_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000"]

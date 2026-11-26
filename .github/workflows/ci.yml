@@ -23,9 +23,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install
-        run: pip install -r requirements.txt ruff==0.17.5
+        run: pip install -r requirements.txt ruff==0.17.5 pip-audit==2.10.1
+      # Известные уязвимости в зависимостях бота (aiogram, aiohttp и т. д.) роняют сборку
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt
       - name: Lint
-        run: ruff check --select E,F,W,B,UP --ignore E501 .
+        run: ruff check .
       - name: Import check
         # Импортируем модуль без запуска polling: проверяем, что зависимости и хендлеры собираются
         run: BOT_TOKEN=123:test ADMIN_ID=1 python -c "import bot; print('handlers:', len(bot.dp.message.handlers) + len(bot.dp.callback_query.handlers))"
@@ -65,9 +68,12 @@ jobs:
       - name: Install
         run: pip install -r requirements-dev.txt
       - name: Lint
-        run: ruff check --select E,F,W,B,UP --ignore E501 .
+        run: ruff check .
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt -r requirements-dev.txt
+      # Покрытие ветвей не должно проседать: новые правила — вместе с тестами
       - name: Tests
-        run: pytest -v
+        run: pytest -v --cov=app --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Docker image builds
         if: matrix.db == 'sqlite'
         run: docker build -t portfolio-api .
@@ -95,7 +101,7 @@ jobs:
       - name: Check
         run: python tools/demos.py check
       - name: Lint tools
-        run: pip install ruff==0.17.5 && ruff check --select E,F,W,B,UP --ignore E501 tools
+        run: pip install ruff==0.17.5 && ruff check tools tests-e2e
       # На Pages уходит только белый список файлов: без архивов, кешей и бэкенда
       - name: Build contents
         run: pip install pytest && pytest -q tools/test_build.py

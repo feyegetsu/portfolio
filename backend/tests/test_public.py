@@ -163,7 +163,7 @@ def test_availability(client, monkeypatch):
     assert by_time["20:00"]["left"] == 0
     assert by_time["19:30"]["left"] == 10
     assert by_time["20:00"]["starts_at"] == when.isoformat()
-    assert [s["time"] for s in slots][0] == "18:00" and slots[-1]["time"] == "22:30"
+    assert slots[0]["time"] == "18:00" and slots[-1]["time"] == "22:30"
     monday = _next_weekday(0, 19).date().isoformat()
     assert client.get("/api/v1/sites/restaurant/availability", params={"date": monday}).json() == []  # выходной
 

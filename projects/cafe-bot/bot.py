@@ -195,7 +195,7 @@ async def broadcast(message: Message, bot: Bot):
         try:
             await bot.send_message(user_id, text)
             sent += 1
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — разбор ошибок рассылки — BOT-004
             pass
         await asyncio.sleep(0.05)
     await message.answer(f"Рассылка завершена: {sent} получателей.")

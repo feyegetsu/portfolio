@@ -7,14 +7,15 @@
 import json
 import re
 import sys
-from datetime import date
+from datetime import UTC, datetime
 from pathlib import Path
 
 CATEGORIES = ["performance", "accessibility", "best-practices", "seo"]
+REGISTRY = Path(__file__).resolve().parent.parent / "projects" / "demos.json"
+# Подписи страниц: главная — здесь, демо — из реестра projects/demos.json (как и список замеров в воркфлоу Assets)
 TITLES = {
-    "home-mobile": "Главная (телефон)", "home-desktop": "Главная (компьютер)", "miniapp": "Mini App",
-    "florist": "Пион & Ко", "dental": "Белая линия", "cafe": "Зерно", "barbershop": "BLADE",
-    "fitness": "PULSE", "autoservice": "МоторЛайн", "realty": "Квадрат", "saas": "Taskly",
+    "home-mobile": "Главная (телефон)", "home-desktop": "Главная (компьютер)",
+    **{d["slug"]: d["title"] for d in json.loads(REGISTRY.read_text(encoding="utf-8"))["demos"]},
 }
 
 
@@ -50,7 +51,7 @@ def collect(folder: str) -> dict:
             "issues": failed[:12],
             "a11y": elements,
         }
-    return {"date": date.today().isoformat(), "pages": pages}
+    return {"date": datetime.now(UTC).date().isoformat(), "pages": pages}
 
 
 def badge(score: int) -> str:

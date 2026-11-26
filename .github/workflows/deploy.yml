@@ -41,7 +41,7 @@ jobs:
 
       - name: Install Playwright
         run: |
-          pip install playwright==1.47.0
+          pip install playwright==1.65.2
           python -m playwright install --with-deps chromium
 
       - name: Build

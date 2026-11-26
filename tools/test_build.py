@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import build  # noqa: E402
+import build
 
 
 def published(tmp_path: Path) -> set[str]:

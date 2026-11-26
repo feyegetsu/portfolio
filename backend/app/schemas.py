@@ -208,7 +208,7 @@ class PasswordIn(Input):
 
 class TokenOut(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str = "bearer"  # noqa: S105 — тип токена по OAuth2, не секрет
 
 
 class UserOut(ORM):
