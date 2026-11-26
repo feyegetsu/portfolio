@@ -5,9 +5,6 @@ name: Assets
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "assets/**"
-      - "**.md"
   workflow_dispatch:
 
 # По умолчанию только чтение: Playwright, npm и pip ставятся без права записи в репозиторий.
@@ -22,31 +19,51 @@ concurrency:
 jobs:
   assets:
     runs-on: ubuntu-latest
+    outputs:
+      site: ${{ steps.changes.outputs.site }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        with:
+          fetch-depth: 0
+      # Только README и assets/ — замеры не нужны, но воркфлоу завершается успешно и запускает деплой
+      - name: What changed
+        id: changes
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "${{ github.event_name }}" != "push" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "site=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if git diff --name-only "$BEFORE" HEAD | grep -qvE '^assets/|\.md$'; then echo "site=true"; else echo "site=false"; fi >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        if: steps.changes.outputs.site == 'true'
         with:
           python-version: "3.12"
 
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5
+        if: steps.changes.outputs.site == 'true'
         with:
           node-version: "20"
 
       - name: Install Playwright
+        if: steps.changes.outputs.site == 'true'
         run: |
           pip install playwright==1.47.0
           python -m playwright install --with-deps chromium
 
       - name: Start local server
+        if: steps.changes.outputs.site == 'true'
         run: |
           python -m http.server 8000 >/dev/null 2>&1 &
           sleep 1
 
       - name: Screenshots
+        if: steps.changes.outputs.site == 'true'
         run: python tools/screenshots.py http://localhost:8000
 
       - name: Lighthouse
+        if: steps.changes.outputs.site == 'true'
         run: |
           mkdir -p .lh
           run() {
@@ -62,6 +79,7 @@ jobs:
           cat assets/lighthouse.json
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        if: steps.changes.outputs.site == 'true'
         with:
           name: assets
           path: |
@@ -71,6 +89,7 @@ jobs:
 
   commit:
     needs: assets
+    if: needs.assets.outputs.site == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -87,5 +106,9 @@ jobs:
           git add assets README.md
           git diff --cached --quiet && exit 0
           git commit -m "Обновить скриншоты и замеры Lighthouse [skip ci]"
-          git pull --rebase
-          git push
+          # Параллельный пуш в main не должен ронять коммит ассетов: до трёх попыток
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
