@@ -206,7 +206,7 @@
   <section class="hero">
     <div class="container hero__grid">
       <div>
-        <span class="now" id="now"><i></i><span id="nowText">Открыто до 02:00</span></span>
+        <span class="now" id="now"><i></i><span id="nowText" data-no-prerender>Открыто до 02:00</span></span>
         <h1>Еда, крафт и <span>разговоры</span> до двух ночи</h1>
         <p>Двенадцать кранов местных пивоварен, кухня с открытым огнём и большие столы, за которыми знакомятся. По вторникам квиз, по четвергам джаз.</p>
         <div class="hero__btns"><a href="#book" class="btn">Забронировать стол</a><a href="#board" class="btn btn--line">Что сегодня на доске</a></div>
@@ -224,11 +224,11 @@
     </div>
   </section>
 
-  <section id="board" style="padding-top:20px">
+  <section id="board" data-no-prerender style="padding-top:20px">
     <div class="container">
       <div class="sec-head"><h2 data-reveal>Сегодня <em>на доске</em></h2><p class="muted" style="max-width:420px">Шеф пишет мелом то, что купил утром на рынке. Меняется каждый день, пока не кончится.</p></div>
       <div class="board-wrap">
-        <div class="days" id="days" role="group" aria-label="День недели"></div>
+        <div class="days" id="days" data-no-prerender role="group" aria-label="День недели"></div>
         <div class="board" id="boardList"></div>
         <p class="board__note" id="boardNote"></p>
       </div>
@@ -256,7 +256,7 @@
   <section id="events" style="background:var(--coal-2)">
     <div class="container">
       <div class="sec-head"><h2 data-reveal>Афиша <em>недели</em></h2><p class="muted">Вход свободный, но места за столами лучше занять заранее.</p></div>
-      <div class="events" id="eventList"></div>
+      <div class="events" id="eventList" data-no-prerender></div>
     </div>
   </section>
 

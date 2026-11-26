@@ -6,7 +6,8 @@
 2. Пререндер. То, что JavaScript дорисовывает в пустые контейнеры (меню, цены, карточки), записывается
    прямо в HTML: поисковик и браузер без JavaScript видят содержимое. Затем каждая страница открывается
    ещё раз, и контейнер откатывается, если скрипт его не перерисовал (кнопки остались бы без обработчиков),
-   задвоил содержимое или страница начала падать с ошибкой.
+   задвоил содержимое или страница начала падать с ошибкой. Контейнеры с data-no-prerender (дата, сезон,
+   афиша, расписание) не запекаются: поисковик увидел бы день сборки.
 3. Минификация CSS и JS — внешних файлов и блоков внутри страниц — через esbuild (нужен Node, в CI он есть).
 4. Версия ?v=<хеш> в ссылках на CSS и JS: после обновления браузер не возьмёт старый файл из кэша.
 5. Content-Security-Policy в каждой странице: встроенные скрипты разрешены по SHA-256 своего текста,
@@ -66,7 +67,8 @@ SNAPSHOT_JS = """async () => {
   const doc = new DOMParser().parseFromString(src, "text/html");
   const out = {};
   for (const el of doc.querySelectorAll("body [id]")) {
-    if (SKIP.has(el.tagName) || el.innerHTML.trim()) continue;
+    // data-no-prerender — содержимое зависит от даты (сегодняшний день, сезон, афиша): в HTML оно бы устарело
+    if (SKIP.has(el.tagName) || el.innerHTML.trim() || el.hasAttribute("data-no-prerender")) continue;
     if (doc.querySelectorAll(`[id="${CSS.escape(el.id)}"]`).length !== 1) continue;
     const live = document.getElementById(el.id);
     // Закрытые окна и декоративные блоки поиску не нужны

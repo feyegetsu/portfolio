@@ -236,13 +236,13 @@
     <div class="container">
       <span class="eyebrow" data-reveal>Дегустационный сет</span>
       <h2 data-reveal>Четыре сезона — четыре меню</h2>
-      <div class="seasons" role="group" aria-label="Сезонное меню" id="seasons"></div>
+      <div class="seasons" role="group" aria-label="Сезонное меню" id="seasons" data-no-prerender></div>
       <div class="set__head">
         <p class="set__intro" id="seasonIntro"></p>
         <label class="pairing"><input type="checkbox" id="wine"><span class="pairing__sw"></span><span><b>Винное сопровождение</b><small>бокал к каждой подаче · +3 500 ₽</small></span></label>
       </div>
-      <div class="courses" id="courses" tabindex="0" role="region" aria-label="Блюда сета"></div>
-      <div class="set__total"><span class="muted" id="setLabel"></span><b id="setPrice">6 900 ₽</b><a href="#book" class="btn">Забронировать с этим сетом</a></div>
+      <div class="courses" id="courses" data-no-prerender tabindex="0" role="region" aria-label="Блюда сета"></div>
+      <div class="set__total"><span class="muted" id="setLabel"></span><b id="setPrice" data-no-prerender>6 900 ₽</b><a href="#book" class="btn">Забронировать с этим сетом</a></div>
     </div>
   </section>
 
@@ -289,8 +289,8 @@
       </div>
       <div class="card" id="bookCard">
         <form id="bookForm" novalidate>
-          <div class="step"><b>Дата</b><div class="dates" id="dates" role="group" aria-label="Дата"></div></div>
-          <div class="step"><b>Время</b><div class="times" id="times" role="group" aria-label="Время"></div></div>
+          <div class="step"><b>Дата</b><div class="dates" id="dates" data-no-prerender role="group" aria-label="Дата"></div></div>
+          <div class="step"><b>Время</b><div class="times" id="times" data-no-prerender role="group" aria-label="Время"></div></div>
           <div class="step row">
             <div><b style="display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Гостей</b>
               <div class="guests"><button type="button" id="gMinus" aria-label="Меньше гостей">−</button><output id="guests">2</output><button type="button" id="gPlus" aria-label="Больше гостей">+</button></div></div>
