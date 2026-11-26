@@ -263,6 +263,10 @@
   </div>
 
   <script>
+    // initDataUnsafe берём только чтобы подставить имя в форму. Сервер заказы с пользователем Telegram не связывает,
+    // поэтому подпись не проверяется. Если появятся история заказов или уведомления в чат — отправлять tg.initData
+    // на сервер и проверять HMAC-SHA256 с ключом от BOT_TOKEN (алгоритм из документации Telegram Mini Apps),
+    // иначе пользователя можно подделать
     const tg = window.Telegram && window.Telegram.WebApp;
     const inTG = !!(tg && tg.initData);
     if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");
