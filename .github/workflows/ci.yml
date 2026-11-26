@@ -29,6 +29,9 @@ jobs:
         run: pip-audit -r requirements.txt
       - name: Lint
         run: ruff check .
+      # Обработчики с заглушками Telegram: заказ, кнопка «Готов», рассылка, настройки
+      - name: Tests
+        run: pip install -r requirements-dev.txt && pytest -v
       - name: Import check
         # Импортируем модуль без запуска polling: проверяем, что зависимости и хендлеры собираются
         run: BOT_TOKEN=123:test ADMIN_ID=1 python -c "import bot; print('handlers:', len(bot.dp.message.handlers) + len(bot.dp.callback_query.handlers))"
