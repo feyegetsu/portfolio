@@ -1,54 +1,62 @@
 {
-  "date": "2026-11-09",
+  "date": "2026-11-26",
   "pages": {
     "autoservice": {
       "scores": {
-        "performance": 82,
-        "accessibility": 96,
+        "performance": 99,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "2.1 s",
-      "cls": "0.356",
+      "cls": "0",
+      "issues": [],
+      "a11y": {}
+    },
+    "bar": {
+      "scores": {
+        "performance": 92,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "3.3 s",
+      "cls": "0",
       "issues": [
-        "Cumulative Layout Shift",
-        "Background and foreground colors do not have a sufficient contrast ratio."
+        "First Contentful Paint",
+        "Largest Contentful Paint",
+        "Elements with visible text labels do not have matching accessible names."
       ],
       "a11y": {
-        "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
+        "label-content-name-mismatch": [
+          "section.hero > div.container > div.door > button#knock <button class=\"knock\" id=\"knock\" aria-label=\"Постучать в дверь\">"
         ]
       }
     },
     "barbershop": {
       "scores": {
         "performance": 100,
-        "accessibility": 95,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
+      "lcp": "1.5 s",
       "cls": "0",
-      "issues": [
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
-        ]
-      }
+      "issues": [],
+      "a11y": {}
     },
     "cafe": {
       "scores": {
-        "performance": 97,
+        "performance": 85,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.5 s",
-      "cls": "0.011",
+      "lcp": "4.3 s",
+      "cls": "0",
       "issues": [
         "Largest Contentful Paint",
+        "Time to Interactive",
         "Uses ARIA roles on incompatible elements",
         "Background and foreground colors do not have a sufficient contrast ratio."
       ],
@@ -67,72 +75,70 @@
     "dental": {
       "scores": {
         "performance": 100,
-        "accessibility": 96,
+        "accessibility": 99,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
-      "cls": "0.033",
+      "lcp": "1.5 s",
+      "cls": "0",
       "issues": [
-        "Uses ARIA roles on incompatible elements",
-        "Background and foreground colors do not have a sufficient contrast ratio."
+        "Uses ARIA roles on incompatible elements"
       ],
       "a11y": {
         "aria-allowed-role": [
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" data-info=\"rooms\" tabindex=\"0\" role=\"button\" aria-label=\"Кабинеты: подробнее\">",
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:120ms\" data-info=\"visit\" tabindex=\"0\" role=\"button\" aria-label=\"Приём: подро",
           "section > div.container > div.clinic > figure <figure data-reveal=\"zoom\" style=\"--d:240ms\" data-info=\"tech\" tabindex=\"0\" role=\"button\" aria-label=\"Оборудование:"
-        ],
-        "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
         ]
       }
     },
     "fitness": {
       "scores": {
-        "performance": 100,
-        "accessibility": 96,
+        "performance": 99,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
+      "lcp": "2.0 s",
       "cls": "0",
-      "issues": [
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
-        ]
-      }
+      "issues": [],
+      "a11y": {}
     },
     "florist": {
       "scores": {
-        "performance": 98,
-        "accessibility": 95,
+        "performance": 100,
+        "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "2.2 s",
-      "cls": "0.018",
-      "issues": [
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
-        ]
-      }
+      "lcp": "1.5 s",
+      "cls": "0",
+      "issues": [],
+      "a11y": {}
     },
-    "home-desktop": {
+    "gastrobar": {
       "scores": {
         "performance": 96,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
+      "lcp": "2.7 s",
+      "cls": "0",
+      "issues": [
+        "Largest Contentful Paint"
+      ],
+      "a11y": {}
+    },
+    "home-desktop": {
+      "scores": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
       "lcp": "0.5 s",
-      "cls": "0.129",
+      "cls": "0.147",
       "issues": [
         "Cumulative Layout Shift"
       ],
@@ -140,14 +146,15 @@
     },
     "home-mobile": {
       "scores": {
-        "performance": 96,
+        "performance": 94,
         "accessibility": 96,
         "best-practices": 100,
         "seo": 100
       },
       "lcp": "2.0 s",
-      "cls": "0.001",
+      "cls": "0",
       "issues": [
+        "Total Blocking Time",
         "Max Potential First Input Delay",
         "Time to Interactive",
         "Links do not have a discernible name"
@@ -160,52 +167,79 @@
     },
     "miniapp": {
       "scores": {
-        "performance": 94,
-        "accessibility": 96,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "2.5 s",
-      "cls": "0",
-      "issues": [
-        "First Contentful Paint",
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "body > div.stage > div.intro > footer.intro__foot <footer class=\"intro__foot\">"
-        ]
-      }
-    },
-    "realty": {
-      "scores": {
-        "performance": 99,
-        "accessibility": 97,
-        "best-practices": 100,
-        "seo": 100
-      },
-      "lcp": "2.0 s",
-      "cls": "0.057",
-      "issues": [
-        "Background and foreground colors do not have a sufficient contrast ratio."
-      ],
-      "a11y": {
-        "color-contrast": [
-          "body > footer > p.pf-fiction <p class=\"pf-fiction\" style=\"margin:0;padding:0 20px 20px;text-align:center;font-size:12px;opacity:.65\">"
-        ]
-      }
-    },
-    "saas": {
-      "scores": {
         "performance": 99,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcp": "1.4 s",
-      "cls": "0.065",
+      "lcp": "1.9 s",
+      "cls": "0",
+      "issues": [
+        "Elements with visible text labels do not have matching accessible names."
+      ],
+      "a11y": {
+        "label-content-name-mismatch": [
+          "div#menuBody > div.grid > article.card > button.card__img <button type=\"button\" class=\"card__img\" data-open=\"1\" aria-label=\"Подробнее: Маргарита\">"
+        ]
+      }
+    },
+    "realty": {
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.1 s",
+      "cls": "0.055",
       "issues": [],
       "a11y": {}
+    },
+    "restaurant": {
+      "scores": {
+        "performance": 92,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "3.2 s",
+      "cls": "0",
+      "issues": [
+        "First Contentful Paint",
+        "Largest Contentful Paint"
+      ],
+      "a11y": {}
+    },
+    "saas": {
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.0 s",
+      "cls": "0.06",
+      "issues": [],
+      "a11y": {}
+    },
+    "sushi": {
+      "scores": {
+        "performance": 95,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": "2.9 s",
+      "cls": "0",
+      "issues": [
+        "Largest Contentful Paint",
+        "Elements with visible text labels do not have matching accessible names."
+      ],
+      "a11y": {
+        "label-content-name-mismatch": [
+          "body > header > div.container > button#cartBtn <button class=\"cart-btn\" id=\"cartBtn\" aria-label=\"Корзина\">"
+        ]
+      }
     }
   }
 }
