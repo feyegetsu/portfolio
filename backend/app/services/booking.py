@@ -104,13 +104,16 @@ def reserve(db: Session, site: Site, resource: str, starts_at: datetime) -> None
     if not cap:
         return
     key, limit = cap
-    stmt = _insert(db)(SlotCounter).values(site=site.slug, resource_key=key, starts_at=starts_at, taken=1)
+    table = SlotCounter.__table__
+    stmt = _insert(db)(table).values(site=site.slug, resource_key=key, starts_at=starts_at, taken=1)
     stmt = stmt.on_conflict_do_update(
         index_elements=["site", "resource_key", "starts_at"],
-        set_={"taken": SlotCounter.taken + 1},
-        where=SlotCounter.taken < limit,
-    )
-    if db.execute(stmt).rowcount == 0:
+        set_={"taken": table.c.taken + 1},
+        where=table.c.taken < limit,
+    ).returning(table.c.taken)
+    # Место занято, только если оператор вернул строку. rowcount у INSERT … ON CONFLICT ненадёжен: insert по
+    # ORM-сущности SQLAlchemy выполняет своим путём, и в PostgreSQL отказ по WHERE не давал 0 — мест не хватало
+    if db.execute(stmt).first() is None:
         raise HTTPException(status.HTTP_409_CONFLICT, FULL)
 
 
