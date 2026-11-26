@@ -274,7 +274,7 @@
 
     const $ = (id) => document.getElementById(id);
     const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
-    const rub = (n) => Number(n).toLocaleString("ru-RU") + " ₽";  // Number: ответ API не вставляем в HTML как есть
+    const rub = PF.rub;  // общий помощник из ../shared/kit.js
     const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const haptic = (type = "light") => { if (inTG && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(type); };
 
@@ -298,11 +298,12 @@
       { id: 15, cat: "pasta", name: "Стейк с фри", desc: "Мачете из говядины, картофель фри, соус демиглас.", w: "390 г", price: 890, photo: "1600891964092-4316c288032e" },
       { id: 16, cat: "drinks", name: "Лимонады", desc: "Маракуйя, клубника-базилик или классический. 0,4 л.", w: "400 мл", price: 219, photo: "1544145945-f90425340c7e" },
     ];
-    const SIZES = [["25 см", -120], ["30 см", 0], ["35 см", 170]];
-    const EXTRAS = [["Двойной сыр", 90], ["Халапеньо", 50], ["Бортик с сыром", 120]];
-    // Публичный промокод для предпросмотра скидки; принимает и проверяет его сервер
-    const PROMOS = { FOX10: 0.1 };
-    const FREE_FROM = 1500, DELIVERY = 199;
+    // Правила заказа — из api.js, копии backend/app/sites.py: размеры, добавки, промокоды и доставка живут в одном
+    // месте, и витрина показывает то же, что посчитает сервер. Промокод здесь — только предпросмотр скидки
+    const RULES = PortfolioAPI.rules("miniapp").pricing;
+    const SIZES = RULES.sizes, EXTRAS = RULES.extras;
+    const PROMOS = Object.fromEntries(Object.entries(RULES.promos).map(([code, percent]) => [code, percent / 100]));
+    const FREE_FROM = RULES.freeFrom, DELIVERY = RULES.delivery;
 
     // Корзина: ключ строки = товар + размер + добавки
     const state = { screen: "menu", cart: [], promo: null, mode: "delivery", query: "" };

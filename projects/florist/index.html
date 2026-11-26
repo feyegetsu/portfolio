@@ -314,8 +314,9 @@
       { id: 12, name: "Пионовидные розы", desc: "Кустовые розы Бомбастик", price: 5900, cat: "Розы", photo: "1591886960571-74d43a9d4166", bg: "#fbe0e6", pop: 9, tag: "Сезон" },
     ];
     const ph = (id, w = 600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
-    const FREE_DELIVERY = 5000, DELIVERY = 390;
-    const rub = n => Number(n).toLocaleString("ru-RU") + " ₽";  // Number: ответ API не вставляем в HTML как есть
+    // Доставка — из правил сайта в api.js (копия backend/app/sites.py), а не своей константой
+    const { freeFrom: FREE_DELIVERY, delivery: DELIVERY } = PortfolioAPI.rules("florist").pricing;
+    const rub = PF.rub;  // общий помощник из ../shared/kit.js
 
     // Корзина хранится в localStorage, но страница работает и без него
     const store = {

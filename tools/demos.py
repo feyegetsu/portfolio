@@ -51,6 +51,9 @@ PLACES = {
     "копия правил в демо-клиенте (api.js)": ("projects/shared/api.js", lambda s: f'{{"slug": "{s}"'),
 }
 
+# Правила сайта, которые демо не должно держать своей копией: они приходят из PortfolioAPI.rules(slug)
+HARDCODED_RULES = re.compile(r"\b(?:FREE_FROM|FREE_DELIVERY|DELIVERY)\s*=\s*\d|\bPROMOS\s*=\s*\{|\b(?:SIZES|EXTRAS)\s*=\s*\[\[")
+
 # Чего не должно быть на страницах демо
 FORBIDDEN = {
     "+7 (900) 000-00-00": "телефон-заглушка: у каждого демо свой номер",
@@ -78,6 +81,8 @@ IMG_WITHOUT_SIZE = re.compile(r"<img\b(?![^>]*\bwidth=)[^>]*>")
 def markup_problems(text: str) -> list[str]:
     """Правила разметки для страниц и шаблонов в скриптах."""
     problems = []
+    for m in HARDCODED_RULES.finditer(text):
+        problems.append(f"правило сайта константой «{m.group(0)}»: берите PortfolioAPI.rules(slug).pricing")
     for tag in IMG_WITHOUT_SIZE.findall(text):
         problems.append(f"<img> без width/height (сдвиг вёрстки при загрузке): {tag[:80]}")
     return problems

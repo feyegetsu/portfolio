@@ -5,7 +5,7 @@ import re
 import urllib.parse
 import urllib.request
 
-from conftest import OWNER, demo_login
+from conftest import OWNER, ROOT, demo_login
 from playwright.sync_api import expect
 
 
@@ -128,3 +128,15 @@ def test_miniapp_outside_telegram_does_not_load_sdk(page, site, errors):
     assert not [u for u in urls if "telegram.org" in u]
     page.goto(f"{site}/projects/miniapp/?tg=1#tgWebAppData=query_id%3D1")  # новая загрузка, а не смена hash
     assert [u for u in urls if "telegram.org" in u]  # внутри Telegram SDK подключается
+
+
+def test_storefront_rules_come_from_api_js(page, site, errors):
+    # ARCH-001: порог бесплатной доставки меняется в sites.py → rules_export → api.js, без правки HTML витрины
+    src = (ROOT / "projects" / "shared" / "api.js").read_text(encoding="utf-8")
+    patched = re.sub(r'("slug": "sushi".*?"freeFrom": )1500', r"\g<1>3000", src, count=1)
+    assert patched != src
+    page.route("**/projects/shared/api.js*", lambda r: r.fulfill(status=200, content_type="text/javascript", body=patched))
+    page.goto(f"{site}/projects/sushi/")
+    page.locator("[data-inc='s7']").first.click()
+    page.locator("#cartBtn").click()
+    expect(page.locator("#drawer")).to_contain_text("2 810")  # 3 000 − 190 ₽

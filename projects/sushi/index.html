@@ -273,9 +273,10 @@
   <script src="../shared/motion.js" defer></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const rub = (n) => `${Number(n).toLocaleString("ru-RU")} ₽`;  // Number: ответ API не вставляем в HTML как есть
+    const rub = PF.rub;  // общий помощник из ../shared/kit.js
     const ph = (id, w = 500) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${Math.round(w * .75)}&q=70`;
-    const FREE_FROM = 1500, DELIVERY = 199;
+    // Доставка — из правил сайта в api.js (копия backend/app/sites.py), а не своей константой
+    const { freeFrom: FREE_FROM, delivery: DELIVERY } = PortfolioAPI.rules("sushi").pricing;
 
     // ref совпадает с каталогом в API: цены и наличие приходят оттуда, здесь значения по умолчанию
     const CATS = ["Сеты", "Роллы", "Запечённые", "Нигири и сашими", "Горячее"];
