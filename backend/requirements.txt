@@ -6,4 +6,4 @@ alembic==1.20.1
 PyJWT==2.15.1
 psycopg[binary]==3.3.9
 tzdata==2026.6
-redis==8.1.0
+redis==8.2.0
