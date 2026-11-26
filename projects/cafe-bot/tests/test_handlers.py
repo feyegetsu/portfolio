@@ -6,8 +6,8 @@ import bot as cafe
 
 
 async def test_checkout_saves_order_and_notifies_admin(bot):
-    await cafe.add_to_cart(callback("add:coffee:0"))
-    await cafe.add_to_cart(callback("add:bakery:1"))
+    await cafe.add_to_cart(callback("add:coffee:0"), cafe.Add(key="coffee", idx=0))
+    await cafe.add_to_cart(callback("add:bakery:1"), cafe.Add(key="bakery", idx=1))
     call = callback("checkout")
     await cafe.checkout(call, bot)
     text = call.message.edit_text.await_args.args[0]
@@ -18,10 +18,10 @@ async def test_checkout_saves_order_and_notifies_admin(bot):
 
 async def test_order_ready_only_for_admin(bot):
     stranger = callback("ready:5:7", uid=1, text="Заказ")
-    await cafe.order_ready(stranger, bot)
+    await cafe.order_ready(stranger, cafe.Ready(order_id=5, user_id=7), bot)
     bot.send_message.assert_not_awaited()
     admin = callback("ready:5:7", uid=ADMIN, text="Заказ")
-    await cafe.order_ready(admin, bot)
+    await cafe.order_ready(admin, cafe.Ready(order_id=5, user_id=7), bot)
     assert bot.send_message.await_args.args[0] == 7
 
 
